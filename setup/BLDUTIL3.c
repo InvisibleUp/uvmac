@@ -17,6 +17,8 @@
 	BuiLD system UTILities part 3
 */
 
+#include "COREDEFS.h"
+
 
 #define src_d_name "src"
 #define cfg_d_name "cfg"

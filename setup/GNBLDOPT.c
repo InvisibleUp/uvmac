@@ -17,6 +17,8 @@
 	GeNeric BuiLD OPTions
 */
 
+#include "COREDEFS.h"
+
 /* --- default definitions for SPBASDEF --- */
 
 #ifndef MayUseSound

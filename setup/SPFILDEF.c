@@ -17,7 +17,7 @@
 	program SPecific FILe DEFinitions
 */
 
-
+#include "COREDEFS.h"
 
 /* --- list of source files --- */
 

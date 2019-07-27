@@ -17,6 +17,8 @@
 	program SPecific CoNFiGuration GLobals
 */
 
+#include "COREDEFS.h"
+
 LOCALPROC WriteAppSpecificCNFGGLOBoptions(void)
 {
 	WriteBlankLineToDestFile();

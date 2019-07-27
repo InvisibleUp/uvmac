@@ -1,5 +1,5 @@
 /*
-	COREDEFS.i
+	COREDEFS.h
 	Copyright (C) 2018 Paul C. Pratt
 
 	You can redistribute this file and/or modify it under the terms
@@ -17,6 +17,8 @@
 	CORE DEFinitionS
 */
 
+#ifndef _COREDEFS_H
+#define _COREDEFS_H
 
 typedef unsigned long ui5b;
 typedef unsigned short ui4b;
@@ -88,3 +90,5 @@ typedef MyByte *MyPtr;
 #define EXPORTVAR static
 
 GLOBALVAR MyPtr pDt;
+
+#endif

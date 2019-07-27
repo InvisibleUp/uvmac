@@ -17,6 +17,8 @@
 	WRite MACintosh RESources configuration
 */
 
+#include "COREDEFS.h"
+
 
 LOCALPROC WriteBeginResResource(char *types, int id)
 {

@@ -20,6 +20,7 @@
 	used to make an MPW tool.
 */
 
+#include "COREDEFS.h"
 
 LOCALVAR int The_argc;
 LOCALVAR int The_argi;

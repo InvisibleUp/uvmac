@@ -17,6 +17,7 @@
 	WRite TEXT FiLe
 */
 
+#include "COREDEFS.h"
 
 
 /* --- routines for writing text files --- */

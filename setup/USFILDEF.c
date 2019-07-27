@@ -17,6 +17,8 @@
 	USe program SPecific FILe DEFinitions
 */
 
+#include "COREDEFS.h"
+
 LOCALPROC NullProc(void)
 {
 }

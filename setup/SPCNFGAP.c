@@ -20,6 +20,8 @@
 	only by platform specific code)
 */
 
+#include "COREDEFS.h"
+
 
 LOCALPROC WriteAppSpecificCNFGRAPIoptions(void)
 {

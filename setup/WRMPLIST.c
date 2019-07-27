@@ -17,6 +17,7 @@
 	WRite Macintosh PLIST
 */
 
+#include "COREDEFS.h"
 
 enum {
 	kPListRaw, /* native plist data */

@@ -19,6 +19,8 @@
 	Some very basic string macros and routines.
 */
 
+#include "COREDEFS.h"
+
 
 #define PStrLength(s) (*(s))
 #define PStrToMyCharPtr(s) ((s) + 1)

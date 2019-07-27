@@ -17,6 +17,8 @@
 	program SPecific write OTHer ConFiguration files
 */
 
+#include "COREDEFS.h"
+
 LOCALPROC WriteAppCNFGGLOBContents(void)
 {
 	WriteCommonCNFGGLOBContents();

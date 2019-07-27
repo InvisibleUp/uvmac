@@ -17,6 +17,8 @@
 	WRite Bash Gnu C specific FiLeS
 */
 
+#include "../COREDEFS.h"
+#include "../config.h"
 
 #define WriteXCDcallgcc WriteCompileCExec
 #if 0

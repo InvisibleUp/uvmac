@@ -17,6 +17,8 @@
 	program SPecific BuiLD OPTions
 */
 
+#include "COREDEFS.h"
+
 /* option: model */
 
 enum {

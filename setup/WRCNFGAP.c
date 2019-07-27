@@ -17,6 +17,8 @@
 	WRite "CNFGrAPi.h"
 */
 
+#include "COREDEFS.h"
+
 LOCALPROC WriteOSXLocalTalkCNFGRAPI(void)
 {
 	WriteDestFileLn("#include <unistd.h>");

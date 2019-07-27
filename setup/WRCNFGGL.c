@@ -17,6 +17,8 @@
 	WRite "CNFGGLob.h"
 */
 
+#include "COREDEFS.h"
+
 
 LOCALPROC WriteConfigurationWarning(void)
 {

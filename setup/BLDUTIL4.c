@@ -17,6 +17,9 @@
 	BuiLD system UTILities part 4
 */
 
+#include "COREDEFS.h"
+#include "CNFGDLFT.h"
+
 LOCALPROC WriteOutDummyContents(void)
 {
 	WriteDestFileLn(

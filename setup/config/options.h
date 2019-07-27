@@ -1,5 +1,5 @@
 /*
-	CNFGOPTS.i
+	options.h
 	Copyright (C) 2018 Paul C. Pratt
 
 	You can redistribute this file and/or modify it under the terms
@@ -14,14 +14,13 @@
 */
 
 /*
-	CoNFiGuration OPTionS
+	Configuration Options
 
-	choices that can be used in CONFIGUR.i
+	choices that can be used in config.h
 */
 
 
 /* choices for cur_ide */
-
 #define gbk_ide_mpw 1 /* Macintosh Programmers Workshop */
 #define gbk_ide_mw8 2 /* Metrowerks CodeWarrior */
 #define gbk_ide_bgc 3 /* Gnu tools */
@@ -40,7 +39,6 @@
 #define gbk_ide_mvc 15 /* Mini vMac C (a specific version of gcc) */
 
 /* choices for gbo_script */
-
 #define gbk_script_mpw 1
 #define gbk_script_applescript 2
 #define gbk_script_bash 3

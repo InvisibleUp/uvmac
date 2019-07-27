@@ -1,5 +1,5 @@
 /*
-	CNFGDLFT.i
+	defaults.h
 	Copyright (C) 2018 Paul C. Pratt
 
 	You can redistribute this file and/or modify it under the terms
@@ -16,7 +16,7 @@
 /*
 	CoNFiGuration DeFauLTs
 
-	set default values for things not set in CONFIGUR.i
+	set default values for things not set in config.h
 */
 
 
@@ -32,6 +32,8 @@
 
 #ifndef cur_ide
 
+/* Automatic IDE selection */
+/* TODO: Fill out and/or remove other compilers */
 #ifdef applec
 #define cur_ide gbk_ide_mpw
 #else
@@ -40,7 +42,8 @@
 
 #endif /* cur_ide */
 
-
+/* Determine the IDE version, if applicable */
+/* TODO: Fill out and/or remove other compilers */
 #ifndef ide_vers
 
 #if gbk_ide_xcd == cur_ide
@@ -53,12 +56,14 @@
 
 #endif /* ide_vers */
 
-
+/* Use command line for ??? */
 #ifndef UseCmndLine
 #define UseCmndLine 0
 #endif
 
 
+/* Check if we're on classic Mac OS, which can only store executables in */
+/* 32-kilobyte segments */
 #ifndef NeedSegmenting
 
 #if gbk_ide_mpw == cur_ide
@@ -70,6 +75,7 @@
 #endif /* NeedSegmenting */
 
 
+/* Automatically determine makefile output format */
 #ifndef gbo_script
 
 #if gbk_ide_mpw == cur_ide

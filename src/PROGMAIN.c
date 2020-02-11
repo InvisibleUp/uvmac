@@ -127,7 +127,7 @@ LOCALPROC SubTickNotify(int SubTick)
 #define CyclesScaledPerTick (130240UL * kMyClockMult * kCycleScale)
 #define CyclesScaledPerSubTick (CyclesScaledPerTick / kNumSubTicks)
 
-LOCALVAR ui4r SubTickCounter;
+LOCALVAR uint16_t SubTickCounter;
 
 LOCALPROC SubTickTaskDo(void)
 {
@@ -328,11 +328,11 @@ LOCALPROC ICT_DoCurrentTasks(void)
 	}
 }
 
-LOCALFUNC ui5b ICT_DoGetNext(ui5b maxn)
+LOCALFUNC uint32_t ICT_DoGetNext(uint32_t maxn)
 {
 	int i = 0;
 	uimr m = ICTactive;
-	ui5b v = maxn;
+	uint32_t v = maxn;
 
 	while (0 != m) {
 		if (0 != (m & 1)) {
@@ -340,7 +340,7 @@ LOCALFUNC ui5b ICT_DoGetNext(ui5b maxn)
 				/* shouldn't happen */
 				m = 0;
 			} else {
-				ui5b d = ICTwhen[i] - NextiCount;
+				uint32_t d = ICTwhen[i] - NextiCount;
 				/* at this point d must be > 0 */
 				if (d < v) {
 #ifdef _VIA_Debug
@@ -358,10 +358,10 @@ LOCALFUNC ui5b ICT_DoGetNext(ui5b maxn)
 	return v;
 }
 
-LOCALPROC m68k_go_nCycles_1(ui5b n)
+LOCALPROC m68k_go_nCycles_1(uint32_t n)
 {
-	ui5b n2;
-	ui5b StopiCount = NextiCount + n;
+	uint32_t n2;
+	uint32_t StopiCount = NextiCount + n;
 	do {
 		ICT_DoCurrentTasks();
 		n2 = ICT_DoGetNext(n);
@@ -381,13 +381,13 @@ LOCALPROC m68k_go_nCycles_1(ui5b n)
 	} while (n != 0);
 }
 
-LOCALVAR ui5b ExtraSubTicksToDo = 0;
+LOCALVAR uint32_t ExtraSubTicksToDo = 0;
 
 LOCALPROC DoEmulateOneTick(void)
 {
 #if EnableAutoSlow
 	{
-		ui5r NewQuietTime = QuietTime + 1;
+		uint32_t NewQuietTime = QuietTime + 1;
 
 		if (NewQuietTime > QuietTime) {
 			/* if not overflow */
@@ -397,7 +397,7 @@ LOCALPROC DoEmulateOneTick(void)
 #endif
 #if EnableAutoSlow
 	{
-		ui5r NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
+		uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
 
 		if (NewQuietSubTicks > QuietSubTicks) {
 			/* if not overflow */
@@ -412,11 +412,11 @@ LOCALPROC DoEmulateOneTick(void)
 
 	SixtiethEndNotify();
 
-	if ((ui3b) -1 == SpeedValue) {
-		ExtraSubTicksToDo = (ui5b) -1;
+	if ((uint8_t) -1 == SpeedValue) {
+		ExtraSubTicksToDo = (uint32_t) -1;
 	} else {
-		ui5b ExtraAdd = (kNumSubTicks << SpeedValue) - kNumSubTicks;
-		ui5b ExtraLimit = ExtraAdd << 3;
+		uint32_t ExtraAdd = (kNumSubTicks << SpeedValue) - kNumSubTicks;
+		uint32_t ExtraLimit = ExtraAdd << 3;
 
 		ExtraSubTicksToDo += ExtraAdd;
 		if (ExtraSubTicksToDo > ExtraLimit) {
@@ -463,7 +463,7 @@ LOCALPROC DoEmulateExtraTime(void)
 		do {
 #if EnableAutoSlow
 			{
-				ui5r NewQuietSubTicks = QuietSubTicks + 1;
+				uint32_t NewQuietSubTicks = QuietSubTicks + 1;
 
 				if (NewQuietSubTicks > QuietSubTicks) {
 					/* if not overflow */
@@ -478,7 +478,7 @@ LOCALPROC DoEmulateExtraTime(void)
 	}
 }
 
-LOCALVAR ui5b CurEmulatedTime = 0;
+LOCALVAR uint32_t CurEmulatedTime = 0;
 	/*
 		The number of ticks that have been
 		emulated so far.
@@ -507,7 +507,7 @@ LOCALPROC RunEmulatedTicksToTrueTime(void)
 		CurEmulatedTime >= TrueEmulatedTime.
 	*/
 
-	si3b n = OnTrueTime - CurEmulatedTime;
+	int8_t n = OnTrueTime - CurEmulatedTime;
 
 	if (n > 0) {
 		DoEmulateOneTick();

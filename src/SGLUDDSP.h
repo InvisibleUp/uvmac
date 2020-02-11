@@ -48,13 +48,13 @@ label_retry:
 			fprintf(stderr, "SNDCTL_DSP_GETOSPACE fails\n");
 		} else {
 			tpSoundSamp NextPlayPtr;
-			ui4b PlayNowSize = 0;
-			ui4b MaskedFillOffset = ThePlayOffset & kOneBuffMask;
-			ui4b PrivateBuffUsed = TheFillOffset - ThePlayOffset;
+			uint16_t PlayNowSize = 0;
+			uint16_t MaskedFillOffset = ThePlayOffset & kOneBuffMask;
+			uint16_t PrivateBuffUsed = TheFillOffset - ThePlayOffset;
 			int used = (info.fragstotal * info.fragsize) - info.bytes;
 
 			if (audio_started) {
-				ui4b TotPendBuffs = used >> kLnOneBuffSz;
+				uint16_t TotPendBuffs = used >> kLnOneBuffSz;
 
 				if (TotPendBuffs < MinFilledSoundBuffs) {
 					MinFilledSoundBuffs = TotPendBuffs;
@@ -209,7 +209,7 @@ LOCALPROC MySound_UnInit(void)
 	}
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(ui4r actL)
+GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
 {
 	if (MySound_EndWrite0(actL)) {
 		ConvertSoundBlockToNative(TheSoundBuffer

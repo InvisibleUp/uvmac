@@ -74,9 +74,9 @@
 /*                                                               */
 /* ************************************************************* */
 
-LOCALFUNC ui5b jdate(int day, int month, int year)
+LOCALFUNC uint32_t jdate(int day, int month, int year)
 {
-	ui5b days;                      /* value returned */
+	uint32_t days;                      /* value returned */
 	int mtable[] = {
 		0,    31,  59,  90, 120, 151,
 		181, 212, 243, 273, 304, 334
@@ -87,7 +87,7 @@ LOCALFUNC ui5b jdate(int day, int month, int year)
 		and Centenial year stuff
 	*/
 
-	days = (((ui5b)year * 365) + day + mtable[month - 1]
+	days = (((uint32_t)year * 365) + day + mtable[month - 1]
 		+ ((year + 4) / 4) - ((year / 100) - (year / 400)));
 
 	/* now adjust for leap year before March 1st */
@@ -104,11 +104,11 @@ LOCALFUNC ui5b jdate(int day, int month, int year)
 	return (days + 5);
 }
 
-LOCALFUNC ui5b Date2MacSeconds(int second, int minute, int hour,
+LOCALFUNC uint32_t Date2MacSeconds(int second, int minute, int hour,
 	int day, int month, int year)
 {
-	ui5b curjdate;
-	ui5b basejdate;
+	uint32_t curjdate;
+	uint32_t basejdate;
 
 	curjdate = jdate(day, month, year);
 	basejdate = jdate(1, 1, 1904);

@@ -45,7 +45,7 @@
 
 #define VID_dolog (dbglog_HAVE && 0)
 
-LOCALVAR const ui3b VidDrvr_contents[] = {
+LOCALVAR const uint8_t VidDrvr_contents[] = {
 0x4C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x2A, 0x00, 0x00, 0x00, 0xE2, 0x00, 0xEC,
 0x00, 0xB6, 0x15, 0x2E, 0x44, 0x69, 0x73, 0x70,
@@ -89,7 +89,7 @@ LOCALPROC ChecksumSlotROM(void)
 	/* assuming check sum field initialized to zero */
 	int i;
 	ui3p p = VidROM;
-	ui5b crc = 0;
+	uint32_t crc = 0;
 
 	for (i = kVidROM_Size; --i >= 0; ) {
 		crc = ((crc << 1) | (crc >> 31)) + *p++;
@@ -99,31 +99,31 @@ LOCALPROC ChecksumSlotROM(void)
 
 LOCALVAR ui3p pPatch;
 
-LOCALPROC PatchAByte(ui3b v)
+LOCALPROC PatchAByte(uint8_t v)
 {
 	*pPatch++ = v;
 }
 
-LOCALPROC PatchAWord(ui4r v)
+LOCALPROC PatchAWord(uint16_t v)
 {
 	PatchAByte(v >> 8);
 	PatchAByte(v & 0x00FF);
 }
 
-LOCALPROC PatchALong(ui5r v)
+LOCALPROC PatchALong(uint32_t v)
 {
 	PatchAWord(v >> 16);
 	PatchAWord(v & 0x0000FFFF);
 }
 
 #if 0
-LOCALPROC PatchAOSLstEntry0(ui3r Id, ui5r Offset)
+LOCALPROC PatchAOSLstEntry0(uint8_t Id, uint32_t Offset)
 {
 	PatchALong((Id << 24) | (Offset & 0x00FFFFFF));
 }
 #endif
 
-LOCALPROC PatchAOSLstEntry(ui3r Id, ui3p Offset)
+LOCALPROC PatchAOSLstEntry(uint8_t Id, ui3p Offset)
 {
 	PatchALong((Id << 24) | ((Offset - pPatch) & 0x00FFFFFF));
 }
@@ -135,7 +135,7 @@ LOCALFUNC ui3p ReservePatchOSLstEntry(void)
 	return v;
 }
 
-LOCALPROC PatchAReservedOSLstEntry(ui3p p, ui3r Id)
+LOCALPROC PatchAReservedOSLstEntry(ui3p p, uint8_t Id)
 {
 	ui3p pPatchSave = pPatch;
 	pPatch = p;
@@ -143,7 +143,7 @@ LOCALPROC PatchAReservedOSLstEntry(ui3p p, ui3r Id)
 	pPatch = pPatchSave;
 }
 
-LOCALPROC PatchADatLstEntry(ui3r Id, ui5r Data)
+LOCALPROC PatchADatLstEntry(uint8_t Id, uint32_t Data)
 {
 	PatchALong((Id << 24) | (Data & 0x00FFFFFF));
 }
@@ -156,7 +156,7 @@ LOCALPROC PatchAnEndOfLst(void)
 GLOBALFUNC blnr Vid_Init(void)
 {
 	int i;
-	ui5r UsedSoFar;
+	uint32_t UsedSoFar;
 
 	ui3p pAt_sRsrcDir;
 	ui3p pTo_sRsrc_Board;
@@ -432,7 +432,7 @@ GLOBALPROC Vid_Update(void)
 	}
 }
 
-LOCALFUNC ui4r Vid_GetMode(void)
+LOCALFUNC uint16_t Vid_GetMode(void)
 {
 	return
 #if 0 != vMacScreenDepth
@@ -441,7 +441,7 @@ LOCALFUNC ui4r Vid_GetMode(void)
 		128;
 }
 
-LOCALFUNC tMacErr Vid_SetMode(ui4r v)
+LOCALFUNC tMacErr Vid_SetMode(uint16_t v)
 {
 #if 0 == vMacScreenDepth
 	UnusedParam(v);
@@ -454,7 +454,7 @@ LOCALFUNC tMacErr Vid_SetMode(ui4r v)
 	return mnvm_noErr;
 }
 
-GLOBALFUNC ui4r Vid_Reset(void)
+GLOBALFUNC uint16_t Vid_Reset(void)
 {
 #if 0 != vMacScreenDepth
 	UseColorMode = falseblnr;
@@ -492,20 +492,20 @@ LOCALPROC FillScreenWithGrayPattern(void)
 {
 	int i;
 	int j;
-	ui5b *p1 = (ui5b *)VidMem;
+	uint32_t *p1 = (uint32_t *)VidMem;
 
 #if 0 != vMacScreenDepth
 	if (UseColorMode) {
 #if 1 == vMacScreenDepth
-		ui5b pat = 0xCCCCCCCC;
+		uint32_t pat = 0xCCCCCCCC;
 #elif 2 == vMacScreenDepth
-		ui5b pat = 0xF0F0F0F0;
+		uint32_t pat = 0xF0F0F0F0;
 #elif 3 == vMacScreenDepth
-		ui5b pat = 0xFF00FF00;
+		uint32_t pat = 0xFF00FF00;
 #elif 4 == vMacScreenDepth
-		ui5b pat = 0x00007FFF;
+		uint32_t pat = 0x00007FFF;
 #elif 5 == vMacScreenDepth
-		ui5b pat = 0x00000000;
+		uint32_t pat = 0x00000000;
 #endif
 		for (i = vMacScreenHeight; --i >= 0; ) {
 			for (j = vMacScreenByteWidth >> 2; --j >= 0; ) {
@@ -525,7 +525,7 @@ LOCALPROC FillScreenWithGrayPattern(void)
 	} else
 #endif
 	{
-		ui5b pat = 0xAAAAAAAA;
+		uint32_t pat = 0xAAAAAAAA;
 
 		for (i = vMacScreenHeight; --i >= 0; ) {
 			for (j = vMacScreenMonoByteWidth >> 2; --j >= 0; ) {
@@ -577,7 +577,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 				CPTR CntrlParams = get_vm_long(p + 8);
 				CPTR csParam =
 					get_vm_long(CntrlParams + CntrlParam_csParam);
-				ui4r csCode =
+				uint16_t csCode =
 					get_vm_word(CntrlParams + CntrlParam_csCode);
 
 				switch (csCode) {
@@ -631,17 +631,17 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 						if (UseColorMode) {
 							CPTR csTable = get_vm_long(
 								csParam + VDSetEntryRecord_csTable);
-							ui4r csStart = get_vm_word(
+							uint16_t csStart = get_vm_word(
 								csParam + VDSetEntryRecord_csStart);
-							ui4r csCount = 1 + get_vm_word(
+							uint16_t csCount = 1 + get_vm_word(
 								csParam + VDSetEntryRecord_csCount);
 
-							if (((ui4r) 0xFFFF) == csStart) {
+							if (((uint16_t) 0xFFFF) == csStart) {
 								int i;
 
 								result = mnvm_noErr;
 								for (i = 0; i < csCount; ++i) {
-									ui4r j = get_vm_word(csTable + 0);
+									uint16_t j = get_vm_word(csTable + 0);
 									if (j == 0) {
 										/* ignore input, leave white */
 									} else
@@ -653,11 +653,11 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 										result = mnvm_paramErr;
 									} else
 									{
-										ui4r r =
+										uint16_t r =
 											get_vm_word(csTable + 2);
-										ui4r g =
+										uint16_t g =
 											get_vm_word(csTable + 4);
-										ui4r b =
+										uint16_t b =
 											get_vm_word(csTable + 6);
 										CLUT_reds[j] = r;
 										CLUT_greens[j] = g;
@@ -687,11 +687,11 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 										/* ignore input, leave black */
 									} else
 									{
-										ui4r r =
+										uint16_t r =
 											get_vm_word(csTable + 2);
-										ui4r g =
+										uint16_t g =
 											get_vm_word(csTable + 4);
-										ui4r b =
+										uint16_t b =
 											get_vm_word(csTable + 6);
 										CLUT_reds[j] = r;
 										CLUT_greens[j] = g;
@@ -735,7 +735,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 #endif
 						{
 #if 0
-							ui4r csPage = get_vm_word(
+							uint16_t csPage = get_vm_word(
 								csParam + VDPageInfo_csPage);
 							/* not implemented */
 #endif
@@ -749,7 +749,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 							"Video_Access kCmndVideoControl, SetGray");
 #endif
 						{
-							ui3r csMode = get_vm_byte(
+							uint8_t csMode = get_vm_byte(
 								csParam + VDPageInfo_csMode);
 								/*
 									"Designing Cards and Drivers" book
@@ -800,7 +800,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 				CPTR CntrlParams = get_vm_long(p + 8);
 				CPTR csParam = get_vm_long(
 					CntrlParams + CntrlParam_csParam);
-				ui4r csCode = get_vm_word(
+				uint16_t csCode = get_vm_word(
 					CntrlParams + CntrlParam_csCode);
 
 				result = mnvm_statusErr;
@@ -855,7 +855,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 							" GetPageAddr");
 #endif
 						{
-							ui4r csPage = get_vm_word(
+							uint16_t csPage = get_vm_word(
 								csParam + VDPageInfo_csPage);
 							if (0 != csPage) {
 								/*

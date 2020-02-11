@@ -33,7 +33,7 @@
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, si5b byteCount)
+GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -108,7 +108,7 @@ LOCALPROC WriteExtraErr(char *s)
 
 LOCALPROC NativeStrFromCStr(char *r, char *s, blnr AddEllipsis)
 {
-	ui3b ps[ClStrMaxLength];
+	uint8_t ps[ClStrMaxLength];
 	int i;
 	int L;
 
@@ -150,10 +150,10 @@ LOCALPROC InitDrives(void)
 }
 
 GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
-	tDrive Drive_No, ui5r Sony_Start, ui5r Sony_Count,
-	ui5r *Sony_ActCount)
+	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
+	uint32_t *Sony_ActCount)
 {
-	ui5r NewSony_Count = Sony_Count;
+	uint32_t NewSony_Count = Sony_Count;
 
 	fseek(Drives[Drive_No], Sony_Start, SEEK_SET);
 
@@ -170,7 +170,7 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
 	return mnvm_noErr; /*& figure out what really to return &*/
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, ui5r *Sony_Count)
+GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
 	fseek(Drives[Drive_No], 0, SEEK_END);
 	*Sony_Count = ftell(Drives[Drive_No]);
@@ -338,8 +338,8 @@ LOCALVAR blnr gBackgroundFlag = falseblnr;
 LOCALVAR blnr gTrueBackgroundFlag = falseblnr;
 LOCALVAR blnr CurSpeedStopped = trueblnr;
 
-LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
-	si4b bottom, si4b right)
+LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
+	int16_t bottom, int16_t right)
 {
 	guchar graybuf[vMacScreenWidth * vMacScreenHeight];
 
@@ -347,10 +347,10 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 		int i;
 		int j;
 		int k;
-		ui3b *p1 = GetCurDrawBuff()
-			+ (ui5r)vMacScreenWidth / 8 * top;
-		ui3b *p2 = (ui3b *)graybuf + (ui5r)vMacScreenWidth * top;
-		ui5b t0;
+		uint8_t *p1 = GetCurDrawBuff()
+			+ (uint32_t)vMacScreenWidth / 8 * top;
+		uint8_t *p2 = (uint8_t *)graybuf + (uint32_t)vMacScreenWidth * top;
+		uint32_t t0;
 
 		UnusedParam(left);
 		UnusedParam(right);
@@ -371,7 +371,7 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 		right - left /* width */,
 		bottom - top /* height */,
 		GDK_RGB_DITHER_NONE,
-		graybuf + left + (ui5r)vMacScreenWidth * top,
+		graybuf + left + (uint32_t)vMacScreenWidth * top,
 		vMacScreenWidth);
 }
 
@@ -473,9 +473,9 @@ LOCALPROC CheckMouseState(void)
 	*/
 
 
-LOCALVAR ui3b KC2MKC[MaxNumKeycode];
+LOCALVAR uint8_t KC2MKC[MaxNumKeycode];
 
-LOCALPROC KC2MKCAssignOne(guint keyval, ui3r key)
+LOCALPROC KC2MKCAssignOne(guint keyval, uint8_t key)
 {
 	GdkKeymapKey *keys;
 	gint n_keys;
@@ -766,7 +766,7 @@ LOCALPROC DoKeyCode(guint keycode, blnr down)
 	if (GDK_Caps_Lock == keycode) {
 		CheckTheCapsLock();
 	} else {
-		ui3r key = KC2MKC[keycode & KeyCodeMask];
+		uint8_t key = KC2MKC[keycode & KeyCodeMask];
 
 		if (MKC_None != key) {
 			Keyboard_UpdateKeyMap2(key, down);
@@ -776,19 +776,19 @@ LOCALPROC DoKeyCode(guint keycode, blnr down)
 
 /* --- time, date, location --- */
 
-LOCALVAR ui5b TrueEmulatedTime = 0;
+LOCALVAR uint32_t TrueEmulatedTime = 0;
 
 #include "DATE2SEC.h"
 
 #define TicksPerSecond 1000000
 
 LOCALVAR blnr HaveTimeDelta = falseblnr;
-LOCALVAR ui5b TimeDelta;
+LOCALVAR uint32_t TimeDelta;
 
-LOCALVAR ui5b NewMacDateInSeconds;
+LOCALVAR uint32_t NewMacDateInSeconds;
 
-LOCALVAR ui5b LastTimeSec;
-LOCALVAR ui5b LastTimeUsec;
+LOCALVAR uint32_t LastTimeSec;
+LOCALVAR uint32_t LastTimeUsec;
 
 LOCALPROC GetCurrentTicks(void)
 {
@@ -810,21 +810,21 @@ LOCALPROC GetCurrentTicks(void)
 		TimeDelta = Date2MacSeconds(s->tm_sec, s->tm_min, s->tm_hour,
 			s->tm_mday, 1 + s->tm_mon, 1900 + s->tm_year) - t.tv_sec;
 #if 0 && AutoTimeZone /* how portable is this ? */
-		CurMacDelta = ((ui5b)(s->tm_gmtoff) & 0x00FFFFFF)
+		CurMacDelta = ((uint32_t)(s->tm_gmtoff) & 0x00FFFFFF)
 			| ((s->tm_isdst ? 0x80 : 0) << 24);
 #endif
 		HaveTimeDelta = trueblnr;
 	}
 
 	NewMacDateInSeconds = t.tv_sec + TimeDelta;
-	LastTimeSec = (ui5b)t.tv_sec;
-	LastTimeUsec = (ui5b)t.tv_usec;
+	LastTimeSec = (uint32_t)t.tv_sec;
+	LastTimeUsec = (uint32_t)t.tv_usec;
 }
 
 #define MyInvTimeStep 16626 /* TicksPerSecond / 60.14742 */
 
-LOCALVAR ui5b NextTimeSec;
-LOCALVAR ui5b NextTimeUsec;
+LOCALVAR uint32_t NextTimeSec;
+LOCALVAR uint32_t NextTimeUsec;
 
 LOCALPROC IncrNextTime(void)
 {
@@ -848,15 +848,15 @@ LOCALPROC StartUpTimeAdjust(void)
 	InitNextTime();
 }
 
-LOCALFUNC si5b GetTimeDiff(void)
+LOCALFUNC int32_t GetTimeDiff(void)
 {
-	return ((si5b)(LastTimeSec - NextTimeSec)) * TicksPerSecond
-		+ ((si5b)(LastTimeUsec - NextTimeUsec));
+	return ((int32_t)(LastTimeSec - NextTimeSec)) * TicksPerSecond
+		+ ((int32_t)(LastTimeUsec - NextTimeUsec));
 }
 
 LOCALPROC UpdateTrueEmulatedTime(void)
 {
-	si5b TimeDiff;
+	int32_t TimeDiff;
 
 	GetCurrentTicks();
 
@@ -1293,7 +1293,7 @@ label_retry:
 	}
 
 	if (ExtraTimeNotOver()) {
-		si5b TimeDiff = GetTimeDiff();
+		int32_t TimeDiff = GetTimeDiff();
 		if (TimeDiff < 0) {
 			g_usleep(- TimeDiff);
 		}

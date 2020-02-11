@@ -27,9 +27,9 @@
 #include "CNFGGLOB.h"
 
 
-typedef ui3b *ui3p;
-typedef ui4b *ui4p;
-typedef ui5b *ui5p;
+typedef uint8_t *ui3p;
+typedef uint16_t *ui4p;
+typedef uint32_t *ui5p;
 
 /*
 	Largest efficiently supported
@@ -37,10 +37,10 @@ typedef ui5b *ui5p;
 	large enough to hold number of elements
 	of any array we will deal with.
 */
-typedef ui5r uimr;
-typedef si5r simr;
+typedef uint32_t uimr;
+typedef int32_t simr;
 
-#define blnr ui3r
+#define blnr uint8_t
 #define trueblnr 1
 #define falseblnr 0
 
@@ -111,7 +111,7 @@ typedef si5r simr;
 	*/
 
 /*
-	best type for ui4r that is probably in register
+	best type for uint16_t that is probably in register
 	(when compiler messes up otherwise)
 */
 
@@ -123,16 +123,16 @@ typedef si5r simr;
 #define LittleEndianUnaligned 0
 #endif
 
-#ifndef ui3rr
-#define ui3rr ui3r
+#ifndef uint8_tr
+#define uint8_tr uint8_t
 #endif
 
-#ifndef ui4rr
-#define ui4rr ui4r
+#ifndef uint16_tr
+#define uint16_tr uint16_t
 #endif
 
-#ifndef si5rr
-#define si5rr si5r
+#ifndef int32_tr
+#define int32_tr int32_t
 #endif
 
 #ifndef my_align_8

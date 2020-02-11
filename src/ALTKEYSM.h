@@ -47,7 +47,7 @@ LOCALPROC CheckAltKeyUseMode(void)
 	}
 }
 
-LOCALPROC Keyboard_UpdateKeyMap1(ui3r key, blnr down)
+LOCALPROC Keyboard_UpdateKeyMap1(uint8_t key, blnr down)
 {
 	if (MKC_Command == key) {
 		AltKeysTrueCmnd = down;
@@ -171,7 +171,7 @@ LOCALPROC Keyboard_UpdateKeyMap1(ui3r key, blnr down)
 	}
 }
 
-LOCALPROC DisconnectKeyCodes1(ui5b KeepMask)
+LOCALPROC DisconnectKeyCodes1(uint32_t KeepMask)
 {
 	DisconnectKeyCodes(KeepMask);
 

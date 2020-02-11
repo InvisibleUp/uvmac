@@ -33,27 +33,27 @@
 	ReportAbnormalID unused 0x0F0E, 0x0F1E - 0x0FFF
 */
 
-LOCALVAR ui3r SoundReg801 = 0;
-LOCALVAR ui3r SoundReg802 = 0;
-LOCALVAR ui3r SoundReg803 = 0;
-LOCALVAR ui3r SoundReg804 = 0;
-LOCALVAR ui3r SoundReg805 = 0;
-LOCALVAR ui3r SoundReg_Volume = 0; /* 0x806 */
-/* LOCALVAR ui3r SoundReg807 = 0; */
+LOCALVAR uint8_t SoundReg801 = 0;
+LOCALVAR uint8_t SoundReg802 = 0;
+LOCALVAR uint8_t SoundReg803 = 0;
+LOCALVAR uint8_t SoundReg804 = 0;
+LOCALVAR uint8_t SoundReg805 = 0;
+LOCALVAR uint8_t SoundReg_Volume = 0; /* 0x806 */
+/* LOCALVAR uint8_t SoundReg807 = 0; */
 
-LOCALVAR ui3b ASC_SampBuff[0x800];
+LOCALVAR uint8_t ASC_SampBuff[0x800];
 
 struct ASC_ChanR {
-	ui3b freq[4];
-	ui3b phase[4];
+	uint8_t freq[4];
+	uint8_t phase[4];
 };
 typedef struct ASC_ChanR ASC_ChanR;
 
 LOCALVAR ASC_ChanR ASC_ChanA[4];
 
-LOCALVAR ui4b ASC_FIFO_Out = 0;
-LOCALVAR ui4b ASC_FIFO_InA = 0;
-LOCALVAR ui4b ASC_FIFO_InB = 0;
+LOCALVAR uint16_t ASC_FIFO_Out = 0;
+LOCALVAR uint16_t ASC_FIFO_InA = 0;
+LOCALVAR uint16_t ASC_FIFO_InB = 0;
 LOCALVAR blnr ASC_Playing = falseblnr;
 
 #define ASC_dolog (dbglog_HAVE && 0)
@@ -65,23 +65,23 @@ IMPORTPROC ASC_interrupt_PulseNtfy(void);
 LOCALPROC ASC_RecalcStatus(void)
 {
 	if ((1 == SoundReg801) && ASC_Playing) {
-		if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
+		if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
 			SoundReg804 &= ~ 0x01;
 		} else {
 			SoundReg804 |= 0x01;
 		}
-		if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400) {
+		if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400) {
 			SoundReg804 |= 0x02;
 		} else {
 			SoundReg804 &= ~ 0x02;
 		}
 		if (0 != (SoundReg802 & 2)) {
-			if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200) {
+			if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200) {
 				SoundReg804 &= ~ 0x04;
 			} else {
 				SoundReg804 |= 0x04;
 			}
-			if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400) {
+			if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400) {
 				SoundReg804 |= 0x08;
 			} else {
 				SoundReg804 &= ~ 0x08;
@@ -99,13 +99,13 @@ LOCALPROC ASC_ClearFIFO(void)
 	ASC_RecalcStatus();
 }
 
-GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t ASC_Access(uint32_t Data, blnr WriteMem, CPTR addr)
 {
 	if (addr < 0x800) {
 		if (WriteMem) {
 			if (1 == SoundReg801) {
 				if (0 == (addr & 0x400)) {
-					if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400)
+					if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400)
 					{
 #if 0 /* seems to happen in tetris */
 						ReportAbnormalID(0x0F01,
@@ -117,7 +117,7 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 					ASC_SampBuff[ASC_FIFO_InA & 0x3FF] = Data;
 
 					++ASC_FIFO_InA;
-					if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200)
+					if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200)
 					{
 						if (0 != (SoundReg804 & 0x01)) {
 							/* happens normally */
@@ -128,7 +128,7 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 						SoundReg804 |= 0x01;
 #endif
 					}
-					if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400)
+					if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400)
 					{
 						SoundReg804 |= 0x02;
 #if ASC_dolog
@@ -148,7 +148,7 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 						ReportAbnormalID(0x0F03,
 							"ASC - Channel B for Mono");
 					}
-					if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400)
+					if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400)
 					{
 						ReportAbnormalID(0x0F04,
 							"ASC - Channel B Overflow");
@@ -158,7 +158,7 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 					ASC_SampBuff[0x400 + (ASC_FIFO_InB & 0x3FF)] = Data;
 
 					++ASC_FIFO_InB;
-					if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200)
+					if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200)
 					{
 						if (0 != (SoundReg804 & 0x04)) {
 							/* happens normally */
@@ -169,7 +169,7 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 						SoundReg804 |= 0x04;
 #endif
 					}
-					if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400)
+					if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400)
 					{
 						SoundReg804 |= 0x08;
 #if ASC_dolog
@@ -459,8 +459,8 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 				break;
 		}
 	} else if (addr < 0x830) {
-		ui3r b = addr & 3;
-		ui3r chan = ((addr - 0x810) >> 3) & 3;
+		uint8_t b = addr & 3;
+		uint8_t chan = ((addr - 0x810) >> 3) & 3;
 
 		if (0 != (addr & 4)) {
 
@@ -517,7 +517,7 @@ GLOBALFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr)
 	= {approx} (x - kCenterSound) / (8 - SoundVolume) + kCenterSound;
 */
 
-LOCALVAR const ui4b vol_mult[] = {
+LOCALVAR const uint16_t vol_mult[] = {
 	8192, 9362, 10922, 13107, 16384, 21845, 32768
 };
 
@@ -531,21 +531,21 @@ LOCALVAR const trSoundSamp vol_offset[] = {
 #endif
 };
 
-LOCALVAR const ui3r SubTick_n[kNumSubTicks] = {
+LOCALVAR const uint8_t SubTick_n[kNumSubTicks] = {
 	23,  23,  23,  23,  23,  23,  23,  24,
 	23,  23,  23,  23,  23,  23,  23,  24
 };
 
 GLOBALPROC ASC_SubTick(int SubTick)
 {
-	ui4r actL;
+	uint16_t actL;
 #if MySoundEnabled
 	tpSoundSamp p;
 #endif
-	ui4r i;
-	ui4r n = SubTick_n[SubTick];
+	uint16_t i;
+	uint16_t n = SubTick_n[SubTick];
 #if MySoundEnabled
-	ui3b SoundVolume = SoundReg_Volume;
+	uint8_t SoundVolume = SoundReg_Volume;
 #endif
 
 #if MySoundEnabled
@@ -564,8 +564,8 @@ label_retry:
 			if (0 != (SoundReg802 & 2)) {
 
 			if (! ASC_Playing) {
-				if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
-					if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200)
+				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
+					if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200)
 					{
 						SoundReg804 &= ~ 0x01;
 						SoundReg804 &= ~ 0x04;
@@ -574,8 +574,8 @@ label_retry:
 						dbglog_WriteNote("ASC : start stereo playing");
 #endif
 					} else {
-						if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) == 0)
-						if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out))
+						if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) == 0)
+						if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out))
 							>= 370)
 						{
 #if ASC_dolog
@@ -592,10 +592,10 @@ label_retry:
 			}
 
 			for (i = 0; i < actL; i++) {
-				if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) == 0) {
+				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) == 0) {
 					ASC_Playing = falseblnr;
 				}
-				if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) == 0) {
+				if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) == 0) {
 					ASC_Playing = falseblnr;
 				}
 				if (! ASC_Playing) {
@@ -638,7 +638,7 @@ label_retry:
 			/* mono */
 
 			if (! ASC_Playing) {
-				if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200)
+				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200)
 				{
 					SoundReg804 &= ~ 0x01;
 					ASC_Playing = trueblnr;
@@ -649,7 +649,7 @@ label_retry:
 			}
 
 			for (i = 0; i < actL; i++) {
-				if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) == 0) {
+				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) == 0) {
 					ASC_Playing = falseblnr;
 				}
 				if (! ASC_Playing) {
@@ -671,7 +671,7 @@ label_retry:
 				dbglog_writeCStr(" = ");
 				dbglog_writeHex(*addr);
 				dbglog_writeCStr(", in buff: ");
-				dbglog_writeHex((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out));
+				dbglog_writeHex((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out));
 				dbglog_writeReturn();
 #endif
 
@@ -693,20 +693,20 @@ label_retry:
 			}
 		} else if (2 == SoundReg801) {
 #if MySoundEnabled
-			ui4r v;
-			ui4r i0;
-			ui4r i1;
-			ui4r i2;
-			ui4r i3;
+			uint16_t v;
+			uint16_t i0;
+			uint16_t i1;
+			uint16_t i2;
+			uint16_t i3;
 #endif
-			ui5r freq0 = do_get_mem_long(ASC_ChanA[0].freq);
-			ui5r freq1 = do_get_mem_long(ASC_ChanA[1].freq);
-			ui5r freq2 = do_get_mem_long(ASC_ChanA[2].freq);
-			ui5r freq3 = do_get_mem_long(ASC_ChanA[3].freq);
-			ui5r phase0 = do_get_mem_long(ASC_ChanA[0].phase);
-			ui5r phase1 = do_get_mem_long(ASC_ChanA[1].phase);
-			ui5r phase2 = do_get_mem_long(ASC_ChanA[2].phase);
-			ui5r phase3 = do_get_mem_long(ASC_ChanA[3].phase);
+			uint32_t freq0 = do_get_mem_long(ASC_ChanA[0].freq);
+			uint32_t freq1 = do_get_mem_long(ASC_ChanA[1].freq);
+			uint32_t freq2 = do_get_mem_long(ASC_ChanA[2].freq);
+			uint32_t freq3 = do_get_mem_long(ASC_ChanA[3].freq);
+			uint32_t phase0 = do_get_mem_long(ASC_ChanA[0].phase);
+			uint32_t phase1 = do_get_mem_long(ASC_ChanA[1].phase);
+			uint32_t phase2 = do_get_mem_long(ASC_ChanA[2].phase);
+			uint32_t phase3 = do_get_mem_long(ASC_ChanA[3].phase);
 #if ASC_dolog && 1
 			dbglog_writeCStr("freq0=");
 			dbglog_writeNum(freq0);
@@ -782,12 +782,12 @@ label_retry:
 				Usually have volume at 7, so this
 				is just for completeness.
 			*/
-			ui5b mult = (ui5b)vol_mult[SoundVolume];
+			uint32_t mult = (uint32_t)vol_mult[SoundVolume];
 			trSoundSamp offset = vol_offset[SoundVolume];
 
 			p -= actL;
 			for (i = 0; i < actL; i++) {
-				*p = (trSoundSamp)((ui5b)(*p) * mult >> 16) + offset;
+				*p = (trSoundSamp)((uint32_t)(*p) * mult >> 16) + offset;
 				++p;
 			}
 		}
@@ -802,7 +802,7 @@ label_retry:
 
 #if 1
 	if ((1 == SoundReg801) && ASC_Playing) {
-		if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
+		if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
 			if (0 != (SoundReg804 & 0x01)) {
 				ReportAbnormalID(0x0F1A,
 					"half flag A not already clear");
@@ -819,7 +819,7 @@ label_retry:
 				SoundReg804 |= 0x01;
 			}
 		}
-		if (((ui4b)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400) {
+		if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x400) {
 			if (0 == (SoundReg804 & 0x02)) {
 				ReportAbnormalID(0x0F1B, "full flag A not already set");
 				SoundReg804 |= 0x02;
@@ -831,7 +831,7 @@ label_retry:
 			}
 		}
 		if (0 != (SoundReg802 & 2)) {
-			if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200) {
+			if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x200) {
 				if (0 != (SoundReg804 & 0x04)) {
 					ReportAbnormalID(0x0F1C,
 						"half flag B not already clear");
@@ -848,7 +848,7 @@ label_retry:
 					SoundReg804 |= 0x04;
 				}
 			}
-			if (((ui4b)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400) {
+			if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) >= 0x400) {
 				if (0 == (SoundReg804 & 0x08)) {
 					ReportAbnormalID(0x0F1D,
 						"full flag B not already set");

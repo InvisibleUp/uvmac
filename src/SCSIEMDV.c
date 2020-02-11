@@ -55,7 +55,7 @@
 
 #define kSCSI_Size 0x00010
 
-LOCALVAR ui3b SCSI[kSCSI_Size];
+LOCALVAR uint8_t SCSI[kSCSI_Size];
 
 GLOBALPROC SCSI_Reset(void)
 {
@@ -141,7 +141,7 @@ LOCALPROC SCSI_Check(void)
 	}
 }
 
-GLOBALFUNC ui5b SCSI_Access(ui5b Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t SCSI_Access(uint32_t Data, blnr WriteMem, CPTR addr)
 {
 	if (addr < (kSCSI_Size / 2)) {
 		addr *= 2;

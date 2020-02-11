@@ -60,29 +60,29 @@
 typedef struct
 {
 	/* RTC VIA Flags */
-	ui3b WrProtect;
-	ui3b DataOut;
-	ui3b DataNextOut;
+	uint8_t WrProtect;
+	uint8_t DataOut;
+	uint8_t DataNextOut;
 
 	/* RTC Data */
-	ui3b ShiftData;
-	ui3b Counter;
-	ui3b Mode;
-	ui3b SavedCmd;
+	uint8_t ShiftData;
+	uint8_t Counter;
+	uint8_t Mode;
+	uint8_t SavedCmd;
 #if HaveXPRAM
-	ui3b Sector;
+	uint8_t Sector;
 #endif
 
 	/* RTC Registers */
-	ui3b Seconds_1[4];
-	ui3b PARAMRAM[PARAMRAMSize];
+	uint8_t Seconds_1[4];
+	uint8_t PARAMRAM[PARAMRAMSize];
 } RTC_Ty;
 
 LOCALVAR RTC_Ty RTC;
 
 /* RTC Functions */
 
-LOCALVAR ui5b LastRealDate;
+LOCALVAR uint32_t LastRealDate;
 
 #ifndef RTCinitPRAM
 #define RTCinitPRAM 1
@@ -148,7 +148,7 @@ GLOBALPROC DumpRTC(void)
 GLOBALFUNC blnr RTC_Init(void)
 {
 	int Counter;
-	ui5b secs;
+	uint32_t secs;
 
 	RTC.Mode = RTC.ShiftData = RTC.Counter = 0;
 	RTC.DataOut = RTC.DataNextOut = 0;
@@ -310,9 +310,9 @@ IMPORTPROC RTC_OneSecond_PulseNtfy(void);
 
 GLOBALPROC RTC_Interrupt(void)
 {
-	ui5b Seconds = 0;
-	ui5b NewRealDate = CurMacDateInSeconds;
-	ui5b DateDelta = NewRealDate - LastRealDate;
+	uint32_t Seconds = 0;
+	uint32_t NewRealDate = CurMacDateInSeconds;
+	uint32_t DateDelta = NewRealDate - LastRealDate;
 
 	if (DateDelta != 0) {
 		Seconds = (RTC.Seconds_1[3] << 24) + (RTC.Seconds_1[2] << 16)
@@ -331,7 +331,7 @@ GLOBALPROC RTC_Interrupt(void)
 	}
 }
 
-LOCALFUNC ui3b RTC_Access_PRAM_Reg(ui3b Data, blnr WriteReg, ui3b t)
+LOCALFUNC uint8_t RTC_Access_PRAM_Reg(uint8_t Data, blnr WriteReg, uint8_t t)
 {
 	if (WriteReg) {
 		if (! RTC.WrProtect) {
@@ -346,9 +346,9 @@ LOCALFUNC ui3b RTC_Access_PRAM_Reg(ui3b Data, blnr WriteReg, ui3b t)
 	return Data;
 }
 
-LOCALFUNC ui3b RTC_Access_Reg(ui3b Data, blnr WriteReg, ui3b TheCmd)
+LOCALFUNC uint8_t RTC_Access_Reg(uint8_t Data, blnr WriteReg, uint8_t TheCmd)
 {
-	ui3b t = (TheCmd & 0x7C) >> 2;
+	uint8_t t = (TheCmd & 0x7C) >> 2;
 	if (t < 8) {
 		if (WriteReg) {
 			if (! RTC.WrProtect) {

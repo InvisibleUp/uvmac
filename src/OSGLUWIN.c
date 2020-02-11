@@ -98,7 +98,7 @@ LOCALFUNC blnr HaveMySHGetSpecialFolderPath(void)
 
 LOCALPROC NativeStrFromCStr(LPTSTR r, char *s, blnr AddEllipsis)
 {
-	ui3b ps[ClStrMaxLength];
+	uint8_t ps[ClStrMaxLength];
 	int i;
 	int L;
 
@@ -220,7 +220,7 @@ LOCALPROC dbglog_write0(char *s, uimr L)
 			(DWORD)L, /* number of bytes to read */
 			&BytesWritten, /* address of number of bytes read */
 			nullpr) /* address of structure for data */
-			|| ((ui5b)BytesWritten != L))
+			|| ((uint32_t)BytesWritten != L))
 		{
 			/* report error (how?) */
 		}
@@ -258,7 +258,7 @@ LOCALPROC dbglog_close0(void)
 
 #define TestBit(i, p) (((unsigned long)(i) & PowOf2(p)) != 0)
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, si5b byteCount)
+GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 /*
 	must work even if blocks overlap in memory
@@ -273,7 +273,7 @@ LOCALVAR HGLOBAL PbufDat[NumPbufs];
 #endif
 
 #if IncludePbufs
-LOCALFUNC tMacErr PbufNewFromHandle(HGLOBAL h, ui5b count, tPbuf *r)
+LOCALFUNC tMacErr PbufNewFromHandle(HGLOBAL h, uint32_t count, tPbuf *r)
 {
 	tPbuf i;
 	tMacErr err;
@@ -293,7 +293,7 @@ LOCALFUNC tMacErr PbufNewFromHandle(HGLOBAL h, ui5b count, tPbuf *r)
 #endif
 
 #if IncludePbufs
-GLOBALOSGLUFUNC tMacErr PbufNew(ui5b count, tPbuf *r)
+GLOBALOSGLUFUNC tMacErr PbufNew(uint32_t count, tPbuf *r)
 {
 	HGLOBAL h;
 	tMacErr err = mnvm_miscErr;
@@ -350,7 +350,7 @@ LOCALPROC PbufUnlock(tPbuf i)
 
 #if IncludePbufs
 GLOBALOSGLUPROC PbufTransfer(ui3p Buffer,
-	tPbuf i, ui5r offset, ui5r count, blnr IsWrite)
+	tPbuf i, uint32_t offset, uint32_t count, blnr IsWrite)
 {
 	HGLOBAL h = PbufDat[i];
 	ui3p p0 = GlobalLock(h);
@@ -411,10 +411,10 @@ LOCALPROC ForceShowCursor(void)
 
 /* cursor moving */
 
-LOCALFUNC blnr MyMoveMouse(si4b h, si4b v)
+LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 {
 	POINT NewMousePos;
-	ui5b difftime;
+	uint32_t difftime;
 	blnr IsOk;
 	DWORD StartTime = GetTickCount();
 	LONG x = h;
@@ -457,7 +457,7 @@ LOCALFUNC blnr MyMoveMouse(si4b h, si4b v)
 		} else {
 			IsOk = (x == NewMousePos.x) && (y == NewMousePos.y);
 		}
-		difftime = (ui5b)(GetTickCount() - StartTime);
+		difftime = (uint32_t)(GetTickCount() - StartTime);
 	} while ((! IsOk) && (difftime < 100));
 	return IsOk;
 }
@@ -543,7 +543,7 @@ LOCALPROC SetCurMouseButton(blnr v)
 #endif
 
 #if ItnlKyBdFix
-LOCALVAR ui3b MyVkMapA[256];
+LOCALVAR uint8_t MyVkMapA[256];
 #endif
 
 #if ItnlKyBdFix
@@ -1670,9 +1670,9 @@ LOCALPROC MyInitCheckKeyboardLayout(void)
 }
 #endif
 
-LOCALVAR ui3b WinKey2Mac[256];
+LOCALVAR uint8_t WinKey2Mac[256];
 
-LOCALPROC AssignOneMacKey(ui3b WinKey, ui3r MacKey)
+LOCALPROC AssignOneMacKey(uint8_t WinKey, uint8_t MacKey)
 {
 	WinKey2Mac[WinKey] = MacKey;
 }
@@ -1833,7 +1833,7 @@ LOCALFUNC blnr InitWinKey2Mac(void)
 
 LOCALPROC DoKeyCode(int i, blnr down)
 {
-	ui3r key = WinKey2Mac[
+	uint8_t key = WinKey2Mac[
 #if ItnlKyBdFix
 		MyVkMapA[i]
 #else
@@ -1903,7 +1903,7 @@ LOCALPROC DoVKcode0(int i, blnr down)
 	DoKeyCode(i, down);
 }
 
-LOCALPROC DoVKcode(int i, ui3r flags, blnr down)
+LOCALPROC DoVKcode(int i, uint8_t flags, blnr down)
 {
 	switch (i) {
 #if MKC_formac_Control != MKC_formac_RControl
@@ -2184,7 +2184,7 @@ LOCALPROC LowerMyPriority(void)
 
 #define dbglog_TimeStuff (0 && dbglog_HAVE)
 
-LOCALVAR ui5b TrueEmulatedTime = 0;
+LOCALVAR uint32_t TrueEmulatedTime = 0;
 
 #define MyInvTimeDivPow 16
 #define MyInvTimeDiv (1 << MyInvTimeDivPow)
@@ -2194,7 +2194,7 @@ LOCALVAR ui5b TrueEmulatedTime = 0;
 LOCALVAR DWORD LastTime;
 
 LOCALVAR DWORD NextIntTime;
-LOCALVAR ui5b NextFracTime;
+LOCALVAR uint32_t NextFracTime;
 
 LOCALPROC IncrNextTime(void)
 {
@@ -2213,7 +2213,7 @@ LOCALPROC InitNextTime(void)
 LOCALFUNC blnr UpdateTrueEmulatedTime(void)
 {
 	DWORD LatestTime;
-	si5b TimeDiff;
+	int32_t TimeDiff;
 
 	LatestTime = timeGetTime();
 	if (LatestTime != LastTime) {
@@ -2250,17 +2250,17 @@ LOCALFUNC blnr UpdateTrueEmulatedTime(void)
 	return falseblnr;
 }
 
-LOCALVAR ui5b TimeSecBase;
+LOCALVAR uint32_t TimeSecBase;
 LOCALVAR DWORD TimeMilliBase;
 
 #include "DATE2SEC.h"
 
 LOCALFUNC blnr CheckDateTime(void)
 {
-	ui5b NewMacDateInSecond;
+	uint32_t NewMacDateInSecond;
 
 	NewMacDateInSecond =
-		((ui5b)(LastTime - TimeMilliBase)) / 1000 + TimeSecBase;
+		((uint32_t)(LastTime - TimeMilliBase)) / 1000 + TimeSecBase;
 	if (CurMacDateInSeconds != NewMacDateInSecond) {
 		CurMacDateInSeconds = NewMacDateInSecond;
 
@@ -2288,9 +2288,9 @@ LOCALFUNC blnr Init60thCheck(void)
 #if AutoTimeZone
 	v = GetTimeZoneInformation(&r);
 	if ((v != 0xFFFFFFFF) && (v != TIME_ZONE_ID_UNKNOWN)) {
-		si5b dlsBias = (v != TIME_ZONE_ID_DAYLIGHT)
+		int32_t dlsBias = (v != TIME_ZONE_ID_DAYLIGHT)
 			? r.StandardBias : r.DaylightBias;
-		CurMacDelta = (((ui5b)(- (r.Bias + dlsBias) * 60))
+		CurMacDelta = (((uint32_t)(- (r.Bias + dlsBias) * 60))
 			& 0x00FFFFFF)
 			| (((v != TIME_ZONE_ID_DAYLIGHT) ? 0 : 0x80)
 				<< 24);
@@ -2382,11 +2382,11 @@ LOCALPROC MyTimer_Resume(void)
 #define dbglog_SoundBuffStats (0 && dbglog_HAVE)
 
 LOCALVAR tpSoundSamp TheSoundBuffer = nullpr;
-LOCALVAR ui4b ThePlayOffset;
-LOCALVAR ui4b TheFillOffset;
+LOCALVAR uint16_t ThePlayOffset;
+LOCALVAR uint16_t TheFillOffset;
 LOCALVAR blnr wantplaying;
-LOCALVAR ui4b MinFilledSoundBuffs;
-LOCALVAR ui4b TheWriteOffset;
+LOCALVAR uint16_t MinFilledSoundBuffs;
+LOCALVAR uint16_t TheWriteOffset;
 
 #define SOUND_SAMPLERATE /* 22050 */ 22255
 	/* = round(7833600 * 2 / 704) */
@@ -2490,7 +2490,7 @@ LOCALPROC MySound_Stop(void)
 		DWORD StartTime = GetTickCount();
 		for (i = 0; i < kSoundBuffers; ++i) {
 			while (((whdr[i].dwFlags & WHDR_DONE) == 0)
-				&& ((ui5b)(GetTickCount() - StartTime) < 1000))
+				&& ((uint32_t)(GetTickCount() - StartTime) < 1000))
 			{
 				Sleep(1);
 			}
@@ -2524,9 +2524,9 @@ LOCALPROC SoundCheckVeryOften(void)
 	if ((hWaveOut != NULL) && (wantplaying)) {
 label_retry:
 		{
-			ui4b FilledSoundBuffs;
-			ui4b ToPlaySize = TheFillOffset - ThePlayOffset;
-			ui4b CurPlayBuffer =
+			uint16_t FilledSoundBuffs;
+			uint16_t ToPlaySize = TheFillOffset - ThePlayOffset;
+			uint16_t CurPlayBuffer =
 				(ThePlayOffset >> kLnOneBuffLen) & kSoundBuffMask;
 
 			if ((ToPlaySize > kOneBuffLen)
@@ -2543,10 +2543,10 @@ label_retry:
 
 			if (FilledSoundBuffs < 2) {
 				MMRESULT mmr;
-				ui4b PrevPlayOffset = ThePlayOffset - kOneBuffLen;
-				ui4b PrevPlayBuffer =
+				uint16_t PrevPlayOffset = ThePlayOffset - kOneBuffLen;
+				uint16_t PrevPlayBuffer =
 					(PrevPlayOffset >> kLnOneBuffLen) & kSoundBuffMask;
-				ui4b LastPlayedOffset =
+				uint16_t LastPlayedOffset =
 					((TheFillOffset >> kLnOneBuffLen) << kLnOneBuffLen)
 						- 1;
 
@@ -2589,7 +2589,7 @@ LOCALPROC ConvertSoundBlockToNative(tpSoundSamp p)
 LOCALPROC MySound_FilledBlocks(void)
 {
 	while (0 != ((TheWriteOffset - TheFillOffset) >> kLnOneBuffLen)) {
-		ui4b CurFillBuffer =
+		uint16_t CurFillBuffer =
 			(TheFillOffset >> kLnOneBuffLen) & kSoundBuffMask;
 		blnr IsOk = falseblnr;
 
@@ -2632,7 +2632,7 @@ LOCALPROC MySound_WroteABlock(void)
 	}
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(ui4r actL)
+GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
 {
 	TheWriteOffset += actL;
 
@@ -2643,10 +2643,10 @@ GLOBALOSGLUPROC MySound_EndWrite(ui4r actL)
 	}
 }
 
-GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(ui4r n, ui4r *actL)
+GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
 {
-	ui4b ToFillLen = kAllBuffLen - (TheWriteOffset - ThePlayOffset);
-	ui4b WriteBuffContig =
+	uint16_t ToFillLen = kAllBuffLen - (TheWriteOffset - ThePlayOffset);
+	uint16_t WriteBuffContig =
 		kOneBuffLen - (TheWriteOffset & kOneBuffMask);
 
 	if (WriteBuffContig < n) {
@@ -2690,7 +2690,7 @@ LOCALPROC GrabTheMachine(void)
 	StartSaveMouseMotion();
 #endif
 #if EnableChangePriority
-	if ((ui3b) -1 == SpeedValue) {
+	if ((uint8_t) -1 == SpeedValue) {
 		RaiseMyPriority();
 	}
 #endif
@@ -2790,7 +2790,7 @@ LOCALVAR ui3p ScalingBuff = NULL;
 
 LOCALVAR HDC MainWndDC = NULL;
 
-LOCALVAR si5b CmdShow;
+LOCALVAR int32_t CmdShow;
 
 LOCALVAR TCHAR WndTitle[_MAX_PATH];
 LOCALVAR const TCHAR WndClassName[] = TEXT("minivmac");
@@ -3121,8 +3121,8 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 		p.x = 0;
 		p.y = 0;
 		(void) MapWindowPoints(NewMainWindow, NULL, &p, 1);
-		WndX = (si4b)p.x;
-		WndY = (si4b)p.y;
+		WndX = (int16_t)p.x;
+		WndY = (int16_t)p.y;
 	}
 
 #if MayFullScreen
@@ -3301,11 +3301,11 @@ typedef struct BITMAPINFOHEADER256 {
 #define MyScaledWidth (MyWindowScale * vMacScreenWidth)
 #endif
 
-LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
-	si4b bottom, si4b right)
+LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
+	int16_t bottom, int16_t right)
 {
 	BITMAPINFOHEADER256 bmh;
-	ui3b *cdb = GetCurDrawBuff();
+	uint8_t *cdb = GetCurDrawBuff();
 	int XDest;
 	int YDest;
 
@@ -3378,12 +3378,12 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 		int nDestWidth = (right - left);
 		int nDestHeight = (bottom - top);
 #if 1 == vMacScreenDepth
-		ui3b *p
-			= ScalingBuff + ((ui5r)vMacScreenWidth / 4) * top;
+		uint8_t *p
+			= ScalingBuff + ((uint32_t)vMacScreenWidth / 4) * top;
 #elif vMacScreenDepth >= 4
-		ui3b *p = ScalingBuff + (ui5r)vMacScreenByteWidth * top;
+		uint8_t *p = ScalingBuff + (uint32_t)vMacScreenByteWidth * top;
 #else
-		ui3b *p = cdb + (ui5r)vMacScreenByteWidth * top;
+		uint8_t *p = cdb + (uint32_t)vMacScreenByteWidth * top;
 #endif
 
 		memset(&bmh, 0, sizeof (bmh));
@@ -3419,11 +3419,11 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 #if 1 == vMacScreenDepth
 		{
 			int j;
-			ui3b *p1 = (ui3b *)(cdb + (ui5r)vMacScreenByteWidth * top);
-			ui4b *p2 = (ui4b *)p;
+			uint8_t *p1 = (uint8_t *)(cdb + (uint32_t)vMacScreenByteWidth * top);
+			uint16_t *p2 = (uint16_t *)p;
 			for (i = bottom - top; --i >= 0; ) {
 				for (j = vMacScreenWidth / 4; --j >= 0; ) {
-					ui4r t0 = *p1++;
+					uint16_t t0 = *p1++;
 					*p2 ++
 						= ((t0 & 0xC0) >> 2)
 						| ((t0 & 0x30) >> 4)
@@ -3435,11 +3435,11 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 #elif 4 == vMacScreenDepth
 		{
 			int j;
-			ui4b *p1 = (ui4b *)(cdb + (ui5r)vMacScreenByteWidth * top);
-			ui4b *p2 = (ui4b *)p;
+			uint16_t *p1 = (uint16_t *)(cdb + (uint32_t)vMacScreenByteWidth * top);
+			uint16_t *p2 = (uint16_t *)p;
 			for (i = bottom - top; --i >= 0; ) {
 				for (j = vMacScreenWidth; --j >= 0; ) {
-					ui4r t0 = *p1++;
+					uint16_t t0 = *p1++;
 					*p2 ++ =
 						((t0 & 0xFF00) >> 8) | ((t0 & 0x00FF) << 8);
 				}
@@ -3448,11 +3448,11 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 #elif 5 == vMacScreenDepth
 		{
 			int j;
-			ui5b *p1 = (ui5b *)(cdb + (ui5r)vMacScreenByteWidth * top);
-			ui5b *p2 = (ui5b *)p;
+			uint32_t *p1 = (uint32_t *)(cdb + (uint32_t)vMacScreenByteWidth * top);
+			uint32_t *p2 = (uint32_t *)p;
 			for (i = bottom - top; --i >= 0; ) {
 				for (j = vMacScreenWidth; --j >= 0; ) {
-					ui5r t0 = *p1++;
+					uint32_t t0 = *p1++;
 					*p2++
 						= ((t0 & 0xFF000000) >> 24)
 						| ((t0 & 0x00FF0000) >> 8)
@@ -3494,7 +3494,7 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 	} else
 #endif
 	{
-		ui3b *p = cdb + (ui5r)vMacScreenMonoByteWidth * top;
+		uint8_t *p = cdb + (uint32_t)vMacScreenMonoByteWidth * top;
 
 		memset(&bmh, 0, sizeof (bmh));
 		bmh.bmi.biSize = sizeof(BITMAPINFOHEADER);
@@ -3526,23 +3526,23 @@ LOCALPROC HaveChangedScreenBuff(si4b top, si4b left,
 				int i;
 				int j;
 				int k;
-				ui4r left1 = left & (~ 7);
-				ui4r right1 = (right + 7) & (~ 7);
-				ui4r jn = (right1 - left1) / 8;
-				ui3b *p1 =
-					cdb + ((left1 + vMacScreenWidth * (ui5r)top) / 8);
-				ui3b *p2 = ScalingBuff
+				uint16_t left1 = left & (~ 7);
+				uint16_t right1 = (right + 7) & (~ 7);
+				uint16_t jn = (right1 - left1) / 8;
+				uint8_t *p1 =
+					cdb + ((left1 + vMacScreenWidth * (uint32_t)top) / 8);
+				uint8_t *p2 = ScalingBuff
 					/*
 						+ ((left1 + vMacScreenWidth * MyWindowScale
-								* (ui5r)top)
+								* (uint32_t)top)
 							* MyWindowScale / 8)
 					*/
 					;
-				ui3b *p3;
-				ui3b t0;
-				ui3b t1;
-				ui3b t2;
-				ui3b m;
+				uint8_t *p3;
+				uint8_t t0;
+				uint8_t t1;
+				uint8_t t2;
+				uint8_t m;
 
 				for (i = bottom - top; --i >= 0; ) {
 					p3 = p2;
@@ -3741,8 +3741,8 @@ LOCALFUNC blnr InitTheCursor(void)
 #if EnableFSMouseMotion
 LOCALPROC MyMouseConstrain(void)
 {
-	si4b shiftdh;
-	si4b shiftdv;
+	int16_t shiftdh;
+	int16_t shiftdv;
 
 	if (SavedMouseH < ViewHStart + (ViewHSize / 4)) {
 		shiftdh = ViewHSize / 2;
@@ -3859,7 +3859,7 @@ LOCALPROC CheckMouseState(void)
 }
 #endif
 
-LOCALVAR const ui3b Native2MacRomanTab[] = {
+LOCALVAR const uint8_t Native2MacRomanTab[] = {
 	0xAD, 0xB0, 0xE2, 0xC4, 0xE3, 0xC9, 0xA0, 0xE0,
 	0xF6, 0xE4, 0xB6, 0xDC, 0xCE, 0xB2, 0xB3, 0xB7,
 	0xB8, 0xD4, 0xD5, 0xD2, 0xD3, 0xA5, 0xD0, 0xD1,
@@ -3882,13 +3882,13 @@ LOCALVAR const ui3b Native2MacRomanTab[] = {
 LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 {
 #if MyUseUni
-#define MyUnsignedChar ui4b
+#define MyUnsignedChar uint16_t
 #else
-#define MyUnsignedChar ui3b
+#define MyUnsignedChar uint8_t
 #endif
 	HGLOBAL h;
 	LPTSTR p1;
-	ui5b n;
+	uint32_t n;
 	MyUnsignedChar v;
 	tMacErr err = mnvm_miscErr;
 
@@ -3906,7 +3906,7 @@ LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 		if (h != NULL) {
 			p1 = GlobalLock(x);
 			if (p1 != NULL) {
-				ui3b *p2 = GlobalLock(h);
+				uint8_t *p2 = GlobalLock(h);
 				if (p2 != NULL) {
 					while ((v = (MyUnsignedChar)*p1++) != 0) {
 						if (v >= 128) {
@@ -3939,7 +3939,7 @@ LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 }
 #endif
 
-LOCALVAR const ui3b MacRoman2NativeTab[] = {
+LOCALVAR const uint8_t MacRoman2NativeTab[] = {
 	0xC4, 0xC5, 0xC7, 0xC9, 0xD1, 0xD6, 0xDC, 0xE1,
 	0xE0, 0xE2, 0xE4, 0xE3, 0xE5, 0xE7, 0xE9, 0xE8,
 	0xEA, 0xEB, 0xED, 0xEC, 0xEE, 0xEF, 0xF1, 0xF3,
@@ -3963,10 +3963,10 @@ LOCALFUNC blnr MacRomanTextToNativeHand(tPbuf Pbuf_no,
 	blnr IsFileName, HGLOBAL *r)
 {
 	HGLOBAL h;
-	ui5b i;
-	ui5b rn = 0;
+	uint32_t i;
+	uint32_t rn = 0;
 	HGLOBAL bh = PbufDat[Pbuf_no];
-	ui5b L = PbufSize[Pbuf_no];
+	uint32_t L = PbufSize[Pbuf_no];
 	blnr IsOk = falseblnr;
 
 	if (IsFileName) {
@@ -3974,7 +3974,7 @@ LOCALFUNC blnr MacRomanTextToNativeHand(tPbuf Pbuf_no,
 			L = 255;
 		}
 	} else {
-		ui3b *Buffer = (ui3b *)GlobalLock(bh);
+		uint8_t *Buffer = (uint8_t *)GlobalLock(bh);
 		if (Buffer != NULL) {
 			for (i = 0; i < L; ++i) {
 				if (Buffer[i] == 13) {
@@ -3987,13 +3987,13 @@ LOCALFUNC blnr MacRomanTextToNativeHand(tPbuf Pbuf_no,
 
 	h = GlobalAlloc(GMEM_DDESHARE, (L + rn + 1) * sizeof(TCHAR));
 	if (h != NULL) {
-		ui3b *Buffer = (ui3b *)GlobalLock(bh);
+		uint8_t *Buffer = (uint8_t *)GlobalLock(bh);
 		if (Buffer != NULL) {
 			LPTSTR p1 = GlobalLock(h);
 			if (p1 != NULL) {
 				for (i = 0; i < L; ++i) {
 					TCHAR y;
-					ui3b x = ((ui3b *)Buffer)[i];
+					uint8_t x = ((uint8_t *)Buffer)[i];
 					if (x >= 128) {
 						y = (TCHAR)MacRoman2NativeTab[x - 128];
 					} else {
@@ -4132,8 +4132,8 @@ LOCALPROC InitDrives(void)
 }
 
 GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
-	tDrive Drive_No, ui5r Sony_Start, ui5r Sony_Count,
-	ui5r *Sony_ActCount)
+	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
+	uint32_t *Sony_ActCount)
 {
 	HANDLE refnum;
 	DWORD newL;
@@ -4149,7 +4149,7 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
 	);
 	if (newL == 0xFFFFFFFF) {
 		result = mnvm_miscErr; /*& figure out what really to return &*/
-	} else if (Sony_Start != (ui5b)newL) {
+	} else if (Sony_Start != (uint32_t)newL) {
 		/* not supposed to get here */
 		result = mnvm_miscErr; /*& figure out what really to return &*/
 	} else {
@@ -4163,7 +4163,7 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
 			{
 				result = mnvm_miscErr;
 					/*& figure out what really to return &*/
-			} else if ((ui5b)BytesTransferred != Sony_Count) {
+			} else if ((uint32_t)BytesTransferred != Sony_Count) {
 				result = mnvm_miscErr;
 					/*& figure out what really to return &*/
 			} else {
@@ -4180,7 +4180,7 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
 			{
 				result = mnvm_miscErr;
 					/*& figure out what really to return &*/
-			} else if ((ui5b)BytesTransferred != Sony_Count) {
+			} else if ((uint32_t)BytesTransferred != Sony_Count) {
 				result = mnvm_miscErr;
 					/*& figure out what really to return &*/
 			} else {
@@ -4196,7 +4196,7 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
 	return result;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, ui5r *Sony_Count)
+GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
 	tMacErr result;
 	DWORD L;
@@ -4424,7 +4424,7 @@ LOCALFUNC blnr LoadMacRomFromPath(LPTSTR drivepath)
 		{
 			MacMsgOverride(kStrNoReadROMTitle, kStrNoReadROMMessage);
 		} else
-		if ((ui5b)BytesRead != kROM_Size) {
+		if ((uint32_t)BytesRead != kROM_Size) {
 			MacMsgOverride(kStrShortROMTitle, kStrShortROMMessage);
 		} else
 		{
@@ -4827,7 +4827,7 @@ LOCALFUNC blnr LoadInitialImages(void)
 }
 
 #if IncludeSonyNew
-LOCALFUNC blnr WriteZero(HANDLE refnum, ui5b L)
+LOCALFUNC blnr WriteZero(HANDLE refnum, uint32_t L)
 {
 	if (SetFilePointer(
 		refnum, /* handle of file */
@@ -4839,8 +4839,8 @@ LOCALFUNC blnr WriteZero(HANDLE refnum, ui5b L)
 		return falseblnr;
 	} else {
 #define ZeroBufferSize 2048
-		ui5b i;
-		ui3b buffer[ZeroBufferSize];
+		uint32_t i;
+		uint8_t buffer[ZeroBufferSize];
 		DWORD BytesWritten;
 
 		memset(&buffer, 0, ZeroBufferSize);
@@ -4853,7 +4853,7 @@ LOCALFUNC blnr WriteZero(HANDLE refnum, ui5b L)
 				(DWORD)i, /* number of bytes to read */
 				&BytesWritten, /* address of number of bytes read */
 				nullpr) /* address of structure for data */
-				|| ((ui5b)BytesWritten != i))
+				|| ((uint32_t)BytesWritten != i))
 			{
 				return falseblnr;
 			}
@@ -4867,7 +4867,7 @@ LOCALFUNC blnr WriteZero(HANDLE refnum, ui5b L)
 #define MaxSavePathSize MAX_PATH
 
 #if IncludeSonyNew
-LOCALPROC MakeNewDisk0(ui5b L, LPTSTR pathName)
+LOCALPROC MakeNewDisk0(uint32_t L, LPTSTR pathName)
 {
 	blnr IsOk = falseblnr;
 	HANDLE newrefNum;
@@ -4914,7 +4914,7 @@ LOCALPROC MakeNewDisk0(ui5b L, LPTSTR pathName)
 #endif
 
 #if IncludeSonyNew
-LOCALPROC MakeNewDisk(ui5b L, HGLOBAL NewDiskNameDat)
+LOCALPROC MakeNewDisk(uint32_t L, HGLOBAL NewDiskNameDat)
 {
 #if SaveDialogEnable
 	OPENFILENAME ofn;
@@ -5659,8 +5659,8 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 			}
 			break;
 		case WM_MOVE:
-			WndX = (si4b) LOWORD(lparam);
-			WndY = (si4b) HIWORD(lparam);
+			WndX = (int16_t) LOWORD(lparam);
+			WndY = (int16_t) HIWORD(lparam);
 			break;
 		case WM_SYSCHAR:
 		case WM_CHAR:
@@ -5748,7 +5748,7 @@ LOCALPROC WaitForTheNextEvent(void)
 LOCALPROC CheckForSystemEvents(void)
 {
 	MSG msg;
-	ui3r i = 0;
+	uint8_t i = 0;
 
 	while ((i < 32) && (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))) {
 		DispatchMessage(&msg);
@@ -5924,7 +5924,7 @@ LOCALPROC ReserveAllocAll(void)
 #endif
 #if EnableScalingBuff
 	{
-		ui5r n = vMacScreenMonoNumBytes
+		uint32_t n = vMacScreenMonoNumBytes
 #if EnableMagnify
 			* MyWindowScale * MyWindowScale
 #endif

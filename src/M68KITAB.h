@@ -246,15 +246,15 @@ enum {
 
 struct DecOpXR {
 	/* expected size : 4 bytes */
-	ui4b MainClas;
-	ui4b Cycles;
+	uint16_t MainClas;
+	uint16_t Cycles;
 };
 typedef struct DecOpXR DecOpXR;
 
 struct DecArgR {
 	/* expected size : 2 bytes */
-	ui3b AMd;
-	ui3b ArgDat;
+	uint8_t AMd;
+	uint8_t ArgDat;
 };
 typedef struct DecArgR DecArgR;
 

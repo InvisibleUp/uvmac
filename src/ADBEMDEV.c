@@ -35,17 +35,17 @@
 	ReportAbnormalID unused 0x0C06 - 0x0CFF
 */
 
-IMPORTPROC ADB_ShiftOutData(ui3b v);
-IMPORTFUNC ui3b ADB_ShiftInData(void);
+IMPORTPROC ADB_ShiftOutData(uint8_t v);
+IMPORTFUNC uint8_t ADB_ShiftInData(void);
 
 #include "ADBSHARE.h"
 
 LOCALVAR blnr ADB_ListenDatBuf;
-LOCALVAR ui3b ADB_IndexDatBuf;
+LOCALVAR uint8_t ADB_IndexDatBuf;
 
 GLOBALPROC ADB_DoNewState(void)
 {
-	ui3b state = ADB_st1 * 2 + ADB_st0;
+	uint8_t state = ADB_st1 * 2 + ADB_st0;
 #ifdef _VIA_Debug
 	fprintf(stderr, "ADB_DoNewState: %d\n", state);
 #endif
@@ -188,7 +188,7 @@ GLOBALPROC ADB_DataLineChngNtfy(void)
 
 GLOBALPROC ADB_Update(void)
 {
-	ui3b state = ADB_st1 * 2 + ADB_st0;
+	uint8_t state = ADB_st1 * 2 + ADB_st0;
 
 	if (state == 3) { /* idle */
 		if (ADB_TalkDatBuf) {

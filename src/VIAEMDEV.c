@@ -208,21 +208,21 @@ IMPORTPROC VIA1_iCB2_ChangeNtfy(void);
 #endif
 
 typedef struct {
-	ui5b T1C_F;  /* Timer 1 Counter Fixed Point */
-	ui5b T2C_F;  /* Timer 2 Counter Fixed Point */
-	ui3b ORB;    /* Buffer B */
-	/* ui3b ORA_H;     Buffer A with Handshake */
-	ui3b DDR_B;  /* Data Direction Register B */
-	ui3b DDR_A;  /* Data Direction Register A */
-	ui3b T1L_L;  /* Timer 1 Latch Low */
-	ui3b T1L_H;  /* Timer 1 Latch High */
-	ui3b T2L_L;  /* Timer 2 Latch Low */
-	ui3b SR;     /* Shift Register */
-	ui3b ACR;    /* Auxiliary Control Register */
-	ui3b PCR;    /* Peripheral Control Register */
-	ui3b IFR;    /* Interrupt Flag Register */
-	ui3b IER;    /* Interrupt Enable Register */
-	ui3b ORA;    /* Buffer A */
+	uint32_t T1C_F;  /* Timer 1 Counter Fixed Point */
+	uint32_t T2C_F;  /* Timer 2 Counter Fixed Point */
+	uint8_t ORB;    /* Buffer B */
+	/* uint8_t ORA_H;     Buffer A with Handshake */
+	uint8_t DDR_B;  /* Data Direction Register B */
+	uint8_t DDR_A;  /* Data Direction Register A */
+	uint8_t T1L_L;  /* Timer 1 Latch Low */
+	uint8_t T1L_H;  /* Timer 1 Latch High */
+	uint8_t T2L_L;  /* Timer 2 Latch Low */
+	uint8_t SR;     /* Shift Register */
+	uint8_t ACR;    /* Auxiliary Control Register */
+	uint8_t PCR;    /* Peripheral Control Register */
+	uint8_t IFR;    /* Interrupt Flag Register */
+	uint8_t IER;    /* Interrupt Enable Register */
+	uint8_t ORA;    /* Buffer A */
 } VIA1_Ty;
 
 LOCALVAR VIA1_Ty VIA1_D;
@@ -243,9 +243,9 @@ LOCALVAR VIA1_Ty VIA1_D;
 	about their status
 */
 
-LOCALFUNC ui3b VIA1_Get_ORA(ui3b Selection)
+LOCALFUNC uint8_t VIA1_Get_ORA(uint8_t Selection)
 {
-	ui3b Value = (~ VIA1_ORA_CanIn) & Selection & VIA1_ORA_FloatVal;
+	uint8_t Value = (~ VIA1_ORA_CanIn) & Selection & VIA1_ORA_FloatVal;
 
 #if Ui3rTestBit(VIA1_ORA_CanIn, 7)
 	if (Ui3rTestBit(Selection, 7)) {
@@ -304,9 +304,9 @@ LOCALFUNC ui3b VIA1_Get_ORA(ui3b Selection)
 	about their status
 */
 
-LOCALFUNC ui3b VIA1_Get_ORB(ui3b Selection)
+LOCALFUNC uint8_t VIA1_Get_ORB(uint8_t Selection)
 {
-	ui3b Value = (~ VIA1_ORB_CanIn) & Selection & VIA1_ORB_FloatVal;
+	uint8_t Value = (~ VIA1_ORB_CanIn) & Selection & VIA1_ORB_FloatVal;
 
 #if Ui3rTestBit(VIA1_ORB_CanIn, 7)
 	if (Ui3rTestBit(Selection, 7)) {
@@ -363,10 +363,10 @@ LOCALFUNC ui3b VIA1_Get_ORB(ui3b Selection)
 	(Ui3rTestBit(Selection, p) && \
 	((v = (Data >> p) & 1) != x))
 
-LOCALPROC VIA1_Put_ORA(ui3b Selection, ui3b Data)
+LOCALPROC VIA1_Put_ORA(uint8_t Selection, uint8_t Data)
 {
 #if 0 != VIA1_ORA_CanOut
-	ui3b v;
+	uint8_t v;
 #endif
 
 #if Ui3rTestBit(VIA1_ORA_CanOut, 7)
@@ -442,10 +442,10 @@ LOCALPROC VIA1_Put_ORA(ui3b Selection, ui3b Data)
 #endif
 }
 
-LOCALPROC VIA1_Put_ORB(ui3b Selection, ui3b Data)
+LOCALPROC VIA1_Put_ORB(uint8_t Selection, uint8_t Data)
 {
 #if 0 != VIA1_ORB_CanOut
-	ui3b v;
+	uint8_t v;
 #endif
 
 #if Ui3rTestBit(VIA1_ORB_CanOut, 7)
@@ -521,10 +521,10 @@ LOCALPROC VIA1_Put_ORB(ui3b Selection, ui3b Data)
 #endif
 }
 
-LOCALPROC VIA1_SetDDR_A(ui3b Data)
+LOCALPROC VIA1_SetDDR_A(uint8_t Data)
 {
-	ui3b floatbits = VIA1_D.DDR_A & ~ Data;
-	ui3b unfloatbits = Data & ~ VIA1_D.DDR_A;
+	uint8_t floatbits = VIA1_D.DDR_A & ~ Data;
+	uint8_t unfloatbits = Data & ~ VIA1_D.DDR_A;
 
 	if (floatbits != 0) {
 		VIA1_Put_ORA(floatbits, VIA1_ORA_FloatVal);
@@ -539,10 +539,10 @@ LOCALPROC VIA1_SetDDR_A(ui3b Data)
 	}
 }
 
-LOCALPROC VIA1_SetDDR_B(ui3b Data)
+LOCALPROC VIA1_SetDDR_B(uint8_t Data)
 {
-	ui3b floatbits = VIA1_D.DDR_B & ~ Data;
-	ui3b unfloatbits = Data & ~ VIA1_D.DDR_B;
+	uint8_t floatbits = VIA1_D.DDR_B & ~ Data;
+	uint8_t unfloatbits = Data & ~ VIA1_D.DDR_B;
 
 	if (floatbits != 0) {
 		VIA1_Put_ORB(floatbits, VIA1_ORB_FloatVal);
@@ -560,7 +560,7 @@ LOCALPROC VIA1_SetDDR_B(ui3b Data)
 
 LOCALPROC VIA1_CheckInterruptFlag(void)
 {
-	ui3b NewInterruptRequest =
+	uint8_t NewInterruptRequest =
 		((VIA1_D.IFR & VIA1_D.IER) != 0) ? 1 : 0;
 
 	if (NewInterruptRequest != VIA1_InterruptRequest) {
@@ -572,8 +572,8 @@ LOCALPROC VIA1_CheckInterruptFlag(void)
 }
 
 
-LOCALVAR ui3b VIA1_T1_Active = 0;
-LOCALVAR ui3b VIA1_T2_Active = 0;
+LOCALVAR uint8_t VIA1_T1_Active = 0;
+LOCALVAR uint8_t VIA1_T2_Active = 0;
 
 LOCALVAR blnr VIA1_T1IntReady = falseblnr;
 
@@ -607,15 +607,15 @@ GLOBALPROC VIA1_Reset(void)
 	VIA1_CheckInterruptFlag();
 }
 
-LOCALPROC VIA1_SetInterruptFlag(ui3b VIA_Int)
+LOCALPROC VIA1_SetInterruptFlag(uint8_t VIA_Int)
 {
-	VIA1_D.IFR |= ((ui3b)1 << VIA_Int);
+	VIA1_D.IFR |= ((uint8_t)1 << VIA_Int);
 	VIA1_CheckInterruptFlag();
 }
 
-LOCALPROC VIA1_ClrInterruptFlag(ui3b VIA_Int)
+LOCALPROC VIA1_ClrInterruptFlag(uint8_t VIA_Int)
 {
-	VIA1_D.IFR &= ~ ((ui3b)1 << VIA_Int);
+	VIA1_D.IFR &= ~ ((uint8_t)1 << VIA_Int);
 	VIA1_CheckInterruptFlag();
 }
 
@@ -623,13 +623,13 @@ LOCALPROC VIA1_ClrInterruptFlag(ui3b VIA_Int)
 #include <stdio.h>
 #endif
 
-GLOBALPROC VIA1_ShiftInData(ui3b v)
+GLOBALPROC VIA1_ShiftInData(uint8_t v)
 {
 	/*
 		external hardware generates 8 pulses on CB1,
 		writes 8 bits to CB2
 	*/
-	ui3b ShiftMode = (VIA1_D.ACR & 0x1C) >> 2;
+	uint8_t ShiftMode = (VIA1_D.ACR & 0x1C) >> 2;
 
 	if (ShiftMode != 3) {
 #if ExtraAbnormalReports
@@ -650,7 +650,7 @@ GLOBALPROC VIA1_ShiftInData(ui3b v)
 	}
 }
 
-GLOBALFUNC ui3b VIA1_ShiftOutData(void)
+GLOBALFUNC uint8_t VIA1_ShiftOutData(void)
 {
 	/*
 		external hardware generates 8 pulses on CB1,
@@ -679,20 +679,20 @@ GLOBALPROC VIA1_DoTimer1Check(void)
 		iCountt NewTime = GetCuriCount();
 		iCountt deltaTime = (NewTime - VIA1_T1LastTime);
 		if (deltaTime != 0) {
-			ui5b Temp = VIA1_D.T1C_F; /* Get Timer 1 Counter */
-			ui5b deltaTemp =
+			uint32_t Temp = VIA1_D.T1C_F; /* Get Timer 1 Counter */
+			uint32_t deltaTemp =
 				(deltaTime / CyclesPerViaTime) << (16 - kLn2CycleScale);
 					/* may overflow */
-			ui5b NewTemp = Temp - deltaTemp;
+			uint32_t NewTemp = Temp - deltaTemp;
 			if ((deltaTime > (0x00010000UL * CyclesScaledPerViaTime))
 				|| ((Temp <= deltaTemp) && (Temp != 0)))
 			{
 				if ((VIA1_D.ACR & 0x40) != 0) { /* Free Running? */
 					/* Reload Counter from Latches */
-					ui4b v = (VIA1_D.T1L_H << 8) + VIA1_D.T1L_L;
-					ui4b ntrans = 1 + ((v == 0) ? 0 :
+					uint16_t v = (VIA1_D.T1L_H << 8) + VIA1_D.T1L_L;
+					uint16_t ntrans = 1 + ((v == 0) ? 0 :
 						(((deltaTemp - Temp) / v) >> 16));
-					NewTemp += (((ui5b)v * ntrans) << 16);
+					NewTemp += (((uint32_t)v * ntrans) << 16);
 #if Ui3rTestBit(VIA1_ORB_CanOut, 7)
 					if ((VIA1_D.ACR & 0x80) != 0) { /* invert ? */
 						if ((ntrans & 1) != 0) {
@@ -725,8 +725,8 @@ GLOBALPROC VIA1_DoTimer1Check(void)
 		VIA1_T1IntReady = falseblnr;
 		if ((VIA1_D.IFR & (1 << kIntT1)) == 0) {
 			if (((VIA1_D.ACR & 0x40) != 0) || (VIA1_T1_Active == 1)) {
-				ui5b NewTemp = VIA1_D.T1C_F; /* Get Timer 1 Counter */
-				ui5b NewTimer;
+				uint32_t NewTemp = VIA1_D.T1C_F; /* Get Timer 1 Counter */
+				uint32_t NewTimer;
 #ifdef _VIA_Debug
 				fprintf(stderr, "posting Timer1Check, %d, %d\n",
 					Temp, GetCuriCount());
@@ -765,9 +765,9 @@ LOCALPROC CheckT1IntReady(void)
 	}
 }
 
-GLOBALFUNC ui4b VIA1_GetT1InvertTime(void)
+GLOBALFUNC uint16_t VIA1_GetT1InvertTime(void)
 {
-	ui4b v;
+	uint16_t v;
 
 	if ((VIA1_D.ACR & 0xC0) == 0xC0) {
 		v = (VIA1_D.T1L_H << 8) + VIA1_D.T1L_L;
@@ -785,11 +785,11 @@ GLOBALPROC VIA1_DoTimer2Check(void)
 {
 	if (VIA1_T2Running) {
 		iCountt NewTime = GetCuriCount();
-		ui5b Temp = VIA1_D.T2C_F; /* Get Timer 2 Counter */
+		uint32_t Temp = VIA1_D.T2C_F; /* Get Timer 2 Counter */
 		iCountt deltaTime = (NewTime - VIA1_T2LastTime);
-		ui5b deltaTemp = (deltaTime / CyclesPerViaTime)
+		uint32_t deltaTemp = (deltaTime / CyclesPerViaTime)
 			<< (16 - kLn2CycleScale); /* may overflow */
-		ui5b NewTemp = Temp - deltaTemp;
+		uint32_t NewTemp = Temp - deltaTemp;
 		if (VIA1_T2_Active == 1) {
 			if ((deltaTime > (0x00010000UL * CyclesScaledPerViaTime))
 				|| ((Temp <= deltaTemp) && (Temp != 0)))
@@ -801,7 +801,7 @@ GLOBALPROC VIA1_DoTimer2Check(void)
 				dbglog_WriteNote("VIA1 Timer 2 Interrupt");
 #endif
 			} else {
-				ui5b NewTimer;
+				uint32_t NewTimer;
 #ifdef _VIA_Debug
 				fprintf(stderr, "posting Timer2Check, %d, %d\n",
 					Temp, GetCuriCount());
@@ -837,7 +837,7 @@ GLOBALPROC VIA1_DoTimer2Check(void)
 #define kIER    0x0E
 #define kORA    0x0F
 
-GLOBALFUNC ui5b VIA1_Access(ui5b Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t VIA1_Access(uint32_t Data, blnr WriteMem, CPTR addr)
 {
 	switch (addr) {
 		case kORB   :
@@ -1013,7 +1013,7 @@ GLOBALFUNC ui5b VIA1_Access(ui5b Data, blnr WriteMem, CPTR addr)
 		case kACR:
 			if (WriteMem) {
 #if 1
-				if ((VIA1_D.ACR & 0x10) != ((ui3b)Data & 0x10)) {
+				if ((VIA1_D.ACR & 0x10) != ((uint8_t)Data & 0x10)) {
 					/* shift direction has changed */
 					if ((Data & 0x10) == 0) {
 						/*

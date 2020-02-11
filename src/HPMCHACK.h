@@ -38,7 +38,7 @@
 #define kAHM_yuck 13
 #define kAHM_zombie 14
 
-LOCALVAR const ui3b my_HappyMac_icon[] = {
+LOCALVAR const uint8_t my_HappyMac_icon[] = {
 #if CurAltHappyMac == kAHM_aside
 	0x00, 0x00,
 	0x39, 0x38,
@@ -243,8 +243,8 @@ LOCALPROC PatchHappyMac(void)
 	|| (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)
 
 	int i;
-	ui3b *dst = HappyMacBase + ROM + 0x18;
-	ui3b *src = (ui3b *)my_HappyMac_icon;
+	uint8_t *dst = HappyMacBase + ROM + 0x18;
+	uint8_t *src = (uint8_t *)my_HappyMac_icon;
 
 	for (i = 10; --i >= 0; ) {
 		++dst;

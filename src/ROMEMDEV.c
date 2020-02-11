@@ -44,7 +44,7 @@
 #endif
 
 #if UseSonyPatch
-LOCALVAR const ui3b sony_driver[] = {
+LOCALVAR const uint8_t sony_driver[] = {
 /*
 	Replacement for .Sony driver
 	68k machine code, compiled from mydriver.a
@@ -108,7 +108,7 @@ LOCALVAR const ui3b sony_driver[] = {
 #endif
 
 #if UseSonyPatch
-LOCALVAR const ui3b my_disk_icon[] = {
+LOCALVAR const uint8_t my_disk_icon[] = {
 	0x7F, 0xFF, 0xFF, 0xF0,
 	0x81, 0x00, 0x01, 0x08,
 	0x81, 0x00, 0x71, 0x04,
@@ -254,16 +254,16 @@ LOCALPROC Sony_Install(void)
 #ifdef ln2mtb
 LOCALPROC ROMscrambleForMTB(void)
 {
-	si5r j;
+	int32_t j;
 	ui3p p = ROM;
 	ui3p p2 = ROM + (1 << ln2mtb);
 
 	for (j = kROM_Size / (1 << ln2mtb) / 2; --j >= 0; ) {
-		si5r i;
+		int32_t i;
 
 		for (i = (1 << ln2mtb); --i >= 0; ) {
-			ui3b t0 = *p;
-			ui3b t1 = *p2;
+			uint8_t t0 = *p;
+			uint8_t t1 = *p2;
 			*p++ = t1;
 			*p2++ = t0;
 		}

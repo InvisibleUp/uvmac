@@ -30,11 +30,11 @@
 
 struct WorkR {
 	/* expected size : 8 bytes */
-	ui5b opcode;
-	ui5b opsize;
-	ui4r MainClass;
+	uint32_t opcode;
+	uint32_t opsize;
+	uint16_t MainClass;
 #if WantCycByPriOp
-	ui4r Cycles;
+	uint16_t Cycles;
 #endif
 	DecOpR DecOp;
 };
@@ -71,9 +71,9 @@ enum {
 
 #define kMyAvgCycPerInstr (10 * kCycleScale + (40 * kCycleScale / 64))
 
-LOCALFUNC ui3r GetAMdRegSz(WorkR *p)
+LOCALFUNC uint8_t GetAMdRegSz(WorkR *p)
 {
-	ui3r CurAMd;
+	uint8_t CurAMd;
 
 	switch (p->opsize) {
 		case 1:
@@ -91,9 +91,9 @@ LOCALFUNC ui3r GetAMdRegSz(WorkR *p)
 	return CurAMd;
 }
 
-LOCALFUNC ui3r GetAMdIndirectSz(WorkR *p)
+LOCALFUNC uint8_t GetAMdIndirectSz(WorkR *p)
 {
-	ui3r CurAMd;
+	uint8_t CurAMd;
 
 	switch (p->opsize) {
 		case 1:
@@ -112,9 +112,9 @@ LOCALFUNC ui3r GetAMdIndirectSz(WorkR *p)
 }
 
 #if WantCycByPriOp
-LOCALFUNC ui4r OpEACalcCyc(WorkR *p, ui3r m, ui3r r)
+LOCALFUNC uint16_t OpEACalcCyc(WorkR *p, uint8_t m, uint8_t r)
 {
-	ui4r v;
+	uint16_t v;
 
 	switch (m) {
 		case 0:
@@ -188,9 +188,9 @@ LOCALFUNC ui4r OpEACalcCyc(WorkR *p, ui3r m, ui3r r)
 #endif
 
 #if WantCycByPriOp
-LOCALFUNC ui4r OpEADestCalcCyc(WorkR *p, ui3r m, ui3r r)
+LOCALFUNC uint16_t OpEADestCalcCyc(WorkR *p, uint8_t m, uint8_t r)
 {
-	ui4r v;
+	uint16_t v;
 
 	switch (m) {
 		case 0:
@@ -253,7 +253,7 @@ LOCALFUNC ui4r OpEADestCalcCyc(WorkR *p, ui3r m, ui3r r)
 #endif
 
 LOCALPROC SetDcoArgFields(WorkR *p, blnr src,
-	ui3r CurAMd, ui3r CurArgDat)
+	uint8_t CurAMd, uint8_t CurArgDat)
 {
 	if (src) {
 		p->DecOp.y.v[0].AMd = CurAMd;
@@ -265,10 +265,10 @@ LOCALPROC SetDcoArgFields(WorkR *p, blnr src,
 }
 
 LOCALFUNC blnr CheckValidAddrMode(WorkR *p,
-	ui3r m, ui3r r, ui3r v, blnr src)
+	uint8_t m, uint8_t r, uint8_t v, blnr src)
 {
-	ui3r CurAMd = 0; /* init to keep compiler happy */
-	ui3r CurArgDat = 0;
+	uint8_t CurAMd = 0; /* init to keep compiler happy */
+	uint8_t CurArgDat = 0;
 	blnr IsOk;
 
 	switch (m) {
@@ -493,9 +493,9 @@ LOCALFUNC blnr CheckValidAddrMode(WorkR *p,
 }
 
 #if WantCycByPriOp
-LOCALFUNC blnr LeaPeaEACalcCyc(WorkR *p, ui3r m, ui3r r)
+LOCALFUNC blnr LeaPeaEACalcCyc(WorkR *p, uint8_t m, uint8_t r)
 {
-	ui4r v;
+	uint16_t v;
 
 	UnusedParam(p);
 	switch (m) {
@@ -590,9 +590,9 @@ LOCALPROC FindOpSizeFromb76(WorkR *p)
 #endif
 }
 
-LOCALFUNC ui3r OpSizeOffset(WorkR *p)
+LOCALFUNC uint8_t OpSizeOffset(WorkR *p)
 {
-	ui3r v;
+	uint8_t v;
 
 	switch (p->opsize) {
 		case 1 :
@@ -611,7 +611,7 @@ LOCALFUNC ui3r OpSizeOffset(WorkR *p)
 }
 
 
-LOCALFUNC ui5r octdat(ui5r x)
+LOCALFUNC uint32_t octdat(uint32_t x)
 {
 	if (x == 0) {
 		return 8;
@@ -1155,9 +1155,9 @@ LOCALPROCUSEDONCE DeCode3(WorkR *p)
 #define MoveAvgN 3
 #endif
 
-LOCALFUNC ui4r MoveMEACalcCyc(WorkR *p, ui3r m, ui3r r)
+LOCALFUNC uint16_t MoveMEACalcCyc(WorkR *p, uint8_t m, uint8_t r)
 {
-	ui4r v;
+	uint16_t v;
 
 	UnusedParam(p);
 	switch (m) {
@@ -2039,7 +2039,7 @@ LOCALPROCUSEDONCE DeCode5(WorkR *p)
 
 LOCALPROCUSEDONCE DeCode6(WorkR *p)
 {
-	ui5b cond = (p->opcode >> 8) & 15;
+	uint32_t cond = (p->opcode >> 8) & 15;
 
 	if (cond == 1) {
 		/* Bsr 01100001nnnnnnnn */
@@ -2812,9 +2812,9 @@ LOCALPROCUSEDONCE DeCodeD(WorkR *p)
 	}
 }
 
-LOCALFUNC ui5r rolops(WorkR *p, ui5r x)
+LOCALFUNC uint32_t rolops(WorkR *p, uint32_t x)
 {
-	ui5r binop;
+	uint32_t binop;
 
 	binop = (x << 1);
 	if (! b8(p)) {
@@ -3050,10 +3050,10 @@ LOCALPROC DeCodeOneOp(WorkR *p)
 
 GLOBALPROC M68KITAB_setup(DecOpR *p)
 {
-	ui5b i;
+	uint32_t i;
 	WorkR r;
 
-	for (i = 0; i < (ui5b)256 * 256; ++i) {
+	for (i = 0; i < (uint32_t)256 * 256; ++i) {
 		r.opcode = i;
 		r.MainClass = kIKindIllegal;
 

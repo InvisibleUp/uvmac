@@ -44,25 +44,25 @@ enum {
 };
 
 #define PMU_BuffSz 8
-LOCALVAR ui3b PMU_BuffA[PMU_BuffSz];
+LOCALVAR uint8_t PMU_BuffA[PMU_BuffSz];
 LOCALVAR ui3p PMU_p;
-LOCALVAR ui3r PMU_rem;
-LOCALVAR ui3r PMU_i;
+LOCALVAR uint8_t PMU_rem;
+LOCALVAR uint8_t PMU_i;
 
 LOCALVAR int PMUState = kPMUStateReadyForCommand;
 
-LOCALVAR ui3r PMU_CurCommand;
-LOCALVAR ui3r PMU_SendNext;
-LOCALVAR ui3r PMU_BuffL;
+LOCALVAR uint8_t PMU_CurCommand;
+LOCALVAR uint8_t PMU_SendNext;
+LOCALVAR uint8_t PMU_BuffL;
 
-LOCALPROC PmuStartSendResult(ui3r ResultCode, ui3r L)
+LOCALPROC PmuStartSendResult(uint8_t ResultCode, uint8_t L)
 {
 	PMU_SendNext = ResultCode;
 	PMU_BuffL = L;
 	PMUState = kPMUStateSendLength;
 }
 
-LOCALVAR ui3b PARAMRAM[128];
+LOCALVAR uint8_t PARAMRAM[128];
 
 LOCALPROC PmuCheckCommandOp(void)
 {
@@ -271,9 +271,9 @@ LOCALPROC LocBuffSetUpNextChunk(void)
 	}
 }
 
-LOCALFUNC ui3r GetPMUbus(void)
+LOCALFUNC uint8_t GetPMUbus(void)
 {
-	ui3r v;
+	uint8_t v;
 
 	v = VIA1_iA7;
 	v <<= 1;
@@ -294,7 +294,7 @@ LOCALFUNC ui3r GetPMUbus(void)
 	return v;
 }
 
-LOCALPROC SetPMUbus(ui3r v)
+LOCALPROC SetPMUbus(uint8_t v)
 {
 	VIA1_iA0 = v & 0x01;
 	v >>= 1;
@@ -370,7 +370,7 @@ GLOBALPROC PmuToReady_ChangeNtfy(void)
 			if (! PmuToReady) {
 				PmuFromReady = 0;
 			} else {
-				ui3r v = GetPMUbus();
+				uint8_t v = GetPMUbus();
 				if (0 == PMU_rem) {
 					PMU_p = nullpr;
 					PmuCheckCommandOp();

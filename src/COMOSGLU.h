@@ -39,8 +39,8 @@
 GLOBALVAR ui3p ROM = nullpr;
 LOCALVAR blnr ROM_loaded = falseblnr;
 
-GLOBALVAR ui5b vSonyWritableMask = 0;
-GLOBALVAR ui5b vSonyInsertedMask = 0;
+GLOBALVAR uint32_t vSonyWritableMask = 0;
+GLOBALVAR uint32_t vSonyInsertedMask = 0;
 
 #if IncludeSonyRawMode
 GLOBALVAR blnr vSonyRawMode = falseblnr;
@@ -48,20 +48,20 @@ GLOBALVAR blnr vSonyRawMode = falseblnr;
 
 #if IncludeSonyNew
 GLOBALVAR blnr vSonyNewDiskWanted = falseblnr;
-GLOBALVAR ui5b vSonyNewDiskSize;
+GLOBALVAR uint32_t vSonyNewDiskSize;
 #endif
 
 #if IncludeSonyNameNew
 GLOBALVAR tPbuf vSonyNewDiskName = NotAPbuf;
 #endif
 
-GLOBALVAR ui5b CurMacDateInSeconds = 0;
+GLOBALVAR uint32_t CurMacDateInSeconds = 0;
 #if AutoLocation
-GLOBALVAR ui5b CurMacLatitude = 0;
-GLOBALVAR ui5b CurMacLongitude = 0;
+GLOBALVAR uint32_t CurMacLatitude = 0;
+GLOBALVAR uint32_t CurMacLongitude = 0;
 #endif
 #if AutoTimeZone
-GLOBALVAR ui5b CurMacDelta = 0;
+GLOBALVAR uint32_t CurMacDelta = 0;
 #endif
 
 #if 0 != vMacScreenDepth
@@ -74,9 +74,9 @@ GLOBALVAR blnr ColorMappingChanged = falseblnr;
 #endif
 
 #if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
-GLOBALVAR ui4r CLUT_reds[CLUT_size];
-GLOBALVAR ui4r CLUT_greens[CLUT_size];
-GLOBALVAR ui4r CLUT_blues[CLUT_size];
+GLOBALVAR uint16_t CLUT_reds[CLUT_size];
+GLOBALVAR uint16_t CLUT_greens[CLUT_size];
+GLOBALVAR uint16_t CLUT_blues[CLUT_size];
 #endif
 
 LOCALVAR blnr RequestMacOff = falseblnr;
@@ -87,22 +87,22 @@ GLOBALVAR blnr WantMacInterrupt = falseblnr;
 
 GLOBALVAR blnr WantMacReset = falseblnr;
 
-GLOBALVAR ui3b SpeedValue = WantInitSpeedValue;
+GLOBALVAR uint8_t SpeedValue = WantInitSpeedValue;
 
 #if EnableAutoSlow
 GLOBALVAR blnr WantNotAutoSlow = (WantInitNotAutoSlow != 0);
 #endif
 
-GLOBALVAR ui4b CurMouseV = 0;
-GLOBALVAR ui4b CurMouseH = 0;
+GLOBALVAR uint16_t CurMouseV = 0;
+GLOBALVAR uint16_t CurMouseH = 0;
 
 #if EnableFSMouseMotion
 LOCALVAR blnr HaveMouseMotion = falseblnr;
 #endif
 
 #if EnableAutoSlow
-GLOBALVAR ui5r QuietTime = 0;
-GLOBALVAR ui5r QuietSubTicks = 0;
+GLOBALVAR uint32_t QuietTime = 0;
+GLOBALVAR uint32_t QuietSubTicks = 0;
 #endif
 
 #ifndef GrabKeysFullScreen
@@ -114,12 +114,12 @@ GLOBALVAR ui5r QuietSubTicks = 0;
 #endif
 
 #if IncludePbufs
-LOCALVAR ui5b PbufAllocatedMask;
-LOCALVAR ui5b PbufSize[NumPbufs];
+LOCALVAR uint32_t PbufAllocatedMask;
+LOCALVAR uint32_t PbufSize[NumPbufs];
 #endif
 
 #if IncludePbufs
-#define PbufIsAllocated(i) ((PbufAllocatedMask & ((ui5b)1 << (i))) != 0)
+#define PbufIsAllocated(i) ((PbufAllocatedMask & ((uint32_t)1 << (i))) != 0)
 #endif
 
 #if IncludePbufs
@@ -138,17 +138,17 @@ LOCALFUNC blnr FirstFreePbuf(tPbuf *r)
 #endif
 
 #if IncludePbufs
-LOCALPROC PbufNewNotify(tPbuf Pbuf_No, ui5b count)
+LOCALPROC PbufNewNotify(tPbuf Pbuf_No, uint32_t count)
 {
 	PbufSize[Pbuf_No] = count;
-	PbufAllocatedMask |= ((ui5b)1 << Pbuf_No);
+	PbufAllocatedMask |= ((uint32_t)1 << Pbuf_No);
 }
 #endif
 
 #if IncludePbufs
 LOCALPROC PbufDisposeNotify(tPbuf Pbuf_No)
 {
-	PbufAllocatedMask &= ~ ((ui5b)1 << Pbuf_No);
+	PbufAllocatedMask &= ~ ((uint32_t)1 << Pbuf_No);
 }
 #endif
 
@@ -170,7 +170,7 @@ GLOBALOSGLUFUNC tMacErr CheckPbuf(tPbuf Pbuf_No)
 #endif
 
 #if IncludePbufs
-GLOBALOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, ui5r *Count)
+GLOBALOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, uint32_t *Count)
 {
 	tMacErr result = CheckPbuf(Pbuf_No);
 
@@ -214,14 +214,14 @@ GLOBALOSGLUFUNC blnr AnyDiskInserted(void)
 
 GLOBALOSGLUPROC DiskRevokeWritable(tDrive Drive_No)
 {
-	vSonyWritableMask &= ~ ((ui5b)1 << Drive_No);
+	vSonyWritableMask &= ~ ((uint32_t)1 << Drive_No);
 }
 
 LOCALPROC DiskInsertNotify(tDrive Drive_No, blnr locked)
 {
-	vSonyInsertedMask |= ((ui5b)1 << Drive_No);
+	vSonyInsertedMask |= ((uint32_t)1 << Drive_No);
 	if (! locked) {
-		vSonyWritableMask |= ((ui5b)1 << Drive_No);
+		vSonyWritableMask |= ((uint32_t)1 << Drive_No);
 	}
 
 	QuietEnds();
@@ -229,19 +229,19 @@ LOCALPROC DiskInsertNotify(tDrive Drive_No, blnr locked)
 
 LOCALPROC DiskEjectedNotify(tDrive Drive_No)
 {
-	vSonyWritableMask &= ~ ((ui5b)1 << Drive_No);
-	vSonyInsertedMask &= ~ ((ui5b)1 << Drive_No);
+	vSonyWritableMask &= ~ ((uint32_t)1 << Drive_No);
+	vSonyInsertedMask &= ~ ((uint32_t)1 << Drive_No);
 }
 
 /*
-	block type - for operating on multiple ui3b elements
+	block type - for operating on multiple uint8_t elements
 		at a time.
 */
 
 #if LittleEndianUnaligned || BigEndianUnaligned
 
-#define uibb ui5b
-#define uibr ui5r
+#define uibb uint32_t
+#define uibr uint32_t
 #define ln2uiblockn 2
 
 #if 0
@@ -252,8 +252,8 @@ LOCALPROC DiskEjectedNotify(tDrive Drive_No)
 
 #else
 
-#define uibb ui3b
-#define uibr ui3r
+#define uibb uint8_t
+#define uibr uint8_t
 #define ln2uiblockn 0
 
 #endif
@@ -306,7 +306,7 @@ LOCALPROC FindLeftRightChangeInLMat(uibb *ptr1, uibb *ptr2,
 	uibb *p1;
 	uibb *p2;
 	uibr x;
-	ui5r offset = top * width;
+	uint32_t offset = top * width;
 	uibb *p10 = (uibb *)ptr1 + offset;
 	uibb *p20 = (uibb *)ptr2 + offset;
 	uimr LeftMin = *LeftMin0;
@@ -372,7 +372,7 @@ LOCALVAR blnr ColorTransValid = falseblnr;
 #endif
 
 LOCALFUNC blnr ScreenFindChanges(ui3p screencurrentbuff,
-	si3b TimeAdjust, si4b *top, si4b *left, si4b *bottom, si4b *right)
+	int8_t TimeAdjust, int16_t *top, int16_t *left, int16_t *bottom, int16_t *right)
 {
 	uimr j0;
 	uimr j1;
@@ -595,18 +595,18 @@ Label_2:
 }
 
 GLOBALVAR blnr EmVideoDisable = falseblnr;
-GLOBALVAR si3b EmLagTime = 0;
+GLOBALVAR int8_t EmLagTime = 0;
 
-GLOBALVAR ui5b OnTrueTime = 0;
+GLOBALVAR uint32_t OnTrueTime = 0;
 	/*
 		The time slice we are currently dealing
 		with, in the same units as TrueEmulatedTime.
 	*/
 
-LOCALVAR si4b ScreenChangedTop;
-LOCALVAR si4b ScreenChangedLeft;
-LOCALVAR si4b ScreenChangedBottom;
-LOCALVAR si4b ScreenChangedRight;
+LOCALVAR int16_t ScreenChangedTop;
+LOCALVAR int16_t ScreenChangedLeft;
+LOCALVAR int16_t ScreenChangedBottom;
+LOCALVAR int16_t ScreenChangedRight;
 
 LOCALPROC ScreenClearChanges(void)
 {
@@ -625,18 +625,18 @@ LOCALPROC ScreenChangedAll(void)
 }
 
 #if EnableAutoSlow
-LOCALVAR si4b ScreenChangedQuietTop = vMacScreenHeight;
-LOCALVAR si4b ScreenChangedQuietLeft = vMacScreenWidth;
-LOCALVAR si4b ScreenChangedQuietBottom = 0;
-LOCALVAR si4b ScreenChangedQuietRight = 0;
+LOCALVAR int16_t ScreenChangedQuietTop = vMacScreenHeight;
+LOCALVAR int16_t ScreenChangedQuietLeft = vMacScreenWidth;
+LOCALVAR int16_t ScreenChangedQuietBottom = 0;
+LOCALVAR int16_t ScreenChangedQuietRight = 0;
 #endif
 
 GLOBALOSGLUPROC Screen_OutputFrame(ui3p screencurrentbuff)
 {
-	si4b top;
-	si4b left;
-	si4b bottom;
-	si4b right;
+	int16_t top;
+	int16_t left;
+	int16_t bottom;
+	int16_t right;
 
 	if (! EmVideoDisable) {
 		if (ScreenFindChanges(screencurrentbuff, EmLagTime,
@@ -686,13 +686,13 @@ GLOBALOSGLUPROC Screen_OutputFrame(ui3p screencurrentbuff)
 }
 
 #if MayFullScreen
-LOCALVAR ui4r ViewHSize;
-LOCALVAR ui4r ViewVSize;
-LOCALVAR ui4r ViewHStart = 0;
-LOCALVAR ui4r ViewVStart = 0;
+LOCALVAR uint16_t ViewHSize;
+LOCALVAR uint16_t ViewVSize;
+LOCALVAR uint16_t ViewHStart = 0;
+LOCALVAR uint16_t ViewVStart = 0;
 #if EnableFSMouseMotion
-LOCALVAR si4b SavedMouseH;
-LOCALVAR si4b SavedMouseV;
+LOCALVAR int16_t SavedMouseH;
+LOCALVAR int16_t SavedMouseV;
 #endif
 #endif
 
@@ -703,8 +703,8 @@ LOCALVAR si4b SavedMouseV;
 #if EnableFSMouseMotion
 LOCALPROC AutoScrollScreen(void)
 {
-	si4b Shift;
-	si4b Limit;
+	int16_t Shift;
+	int16_t Limit;
 
 	/*
 		Scroll in multiples of two pixels, so as to
@@ -793,12 +793,12 @@ LOCALPROC AutoScrollScreen(void)
 }
 #endif
 
-LOCALPROC SetLongs(ui5b *p, long n)
+LOCALPROC SetLongs(uint32_t *p, long n)
 {
 	long i;
 
 	for (i = n; --i >= 0; ) {
-		*p++ = (ui5b) -1;
+		*p++ = (uint32_t) -1;
 	}
 }
 
@@ -814,7 +814,7 @@ LOCALVAR ui3p ReserveAllocBigBlock = nullpr;
 	/* warning - CeilPow2Mult evaluates p twice */
 
 GLOBALOSGLUPROC ReserveAllocOneBlock(ui3p *p, uimr n,
-	ui3r align, blnr FillOnes)
+	uint8_t align, blnr FillOnes)
 {
 	ReserveAllocOffset = CeilPow2Mult(ReserveAllocOffset, align);
 	if (nullpr == ReserveAllocBigBlock) {
@@ -822,7 +822,7 @@ GLOBALOSGLUPROC ReserveAllocOneBlock(ui3p *p, uimr n,
 	} else {
 		*p = ReserveAllocBigBlock + ReserveAllocOffset;
 		if (FillOnes) {
-			SetLongs((ui5b *)*p, n / 4);
+			SetLongs((uint32_t *)*p, n / 4);
 		}
 	}
 	ReserveAllocOffset += n;
@@ -902,7 +902,7 @@ GLOBALOSGLUPROC dbglog_writeReturn(void)
 
 GLOBALOSGLUPROC dbglog_writeHex(uimr x)
 {
-	ui3r v;
+	uint8_t v;
 	char s[16];
 	char *p = s + 16;
 	uimr n = 0;
@@ -940,7 +940,7 @@ GLOBALOSGLUPROC dbglog_writeNum(uimr x)
 	/* fprintf(DumpFile, "%d", (int)x); */
 }
 
-GLOBALOSGLUPROC dbglog_writeMacChar(ui3r x)
+GLOBALOSGLUPROC dbglog_writeMacChar(uint8_t x)
 {
 	char s;
 
@@ -981,8 +981,8 @@ GLOBALOSGLUPROC dbglog_writelnNum(char *s, simr v)
 #define MyEvtQIMask (MyEvtQSz - 1)
 
 LOCALVAR MyEvtQEl MyEvtQA[MyEvtQSz];
-LOCALVAR ui4r MyEvtQIn = 0;
-LOCALVAR ui4r MyEvtQOut = 0;
+LOCALVAR uint16_t MyEvtQIn = 0;
+LOCALVAR uint16_t MyEvtQOut = 0;
 
 GLOBALOSGLUFUNC MyEvtQEl * MyEvtQOutP(void)
 {
@@ -1025,14 +1025,14 @@ LOCALFUNC MyEvtQEl * MyEvtQElAlloc(void)
 	return p;
 }
 
-LOCALVAR ui5b theKeys[4];
+LOCALVAR uint32_t theKeys[4];
 
-LOCALPROC Keyboard_UpdateKeyMap(ui3r key, blnr down)
+LOCALPROC Keyboard_UpdateKeyMap(uint8_t key, blnr down)
 {
-	ui3r k = key & 127; /* just for safety */
-	ui3r bit = 1 << (k & 7);
-	ui3b *kp = (ui3b *)theKeys;
-	ui3b *kpi = &kp[k / 8];
+	uint8_t k = key & 127; /* just for safety */
+	uint8_t bit = 1 << (k & 7);
+	uint8_t *kp = (uint8_t *)theKeys;
+	uint8_t *kpi = &kp[k / 8];
 	blnr CurDown = ((*kpi & bit) != 0);
 	if (CurDown != down) {
 		MyEvtQEl *p = MyEvtQElAlloc();
@@ -1070,7 +1070,7 @@ LOCALPROC MyMouseButtonSet(blnr down)
 }
 
 #if EnableFSMouseMotion
-LOCALPROC MyMousePositionSetDelta(ui4r dh, ui4r dv)
+LOCALPROC MyMousePositionSetDelta(uint16_t dh, uint16_t dv)
 {
 	if ((dh != 0) || (dv != 0)) {
 		MyEvtQEl *p = MyEvtQElPreviousIn();
@@ -1091,10 +1091,10 @@ LOCALPROC MyMousePositionSetDelta(ui4r dh, ui4r dv)
 }
 #endif
 
-LOCALVAR ui4b MyMousePosCurV = 0;
-LOCALVAR ui4b MyMousePosCurH = 0;
+LOCALVAR uint16_t MyMousePosCurV = 0;
+LOCALVAR uint16_t MyMousePosCurH = 0;
 
-LOCALPROC MyMousePositionSet(ui4r h, ui4r v)
+LOCALPROC MyMousePositionSet(uint16_t h, uint16_t v)
 {
 	if ((h != MyMousePosCurH) || (v != MyMousePosCurV)) {
 		MyEvtQEl *p = MyEvtQElPreviousIn();
@@ -1116,7 +1116,7 @@ LOCALPROC MyMousePositionSet(ui4r h, ui4r v)
 
 #if 0
 #define Keyboard_TestKeyMap(key) \
-	((((ui3b *)theKeys)[(key) / 8] & (1 << ((key) & 7))) != 0)
+	((((uint8_t *)theKeys)[(key) / 8] & (1 << ((key) & 7))) != 0)
 #endif
 
 LOCALPROC InitKeyCodes(void)
@@ -1133,7 +1133,7 @@ LOCALPROC InitKeyCodes(void)
 #define kKeepMaskOption   (1 << 3)
 #define kKeepMaskShift    (1 << 4)
 
-LOCALPROC DisconnectKeyCodes(ui5b KeepMask)
+LOCALPROC DisconnectKeyCodes(uint32_t KeepMask)
 {
 	/*
 		Called when may miss key ups,
@@ -1145,12 +1145,12 @@ LOCALPROC DisconnectKeyCodes(ui5b KeepMask)
 	int j;
 	int b;
 	int key;
-	ui5b m;
+	uint32_t m;
 
 	for (j = 0; j < 16; ++j) {
-		ui3b k1 = ((ui3b *)theKeys)[j];
+		uint8_t k1 = ((uint8_t *)theKeys)[j];
 		if (0 != k1) {
-			ui3b bit = 1;
+			uint8_t bit = 1;
 			for (b = 0; b < 8; ++b) {
 				if (0 != (k1 & bit)) {
 					key = j * 8 + b;
@@ -1183,7 +1183,7 @@ LOCALPROC MyEvtQTryRecoverFromFull(void)
 LOCALVAR char *SavedBriefMsg = nullpr;
 LOCALVAR char *SavedLongMsg;
 #if WantAbnormalReports
-LOCALVAR ui4r SavedIDMsg = 0;
+LOCALVAR uint16_t SavedIDMsg = 0;
 #endif
 LOCALVAR blnr SavedFatalMsg;
 
@@ -1202,7 +1202,7 @@ LOCALPROC MacMsg(char *briefMsg, char *longMsg, blnr fatal)
 }
 
 #if WantAbnormalReports
-GLOBALOSGLUPROC WarnMsgAbnormalID(ui4r id)
+GLOBALOSGLUPROC WarnMsgAbnormalID(uint16_t id)
 {
 	MacMsg(kStrReportAbnormalTitle,
 		kStrReportAbnormalMessage, falseblnr);

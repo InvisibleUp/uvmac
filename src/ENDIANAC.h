@@ -32,40 +32,40 @@
 #endif
 
 
-#define do_get_mem_byte(a) ((ui3r)*((ui3b *)(a)))
+#define do_get_mem_byte(a) ((uint8_t)*((uint8_t *)(a)))
 
 #if BigEndianUnaligned
-#define do_get_mem_word(a) ((ui4r)*((ui4b *)(a)))
+#define do_get_mem_word(a) ((uint16_t)*((uint16_t *)(a)))
 #else
-LOCALINLINEFUNC ui4r do_get_mem_word(ui3p a)
+LOCALINLINEFUNC uint16_t do_get_mem_word(ui3p a)
 {
 #if LittleEndianUnaligned
-	ui4b b = (*((ui4b *)(a)));
+	uint16_t b = (*((uint16_t *)(a)));
 
 	return ((b & 0x00FF) << 8) | ((b >> 8) & 0x00FF);
 #else
-	return (((ui4r)*a) << 8) | ((ui4r)*(a + 1));
+	return (((uint16_t)*a) << 8) | ((uint16_t)*(a + 1));
 #endif
 }
 #endif
 
 #if BigEndianUnaligned
-#define do_get_mem_long(a) ((ui5r)*((ui5b *)(a)))
+#define do_get_mem_long(a) ((uint32_t)*((uint32_t *)(a)))
 #elif HaveMySwapUi5r && LittleEndianUnaligned
-#define do_get_mem_long(a) (MySwapUi5r((ui5r)*((ui5b *)(a))))
+#define do_get_mem_long(a) (MySwapUi5r((uint32_t)*((uint32_t *)(a))))
 #else
-LOCALINLINEFUNC ui5r do_get_mem_long(ui3p a)
+LOCALINLINEFUNC uint32_t do_get_mem_long(ui3p a)
 {
 #if LittleEndianUnaligned
 #if 0
-	ui5b b = (*((ui5b *)(a)));
+	uint32_t b = (*((uint32_t *)(a)));
 	return ((b & 0x000000FF) << 24)
 		|  ((b & 0x0000FF00) <<  8)
 		|  ((b & 0x00FF0000) >>  8)
 		|  ((b & 0xFF000000) >> 24);
 #endif
 #if 0
-	ui5b b = (*((ui5b *)(a)));
+	uint32_t b = (*((uint32_t *)(a)));
 	return ((b << 24) & 0xFF000000)
 		|  ((b <<  8) & 0x00FF0000)
 		|  ((b >>  8) & 0x0000FF00)
@@ -75,35 +75,35 @@ LOCALINLINEFUNC ui5r do_get_mem_long(ui3p a)
 		instead try combining two 16 bit swaps.
 	*/
 #endif
-	ui5b b = (*((ui5b *)(a)));
-	ui4b b1 = b;
-	ui4b b2 = b >> 16;
-	ui4b c1 = ((b1 & 0x00FF) << 8) | ((b1 >> 8) & 0x00FF);
-	ui4b c2 = ((b2 & 0x00FF) << 8) | ((b2 >> 8) & 0x00FF);
+	uint32_t b = (*((uint32_t *)(a)));
+	uint16_t b1 = b;
+	uint16_t b2 = b >> 16;
+	uint16_t c1 = ((b1 & 0x00FF) << 8) | ((b1 >> 8) & 0x00FF);
+	uint16_t c2 = ((b2 & 0x00FF) << 8) | ((b2 >> 8) & 0x00FF);
 
-	return (((ui5r)c1) << 16) | ((ui5r)c2);
+	return (((uint32_t)c1) << 16) | ((uint32_t)c2);
 	/*
 		better, though still doesn't use BSWAP
 		instruction with apple tools for intel.
 	*/
 #else
-	return (((ui5r)*a) << 24) | (((ui5r)*(a + 1)) << 16)
-		| (((ui5r)*(a + 2)) << 8) | ((ui5r)*(a + 3));
+	return (((uint32_t)*a) << 24) | (((uint32_t)*(a + 1)) << 16)
+		| (((uint32_t)*(a + 2)) << 8) | ((uint32_t)*(a + 3));
 #endif
 }
 #endif
 
-#define do_put_mem_byte(a, v) ((*((ui3b *)(a))) = (v))
+#define do_put_mem_byte(a, v) ((*((uint8_t *)(a))) = (v))
 
 #if BigEndianUnaligned
-#define do_put_mem_word(a, v) ((*((ui4b *)(a))) = (v))
+#define do_put_mem_word(a, v) ((*((uint16_t *)(a))) = (v))
 #else
-LOCALINLINEFUNC void do_put_mem_word(ui3p a, ui4r v)
+LOCALINLINEFUNC void do_put_mem_word(ui3p a, uint16_t v)
 {
 #if LittleEndianUnaligned
-	ui4b b = ((v & 0x00FF) << 8) | ((v >> 8) & 0x00FF);
+	uint16_t b = ((v & 0x00FF) << 8) | ((v >> 8) & 0x00FF);
 
-	*(ui4b *)a = b;
+	*(uint16_t *)a = b;
 #else
 	*a = v >> 8;
 	*(a + 1) = v;
@@ -112,19 +112,19 @@ LOCALINLINEFUNC void do_put_mem_word(ui3p a, ui4r v)
 #endif
 
 #if BigEndianUnaligned
-#define do_put_mem_long(a, v) ((*((ui5b *)(a))) = (v))
+#define do_put_mem_long(a, v) ((*((uint32_t *)(a))) = (v))
 #elif HaveMySwapUi5r && LittleEndianUnaligned
-#define do_put_mem_long(a, v) ((*((ui5b *)(a))) = MySwapUi5r(v))
+#define do_put_mem_long(a, v) ((*((uint32_t *)(a))) = MySwapUi5r(v))
 #else
-LOCALINLINEFUNC void do_put_mem_long(ui3p a, ui5r v)
+LOCALINLINEFUNC void do_put_mem_long(ui3p a, uint32_t v)
 {
 #if LittleEndianUnaligned
-	ui4b b1 = v;
-	ui4b b2 = v >> 16;
-	ui4b c1 = ((b1 & 0x00FF) << 8) | ((b1 >> 8) & 0x00FF);
-	ui4b c2 = ((b2 & 0x00FF) << 8) | ((b2 >> 8) & 0x00FF);
+	uint16_t b1 = v;
+	uint16_t b2 = v >> 16;
+	uint16_t c1 = ((b1 & 0x00FF) << 8) | ((b1 >> 8) & 0x00FF);
+	uint16_t c2 = ((b2 & 0x00FF) << 8) | ((b2 >> 8) & 0x00FF);
 
-	*(ui5b *)a = (c1 << 16) | c2;
+	*(uint32_t *)a = (c1 << 16) | c2;
 #else
 	*a = v >> 24;
 	*(a + 1) = v >> 16;

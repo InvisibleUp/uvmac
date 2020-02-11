@@ -29,7 +29,7 @@
 	ClStrAppendSubstCStr encoding
 	HTML character entity
 */
-LOCALVAR const ui3b CellData[] = {
+LOCALVAR const uint8_t CellData[] = {
 	/* kCellUpA 101 0x41 0x0041 'A' 'A' A */
 	0x00, 0x00, 0x00, 0x3C, 0x42, 0x42, 0x42, 0x7E,
 	0x42, 0x42, 0x42, 0x42, 0x00, 0x00, 0x00, 0x00,
@@ -1064,7 +1064,7 @@ LOCALVAR const char Cell2MacAsciiMap[] = {
 
 #if NeedCell2WinAsciiMap
 /* Windows character set (windows-1252 code page) */
-LOCALVAR const ui3b Cell2WinAsciiMap[] = {
+LOCALVAR const uint8_t Cell2WinAsciiMap[] = {
 	0x41, /* kCellUpA */
 	0x42, /* kCellUpB */
 	0x43, /* kCellUpC */
@@ -1454,7 +1454,7 @@ LOCALVAR const char Cell2PlainAsciiMap[] = {
 
 #if NeedCell2UnicodeMap
 /* Unicode character set */
-LOCALVAR const ui4b Cell2UnicodeMap[] = {
+LOCALVAR const uint16_t Cell2UnicodeMap[] = {
 	0x0041, /* kCellUpA */
 	0x0042, /* kCellUpB */
 	0x0043, /* kCellUpC */
@@ -1664,7 +1664,7 @@ LOCALVAR blnr RequestInsertDisk = falseblnr;
 #endif
 
 #if NeedRequestIthDisk
-LOCALVAR ui3r RequestIthDisk = 0;
+LOCALVAR uint8_t RequestIthDisk = 0;
 #endif
 
 #if UseControlKeys
@@ -1844,7 +1844,7 @@ l_exit:
 	return L;
 }
 
-LOCALPROC ClStrAppendChar(int *L0, ui3b *r, ui3b c)
+LOCALPROC ClStrAppendChar(int *L0, uint8_t *r, uint8_t c)
 {
 	int L = *L0;
 
@@ -1853,13 +1853,13 @@ LOCALPROC ClStrAppendChar(int *L0, ui3b *r, ui3b c)
 	*L0 = L;
 }
 
-LOCALPROC ClStrAppendSubstCStr(int *L, ui3b *r, char *s)
+LOCALPROC ClStrAppendSubstCStr(int *L, uint8_t *r, char *s)
 {
 	/* must match ClStrSizeSubstCStr ! */
 
 	char *p = s;
 	char c;
-	ui3b x;
+	uint8_t x;
 
 	while (0 != (c = *p++)) {
 		if ('^' == c) {
@@ -2171,7 +2171,7 @@ LOCALPROC ClStrAppendSubstCStr(int *L, ui3b *r, char *s)
 
 #define ClStrMaxLength 512
 
-LOCALPROC ClStrFromSubstCStr(int *L, ui3b *r, char *s)
+LOCALPROC ClStrFromSubstCStr(int *L, uint8_t *r, char *s)
 {
 	int n = ClStrSizeSubstCStr(s);
 

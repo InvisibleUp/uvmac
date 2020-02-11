@@ -39,8 +39,8 @@
 	ReportAbnormalID unused 0x0B03 - 0x0BFF
 */
 
-IMPORTPROC KYBD_ShiftOutData(ui3b v);
-IMPORTFUNC ui3b KYBD_ShiftInData(void);
+IMPORTPROC KYBD_ShiftOutData(uint8_t v);
+IMPORTFUNC uint8_t KYBD_ShiftInData(void);
 
 enum {
 	kKybdStateIdle,
@@ -54,9 +54,9 @@ enum {
 LOCALVAR int KybdState = kKybdStateIdle;
 
 LOCALVAR blnr HaveKeyBoardResult = falseblnr;
-LOCALVAR ui3b KeyBoardResult;
+LOCALVAR uint8_t KeyBoardResult;
 
-LOCALPROC GotKeyBoardData(ui3b v)
+LOCALPROC GotKeyBoardData(uint8_t v)
 {
 	if (KybdState != kKybdStateIdle) {
 		HaveKeyBoardResult = trueblnr;
@@ -67,13 +67,13 @@ LOCALPROC GotKeyBoardData(ui3b v)
 	}
 }
 
-LOCALVAR ui3b InstantCommandData = 0x7B;
+LOCALVAR uint8_t InstantCommandData = 0x7B;
 
 LOCALFUNC blnr AttemptToFinishInquiry(void)
 {
 	int i;
 	blnr KeyDown;
-	ui3b Keyboard_Data;
+	uint8_t Keyboard_Data;
 
 	if (FindKeyEvent(&i, &KeyDown)) {
 		if (i < 64) {
@@ -111,7 +111,7 @@ GLOBALPROC DoKybd_ReceiveCommand(void)
 		ReportAbnormalID(0x0B01,
 			"KybdState != kKybdStateRecievingCommand");
 	} else {
-		ui3b in = KYBD_ShiftInData();
+		uint8_t in = KYBD_ShiftInData();
 
 		KybdState = kKybdStateRecievedCommand;
 

@@ -61,13 +61,13 @@
 	(ScrnMapr_Scale << (ScrnMapr_DstDepth - ScrnMapr_SrcDepth))
 
 #if 0 == (ScrnMapr_MapElSz & 3)
-#define ScrnMapr_TranT ui5b
+#define ScrnMapr_TranT uint32_t
 #define ScrnMapr_TranLn2Sz 2
 #elif 0 == (ScrnMapr_MapElSz & 1)
-#define ScrnMapr_TranT ui4b
+#define ScrnMapr_TranT uint16_t
 #define ScrnMapr_TranLn2Sz 1
 #else
-#define ScrnMapr_TranT ui3b
+#define ScrnMapr_TranT uint8_t
 #define ScrnMapr_TranLn2Sz 0
 #endif
 
@@ -77,31 +77,31 @@
 
 /* now define the procedure */
 
-LOCALPROC ScrnMapr_DoMap(si4b top, si4b left,
-	si4b bottom, si4b right)
+LOCALPROC ScrnMapr_DoMap(int16_t top, int16_t left,
+	int16_t bottom, int16_t right)
 {
 	int i;
 	int j;
 #if (ScrnMapr_TranN > 4) || (ScrnMapr_Scale > 2)
 	int k;
 #endif
-	ui5r t0;
+	uint32_t t0;
 	ScrnMapr_TranT *pMap;
 #if ScrnMapr_Scale > 1
 	ScrnMapr_TranT *p3;
 #endif
 
-	ui4r leftB = left >> (3 - ScrnMapr_SrcDepth);
-	ui4r rightB = (right + (1 << (3 - ScrnMapr_SrcDepth)) - 1)
+	uint16_t leftB = left >> (3 - ScrnMapr_SrcDepth);
+	uint16_t rightB = (right + (1 << (3 - ScrnMapr_SrcDepth)) - 1)
 		>> (3 - ScrnMapr_SrcDepth);
-	ui4r jn = rightB - leftB;
-	ui4r SrcSkip = ScrnMapr_ScrnWB - jn;
-	ui3b *pSrc = ((ui3b *)ScrnMapr_Src)
-		+ leftB + ScrnMapr_ScrnWB * (ui5r)top;
+	uint16_t jn = rightB - leftB;
+	uint16_t SrcSkip = ScrnMapr_ScrnWB - jn;
+	uint8_t *pSrc = ((uint8_t *)ScrnMapr_Src)
+		+ leftB + ScrnMapr_ScrnWB * (uint32_t)top;
 	ScrnMapr_TranT *pDst = ((ScrnMapr_TranT *)ScrnMapr_Dst)
-		+ ((leftB + ScrnMapr_ScrnWB * ScrnMapr_Scale * (ui5r)top)
+		+ ((leftB + ScrnMapr_ScrnWB * ScrnMapr_Scale * (uint32_t)top)
 			* ScrnMapr_TranN);
-	ui5r DstSkip = SrcSkip * ScrnMapr_TranN;
+	uint32_t DstSkip = SrcSkip * ScrnMapr_TranN;
 
 	for (i = bottom - top; --i >= 0; ) {
 #if ScrnMapr_Scale > 1

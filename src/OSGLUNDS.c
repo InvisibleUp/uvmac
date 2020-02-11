@@ -33,7 +33,7 @@
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, si5b byteCount)
+GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -126,7 +126,7 @@ LOCALPROC WriteExtraErr(char *s)
 
 LOCALPROC NativeStrFromCStr(char *r, char *s)
 {
-	ui3b ps[ClStrMaxLength];
+	uint8_t ps[ClStrMaxLength];
 	int i;
 	int L;
 
@@ -165,12 +165,12 @@ LOCALPROC InitDrives(void)
 }
 
 GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
-	tDrive Drive_No, ui5r Sony_Start, ui5r Sony_Count,
-	ui5r *Sony_ActCount)
+	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
+	uint32_t *Sony_ActCount)
 {
 	tMacErr err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
-	ui5r NewSony_Count = 0;
+	uint32_t NewSony_Count = 0;
 
 	if (0 == fseek(refnum, Sony_Start, SEEK_SET)) {
 		if (IsWrite) {
@@ -191,7 +191,7 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
 	return err; /*& figure out what really to return &*/
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, ui5r *Sony_Count)
+GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
 	tMacErr err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
@@ -292,7 +292,7 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 
 #if IncludeSonyGetName || IncludeSonyNew
 			{
-				ui5b L = strlen(drivepath);
+				uint32_t L = strlen(drivepath);
 				char *p = malloc(L + 1);
 				if (p != NULL) {
 					(void) memcpy(p, drivepath, L + 1);
@@ -368,11 +368,11 @@ LOCALFUNC blnr LoadInitialImages(void)
 }
 
 #if IncludeSonyNew
-LOCALFUNC blnr WriteZero(FILE *refnum, ui5b L)
+LOCALFUNC blnr WriteZero(FILE *refnum, uint32_t L)
 {
 #define ZeroBufferSize 2048
-	ui5b i;
-	ui3b buffer[ZeroBufferSize];
+	uint32_t i;
+	uint8_t buffer[ZeroBufferSize];
 
 	memset(&buffer, 0, ZeroBufferSize);
 
@@ -388,7 +388,7 @@ LOCALFUNC blnr WriteZero(FILE *refnum, ui5b L)
 #endif
 
 #if IncludeSonyNew
-LOCALPROC MakeNewDisk(ui5b L, char *drivepath)
+LOCALPROC MakeNewDisk(uint32_t L, char *drivepath)
 {
 	blnr IsOk = falseblnr;
 	FILE *refnum = fopen(drivepath, "wb+");
@@ -410,7 +410,7 @@ LOCALPROC MakeNewDisk(ui5b L, char *drivepath)
 #endif
 
 #if IncludeSonyNew
-LOCALPROC MakeNewDiskAtDefault(ui5b L)
+LOCALPROC MakeNewDiskAtDefault(uint32_t L)
 {
 	char s[ClStrMaxLength + 1];
 
@@ -485,8 +485,8 @@ LOCALVAR blnr CurSpeedStopped = trueblnr;
 #define MaxScale 1
 #endif
 
-LOCALPROC HaveChangedScreenBuff(ui4r top, ui4r left,
-	ui4r bottom, ui4r right)
+LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
+	uint16_t bottom, uint16_t right)
 {
 	/*
 		Oh god, clean this up.
@@ -529,8 +529,8 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 
 LOCALPROC CheckMouseState(void)
 {
-	si5b MotionX;
-	si5b MotionY;
+	int32_t MotionX;
+	int32_t MotionY;
 
 	/*
 		TODO:
@@ -562,14 +562,14 @@ LOCALPROC CheckMouseState(void)
 
 /* --- keyboard input --- */
 
-LOCALVAR ui3b KC2MKC[256];
+LOCALVAR uint8_t KC2MKC[256];
 
 /*
 	AHA!
 	GCC Was turning this into a macro of some sort which of course
 	broke horribly with libnds's keyboard having some negative values.
 */
-LOCALPROC AssignKeyToMKC(int UKey, int LKey, ui3r MKC)
+LOCALPROC AssignKeyToMKC(int UKey, int LKey, uint8_t MKC)
 {
 	if (UKey != NOKEY) {
 		KC2MKC[UKey] = MKC;
@@ -650,7 +650,7 @@ LOCALFUNC blnr KC2MKCInit(void)
 
 LOCALPROC DoKeyCode0(int i, blnr down)
 {
-	ui3r key = KC2MKC[i];
+	uint8_t key = KC2MKC[i];
 	if (MKC_None != key) {
 		fprintf(stderr, "%s() :: %c (%d) == %d\n",
 			__FUNCTION__, (char) i, key, down);
@@ -676,7 +676,7 @@ LOCALPROC DoKeyCode(int i, blnr down)
 LOCALVAR blnr DS_Keystate_Menu = falseblnr;
 LOCALVAR blnr DS_Keystate_Shift = falseblnr;
 
-LOCALPROC DS_HandleKey(si5b Key, blnr Down)
+LOCALPROC DS_HandleKey(int32_t Key, blnr Down)
 {
 	if (Key == NOKEY) {
 		return;
@@ -728,7 +728,7 @@ LOCALPROC DS_HandleKeyboard(void)
 
 /* --- time, date, location --- */
 
-LOCALVAR ui5b TrueEmulatedTime = 0;
+LOCALVAR uint32_t TrueEmulatedTime = 0;
 
 #include "DATE2SEC.h"
 
@@ -736,12 +736,12 @@ LOCALVAR ui5b TrueEmulatedTime = 0;
 /* #define TicksPerSecond  1000 */
 
 LOCALVAR blnr HaveTimeDelta = falseblnr;
-LOCALVAR ui5b TimeDelta;
+LOCALVAR uint32_t TimeDelta;
 
-LOCALVAR ui5b NewMacDateInSeconds;
+LOCALVAR uint32_t NewMacDateInSeconds;
 
-LOCALVAR ui5b LastTimeSec;
-LOCALVAR ui5b LastTimeUsec;
+LOCALVAR uint32_t LastTimeSec;
+LOCALVAR uint32_t LastTimeUsec;
 
 LOCALPROC GetCurrentTicks(void)
 {
@@ -764,22 +764,22 @@ LOCALPROC GetCurrentTicks(void)
 		TimeDelta = Date2MacSeconds(s->tm_sec, s->tm_min, s->tm_hour,
 			s->tm_mday, 1 + s->tm_mon, 1900 + s->tm_year) - t.tv_sec;
 #if 0 && AutoTimeZone /* how portable is this ? */
-		CurMacDelta = ((ui5b)(s->tm_gmtoff) & 0x00FFFFFF)
+		CurMacDelta = ((uint32_t)(s->tm_gmtoff) & 0x00FFFFFF)
 			| ((s->tm_isdst ? 0x80 : 0) << 24);
 #endif
 		HaveTimeDelta = trueblnr;
 	}
 
 	NewMacDateInSeconds = t.tv_sec + TimeDelta;
-	LastTimeSec = (ui5b)t.tv_sec;
-	LastTimeUsec = (ui5b)t.tv_usec;
+	LastTimeSec = (uint32_t)t.tv_sec;
+	LastTimeUsec = (uint32_t)t.tv_usec;
 }
 
 /* #define MyInvTimeStep 16626 */ /* TicksPerSecond / 60.14742 */
 #define MyInvTimeStep 17
 
-LOCALVAR ui5b NextTimeSec;
-LOCALVAR ui5b NextTimeUsec;
+LOCALVAR uint32_t NextTimeSec;
+LOCALVAR uint32_t NextTimeUsec;
 
 LOCALPROC IncrNextTime(void)
 {
@@ -803,15 +803,15 @@ LOCALPROC StartUpTimeAdjust(void)
 	InitNextTime();
 }
 
-LOCALFUNC si5b GetTimeDiff(void)
+LOCALFUNC int32_t GetTimeDiff(void)
 {
-	return ((si5b)(LastTimeSec - NextTimeSec)) * TicksPerSecond
-		+ ((si5b)(LastTimeUsec - NextTimeUsec));
+	return ((int32_t)(LastTimeSec - NextTimeSec)) * TicksPerSecond
+		+ ((int32_t)(LastTimeUsec - NextTimeUsec));
 }
 
 LOCALPROC UpdateTrueEmulatedTime(void)
 {
-	si5b TimeDiff;
+	int32_t TimeDiff;
 
 	GetCurrentTicks();
 
@@ -1027,7 +1027,7 @@ label_retry:
 	}
 
 	if (ExtraTimeNotOver()) {
-		si5b TimeDiff = GetTimeDiff();
+		int32_t TimeDiff = GetTimeDiff();
 		if (TimeDiff < 0) {
 			/*
 				FIXME:

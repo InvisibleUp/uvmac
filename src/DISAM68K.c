@@ -31,7 +31,7 @@
 
 #include "DISAM68K.h"
 
-LOCALVAR ui5r Disasm_pc;
+LOCALVAR uint32_t Disasm_pc;
 
 /*
 	don't use get_vm_byte/get_vm_word/get_vm_long
@@ -40,8 +40,8 @@ LOCALVAR ui5r Disasm_pc;
 */
 
 LOCALVAR ui3p Disasm_pcp;
-LOCALVAR ui5r Disasm_pc_blockmask;
-LOCALVAR ui3b Disasm_pcp_dummy[2] = {
+LOCALVAR uint32_t Disasm_pc_blockmask;
+LOCALVAR uint8_t Disasm_pcp_dummy[2] = {
 	0, 0
 };
 
@@ -63,10 +63,10 @@ LOCALPROC Disasm_Find_pcp(void)
 	}
 }
 
-LOCALFUNC ui4r Disasm_nextiword(void)
+LOCALFUNC uint16_t Disasm_nextiword(void)
 /* NOT sign extended */
 {
-	ui4r r = do_get_mem_word(Disasm_pcp);
+	uint16_t r = do_get_mem_word(Disasm_pcp);
 	Disasm_pcp += 2;
 	Disasm_pc += 2;
 	if (0 == (Disasm_pc_blockmask & Disasm_pc)) {
@@ -75,16 +75,16 @@ LOCALFUNC ui4r Disasm_nextiword(void)
 	return r;
 }
 
-LOCALINLINEFUNC ui3r Disasm_nextibyte(void)
+LOCALINLINEFUNC uint8_t Disasm_nextibyte(void)
 {
-	return (ui3b) Disasm_nextiword();
+	return (uint8_t) Disasm_nextiword();
 }
 
-LOCALFUNC ui5r Disasm_nextilong(void)
+LOCALFUNC uint32_t Disasm_nextilong(void)
 {
-	ui5r hi = Disasm_nextiword();
-	ui5r lo = Disasm_nextiword();
-	ui5r r = ((hi << 16) & 0xFFFF0000)
+	uint32_t hi = Disasm_nextiword();
+	uint32_t lo = Disasm_nextiword();
+	uint32_t r = ((hi << 16) & 0xFFFF0000)
 		| (lo & 0x0000FFFF);
 
 	return r;
@@ -99,9 +99,9 @@ LOCALPROC Disasm_setpc(CPTR newpc)
 	}
 }
 
-LOCALVAR ui5b Disasm_opcode;
+LOCALVAR uint32_t Disasm_opcode;
 
-LOCALVAR ui5b Disasm_opsize;
+LOCALVAR uint32_t Disasm_opsize;
 
 #define Disasm_b76 ((Disasm_opcode >> 6) & 3)
 #define Disasm_b8 ((Disasm_opcode >> 8) & 1)
@@ -126,7 +126,7 @@ LOCALPROC DisasmOpSizeFromb76(void)
 	}
 }
 
-LOCALPROC DisasmModeRegister(ui5b themode, ui5b thereg)
+LOCALPROC DisasmModeRegister(uint32_t themode, uint32_t thereg)
 {
 	switch (themode) {
 		case 0 :
@@ -179,8 +179,8 @@ LOCALPROC DisasmModeRegister(ui5b themode, ui5b thereg)
 					break;
 				case 2 :
 					{
-						ui5r s = Disasm_pc;
-						s += ui5r_FromSWord(Disasm_nextiword());
+						uint32_t s = Disasm_pc;
+						s += uint32_t_FromSWord(Disasm_nextiword());
 						dbglog_writeCStr("(");
 						dbglog_writeHex(s);
 						dbglog_writeCStr(")");
@@ -244,11 +244,11 @@ LOCALPROC DisasmI_xxxxxxxxssmmmrrr(char *s)
 	DisasmOpSizeFromb76();
 	dbglog_writeCStr(" #");
 	if (Disasm_opsize == 2) {
-		dbglog_writeHex(ui5r_FromSWord(Disasm_nextiword()));
+		dbglog_writeHex(uint32_t_FromSWord(Disasm_nextiword()));
 	} else if (Disasm_opsize < 2) {
-		dbglog_writeHex(ui5r_FromSByte(Disasm_nextibyte()));
+		dbglog_writeHex(uint32_t_FromSByte(Disasm_nextibyte()));
 	} else {
-		dbglog_writeHex(ui5r_FromSLong(Disasm_nextilong()));
+		dbglog_writeHex(uint32_t_FromSLong(Disasm_nextilong()));
 	}
 	dbglog_writeCStr(", ");
 	DisasmModeRegister(Disasm_mode, Disasm_reg);
@@ -265,7 +265,7 @@ LOCALPROC DisasmsAA_xxxxdddxssxxxrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALFUNC ui5r Disasm_octdat(ui5r x)
+LOCALFUNC uint32_t Disasm_octdat(uint32_t x)
 {
 	if (x == 0) {
 		return 8;
@@ -386,8 +386,8 @@ LOCALPROC DisasmCC(void)
 LOCALPROCUSEDONCE DisasmBcc(void)
 {
 	/* Bcc 0110ccccnnnnnnnn */
-	ui5b src = ((ui5b)Disasm_opcode) & 255;
-	ui5r s = Disasm_pc;
+	uint32_t src = ((uint32_t)Disasm_opcode) & 255;
+	uint32_t s = Disasm_pc;
 
 	if (0 == ((Disasm_opcode >> 8) & 15)) {
 		DisasmStartOne("BRA");
@@ -398,17 +398,17 @@ LOCALPROCUSEDONCE DisasmBcc(void)
 	dbglog_writeCStr(" ");
 
 	if (src == 0) {
-		s += ui5r_FromSWord(Disasm_nextiword());
+		s += uint32_t_FromSWord(Disasm_nextiword());
 	} else
 #if Use68020
 	if (src == 255) {
-		s += ui5r_FromSLong(Disasm_nextilong());
+		s += uint32_t_FromSLong(Disasm_nextilong());
 		/* ReportAbnormal("long branch in DoCode6"); */
 		/* Used by various Apps */
 	} else
 #endif
 	{
-		s += ui5r_FromSByte(src);
+		s += uint32_t_FromSByte(src);
 	}
 	dbglog_writeHex(s);
 	dbglog_writeReturn();
@@ -418,7 +418,7 @@ LOCALPROCUSEDONCE DisasmDBcc(void)
 {
 	/* DBcc 0101cccc11001ddd */
 
-	ui5r s = Disasm_pc;
+	uint32_t s = Disasm_pc;
 
 	DisasmStartOne("DB");
 	DisasmCC();
@@ -427,7 +427,7 @@ LOCALPROCUSEDONCE DisasmDBcc(void)
 	dbglog_writeHex(Disasm_reg);
 	dbglog_writeCStr(", ");
 
-	s += (si5b)(si4b)Disasm_nextiword();
+	s += (int32_t)(int16_t)Disasm_nextiword();
 	dbglog_writeHex(s);
 	dbglog_writeReturn();
 }
@@ -488,7 +488,7 @@ LOCALPROCUSEDONCE DisasmMoveQ(void)
 {
 	/* MoveQ 0111ddd0nnnnnnnn */
 	DisasmStartOne("MOVEQ #");
-	dbglog_writeHex(ui5r_FromSByte(Disasm_opcode));
+	dbglog_writeHex(uint32_t_FromSByte(Disasm_opcode));
 	dbglog_writeCStr(", D");
 	dbglog_writeHex(Disasm_rg9);
 	dbglog_writeReturn();
@@ -563,22 +563,22 @@ LOCALPROCUSEDONCE DisasmALine(void)
 
 LOCALPROCUSEDONCE DisasmBsr(void)
 {
-	ui5b src = ((ui5b)Disasm_opcode) & 255;
-	ui5r s = Disasm_pc;
+	uint32_t src = ((uint32_t)Disasm_opcode) & 255;
+	uint32_t s = Disasm_pc;
 
 	DisasmStartOne("BSR ");
 	if (src == 0) {
-		s += (si5b)(si4b)Disasm_nextiword();
+		s += (int32_t)(int16_t)Disasm_nextiword();
 	} else
 #if Use68020
 	if (src == 255) {
-		s += (si5b)Disasm_nextilong();
+		s += (int32_t)Disasm_nextilong();
 		/* ReportAbnormal("long branch in DoCode6"); */
 		/* Used by various Apps */
 	} else
 #endif
 	{
-		s += (si5b)(si3b)src;
+		s += (int32_t)(int8_t)src;
 	}
 	dbglog_writeHex(s);
 	dbglog_writeReturn();
@@ -602,8 +602,8 @@ LOCALPROCUSEDONCE DisasmLinkA6(void)
 LOCALPROCUSEDONCE DisasmMOVEMRmM(void)
 {
 	/* MOVEM reg to mem 0100100011s100rrr */
-	si4b z;
-	ui5r regmask;
+	int16_t z;
+	uint32_t regmask;
 
 	DisasmStartOne("MOVEM");
 	if (Disasm_b76 == 2) {
@@ -634,8 +634,8 @@ LOCALPROCUSEDONCE DisasmMOVEMRmM(void)
 LOCALPROCUSEDONCE DisasmMOVEMApR(void)
 {
 	/* MOVEM mem to reg 0100110011s011rrr */
-	si4b z;
-	ui5r regmask;
+	int16_t z;
+	uint32_t regmask;
 
 	regmask = Disasm_nextiword();
 
@@ -752,7 +752,7 @@ LOCALPROCUSEDONCE DisasmSubXm(void)
 	DisasmAAs_xxxxdddxssxxxrrr("SUBX");
 }
 
-LOCALPROC DisasmBinOp1(ui5r x)
+LOCALPROC DisasmBinOp1(uint32_t x)
 {
 	if (! Disasm_b8) {
 		switch (x) {
@@ -877,7 +877,7 @@ LOCALPROCUSEDONCE DisasmBitOpND(void)
 	DisasmBinBitOp1();
 	Disasm_opsize = 4;
 	dbglog_writeCStr(" #");
-	dbglog_writeHex(ui5r_FromSByte(Disasm_nextibyte()));
+	dbglog_writeHex(uint32_t_FromSByte(Disasm_nextibyte()));
 	dbglog_writeCStr(", ");
 	DisasmModeRegister(0, Disasm_reg);
 	dbglog_writeReturn();
@@ -889,7 +889,7 @@ LOCALPROCUSEDONCE DisasmBitOpNM(void)
 	DisasmBinBitOp1();
 	Disasm_opsize = 1;
 	dbglog_writeCStr(" #");
-	dbglog_writeHex(ui5r_FromSByte(Disasm_nextibyte()));
+	dbglog_writeHex(uint32_t_FromSByte(Disasm_nextibyte()));
 	dbglog_writeCStr(", ");
 	DisasmModeRegister(Disasm_mode, Disasm_rg9);
 	dbglog_writeReturn();
@@ -1124,7 +1124,7 @@ LOCALPROC DisasmBinOpStatusCCR(void)
 	}
 	DisasmOpSizeFromb76();
 	dbglog_writeCStr(" #");
-	dbglog_writeHex(ui5r_FromSWord(Disasm_nextiword()));
+	dbglog_writeHex(uint32_t_FromSWord(Disasm_nextiword()));
 	if (Disasm_b76 != 0) {
 		dbglog_writeCStr(", SR");
 	} else {
@@ -1133,10 +1133,10 @@ LOCALPROC DisasmBinOpStatusCCR(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROC disasmreglist(si4b direction, ui5b m1, ui5b r1)
+LOCALPROC disasmreglist(int16_t direction, uint32_t m1, uint32_t r1)
 {
-	si4b z;
-	ui5r regmask;
+	int16_t z;
+	uint32_t regmask;
 
 	DisasmStartOne("MOVEM");
 
@@ -1188,7 +1188,7 @@ LOCALPROCUSEDONCE DisasmMOVEMmr(void)
 	disasmreglist(1, Disasm_mode, Disasm_reg);
 }
 
-LOCALPROC DisasmByteBinOp(char *s, ui5b m1, ui5b r1, ui5b m2, ui5b r2)
+LOCALPROC DisasmByteBinOp(char *s, uint32_t m1, uint32_t r1, uint32_t m2, uint32_t r2)
 {
 	DisasmStartOne(s);
 	dbglog_writeCStr(" ");
@@ -1460,9 +1460,9 @@ LOCALPROCUSEDONCE DisasmDivL(void)
 	DisasmStartOne("DIV");
 
 	{
-		ui4b extra = Disasm_nextiword();
-		ui5b rDr = extra & 7;
-		ui5b rDq = (extra >> 12) & 7;
+		uint16_t extra = Disasm_nextiword();
+		uint32_t rDr = extra & 7;
+		uint32_t rDq = (extra >> 12) & 7;
 
 		if (extra & 0x0800) {
 			dbglog_writeCStr("S");
@@ -1501,9 +1501,9 @@ LOCALPROCUSEDONCE DisasmMulL(void)
 	DisasmStartOne("MUL");
 
 	{
-		ui4b extra = Disasm_nextiword();
-		ui5b rhi = extra & 7;
-		ui5b rlo = (extra >> 12) & 7;
+		uint16_t extra = Disasm_nextiword();
+		uint32_t rhi = extra & 7;
+		uint32_t rlo = (extra >> 12) & 7;
 
 		if (extra & 0x0800) {
 			dbglog_writeCStr("S");
@@ -1535,13 +1535,13 @@ LOCALPROCUSEDONCE DisasmRtd(void)
 {
 	/* Rtd 0100111001110100 */
 	DisasmStartOne("RTD #");
-	dbglog_writeHex((si5b)(si4b)Disasm_nextiword());
+	dbglog_writeHex((int32_t)(int16_t)Disasm_nextiword());
 	dbglog_writeReturn();
 }
 #endif
 
 #if Use68020
-LOCALPROC DisasmControlReg(ui4r i)
+LOCALPROC DisasmControlReg(uint16_t i)
 {
 	switch (i) {
 		case 0x0000:
@@ -1582,7 +1582,7 @@ LOCALPROCUSEDONCE DisasmMoveC(void)
 	DisasmStartOne("MOVEC ");
 
 	{
-		ui4b src = Disasm_nextiword();
+		uint16_t src = Disasm_nextiword();
 		int regno = (src >> 12) & 0x0F;
 		switch (Disasm_reg) {
 			case 2:
@@ -2442,7 +2442,7 @@ LOCALPROCUSEDONCE DisasmCode5(void)
 
 LOCALPROCUSEDONCE DisasmCode6(void)
 {
-	ui5b cond = (Disasm_opcode >> 8) & 15;
+	uint32_t cond = (Disasm_opcode >> 8) & 15;
 
 	if (cond == 1) {
 		/* Bsr 01100001nnnnnnnn */
@@ -2833,13 +2833,13 @@ LOCALPROC m68k_Disasm_one(void)
 #define Ln2SavedPCs 4
 #define NumSavedPCs (1 << Ln2SavedPCs)
 #define SavedPCsMask (NumSavedPCs - 1)
-LOCALVAR ui5r SavedPCs[NumSavedPCs];
-LOCALVAR ui5r SavedPCsIn = 0;
-LOCALVAR ui5r SavedPCsOut = 0;
+LOCALVAR uint32_t SavedPCs[NumSavedPCs];
+LOCALVAR uint32_t SavedPCsIn = 0;
+LOCALVAR uint32_t SavedPCsOut = 0;
 
 #define DisasmIncludeCycles 0
 
-LOCALPROCUSEDONCE DisasmOneAndBack(ui5r pc)
+LOCALPROCUSEDONCE DisasmOneAndBack(uint32_t pc)
 {
 #if DisasmIncludeCycles
 	dbglog_writeHex(GetCuriCount());
@@ -2853,17 +2853,17 @@ LOCALPROCUSEDONCE DisasmOneAndBack(ui5r pc)
 
 LOCALPROCUSEDONCE DisasmSavedPCs(void)
 {
-	ui5r n = SavedPCsIn - SavedPCsOut;
+	uint32_t n = SavedPCsIn - SavedPCsOut;
 
 	if (n != 0) {
-		ui5r pc;
+		uint32_t pc;
 #if DisasmIncludeCycles
-		ui5r i;
+		uint32_t i;
 #endif
 #if 0
 		blnr Skipped = falseblnr;
 #endif
-		ui5r j = SavedPCsOut;
+		uint32_t j = SavedPCsOut;
 
 		SavedPCsOut = SavedPCsIn;
 			/*
@@ -2901,7 +2901,7 @@ LOCALPROCUSEDONCE DisasmSavedPCs(void)
 
 #if 0
 		if (Skipped) {
-			si4b z;
+			int16_t z;
 
 			for (z = 0; z < 16; ++z) {
 				if (z >= 8) {
@@ -2920,9 +2920,9 @@ LOCALPROCUSEDONCE DisasmSavedPCs(void)
 	}
 }
 
-LOCALVAR ui5r DisasmCounter = 0;
+LOCALVAR uint32_t DisasmCounter = 0;
 
-GLOBALPROC DisasmOneOrSave(ui5r pc)
+GLOBALPROC DisasmOneOrSave(uint32_t pc)
 {
 	if (0 != DisasmCounter) {
 		DisasmOneAndBack(pc);

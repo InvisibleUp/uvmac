@@ -35,23 +35,23 @@
 
 
 #if WantAbnormalReports
-EXPORTOSGLUPROC WarnMsgAbnormalID(ui4r id);
+EXPORTOSGLUPROC WarnMsgAbnormalID(uint16_t id);
 #endif
 
 #if dbglog_HAVE
 EXPORTOSGLUPROC dbglog_writeCStr(char *s);
 EXPORTOSGLUPROC dbglog_writeReturn(void);
-EXPORTOSGLUPROC dbglog_writeHex(ui5r x);
-EXPORTOSGLUPROC dbglog_writeNum(ui5r x);
-EXPORTOSGLUPROC dbglog_writeMacChar(ui3r x);
+EXPORTOSGLUPROC dbglog_writeHex(uint32_t x);
+EXPORTOSGLUPROC dbglog_writeNum(uint32_t x);
+EXPORTOSGLUPROC dbglog_writeMacChar(uint8_t x);
 EXPORTOSGLUPROC dbglog_writeln(char *s);
 EXPORTOSGLUPROC dbglog_writelnNum(char *s, simr v);
 #endif
 
-EXPORTOSGLUPROC ReserveAllocOneBlock(ui3p *p, uimr n, ui3r align,
+EXPORTOSGLUPROC ReserveAllocOneBlock(ui3p *p, uimr n, uint8_t align,
 	blnr FillOnes);
 
-EXPORTOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, si5b byteCount);
+EXPORTOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount);
 
 
 EXPORTVAR(ui3p, ROM)
@@ -61,76 +61,76 @@ EXPORTVAR(ui3p, ROM)
 	(passed back to the emulated 68k code).
 */
 
-#define tMacErr ui4r
+#define tMacErr uint16_t
 
 #define mnvm_noErr      ((tMacErr) 0x0000)
-	/* (ui4b)    0 - No Error */
+	/* (uint16_t)    0 - No Error */
 #define mnvm_miscErr    ((tMacErr) 0xFFFF)
-	/* (ui4b) -  1 - Should probably replace these */
+	/* (uint16_t) -  1 - Should probably replace these */
 #define mnvm_controlErr ((tMacErr) 0xFFEF)
-	/* (ui4b) - 17 - I/O System Errors */
+	/* (uint16_t) - 17 - I/O System Errors */
 #define mnvm_statusErr  ((tMacErr) 0xFFEE)
-	/* (ui4b) - 18 - Driver can't respond to Status call */
+	/* (uint16_t) - 18 - Driver can't respond to Status call */
 #define mnvm_closErr    ((tMacErr) 0xFFE8)
-	/* (ui4b) - 24 - I/O System Errors */
+	/* (uint16_t) - 24 - I/O System Errors */
 #define mnvm_eofErr     ((tMacErr) 0xFFD9)
-	/* (ui4b) - 39 - End of file */
+	/* (uint16_t) - 39 - End of file */
 #define mnvm_tmfoErr    ((tMacErr) 0xFFD6)
-	/* (ui4b) - 42 - too many files open */
+	/* (uint16_t) - 42 - too many files open */
 #define mnvm_fnfErr     ((tMacErr) 0xFFD5)
-	/* (ui4b) - 43 - File not found */
+	/* (uint16_t) - 43 - File not found */
 #define mnvm_wPrErr     ((tMacErr) 0xFFD4)
-	/* (ui4b) - 44 - diskette is write protected */
+	/* (uint16_t) - 44 - diskette is write protected */
 #define mnvm_vLckdErr   ((tMacErr) 0xFFD2)
-	/* (ui4b) - 46 - volume is locked */
+	/* (uint16_t) - 46 - volume is locked */
 #define mnvm_dupFNErr   ((tMacErr) 0xFFD0)
-	/* (ui4b) - 48 - duplicate filename */
+	/* (uint16_t) - 48 - duplicate filename */
 #define mnvm_opWrErr    ((tMacErr) 0xFFCF)
-	/* (ui4b) - 49 - file already open with with write permission */
+	/* (uint16_t) - 49 - file already open with with write permission */
 #define mnvm_paramErr   ((tMacErr) 0xFFCE)
-	/* (ui4b) - 50 - error in parameter list */
+	/* (uint16_t) - 50 - error in parameter list */
 #define mnvm_permErr    ((tMacErr) 0xFFCA)
-	/* (ui4b) - 54 - permissions error (on file open) */
+	/* (uint16_t) - 54 - permissions error (on file open) */
 #define mnvm_nsDrvErr   ((tMacErr) 0xFFC8)
-	/* (ui4b) - 56 - No Such Drive */
+	/* (uint16_t) - 56 - No Such Drive */
 #define mnvm_wrPermErr  ((tMacErr) 0xFFC3)
-	/* (ui4b) - 61 - write permissions error */
+	/* (uint16_t) - 61 - write permissions error */
 #define mnvm_offLinErr  ((tMacErr) 0xFFBF)
-	/* (ui4b) - 65 - off-line drive */
+	/* (uint16_t) - 65 - off-line drive */
 #define mnvm_dirNFErr  ((tMacErr) 0xFF88)
-	/* (ui4b) - 120 - directory not found */
+	/* (uint16_t) - 120 - directory not found */
 #define mnvm_afpAccessDenied  ((tMacErr) 0xEC78)
-	/* (ui4b) - 5000 - Insufficient access privileges for operation */
+	/* (uint16_t) - 5000 - Insufficient access privileges for operation */
 
 #if IncludePbufs
 
-#define tPbuf ui4r
+#define tPbuf uint16_t
 
 #define NotAPbuf ((tPbuf)0xFFFF)
 
 EXPORTOSGLUFUNC tMacErr CheckPbuf(tPbuf Pbuf_No);
-EXPORTOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, ui5r *Count);
+EXPORTOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, uint32_t *Count);
 
-EXPORTOSGLUFUNC tMacErr PbufNew(ui5b count, tPbuf *r);
+EXPORTOSGLUFUNC tMacErr PbufNew(uint32_t count, tPbuf *r);
 EXPORTOSGLUPROC PbufDispose(tPbuf i);
 EXPORTOSGLUPROC PbufTransfer(ui3p Buffer,
-	tPbuf i, ui5r offset, ui5r count, blnr IsWrite);
+	tPbuf i, uint32_t offset, uint32_t count, blnr IsWrite);
 
 #endif
 
-#define tDrive ui4r
+#define tDrive uint16_t
 
-EXPORTVAR(ui5b, vSonyWritableMask)
-EXPORTVAR(ui5b, vSonyInsertedMask)
+EXPORTVAR(uint32_t, vSonyWritableMask)
+EXPORTVAR(uint32_t, vSonyInsertedMask)
 
 #define vSonyIsInserted(Drive_No) \
-	((vSonyInsertedMask & ((ui5b)1 << (Drive_No))) != 0)
+	((vSonyInsertedMask & ((uint32_t)1 << (Drive_No))) != 0)
 
 EXPORTOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
-	tDrive Drive_No, ui5r Sony_Start, ui5r Sony_Count,
-	ui5r *Sony_ActCount);
+	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
+	uint32_t *Sony_ActCount);
 EXPORTOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No);
-EXPORTOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, ui5r *Sony_Count);
+EXPORTOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count);
 
 EXPORTOSGLUFUNC blnr AnyDiskInserted(void);
 EXPORTOSGLUPROC DiskRevokeWritable(tDrive Drive_No);
@@ -141,7 +141,7 @@ EXPORTVAR(blnr, vSonyRawMode)
 
 #if IncludeSonyNew
 EXPORTVAR(blnr, vSonyNewDiskWanted)
-EXPORTVAR(ui5b, vSonyNewDiskSize)
+EXPORTVAR(uint32_t, vSonyNewDiskSize)
 EXPORTOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No);
 #endif
 
@@ -158,15 +158,15 @@ EXPORTOSGLUFUNC tMacErr HTCEexport(tPbuf i);
 EXPORTOSGLUFUNC tMacErr HTCEimport(tPbuf *r);
 #endif
 
-EXPORTVAR(ui5b, OnTrueTime)
+EXPORTVAR(uint32_t, OnTrueTime)
 
-EXPORTVAR(ui5b, CurMacDateInSeconds)
+EXPORTVAR(uint32_t, CurMacDateInSeconds)
 #if AutoLocation
-EXPORTVAR(ui5b, CurMacLatitude)
-EXPORTVAR(ui5b, CurMacLongitude)
+EXPORTVAR(uint32_t, CurMacLatitude)
+EXPORTVAR(uint32_t, CurMacLongitude)
 #endif
 #if AutoTimeZone
-EXPORTVAR(ui5b, CurMacDelta)
+EXPORTVAR(uint32_t, CurMacDelta)
 	/* (dlsDelta << 24) | (gmtDelta & 0x00FFFFFF) */
 #endif
 
@@ -193,13 +193,13 @@ EXPORTVAR(blnr, ColorMappingChanged)
 #if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
 #define CLUT_size (1 << (1 << vMacScreenDepth))
 
-EXPORTVAR(ui4r, CLUT_reds[CLUT_size])
-EXPORTVAR(ui4r, CLUT_greens[CLUT_size])
-EXPORTVAR(ui4r, CLUT_blues[CLUT_size])
+EXPORTVAR(uint16_t, CLUT_reds[CLUT_size])
+EXPORTVAR(uint16_t, CLUT_greens[CLUT_size])
+EXPORTVAR(uint16_t, CLUT_blues[CLUT_size])
 #endif
 
 EXPORTVAR(blnr, EmVideoDisable)
-EXPORTVAR(si3b, EmLagTime)
+EXPORTVAR(int8_t, EmLagTime)
 
 EXPORTOSGLUPROC Screen_OutputFrame(ui3p screencurrentbuff);
 EXPORTOSGLUPROC DoneWithDrawingForTick(void);
@@ -212,19 +212,19 @@ EXPORTVAR(blnr, WantMacReset)
 
 EXPORTOSGLUFUNC blnr ExtraTimeNotOver(void);
 
-EXPORTVAR(ui3b, SpeedValue)
+EXPORTVAR(uint8_t, SpeedValue)
 
 #if EnableAutoSlow
 EXPORTVAR(blnr, WantNotAutoSlow)
 #endif
 
 /* where emulated machine thinks mouse is */
-EXPORTVAR(ui4b, CurMouseV)
-EXPORTVAR(ui4b, CurMouseH)
+EXPORTVAR(uint16_t, CurMouseV)
+EXPORTVAR(uint16_t, CurMouseH)
 
 #if EnableAutoSlow
-EXPORTVAR(ui5r, QuietTime)
-EXPORTVAR(ui5r, QuietSubTicks)
+EXPORTVAR(uint32_t, QuietTime)
+EXPORTVAR(uint32_t, QuietSubTicks)
 
 #define QuietEnds() \
 { \
@@ -236,13 +236,13 @@ EXPORTVAR(ui5r, QuietSubTicks)
 #endif
 
 #if 3 == kLn2SoundSampSz
-#define trSoundSamp ui3r
-#define tbSoundSamp ui3b
+#define trSoundSamp uint8_t
+#define tbSoundSamp uint8_t
 #define tpSoundSamp ui3p
 #define kCenterSound 0x80
 #elif 4 == kLn2SoundSampSz
-#define trSoundSamp ui4r
-#define tbSoundSamp ui4b
+#define trSoundSamp uint16_t
+#define tbSoundSamp uint16_t
 #define tpSoundSamp ui4p
 #define kCenterSound 0x8000
 #else
@@ -251,8 +251,8 @@ EXPORTVAR(ui5r, QuietSubTicks)
 
 #if MySoundEnabled
 
-EXPORTOSGLUFUNC tpSoundSamp MySound_BeginWrite(ui4r n, ui4r *actL);
-EXPORTOSGLUPROC MySound_EndWrite(ui4r actL);
+EXPORTOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL);
+EXPORTOSGLUPROC MySound_EndWrite(uint16_t actL);
 
 /* 370 samples per tick = 22,254.54 per second */
 #endif
@@ -261,12 +261,12 @@ EXPORTOSGLUPROC MySound_EndWrite(ui4r actL);
 
 #define LT_TxBfMxSz 1024
 EXPORTVAR(ui3p, LT_TxBuffer)
-EXPORTVAR(ui4r, LT_TxBuffSz)
+EXPORTVAR(uint16_t, LT_TxBuffSz)
 
 EXPORTOSGLUPROC LT_TransmitPacket(void);
 
 EXPORTVAR(ui3p, LT_RxBuffer)
-EXPORTVAR(ui5r, LT_RxBuffSz)
+EXPORTVAR(uint32_t, LT_RxBuffSz)
 
 EXPORTOSGLUPROC LT_ReceivePacket(void);
 
@@ -281,16 +281,16 @@ EXPORTOSGLUPROC WaitForNextTick(void);
 
 struct MyEvtQEl {
 	/* expected size : 8 bytes */
-	ui3b kind;
-	ui3b pad[3];
+	uint8_t kind;
+	uint8_t pad[3];
 	union {
 		struct {
-			ui3b down;
-			ui3b key;
+			uint8_t down;
+			uint8_t key;
 		} press;
 		struct {
-			ui4b h;
-			ui4b v;
+			uint16_t h;
+			uint16_t v;
 		} pos;
 	} u;
 };

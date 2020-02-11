@@ -22,4 +22,4 @@
 
 EXPORTPROC IWM_Reset(void);
 
-EXPORTFUNC ui5b IWM_Access(ui5b Data, blnr WriteMem, CPTR addr);
+EXPORTFUNC uint32_t IWM_Access(uint32_t Data, blnr WriteMem, CPTR addr);

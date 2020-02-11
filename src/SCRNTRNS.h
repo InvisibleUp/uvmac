@@ -58,27 +58,27 @@
 
 /* now define the procedure */
 
-LOCALPROC ScrnTrns_DoTrans(si4b top, si4b left,
-	si4b bottom, si4b right)
+LOCALPROC ScrnTrns_DoTrans(int16_t top, int16_t left,
+	int16_t bottom, int16_t right)
 {
 	int i;
 	int j;
-	ui5b t0;
-	ui5b t1;
-	ui4r jn = right - left;
-	ui4r SrcSkip = vMacScreenByteWidth
+	uint32_t t0;
+	uint32_t t1;
+	uint16_t jn = right - left;
+	uint16_t SrcSkip = vMacScreenByteWidth
 		- (jn << (ScrnTrns_SrcDepth - 3));
-	ui3b *pSrc = ((ui3b *)ScrnTrns_Src)
+	uint8_t *pSrc = ((uint8_t *)ScrnTrns_Src)
 		+ (left << (ScrnTrns_SrcDepth - 3))
-		+ vMacScreenByteWidth * (ui5r)top;
-	ui5b *pDst = ((ui5b *)ScrnTrns_Dst)
+		+ vMacScreenByteWidth * (uint32_t)top;
+	uint32_t *pDst = ((uint32_t *)ScrnTrns_Dst)
 		+ left * ScrnTrns_Scale
-		+ (ui5r)vMacScreenWidth * ScrnTrns_Scale * ScrnTrns_Scale * top;
-	ui4r DstSkip = (vMacScreenWidth - jn) * ScrnTrns_Scale;
+		+ (uint32_t)vMacScreenWidth * ScrnTrns_Scale * ScrnTrns_Scale * top;
+	uint16_t DstSkip = (vMacScreenWidth - jn) * ScrnTrns_Scale;
 #if ScrnTrns_Scale > 1
 	int k;
-	ui5b *p3;
-	ui5b *p4;
+	uint32_t *p3;
+	uint32_t *p4;
 #endif
 
 	for (i = bottom - top; --i >= 0; ) {

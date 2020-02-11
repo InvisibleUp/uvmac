@@ -1259,8 +1259,8 @@ label_retry:
 				My_snd_strerror(avail));
 		} else {
 			tpSoundSamp NextPlayPtr;
-			ui4b PlayNowSize = 0;
-			ui4b MaskedFillOffset = ThePlayOffset & kOneBuffMask;
+			uint16_t PlayNowSize = 0;
+			uint16_t MaskedFillOffset = ThePlayOffset & kOneBuffMask;
 
 #if RaspbianWorkAround
 			if ((avail > buffer_size) || (avail < 0)) {
@@ -1279,7 +1279,7 @@ label_retry:
 
 			if (! MySound_StartPend) {
 				My_snd_pcm_uframes_t used = buffer_size - avail;
-				ui4b TotPendBuffs = used >> kLnOneBuffLen;
+				uint16_t TotPendBuffs = used >> kLnOneBuffLen;
 
 				if (TotPendBuffs < MinFilledSoundBuffs) {
 					MinFilledSoundBuffs = TotPendBuffs;
@@ -1597,7 +1597,7 @@ LOCALPROC MySound_UnInit(void)
 	MyCloseAlsaLib();
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(ui4r actL)
+GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
 {
 	if (MySound_EndWrite0(actL)) {
 		ConvertSoundBlockToNative(TheSoundBuffer

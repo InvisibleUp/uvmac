@@ -13,54 +13,13 @@
 #error "source is configured for 64 bit compiler"
 #endif
 
+#include <stdint.h>
+
 #define MayInline inline __attribute__((always_inline))
 #define MayNotInline __attribute__((noinline))
 #define SmallGlobals 0
 #define cIncludeUnused 0
 #define UnusedParam(p) (void) p
-
-/* --- integer types ---- */
-
-typedef unsigned char ui3b;
-#define HaveRealui3b 1
-
-typedef signed char si3b;
-#define HaveRealsi3b 1
-
-typedef unsigned short ui4b;
-#define HaveRealui4b 1
-
-typedef short si4b;
-#define HaveRealsi4b 1
-
-typedef unsigned int ui5b;
-#define HaveRealui5b 1
-
-typedef int si5b;
-#define HaveRealsi5b 1
-
-#define HaveRealui6b 0
-#define HaveRealsi6b 0
-
-/* --- integer representation types ---- */
-
-typedef ui3b ui3r;
-#define ui3beqr 1
-
-typedef si3b si3r;
-#define si3beqr 1
-
-typedef ui4b ui4r;
-#define ui4beqr 1
-
-typedef si4b si4r;
-#define si4beqr 1
-
-typedef ui5b ui5r;
-#define ui5beqr 1
-
-typedef si5b si5r;
-#define si5beqr 1
 
 /* capabilities provided by platform specific code */
 

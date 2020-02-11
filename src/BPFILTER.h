@@ -38,7 +38,7 @@ static struct bpf_insn insns[] =
 GLOBALVAR ui3p LT_TxBuffer = NULL;
 
 /* Transmit state */
-GLOBALVAR ui4r LT_TxBuffSz = 0;
+GLOBALVAR uint16_t LT_TxBuffSz = 0;
 
 /*
 	Transmit buffer that is reused from tx packet to tx packet.
@@ -61,7 +61,7 @@ static unsigned char tx_buffer[20 + LT_TxBfMxSz] =
 /* Receive state */
 GLOBALVAR ui3p LT_RxBuffer = NULL;
 	/* When data pending, this is used */
-GLOBALVAR ui5r LT_RxBuffSz = 0;
+GLOBALVAR uint32_t LT_RxBuffSz = 0;
 	/* When data pending, this is used */
 
 /* Macro used by only the get_sockaddrs function for readability. */

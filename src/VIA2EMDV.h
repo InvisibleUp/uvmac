@@ -23,7 +23,7 @@
 EXPORTPROC VIA2_Zap(void);
 EXPORTPROC VIA2_Reset(void);
 
-EXPORTFUNC ui5b VIA2_Access(ui5b Data, blnr WriteMem, CPTR addr);
+EXPORTFUNC uint32_t VIA2_Access(uint32_t Data, blnr WriteMem, CPTR addr);
 
 EXPORTPROC VIA2_ExtraTimeBegin(void);
 EXPORTPROC VIA2_ExtraTimeEnd(void);
@@ -42,7 +42,7 @@ EXPORTPROC VIA2_iCB2_PulseNtfy(void);
 EXPORTPROC VIA2_DoTimer1Check(void);
 EXPORTPROC VIA2_DoTimer2Check(void);
 
-EXPORTFUNC ui4b VIA2_GetT1InvertTime(void);
+EXPORTFUNC uint16_t VIA2_GetT1InvertTime(void);
 
-EXPORTPROC VIA2_ShiftInData(ui3b v);
-EXPORTFUNC ui3b VIA2_ShiftOutData(void);
+EXPORTPROC VIA2_ShiftInData(uint8_t v);
+EXPORTFUNC uint8_t VIA2_ShiftOutData(void);

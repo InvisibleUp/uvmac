@@ -79,7 +79,7 @@ GLOBALPROC Mouse_Update(void)
 #endif
 #endif
 			if (MyEvtQElKindMousePos == p->kind) {
-				ui5r NewMouse = (p->u.pos.v << 16) | p->u.pos.h;
+				uint32_t NewMouse = (p->u.pos.v << 16) | p->u.pos.h;
 
 				if (get_ram_long(0x0828) != NewMouse) {
 					put_ram_long(0x0828, NewMouse);

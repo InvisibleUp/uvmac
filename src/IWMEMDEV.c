@@ -71,14 +71,14 @@
 
 typedef struct
 {
-	ui3b DataIn;    /* Read Data Register */
-	ui3b Handshake; /* Read Handshake Register */
-	ui3b Status;    /* Read Status Register */
-	ui3b Mode;
+	uint8_t DataIn;    /* Read Data Register */
+	uint8_t Handshake; /* Read Handshake Register */
+	uint8_t Status;    /* Read Status Register */
+	uint8_t Mode;
 		/* Drive Off : Write Mode Register */
 		/* Drive On  : Write Data Register */
-	ui3b DataOut;   /* Write Data Register */
-	ui3b Lines;     /* Used to Access Disk Drive Registers */
+	uint8_t DataOut;   /* Write Data Register */
+	uint8_t Lines;     /* Used to Access Disk Drive Registers */
 } IWM_Ty;
 
 IWM_Ty IWM;
@@ -91,7 +91,7 @@ GLOBALPROC IWM_Reset(void)
 
 typedef enum {On, Off} Mode_Ty;
 
-LOCALPROC IWM_Set_Lines(ui3b line, Mode_Ty the_mode)
+LOCALPROC IWM_Set_Lines(uint8_t line, Mode_Ty the_mode)
 {
 	if (the_mode == Off) {
 		IWM.Lines &= (0xFF - line);
@@ -100,7 +100,7 @@ LOCALPROC IWM_Set_Lines(ui3b line, Mode_Ty the_mode)
 	}
 }
 
-LOCALFUNC ui3b IWM_Read_Reg(void)
+LOCALFUNC uint8_t IWM_Read_Reg(void)
 {
 	switch ((IWM.Lines & (kq6 + kq7)) >> 6) {
 		case 0 :
@@ -138,7 +138,7 @@ LOCALFUNC ui3b IWM_Read_Reg(void)
 	}
 }
 
-LOCALPROC IWM_Write_Reg(ui3b in)
+LOCALPROC IWM_Write_Reg(uint8_t in)
 {
 	if (((IWM.Lines & kmtr) >> 4) == 0) {
 #ifdef _IWM_Debug
@@ -149,7 +149,7 @@ LOCALPROC IWM_Write_Reg(ui3b in)
 	}
 }
 
-GLOBALFUNC ui5b IWM_Access(ui5b Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t IWM_Access(uint32_t Data, blnr WriteMem, CPTR addr)
 {
 	switch (addr) {
 		case kph0L :

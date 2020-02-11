@@ -62,34 +62,34 @@ IMPORTPROC Sony_SetQuitOnEject(void);
 
 IMPORTPROC m68k_IPLchangeNtfy(void);
 IMPORTPROC MINEM68K_Init(
-	ui3b *fIPL);
+	uint8_t *fIPL);
 
-IMPORTFUNC ui5b GetCyclesRemaining(void);
-IMPORTPROC SetCyclesRemaining(ui5b n);
+IMPORTFUNC uint32_t GetCyclesRemaining(void);
+IMPORTPROC SetCyclesRemaining(uint32_t n);
 
 IMPORTPROC SetHeadATTel(ATTep p);
 IMPORTFUNC ATTep FindATTel(CPTR addr);
 
-IMPORTFUNC ui5b SCSI_Access(ui5b Data, blnr WriteMem, CPTR addr);
-IMPORTFUNC ui5b SCC_Access(ui5b Data, blnr WriteMem, CPTR addr);
-IMPORTFUNC ui5b IWM_Access(ui5b Data, blnr WriteMem, CPTR addr);
-IMPORTFUNC ui5b VIA1_Access(ui5b Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t SCSI_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t SCC_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t IWM_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t VIA1_Access(uint32_t Data, blnr WriteMem, CPTR addr);
 #if EmVIA2
-IMPORTFUNC ui5b VIA2_Access(ui5b Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t VIA2_Access(uint32_t Data, blnr WriteMem, CPTR addr);
 #endif
 #if EmASC
-IMPORTFUNC ui5b ASC_Access(ui5b Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t ASC_Access(uint32_t Data, blnr WriteMem, CPTR addr);
 #endif
 
-IMPORTFUNC ui3r get_vm_byte(CPTR addr);
-IMPORTFUNC ui4r get_vm_word(CPTR addr);
-IMPORTFUNC ui5r get_vm_long(CPTR addr);
+IMPORTFUNC uint8_t get_vm_byte(CPTR addr);
+IMPORTFUNC uint16_t get_vm_word(CPTR addr);
+IMPORTFUNC uint32_t get_vm_long(CPTR addr);
 
-IMPORTPROC put_vm_byte(CPTR addr, ui3r b);
-IMPORTPROC put_vm_word(CPTR addr, ui4r w);
-IMPORTPROC put_vm_long(CPTR addr, ui5r l);
+IMPORTPROC put_vm_byte(CPTR addr, uint8_t b);
+IMPORTPROC put_vm_word(CPTR addr, uint16_t w);
+IMPORTPROC put_vm_long(CPTR addr, uint32_t l);
 
-GLOBALVAR ui5r my_disk_icon_addr;
+GLOBALVAR uint32_t my_disk_icon_addr;
 
 GLOBALPROC customreset(void)
 {
@@ -125,7 +125,7 @@ GLOBALVAR ui3p VidROM = nullpr;
 GLOBALVAR ui3p VidMem = nullpr;
 #endif
 
-GLOBALVAR ui3b Wires[kNumWires];
+GLOBALVAR uint8_t Wires[kNumWires];
 
 
 #if WantDisasm
@@ -152,8 +152,8 @@ GLOBALPROC dbglog_WriteMemArrow(blnr WriteMem)
 #endif
 
 #if dbglog_HAVE
-GLOBALPROC dbglog_AddrAccess(char *s, ui5r Data,
-	blnr WriteMem, ui5r addr)
+GLOBALPROC dbglog_AddrAccess(char *s, uint32_t Data,
+	blnr WriteMem, uint32_t addr)
 {
 	dbglog_StartLine();
 	dbglog_writeCStr(s);
@@ -167,7 +167,7 @@ GLOBALPROC dbglog_AddrAccess(char *s, ui5r Data,
 #endif
 
 #if dbglog_HAVE
-GLOBALPROC dbglog_Access(char *s, ui5r Data, blnr WriteMem)
+GLOBALPROC dbglog_Access(char *s, uint32_t Data, blnr WriteMem)
 {
 	dbglog_StartLine();
 	dbglog_writeCStr(s);
@@ -210,7 +210,7 @@ LOCALVAR blnr GotOneAbnormal = falseblnr;
 #endif
 
 #if WantAbnormalReports
-GLOBALPROC DoReportAbnormalID(ui4r id
+GLOBALPROC DoReportAbnormalID(uint16_t id
 #if dbglog_HAVE
 	, char *s
 #endif
@@ -303,10 +303,10 @@ GLOBALPROC DoReportAbnormalID(ui4r id
 
 #if IncludeExtnPbufs
 LOCALFUNC tMacErr PbufTransferVM(CPTR Buffera,
-	tPbuf i, ui5r offset, ui5r count, blnr IsWrite)
+	tPbuf i, uint32_t offset, uint32_t count, blnr IsWrite)
 {
 	tMacErr result;
-	ui5b contig;
+	uint32_t contig;
 	ui3p Buffer;
 
 label_1:
@@ -356,7 +356,7 @@ LOCALPROC ExtnParamBuffers_Access(CPTR p)
 		case kCmndPbufNew:
 			{
 				tPbuf Pbuf_No;
-				ui5b count = get_vm_long(p + ExtnDat_params + 4);
+				uint32_t count = get_vm_long(p + ExtnDat_params + 4);
 				/* reserved word at offset 2, should be zero */
 				result = PbufNew(count, &Pbuf_No);
 				put_vm_word(p + ExtnDat_params + 0, Pbuf_No);
@@ -374,7 +374,7 @@ LOCALPROC ExtnParamBuffers_Access(CPTR p)
 			break;
 		case kCmndPbufGetSize:
 			{
-				ui5r Count;
+				uint32_t Count;
 				tPbuf Pbuf_No = get_vm_word(p + ExtnDat_params + 0);
 				/* reserved word at offset 2, should be zero */
 
@@ -386,17 +386,17 @@ LOCALPROC ExtnParamBuffers_Access(CPTR p)
 			break;
 		case kCmndPbufTransfer:
 			{
-				ui5r PbufCount;
+				uint32_t PbufCount;
 				tPbuf Pbuf_No = get_vm_word(p + ExtnDat_params + 0);
 				/* reserved word at offset 2, should be zero */
-				ui5r offset = get_vm_long(p + ExtnDat_params + 4);
-				ui5r count = get_vm_long(p + ExtnDat_params + 8);
+				uint32_t offset = get_vm_long(p + ExtnDat_params + 4);
+				uint32_t count = get_vm_long(p + ExtnDat_params + 8);
 				CPTR Buffera = get_vm_long(p + ExtnDat_params + 12);
 				blnr IsWrite =
 					(get_vm_word(p + ExtnDat_params + 16) != 0);
 				result = PbufGetSize(Pbuf_No, &PbufCount);
 				if (mnvm_noErr == result) {
-					ui5r endoff = offset + count;
+					uint32_t endoff = offset + count;
 					if ((endoff < offset) /* overflow */
 						|| (endoff > PbufCount))
 					{
@@ -484,7 +484,7 @@ LOCALPROC ExtnFind_Access(CPTR p)
 			break;
 		case kCmndFindExtnFind:
 			{
-				ui5b extn = get_vm_long(p + kParamFindExtnTheExtn);
+				uint32_t extn = get_vm_long(p + kParamFindExtnTheExtn);
 
 				if (extn == kDiskDriverExtension) {
 					put_vm_word(p + kParamFindExtnTheId, kExtnDisk);
@@ -516,7 +516,7 @@ LOCALPROC ExtnFind_Access(CPTR p)
 			break;
 		case kCmndFindExtnId2Code:
 			{
-				ui4r extn = get_vm_word(p + kParamFindExtnTheId);
+				uint16_t extn = get_vm_word(p + kParamFindExtnTheId);
 
 				if (extn == kExtnDisk) {
 					put_vm_long(p + kParamFindExtnTheExtn,
@@ -560,9 +560,9 @@ LOCALPROC ExtnFind_Access(CPTR p)
 #define kDSK_Params_Lo 1
 #define kDSK_QuitOnEject 3 /* obsolete */
 
-LOCALVAR ui4b ParamAddrHi;
+LOCALVAR uint16_t ParamAddrHi;
 
-LOCALPROC Extn_Access(ui5b Data, CPTR addr)
+LOCALPROC Extn_Access(uint32_t Data, CPTR addr)
 {
 	switch (addr) {
 		case kDSK_Params_Hi:
@@ -572,7 +572,7 @@ LOCALPROC Extn_Access(ui5b Data, CPTR addr)
 			{
 				CPTR p = ParamAddrHi << 16 | Data;
 
-				ParamAddrHi = (ui4b) - 1;
+				ParamAddrHi = (uint16_t) - 1;
 				if (kcom_callcheck == get_vm_word(p + ExtnDat_checkval))
 				{
 					put_vm_word(p + ExtnDat_checkval, 0);
@@ -619,7 +619,7 @@ LOCALPROC Extn_Access(ui5b Data, CPTR addr)
 
 GLOBALPROC Extn_Reset(void)
 {
-	ParamAddrHi = (ui4b) - 1;
+	ParamAddrHi = (uint16_t) - 1;
 }
 
 /* implementation of read/write for everything but RAM and ROM */
@@ -691,12 +691,12 @@ enum {
 
 
 LOCALVAR ATTer ATTListA[MaxATTListN];
-LOCALVAR ui4r LastATTel;
+LOCALVAR uint16_t LastATTel;
 
 
 LOCALPROC AddToATTList(ATTep p)
 {
-	ui4r NewLast = LastATTel + 1;
+	uint16_t NewLast = LastATTel + 1;
 	if (NewLast >= MaxATTListN) {
 		ReportAbnormalID(0x1101, "MaxATTListN not big enough");
 	} else {
@@ -725,7 +725,7 @@ LOCALPROC FinishATTList(void)
 	}
 
 	{
-		ui4r i = LastATTel;
+		uint16_t i = LastATTel;
 		ATTep p = &ATTListA[LastATTel];
 		ATTep h = nullpr;
 
@@ -745,7 +745,7 @@ LOCALPROC FinishATTList(void)
 					ReportAbnormalID(0x1102, "ATTListA bad entry");
 				}
 				for (q2 = q1->Next; nullpr != q2->Next; q2 = q2->Next) {
-					ui5r common_mask = (q1->cmpmask) & (q2->cmpmask);
+					uint32_t common_mask = (q1->cmpmask) & (q2->cmpmask);
 					if ((q1->cmpvalu & common_mask) ==
 						(q2->cmpvalu & common_mask))
 					{
@@ -764,7 +764,7 @@ LOCALPROC FinishATTList(void)
 LOCALPROC SetUp_RAM24(void)
 {
 	ATTer r;
-	ui5r bankbit = 0x00100000 << (((VIA2_iA7 << 1) | VIA2_iA6) << 1);
+	uint32_t bankbit = 0x00100000 << (((VIA2_iA7 << 1) | VIA2_iA6) << 1);
 
 #if kRAMa_Size == kRAMb_Size
 	if (kRAMa_Size == bankbit) {
@@ -901,7 +901,7 @@ LOCALPROC SetUp_io(void)
 				but rom accesses it anyway
 			*/
 			{
-				ui5r addr2 = addr & 0x1FFFF;
+				uint32_t addr2 = addr & 0x1FFFF;
 
 				if ((addr2 != 0x1DA00) && (addr2 != 0x1DC00)) {
 					ReportAbnormalID(0x1104, "another unknown access");
@@ -989,7 +989,7 @@ LOCALPROC SetUp_address32(void)
 		r.Access = kATTA_readreadymask;
 		AddToATTList(&r);
 	} else {
-		ui5r bankbit =
+		uint32_t bankbit =
 			0x00100000 << (((VIA2_iA7 << 1) | VIA2_iA6) << 1);
 #if kRAMa_Size == kRAMb_Size
 		if (kRAMa_Size == bankbit) {
@@ -1299,7 +1299,7 @@ LOCALPROC get_fail_realblock(ATTep p)
 }
 #endif
 
-GLOBALFUNC ui5b MMDV_Access(ATTep p, ui5b Data,
+GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 	blnr WriteMem, blnr ByteSize, CPTR addr)
 {
 	switch (p->MMDV) {
@@ -1588,10 +1588,10 @@ Label_Retry:
 	return p;
 }
 
-GLOBALFUNC ui3p get_real_address0(ui5b L, blnr WritableMem, CPTR addr,
-	ui5b *actL)
+GLOBALFUNC ui3p get_real_address0(uint32_t L, blnr WritableMem, CPTR addr,
+	uint32_t *actL)
 {
-	ui5b bankleft;
+	uint32_t bankleft;
 	ui3p p;
 	ATTep q;
 
@@ -1600,8 +1600,8 @@ GLOBALFUNC ui3p get_real_address0(ui5b L, blnr WritableMem, CPTR addr,
 		*actL = 0;
 		p = nullpr;
 	} else {
-		ui5r m2 = q->usemask & ~ q->cmpmask;
-		ui5r m3 = m2 & ~ (m2 + 1);
+		uint32_t m2 = q->usemask & ~ q->cmpmask;
+		uint32_t m3 = m2 & ~ (m2 + 1);
 		p = q->usebase + (addr & q->usemask);
 		bankleft = (m3 + 1) - (addr & m3);
 		if (bankleft >= L) {
@@ -1625,12 +1625,12 @@ GLOBALPROC SetInterruptButton(blnr v)
 	}
 }
 
-LOCALVAR ui3b CurIPL = 0;
+LOCALVAR uint8_t CurIPL = 0;
 
 GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 {
 #if (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)
-	ui3b NewIPL;
+	uint8_t NewIPL;
 
 	if (InterruptButton) {
 		NewIPL = 7;
@@ -1644,9 +1644,9 @@ GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 		NewIPL = 0;
 	}
 #else
-	ui3b VIAandNotSCC = VIA1_InterruptRequest
+	uint8_t VIAandNotSCC = VIA1_InterruptRequest
 		& ~ SCCInterruptRequest;
-	ui3b NewIPL = VIAandNotSCC
+	uint8_t NewIPL = VIAandNotSCC
 		| (SCCInterruptRequest << 1)
 		| (InterruptButton << 2);
 #endif
@@ -1688,7 +1688,7 @@ GLOBALPROC PowerOff_ChangeNtfy(void)
 /* user event queue utilities */
 
 #if HaveMasterMyEvtQLock
-GLOBALVAR ui4r MasterMyEvtQLock = 0;
+GLOBALVAR uint16_t MasterMyEvtQLock = 0;
 	/*
 		Takes a few ticks to process button event because
 		of debounce code of Mac. So have this mechanism
@@ -1744,18 +1744,18 @@ GLOBALFUNC iCountt GetCuriCount(void)
 	return NextiCount - GetCyclesRemaining();
 }
 
-GLOBALPROC ICT_add(int taskid, ui5b n)
+GLOBALPROC ICT_add(int taskid, uint32_t n)
 {
 	/* n must be > 0 */
-	si5r x = GetCyclesRemaining();
-	ui5b when = NextiCount - x + n;
+	int32_t x = GetCyclesRemaining();
+	uint32_t when = NextiCount - x + n;
 
 #ifdef _VIA_Debug
 	fprintf(stderr, "ICT_add: %d, %d, %d\n", when, taskid, n);
 #endif
 	InsertICT(taskid, when);
 
-	if (x > (si5r)n) {
+	if (x > (int32_t)n) {
 		SetCyclesRemaining(n);
 		NextiCount = when;
 	}

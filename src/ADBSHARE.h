@@ -33,13 +33,13 @@
 #define ADB_MaxSzDatBuf 8
 
 LOCALVAR uint8_t ADB_SzDatBuf;
-LOCALVAR blnr ADB_TalkDatBuf = falseblnr;
+LOCALVAR bool ADB_TalkDatBuf = false;
 LOCALVAR uint8_t ADB_DatBuf[ADB_MaxSzDatBuf];
 LOCALVAR uint8_t ADB_CurCmd = 0;
 LOCALVAR uint8_t NotSoRandAddr = 1;
 
 LOCALVAR uint8_t MouseADBAddress;
-LOCALVAR blnr SavedCurMouseButton = falseblnr;
+LOCALVAR bool SavedCurMouseButton = false;
 LOCALVAR uint16_t MouseADBDeltaH = 0;
 LOCALVAR uint16_t MouseADBDeltaV = 0;
 
@@ -51,8 +51,8 @@ LOCALPROC ADB_DoMouseTalk(void)
 				EvtQEl *p;
 				uint16_t partH;
 				uint16_t partV;
-				blnr overflow = falseblnr;
-				blnr MouseButtonChange = falseblnr;
+				bool overflow = false;
+				bool MouseButtonChange = false;
 
 				if (nullpr != (p = EvtQOutP())) {
 					if (EvtQElKindMouseDelta == p->kind) {
@@ -71,11 +71,11 @@ LOCALPROC ADB_DoMouseTalk(void)
 					partV = - partV;
 				}
 				if ((partH >> 6) > 0) {
-					overflow = trueblnr;
+					overflow = true;
 					partH = (1 << 6) - 1;
 				}
 				if ((partV >> 6) > 0) {
-					overflow = trueblnr;
+					overflow = true;
 					partV = (1 << 6) - 1;
 				}
 				if ((int16_t)MouseADBDeltaH < 0) {
@@ -90,14 +90,14 @@ LOCALPROC ADB_DoMouseTalk(void)
 					if (nullpr != (p = EvtQOutP())) {
 						if (EvtQElKindMouseButton == p->kind) {
 							SavedCurMouseButton = p->u.press.down;
-							MouseButtonChange = trueblnr;
+							MouseButtonChange = true;
 							EvtQOutDone();
 						}
 					}
 				}
 				if ((0 != partH) || (0 != partV) || MouseButtonChange) {
 					ADB_SzDatBuf = 2;
-					ADB_TalkDatBuf = trueblnr;
+					ADB_TalkDatBuf = true;
 					ADB_DatBuf[0] = (SavedCurMouseButton ? 0x00 : 0x80)
 						| (partV & 127);
 					ADB_DatBuf[1] = /* 0x00 */ 0x80 | (partH & 127);
@@ -107,7 +107,7 @@ LOCALPROC ADB_DoMouseTalk(void)
 			break;
 		case 3:
 			ADB_SzDatBuf = 2;
-			ADB_TalkDatBuf = trueblnr;
+			ADB_TalkDatBuf = true;
 			ADB_DatBuf[0] = 0x60 | (NotSoRandAddr & 0x0f);
 			ADB_DatBuf[1] = 0x01;
 			NotSoRandAddr += 1;
@@ -139,13 +139,13 @@ LOCALPROC ADB_DoMouseListen(void)
 
 LOCALVAR uint8_t KeyboardADBAddress;
 
-LOCALFUNC blnr CheckForADBkeyEvt(uint8_t *NextADBkeyevt)
+LOCALFUNC bool CheckForADBkeyEvt(uint8_t *NextADBkeyevt)
 {
 	int i;
-	blnr KeyDown;
+	bool KeyDown;
 
 	if (! FindKeyEvent(&i, &KeyDown)) {
-		return falseblnr;
+		return false;
 	} else {
 #if dbglog_HAVE && 0
 		if (KeyDown) {
@@ -173,7 +173,7 @@ LOCALFUNC blnr CheckForADBkeyEvt(uint8_t *NextADBkeyevt)
 				break;
 		}
 		*NextADBkeyevt = (KeyDown ? 0x00 : 0x80) | i;
-		return trueblnr;
+		return true;
 	}
 }
 
@@ -186,7 +186,7 @@ LOCALPROC ADB_DoKeyboardTalk(void)
 
 				if (CheckForADBkeyEvt(&NextADBkeyevt)) {
 					ADB_SzDatBuf = 2;
-					ADB_TalkDatBuf = trueblnr;
+					ADB_TalkDatBuf = true;
 					ADB_DatBuf[0] = NextADBkeyevt;
 					if (! CheckForADBkeyEvt(&NextADBkeyevt)) {
 						ADB_DatBuf[1] = 0xFF;
@@ -198,7 +198,7 @@ LOCALPROC ADB_DoKeyboardTalk(void)
 			break;
 		case 3:
 			ADB_SzDatBuf = 2;
-			ADB_TalkDatBuf = trueblnr;
+			ADB_TalkDatBuf = true;
 			ADB_DatBuf[0] = 0x60 | (NotSoRandAddr & 0x0f);
 			ADB_DatBuf[1] = 0x01;
 			NotSoRandAddr += 1;
@@ -229,7 +229,7 @@ LOCALPROC ADB_DoKeyboardListen(void)
 	}
 }
 
-LOCALFUNC blnr CheckForADBanyEvt(void)
+LOCALFUNC bool CheckForADBanyEvt(void)
 {
 	EvtQEl *p = EvtQOutP();
 	if (nullpr != p) {
@@ -237,7 +237,7 @@ LOCALFUNC blnr CheckForADBanyEvt(void)
 			case EvtQElKindMouseButton:
 			case EvtQElKindMouseDelta:
 			case EvtQElKindKey:
-				return trueblnr;
+				return true;
 				break;
 			default:
 				break;
@@ -281,7 +281,7 @@ LOCALPROC ADB_Flush(void)
 		|| (Address == MouseADBAddress))
 	{
 		ADB_SzDatBuf = 2;
-		ADB_TalkDatBuf = trueblnr;
+		ADB_TalkDatBuf = true;
 		ADB_DatBuf[0] = 0x00;
 		ADB_DatBuf[1] = 0x00;
 	} else {

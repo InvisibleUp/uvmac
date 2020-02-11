@@ -51,7 +51,7 @@ LOCALVAR uint32_t vSonyMountedMask = 0;
 #define vSonyIsMounted(Drive_No) \
 	((vSonyMountedMask & ((uint32_t)1 << (Drive_No))) != 0)
 
-LOCALFUNC blnr vSonyNextPendingInsert0(tDrive *Drive_No)
+LOCALFUNC bool vSonyNextPendingInsert0(tDrive *Drive_No)
 {
 	/* find next drive to Mount */
 	uint32_t MountPending = vSonyInsertedMask & (~ vSonyMountedMask);
@@ -60,12 +60,12 @@ LOCALFUNC blnr vSonyNextPendingInsert0(tDrive *Drive_No)
 		for (i = 0; i < NumDrives; ++i) {
 			if ((MountPending & ((uint32_t)1 << i)) != 0) {
 				*Drive_No = i;
-				return trueblnr; /* only one disk at a time */
+				return true; /* only one disk at a time */
 			}
 		}
 	}
 
-	return falseblnr;
+	return false;
 }
 
 LOCALFUNC tMacErr CheckReadableDrive(tDrive Drive_No)
@@ -83,7 +83,7 @@ LOCALFUNC tMacErr CheckReadableDrive(tDrive Drive_No)
 	return result;
 }
 
-LOCALFUNC tMacErr vSonyTransferVM(blnr IsWrite,
+LOCALFUNC tMacErr vSonyTransferVM(bool IsWrite,
 	CPTR Buffera, tDrive Drive_No,
 	uint32_t Sony_Start, uint32_t Sony_Count, uint32_t *Sony_ActCount)
 {
@@ -95,7 +95,7 @@ LOCALFUNC tMacErr vSonyTransferVM(blnr IsWrite,
 	tMacErr result;
 	uint32_t contig;
 	uint32_t actual;
-	ui3p Buffer;
+	uint8_t * Buffer;
 	uint32_t offset = Sony_Start;
 	uint32_t n = Sony_Count;
 
@@ -126,17 +126,17 @@ label_1:
 
 LOCALPROC MoveBytesVM(CPTR srcPtr, CPTR dstPtr, int32_t byteCount)
 {
-	ui3p src;
-	ui3p dst;
+	uint8_t * src;
+	uint8_t * dst;
 	uint32_t contigSrc;
 	uint32_t contigDst;
 	uint32_t contig;
 
 label_1:
 	if (0 != byteCount) {
-		src = get_real_address0(byteCount, falseblnr, srcPtr,
+		src = get_real_address0(byteCount, false, srcPtr,
 			&contigSrc);
-		dst = get_real_address0(byteCount, trueblnr,  dstPtr,
+		dst = get_real_address0(byteCount, true,  dstPtr,
 			&contigDst);
 		if ((0 == contigSrc) || (0 == contigDst)) {
 			ReportAbnormalID(0x0901, "MoveBytesVM fails");
@@ -195,7 +195,7 @@ LOCALFUNC tMacErr DC42BlockChecksum(tDrive Drive_No,
 			n = remaining;
 		}
 
-		result = vSonyTransfer(falseblnr, Buffer, Drive_No, offset,
+		result = vSonyTransfer(false, Buffer, Drive_No, offset,
 			n, nullpr);
 		if (mnvm_noErr != result) {
 			return result;
@@ -278,7 +278,7 @@ LOCALPROC Drive_UpdateChecksums(tDrive Drive_No)
 #endif
 
 			/* write Checksums */
-			vSonyTransfer(trueblnr, Buffer, Drive_No,
+			vSonyTransfer(true, Buffer, Drive_No,
 				kDC42offset_dataChecksum, Sony_Count, nullpr);
 		}
 #endif
@@ -320,9 +320,9 @@ LOCALFUNC tMacErr vSonyNextPendingInsert(tDrive *Drive_No)
 				uint32_t TagSize0;
 				uint8_t Temp[checkheadersize];
 				uint32_t Sony_Count = checkheadersize;
-				blnr gotFormat = falseblnr;
+				bool gotFormat = false;
 
-				result = vSonyTransfer(falseblnr, Temp, i,
+				result = vSonyTransfer(false, Temp, i,
 					checkheaderoffset, Sony_Count, nullpr);
 				if (mnvm_noErr == result) {
 #if Sony_SupportDC42
@@ -345,12 +345,12 @@ LOCALFUNC tMacErr vSonyNextPendingInsert(tDrive *Drive_No)
 						{
 							if (0 == TagSize0) {
 								/* no tags */
-								gotFormat = trueblnr;
+								gotFormat = true;
 							} else if ((DataSize0 >> 9) * 12
 								== TagSize0)
 							{
 								/* 12 byte tags */
-								gotFormat = trueblnr;
+								gotFormat = true;
 							}
 							if (gotFormat) {
 #if Sony_VerifyChecksums /* mostly useful to check the Checksum code */
@@ -469,7 +469,7 @@ GLOBALPROC Sony_Update (void)
 	}
 }
 
-LOCALFUNC tMacErr Drive_Transfer(blnr IsWrite, CPTR Buffera,
+LOCALFUNC tMacErr Drive_Transfer(bool IsWrite, CPTR Buffera,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
@@ -490,12 +490,12 @@ LOCALFUNC tMacErr Drive_Transfer(blnr IsWrite, CPTR Buffera,
 			if (Sony_Start > DataSize) {
 				result = mnvm_eofErr;
 			} else {
-				blnr hit_eof = falseblnr;
+				bool hit_eof = false;
 				uint32_t L = DataSize - Sony_Start;
 				if (L >= Sony_Count) {
 					L = Sony_Count;
 				} else {
-					hit_eof = trueblnr;
+					hit_eof = true;
 				}
 				result = vSonyTransferVM(IsWrite, Buffera, Drive_No,
 					ImageDataOffset[Drive_No] + Sony_Start, L,
@@ -510,11 +510,11 @@ LOCALFUNC tMacErr Drive_Transfer(blnr IsWrite, CPTR Buffera,
 	return result;
 }
 
-LOCALVAR blnr QuitOnEject = falseblnr;
+LOCALVAR bool QuitOnEject = false;
 
 GLOBALPROC Sony_SetQuitOnEject(void)
 {
-	QuitOnEject = trueblnr;
+	QuitOnEject = true;
 }
 
 LOCALFUNC tMacErr Drive_Eject(tDrive Drive_No)
@@ -530,7 +530,7 @@ LOCALFUNC tMacErr Drive_Eject(tDrive Drive_No)
 		result = vSonyEject(Drive_No);
 		if (QuitOnEject != 0) {
 			if (! AnyDiskInserted()) {
-				ForceMacOff = trueblnr;
+				ForceMacOff = true;
 			}
 		}
 	}
@@ -575,7 +575,7 @@ GLOBALPROC Sony_EjectAllDisks(void)
 GLOBALPROC Sony_Reset(void)
 {
 	DelayUntilNextInsert = 0;
-	QuitOnEject = falseblnr;
+	QuitOnEject = false;
 	MountCallBack = 0;
 }
 
@@ -638,7 +638,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 				uint32_t Sony_Start = get_vm_long(p + kParamDiskStart);
 				uint32_t Sony_Count = get_vm_long(p + kParamDiskCount);
 
-				result = Drive_Transfer(falseblnr, Buffera, Drive_No,
+				result = Drive_Transfer(false, Buffera, Drive_No,
 					Sony_Start, Sony_Count, &Sony_ActCount);
 
 				put_vm_long(p + kParamDiskCount, Sony_ActCount);
@@ -652,7 +652,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 				uint32_t Sony_Start = get_vm_long(p + kParamDiskStart);
 				uint32_t Sony_Count = get_vm_long(p + kParamDiskCount);
 
-				result = Drive_Transfer(trueblnr, Buffera, Drive_No,
+				result = Drive_Transfer(true, Buffera, Drive_No,
 					Sony_Start, Sony_Count, &Sony_ActCount);
 
 				put_vm_long(p + kParamDiskCount, Sony_ActCount);
@@ -685,7 +685,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 			result = mnvm_noErr;
 			break;
 		case kCmndDiskQuitOnEject:
-			QuitOnEject = trueblnr;
+			QuitOnEject = true;
 			result = mnvm_noErr;
 			break;
 		case kCmndDiskFeatures:
@@ -742,7 +742,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 				if (Pbuf_No != NotAPbuf) {
 					result = CheckPbuf(Pbuf_No);
 					if (mnvm_noErr == result) {
-						vSonyNewDiskWanted = trueblnr;
+						vSonyNewDiskWanted = true;
 						vSonyNewDiskSize = count;
 #if IncludeSonyNameNew
 						if (vSonyNewDiskName != NotAPbuf) {
@@ -756,7 +756,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 				} else
 #endif
 				{
-					vSonyNewDiskWanted = trueblnr;
+					vSonyNewDiskWanted = true;
 					vSonyNewDiskSize = count;
 				}
 			}
@@ -1036,7 +1036,7 @@ LOCALFUNC tMacErr Sony_Mount(CPTR p)
 
 #if Sony_SupportTags
 LOCALFUNC tMacErr Sony_PrimeTags(tDrive Drive_No,
-	uint32_t Sony_Start, uint32_t Sony_Count, blnr IsWrite)
+	uint32_t Sony_Start, uint32_t Sony_Count, bool IsWrite)
 {
 	tMacErr result = mnvm_noErr;
 	uint32_t TagOffset = ImageTagOffset[Drive_No];
@@ -1059,14 +1059,14 @@ LOCALFUNC tMacErr Sony_PrimeTags(tDrive Drive_No,
 				/* only need to read the last block tags */
 				uint32_t count = 12;
 				TagOffset += 12 * (n - 1);
-				result = vSonyTransferVM(falseblnr, 0x02FC, Drive_No,
+				result = vSonyTransferVM(false, 0x02FC, Drive_No,
 					TagOffset, count, nullpr);
 			} else {
 				uint32_t count = 12;
 				uint16_t BufTgFBkNum = get_vm_word(0x0302);
 				do {
 					put_vm_word(0x0302, BufTgFBkNum);
-					result = vSonyTransferVM(trueblnr, 0x02FC, Drive_No,
+					result = vSonyTransferVM(true, 0x02FC, Drive_No,
 						TagOffset, count, nullpr);
 					if (mnvm_noErr != result) {
 						goto label_fail;
@@ -1114,7 +1114,7 @@ LOCALFUNC tMacErr Sony_Prime(CPTR p)
 	} else
 #endif
 	{
-		blnr IsWrite = (0 != (IOTrap & 0x0001));
+		bool IsWrite = (0 != (IOTrap & 0x0001));
 		uint8_t DiskInPlaceV = get_vm_byte(dvl + kDiskInPlace);
 
 		if (DiskInPlaceV != 0x02) {
@@ -1355,7 +1355,7 @@ LOCALFUNC tMacErr Sony_Control(CPTR p)
 
 					if (get_vm_word(dvl + kQType) != 0) {
 						put_vm_long(ParamBlk + kcsParam,
-							my_disk_icon_addr);
+							disk_icon_addr);
 						result = mnvm_noErr;
 					} else {
 						result = mnvm_controlErr;

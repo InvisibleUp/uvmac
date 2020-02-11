@@ -40,7 +40,7 @@ IMPORTFUNC uint8_t ADB_ShiftInData(void);
 
 #include "ADBSHARE.h"
 
-LOCALVAR blnr ADB_ListenDatBuf;
+LOCALVAR bool ADB_ListenDatBuf;
 LOCALVAR uint8_t ADB_IndexDatBuf;
 
 GLOBALPROC ADB_DoNewState(void)
@@ -54,11 +54,11 @@ GLOBALPROC ADB_DoNewState(void)
 		switch (state) {
 			case 0: /* Start a new command */
 				if (ADB_ListenDatBuf) {
-					ADB_ListenDatBuf = falseblnr;
+					ADB_ListenDatBuf = false;
 					ADB_SzDatBuf = ADB_IndexDatBuf;
 					ADB_EndListen();
 				}
-				ADB_TalkDatBuf = falseblnr;
+				ADB_TalkDatBuf = false;
 				ADB_IndexDatBuf = 0;
 				ADB_CurCmd = ADB_ShiftInData();
 					/* which sets interrupt, acknowleding command */
@@ -86,7 +86,7 @@ GLOBALPROC ADB_DoNewState(void)
 							"Reserved ADB command");
 						break;
 					case 2: /* listen */
-						ADB_ListenDatBuf = trueblnr;
+						ADB_ListenDatBuf = true;
 #ifdef _VIA_Debug
 						fprintf(stderr, "*** listening\n");
 #endif

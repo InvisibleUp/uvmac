@@ -268,7 +268,7 @@ struct DecOpR {
 	/* expected size : 8 bytes */
 	DecOpXR x;
 	DecOpYR y;
-} my_align_8;
+} align_8;
 typedef struct DecOpR DecOpR;
 
 #define GetDcoCycles(p) ((p)->x.Cycles)

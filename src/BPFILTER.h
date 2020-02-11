@@ -35,7 +35,7 @@ static struct bpf_insn insns[] =
 	BPF_STMT(BPF_RET + BPF_K, 0),
 };
 
-GLOBALVAR ui3p LT_TxBuffer = NULL;
+GLOBALVAR uint8_t * LT_TxBuffer = NULL;
 
 /* Transmit state */
 GLOBALVAR uint16_t LT_TxBuffSz = 0;
@@ -59,7 +59,7 @@ static unsigned char tx_buffer[20 + LT_TxBfMxSz] =
 	"\xFF\xFF\xFF\xFF\xFF\xFFssssss\x80\x9BppppSS";
 
 /* Receive state */
-GLOBALVAR ui3p LT_RxBuffer = NULL;
+GLOBALVAR uint8_t * LT_RxBuffer = NULL;
 	/* When data pending, this is used */
 GLOBALVAR uint32_t LT_RxBuffSz = 0;
 	/* When data pending, this is used */
@@ -123,7 +123,7 @@ LOCALFUNC int get_ethernet(void)
 	/* Get a socket to routed for IPv4 */
 	fd = socket(PF_ROUTE, SOCK_RAW, AF_INET);
 	if (fd == -1) {
-		return falseblnr;
+		return false;
 	}
 
 	/* Allocate a message */
@@ -131,7 +131,7 @@ LOCALFUNC int get_ethernet(void)
 	message = (struct rt_msghdr*)malloc(size);
 	if (! message) {
 		close(fd);
-		return falseblnr;
+		return false;
 	}
 	memset(message, 0, size);
 	addrs = (struct sockaddr_in*)(message + 1);
@@ -151,7 +151,7 @@ LOCALFUNC int get_ethernet(void)
 	if (result < 0) {
 		close(fd);
 		free(message);
-		return falseblnr;
+		return false;
 	}
 
 	/* Read the result from the kernel */
@@ -159,7 +159,7 @@ LOCALFUNC int get_ethernet(void)
 	if (result < 0) {
 		close(fd);
 		free(message);
-		return falseblnr;
+		return false;
 	}
 
 	/* Close the route socket */
@@ -174,7 +174,7 @@ LOCALFUNC int get_ethernet(void)
 	if ((! sa_list[RTAX_IFP])
 		|| (sa_list[RTAX_IFP]->sa_family != AF_LINK))
 	{
-		return falseblnr;
+		return false;
 	}
 
 	int namelen = ((struct sockaddr_dl*)sa_list[RTAX_IFP])->sdl_nlen;
@@ -195,7 +195,7 @@ LOCALFUNC int get_ethernet(void)
 
 	result = sysctlbyname("debug.bpf_maxdevices", &kp, &len, NULL, 0);
 	if (result == -1) {
-		return falseblnr;
+		return false;
 	}
 	max = *((int *)&kp);
 
@@ -209,44 +209,44 @@ LOCALFUNC int get_ethernet(void)
 	}
 
 	if (fd <= 0) {
-		return falseblnr;
+		return false;
 	}
 
 	memset(&ifreq, 0, sizeof(struct ifreq));
 	strncpy(ifreq.ifr_name, device, IFNAMSIZ);
 	result = ioctl(fd, BIOCSETIF, &ifreq);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	result = ioctl(fd, BIOCGBLEN, &device_buffer_size);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	result = ioctl(fd, BIOCPROMISC, &enable);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	result = ioctl(fd, BIOCSSEESENT, &enable);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	result = ioctl(fd, BIOCSHDRCMPLT, &enable);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	result = ioctl(fd, BIOCIMMEDIATE, &enable);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	result = ioctl(fd, BIOCVERSION, &bpf_version);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
 	bpf_program.bf_len = 4;
@@ -254,10 +254,10 @@ LOCALFUNC int get_ethernet(void)
 
 	result = ioctl(fd, BIOCSETF, &bpf_program);
 	if (result) {
-		return falseblnr;
+		return false;
 	}
 
-	return trueblnr;
+	return true;
 }
 
 LOCALVAR unsigned char *RxBuffer = NULL;
@@ -278,15 +278,15 @@ LOCALFUNC int InitLocalTalk(void)
 	*/
 	*((uint32_t*)(&tx_buffer[14])) = htonl(getpid());
 
-	LT_TxBuffer = (ui3p)&tx_buffer[20];
+	LT_TxBuffer = (uint8_t *)&tx_buffer[20];
 
 	RxBuffer = malloc(device_buffer_size);
 	if (NULL == RxBuffer) {
-		return falseblnr;
+		return false;
 	}
 
 	/* Initialized properly */
-	return trueblnr;
+	return true;
 }
 
 GLOBALOSGLUPROC LT_TransmitPacket(void)
@@ -356,7 +356,7 @@ label_retry:
 
 		if (llap_length <= ethernet_length) {
 			/* Start the receiver */
-			LT_RxBuffer    = (ui3p)start;
+			LT_RxBuffer    = (uint8_t *)start;
 			LT_RxBuffSz    = llap_length;
 		} else {
 			goto label_retry;

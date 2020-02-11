@@ -149,7 +149,7 @@ LOCALPROC IWM_Write_Reg(uint8_t in)
 	}
 }
 
-GLOBALFUNC uint32_t IWM_Access(uint32_t Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t IWM_Access(uint32_t Data, bool WriteMem, CPTR addr)
 {
 	switch (addr) {
 		case kph0L :

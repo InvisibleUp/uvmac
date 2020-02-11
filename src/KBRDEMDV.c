@@ -53,13 +53,13 @@ enum {
 
 LOCALVAR int KybdState = kKybdStateIdle;
 
-LOCALVAR blnr HaveKeyBoardResult = falseblnr;
+LOCALVAR bool HaveKeyBoardResult = false;
 LOCALVAR uint8_t KeyBoardResult;
 
 LOCALPROC GotKeyBoardData(uint8_t v)
 {
 	if (KybdState != kKybdStateIdle) {
-		HaveKeyBoardResult = trueblnr;
+		HaveKeyBoardResult = true;
 		KeyBoardResult = v;
 	} else {
 		KYBD_ShiftOutData(v);
@@ -69,10 +69,10 @@ LOCALPROC GotKeyBoardData(uint8_t v)
 
 LOCALVAR uint8_t InstantCommandData = 0x7B;
 
-LOCALFUNC blnr AttemptToFinishInquiry(void)
+LOCALFUNC bool AttemptToFinishInquiry(void)
 {
 	int i;
-	blnr KeyDown;
+	bool KeyDown;
 	uint8_t Keyboard_Data;
 
 	if (FindKeyEvent(&i, &KeyDown)) {
@@ -89,9 +89,9 @@ LOCALFUNC blnr AttemptToFinishInquiry(void)
 			}
 		}
 		GotKeyBoardData(Keyboard_Data);
-		return trueblnr;
+		return true;
 	} else {
-		return falseblnr;
+		return false;
 	}
 }
 
@@ -161,7 +161,7 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 #ifdef _VIA_Debug
 			fprintf(stderr, "HaveKeyBoardResult: %d\n", KeyBoardResult);
 #endif
-			HaveKeyBoardResult = falseblnr;
+			HaveKeyBoardResult = false;
 			KYBD_ShiftOutData(KeyBoardResult);
 			VIA1_iCB2 = 1;
 		}

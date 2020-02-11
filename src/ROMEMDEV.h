@@ -20,4 +20,4 @@
 #define ROMEMDEV_H
 #endif
 
-EXPORTFUNC blnr ROM_Init(void);
+EXPORTFUNC bool ROM_Init(void);

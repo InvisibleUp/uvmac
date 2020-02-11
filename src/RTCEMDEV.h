@@ -20,7 +20,7 @@
 #define RTCEMDEV_H
 #endif
 
-EXPORTFUNC blnr RTC_Init(void);
+EXPORTFUNC bool RTC_Init(void);
 EXPORTPROC RTC_Interrupt(void);
 
 EXPORTPROC RTCunEnabled_ChangeNtfy(void);

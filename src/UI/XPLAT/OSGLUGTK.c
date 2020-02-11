@@ -56,10 +56,10 @@ GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 LOCALVAR FILE *dbglog_File = NULL;
 #endif
 
-LOCALFUNC blnr dbglog_open0(void)
+LOCALFUNC bool dbglog_open0(void)
 {
 #if dbglog_ToStdErr
-	return trueblnr;
+	return true;
 #else
 	dbglog_File = fopen("dbglog.txt", "w");
 	return (NULL != dbglog_File);
@@ -106,7 +106,7 @@ LOCALPROC WriteExtraErr(char *s)
 
 /* --- text translation --- */
 
-LOCALPROC NativeStrFromCStr(char *r, char *s, blnr AddEllipsis)
+LOCALPROC NativeStrFromCStr(char *r, char *s, bool AddEllipsis)
 {
 	uint8_t ps[ClStrMaxLength];
 	int i;
@@ -149,7 +149,7 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
+GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
@@ -177,7 +177,7 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 	return mnvm_noErr; /*& figure out what really to return &*/
 }
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
+LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	DiskEjectedNotify(Drive_No);
 
@@ -190,7 +190,7 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
 
 GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
 {
-	return vSonyEject0(Drive_No, falseblnr);
+	return vSonyEject0(Drive_No, false);
 }
 
 LOCALPROC UnInitDrives(void)
@@ -204,7 +204,7 @@ LOCALPROC UnInitDrives(void)
 	}
 }
 
-LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
+LOCALFUNC bool Sony_Insert0(FILE *refnum, bool locked,
 	char *drivepath)
 {
 	tDrive Drive_No;
@@ -212,34 +212,34 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 	if (! FirstFreeDisk(&Drive_No)) {
 		fclose(refnum);
 		MacMsg(kStrTooManyImagesTitle,
-			kStrTooManyImagesMessage, falseblnr);
-		return falseblnr;
+			kStrTooManyImagesMessage, false);
+		return false;
 	} else {
 		/* printf("Sony_Insert0 %d\n", (int)Drive_No); */
 		Drives[Drive_No] = refnum;
 		DiskInsertNotify(Drive_No, locked);
 
-		return trueblnr;
+		return true;
 	}
 }
 
-LOCALFUNC blnr Sony_Insert1(char *drivepath, blnr silentfail)
+LOCALFUNC bool Sony_Insert1(char *drivepath, bool silentfail)
 {
-	blnr locked = falseblnr;
+	bool locked = false;
 	/* printf("Sony_Insert1 %s\n", drivepath); */
 	FILE *refnum = fopen(drivepath, "rb+");
 	if (NULL == refnum) {
-		locked = trueblnr;
+		locked = true;
 		refnum = fopen(drivepath, "rb");
 	}
 	if (NULL == refnum) {
 		if (! silentfail) {
-			MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, falseblnr);
+			MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, false);
 		}
 	} else {
 		return Sony_Insert0(refnum, locked, drivepath);
 	}
-	return falseblnr;
+	return false;
 }
 
 LOCALFUNC tMacErr LoadMacRomFrom(char *path)
@@ -272,9 +272,9 @@ LOCALFUNC tMacErr LoadMacRomFrom(char *path)
 	return err;
 }
 
-LOCALFUNC blnr Sony_Insert1a(char *drivepath, blnr silentfail)
+LOCALFUNC bool Sony_Insert1a(char *drivepath, bool silentfail)
 {
-	blnr v;
+	bool v;
 
 	if (! ROM_loaded) {
 		v = (mnvm_noErr == LoadMacRomFrom(drivepath));
@@ -285,24 +285,24 @@ LOCALFUNC blnr Sony_Insert1a(char *drivepath, blnr silentfail)
 	return v;
 }
 
-LOCALFUNC blnr Sony_InsertIth(int i)
+LOCALFUNC bool Sony_InsertIth(int i)
 {
-	blnr v;
+	bool v;
 
 	if ((i > 9) || ! FirstFreeDisk(nullpr)) {
-		v = falseblnr;
+		v = false;
 	} else {
 		char s[] = "disk?.dsk";
 
 		s[4] = '0' + i;
 
-		v = Sony_Insert1(s, trueblnr);
+		v = Sony_Insert1(s, true);
 	}
 
 	return v;
 }
 
-LOCALFUNC blnr LoadInitialImages(void)
+LOCALFUNC bool LoadInitialImages(void)
 {
 	int i;
 
@@ -310,14 +310,14 @@ LOCALFUNC blnr LoadInitialImages(void)
 		/* stop on first error (including file not found) */
 	}
 
-	return trueblnr;
+	return true;
 }
 
 /* --- ROM --- */
 
 LOCALVAR char *rom_path = NULL;
 
-LOCALFUNC blnr LoadMacRom(void)
+LOCALFUNC bool LoadMacRom(void)
 {
 	tMacErr err;
 
@@ -327,16 +327,16 @@ LOCALFUNC blnr LoadMacRom(void)
 	{
 	}
 
-	return trueblnr;
+	return true;
 }
 
 /* --- video out --- */
 
 static GtkWidget *drawing_area;
 
-LOCALVAR blnr gBackgroundFlag = falseblnr;
-LOCALVAR blnr gTrueBackgroundFlag = falseblnr;
-LOCALVAR blnr CurSpeedStopped = trueblnr;
+LOCALVAR bool gBackgroundFlag = false;
+LOCALVAR bool gTrueBackgroundFlag = false;
+LOCALVAR bool CurSpeedStopped = true;
 
 LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	int16_t bottom, int16_t right)
@@ -391,8 +391,8 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 
 /* --- mouse --- */
 
-LOCALVAR blnr HaveCursorHidden = falseblnr;
-LOCALVAR blnr WantCursorHidden = falseblnr;
+LOCALVAR bool HaveCursorHidden = false;
+LOCALVAR bool WantCursorHidden = false;
 
 static GdkCursor *blank_cursor;
 static GtkWidget *window = NULL;
@@ -400,7 +400,7 @@ static GtkWidget *window = NULL;
 LOCALPROC ForceShowCursor(void)
 {
 	if (HaveCursorHidden) {
-		HaveCursorHidden = falseblnr;
+		HaveCursorHidden = false;
 
 		if (window) {
 			gdk_window_set_cursor(window->window, NULL);
@@ -412,22 +412,22 @@ LOCALPROC ForceShowCursor(void)
 
 LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 {
-	blnr ShouldHaveCursorHidden = trueblnr;
+	bool ShouldHaveCursorHidden = true;
 
 	{
 		if (NewMousePosh < 0) {
 			NewMousePosh = 0;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		} else if (NewMousePosh >= vMacScreenWidth) {
 			NewMousePosh = vMacScreenWidth - 1;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		}
 		if (NewMousePosv < 0) {
 			NewMousePosv = 0;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		} else if (NewMousePosv >= vMacScreenHeight) {
 			NewMousePosv = vMacScreenHeight - 1;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		}
 
 
@@ -494,7 +494,7 @@ LOCALPROC KC2MKCAssignOne(guint keyval, uint8_t key)
 #endif
 }
 
-LOCALFUNC blnr KC2MKCInit(void)
+LOCALFUNC bool KC2MKCInit(void)
 {
 	int i;
 
@@ -748,7 +748,7 @@ LOCALFUNC blnr KC2MKCInit(void)
 
 	InitKeyCodes();
 
-	return trueblnr;
+	return true;
 }
 
 LOCALPROC CheckTheCapsLock(void)
@@ -761,7 +761,7 @@ LOCALPROC CheckTheCapsLock(void)
 		(mask & GDK_LOCK_MASK) != 0);
 }
 
-LOCALPROC DoKeyCode(guint keycode, blnr down)
+LOCALPROC DoKeyCode(guint keycode, bool down)
 {
 	if (GDK_Caps_Lock == keycode) {
 		CheckTheCapsLock();
@@ -782,7 +782,7 @@ LOCALVAR uint32_t TrueEmulatedTime = 0;
 
 #define TicksPerSecond 1000000
 
-LOCALVAR blnr HaveTimeDelta = falseblnr;
+LOCALVAR bool HaveTimeDelta = false;
 LOCALVAR uint32_t TimeDelta;
 
 LOCALVAR uint32_t NewMacDateInSeconds;
@@ -813,7 +813,7 @@ LOCALPROC GetCurrentTicks(void)
 		CurMacDelta = ((uint32_t)(s->tm_gmtoff) & 0x00FFFFFF)
 			| ((s->tm_isdst ? 0x80 : 0) << 24);
 #endif
-		HaveTimeDelta = trueblnr;
+		HaveTimeDelta = true;
 	}
 
 	NewMacDateInSeconds = t.tv_sec + TimeDelta;
@@ -879,22 +879,22 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 	}
 }
 
-LOCALFUNC blnr CheckDateTime(void)
+LOCALFUNC bool CheckDateTime(void)
 {
 	if (CurMacDateInSeconds != NewMacDateInSeconds) {
 		CurMacDateInSeconds = NewMacDateInSeconds;
-		return trueblnr;
+		return true;
 	} else {
-		return falseblnr;
+		return false;
 	}
 }
 
-LOCALFUNC blnr InitLocationDat(void)
+LOCALFUNC bool InitLocationDat(void)
 {
 	GetCurrentTicks();
 	CurMacDateInSeconds = NewMacDateInSeconds;
 
-	return trueblnr;
+	return true;
 }
 
 /* --- basic dialogs --- */
@@ -905,8 +905,8 @@ LOCALPROC CheckSavedMacMsg(void)
 		char briefMsg0[ClStrMaxLength + 1];
 		char longMsg0[ClStrMaxLength + 1];
 
-		NativeStrFromCStr(briefMsg0, SavedBriefMsg, falseblnr);
-		NativeStrFromCStr(longMsg0, SavedLongMsg, falseblnr);
+		NativeStrFromCStr(briefMsg0, SavedBriefMsg, false);
+		NativeStrFromCStr(longMsg0, SavedLongMsg, false);
 
 		fprintf(stderr, "%s\n", briefMsg0);
 		fprintf(stderr, "%s\n", longMsg0);
@@ -915,12 +915,12 @@ LOCALPROC CheckSavedMacMsg(void)
 	}
 }
 
-LOCALVAR blnr CaughtMouse = falseblnr;
+LOCALVAR bool CaughtMouse = false;
 
 /* --- main window creation and disposal --- */
 
-LOCALVAR int my_argc;
-LOCALVAR char **my_argv;
+LOCALVAR int argc;
+LOCALVAR char **argv;
 
 /* Create a new backing pixmap of the appropriate size */
 static gboolean configure_event(GtkWidget *widget,
@@ -967,7 +967,7 @@ static gboolean button_press_event(GtkWidget *widget,
 	gpointer user_data)
 {
 	MousePositionNotify(event->x, event->y);
-	MouseButtonSet(trueblnr);
+	MouseButtonSet(true);
 
 	return TRUE;
 }
@@ -977,7 +977,7 @@ static gboolean button_release_event(GtkWidget *widget,
 	gpointer user_data)
 {
 	MousePositionNotify(event->x, event->y);
-	MouseButtonSet(falseblnr);
+	MouseButtonSet(false);
 
 	return TRUE;
 }
@@ -1008,7 +1008,7 @@ static gboolean enter_notify_event(GtkWidget *widget,
 	GdkEventCrossing *event,
 	gpointer user_data)
 {
-	CaughtMouse = trueblnr;
+	CaughtMouse = true;
 
 	MousePositionNotify(event->x, event->y);
 	MouseButtonSet((event->state & GDK_BUTTON1_MASK) != 0);
@@ -1023,7 +1023,7 @@ static gboolean leave_notify_event(GtkWidget *widget,
 	MousePositionNotify(event->x, event->y);
 	MouseButtonSet((event->state & GDK_BUTTON1_MASK) != 0);
 
-	CaughtMouse = falseblnr;
+	CaughtMouse = false;
 
 	return TRUE;
 }
@@ -1031,7 +1031,7 @@ static gboolean leave_notify_event(GtkWidget *widget,
 static gboolean delete_event(GtkWidget *widget,
 	GdkEventMotion *event)
 {
-	RequestMacOff = trueblnr;
+	RequestMacOff = true;
 
 	return TRUE;
 }
@@ -1042,7 +1042,7 @@ LOCALPROC ReconnectKeyCodes3(void)
 
 #if 0
 	if (WantCmdOptOnReconnect) {
-		WantCmdOptOnReconnect = falseblnr;
+		WantCmdOptOnReconnect = false;
 
 		GetTheDownKeys();
 	}
@@ -1052,21 +1052,21 @@ LOCALPROC ReconnectKeyCodes3(void)
 LOCALPROC DisconnectKeyCodes3(void)
 {
 	DisconnectKeyCodes2();
-	MouseButtonSet(falseblnr);
+	MouseButtonSet(false);
 }
 
-LOCALVAR blnr ADialogIsUp = falseblnr;
+LOCALVAR bool ADialogIsUp = false;
 
 LOCALPROC BeginDialog(void)
 {
 	DisconnectKeyCodes3();
-	ADialogIsUp = trueblnr;
+	ADialogIsUp = true;
 	ForceShowCursor();
 }
 
 LOCALPROC EndDialog(void)
 {
-	ADialogIsUp = falseblnr;
+	ADialogIsUp = false;
 	ReconnectKeyCodes3();
 }
 
@@ -1104,7 +1104,7 @@ static void InsertADisk0(void)
 	char ts[ClStrMaxLength + 1];
 	GtkWidget *dialog;
 
-	NativeStrFromCStr(ts, kStrMenuItemOpen, falseblnr);
+	NativeStrFromCStr(ts, kStrMenuItemOpen, false);
 
 	BeginDialog();
 	dialog = gtk_file_chooser_dialog_new(ts,
@@ -1120,7 +1120,7 @@ static void InsertADisk0(void)
 
 		filename =
 			gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-		(void) Sony_Insert1a(filename, falseblnr);
+		(void) Sony_Insert1a(filename, false);
 		g_free(filename);
 	}
 
@@ -1130,19 +1130,19 @@ static void InsertADisk0(void)
 LOCALPROC CheckForSavedTasks(void)
 {
 	if (EvtQNeedRecover) {
-		EvtQNeedRecover = falseblnr;
+		EvtQNeedRecover = false;
 
 		/* attempt cleanup, EvtQNeedRecover may get set again */
 		EvtQTryRecoverFromFull();
 	}
 
 	if (RequestMacOff) {
-		RequestMacOff = falseblnr;
+		RequestMacOff = false;
 		if (AnyDiskInserted()) {
 			MacMsgOverride(kStrQuitWarningTitle,
 				kStrQuitWarningMessage);
 		} else {
-			ForceMacOff = trueblnr;
+			ForceMacOff = true;
 		}
 	}
 
@@ -1180,7 +1180,7 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 
 	if (NeedWholeScreenDraw) {
-		NeedWholeScreenDraw = falseblnr;
+		NeedWholeScreenDraw = false;
 		ScreenChangedAll();
 	}
 
@@ -1198,7 +1198,7 @@ LOCALPROC CheckForSavedTasks(void)
 	if (gTrueBackgroundFlag || ADialogIsUp) {
 	} else {
 		if (RequestInsertDisk) {
-			RequestInsertDisk = falseblnr;
+			RequestInsertDisk = false;
 			InsertADisk0();
 		}
 	}
@@ -1213,48 +1213,48 @@ LOCALPROC CheckForSavedTasks(void)
 
 /* --- command line parsing --- */
 
-LOCALFUNC blnr ScanCommandLine(void)
+LOCALFUNC bool ScanCommandLine(void)
 {
 	int i;
 
-	for (i = 1; i < my_argc; ++i) {
-		if ('-' == my_argv[i][0]) {
+	for (i = 1; i < argc; ++i) {
+		if ('-' == argv[i][0]) {
 #if 0
-			if ((0 == strcmp(my_argv[i], "--display")) ||
-				(0 == strcmp(my_argv[i], "-display")))
+			if ((0 == strcmp(argv[i], "--display")) ||
+				(0 == strcmp(argv[i], "-display")))
 			{
 				++i;
-				if (i < my_argc) {
-					display_name = my_argv[i];
+				if (i < argc) {
+					display_name = argv[i];
 				}
 			} else
 #endif
-			if ((0 == strcmp(my_argv[i], "--rom")) ||
-				(0 == strcmp(my_argv[i], "-r")))
+			if ((0 == strcmp(argv[i], "--rom")) ||
+				(0 == strcmp(argv[i], "-r")))
 			{
 				++i;
-				if (i < my_argc) {
-					rom_path = my_argv[i];
+				if (i < argc) {
+					rom_path = argv[i];
 				}
 			} else
 #if 0
-			if (0 == strcmp(my_argv[i], "-l")) {
+			if (0 == strcmp(argv[i], "-l")) {
 				SpeedValue = 0;
 			} else
 #endif
 			{
-				MacMsg(kStrBadArgTitle, kStrBadArgMessage, falseblnr);
+				MacMsg(kStrBadArgTitle, kStrBadArgMessage, false);
 			}
 		} else {
-			(void) Sony_Insert1(my_argv[i], falseblnr);
+			(void) Sony_Insert1(argv[i], false);
 		}
 	}
-	return trueblnr;
+	return true;
 }
 
 /* --- main program flow --- */
 
-GLOBALOSGLUFUNC blnr ExtraTimeNotOver(void)
+GLOBALOSGLUFUNC bool ExtraTimeNotOver(void)
 {
 	UpdateTrueEmulatedTime();
 	return TrueEmulatedTime == OnTrueTime;
@@ -1344,7 +1344,7 @@ static gboolean
 focus_in_event(GtkWidget *widget, GdkEvent *event,
 	gpointer data)
 {
-	gTrueBackgroundFlag = falseblnr;
+	gTrueBackgroundFlag = false;
 
 	CheckMouseState();
 
@@ -1355,7 +1355,7 @@ static gboolean
 focus_out_event(GtkWidget *widget, GdkEvent *event,
 	gpointer data)
 {
-	gTrueBackgroundFlag = trueblnr;
+	gTrueBackgroundFlag = true;
 	return FALSE;
 }
 
@@ -1384,7 +1384,7 @@ static gboolean key_press_event(GtkWidget *widget,
 		}
 	}
 #endif
-	DoKeyCode(event->hardware_keycode, trueblnr);
+	DoKeyCode(event->hardware_keycode, true);
 
 	return TRUE;
 }
@@ -1398,7 +1398,7 @@ static gboolean key_release_event(GtkWidget *widget,
 	fprintf(stderr, "keyval %d\n", event->keyval);
 	fprintf(stderr, "hardware_keycode %d\n", event->hardware_keycode);
 #endif
-	DoKeyCode(event->hardware_keycode, falseblnr);
+	DoKeyCode(event->hardware_keycode, false);
 
 	return TRUE;
 }
@@ -1423,7 +1423,7 @@ static void drag_data_received(GtkWidget *widget,
 			file = g_filename_from_uri(uris[i], NULL, NULL);
 			/* file = gnome_vfs_get_local_path_from_uri(uris[i]); */
 			if (file != NULL) {
-				(void) Sony_Insert1a(file, falseblnr);
+				(void) Sony_Insert1a(file, false);
 				handled = TRUE;
 				g_free(file);
 			}
@@ -1448,16 +1448,16 @@ static void do_about_item(GtkAction *action, gpointer user_data)
 
 static void do_quit_item(GtkAction *action, gpointer user_data)
 {
-	RequestMacOff = trueblnr;
+	RequestMacOff = true;
 }
 
 static void do_open_item(GtkAction *action, gpointer user_data)
 {
-	RequestInsertDisk = trueblnr;
+	RequestInsertDisk = true;
 }
 
 LOCALPROC AppendConvertMenuItem(GtkWidget *the_menu,
-	GCallback c_handler, gpointer gobject, char *s, blnr AddEllipsis)
+	GCallback c_handler, gpointer gobject, char *s, bool AddEllipsis)
 {
 	char ts[ClStrMaxLength + 1];
 	GtkWidget *the_item;
@@ -1475,7 +1475,7 @@ LOCALPROC AppendSubmenuConvertName(GtkWidget *menubar,
 	char ts[ClStrMaxLength + 1];
 	GtkWidget *the_item;
 
-	NativeStrFromCStr(ts, s, falseblnr);
+	NativeStrFromCStr(ts, s, false);
 	the_item = gtk_menu_item_new_with_label(ts);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(the_item), the_menu);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menubar), the_item);
@@ -1506,7 +1506,7 @@ LOCALPROC ZapOSGLUVars(void)
 		int i;
 
 		for (i = 0; i < kNumMagStates; ++i) {
-			HavePositionWins[i] = falseblnr;
+			HavePositionWins[i] = false;
 		}
 	}
 #endif
@@ -1517,36 +1517,36 @@ LOCALPROC ReserveAllocAll(void)
 #if dbglog_HAVE
 	dbglog_ReserveAlloc();
 #endif
-	ReserveAllocOneBlock(&ROM, kROM_Size, 5, falseblnr);
+	ReserveAllocOneBlock(&ROM, kROM_Size, 5, false);
 	ReserveAllocOneBlock(&screencomparebuff,
-		vMacScreenNumBytes, 5, trueblnr);
+		vMacScreenNumBytes, 5, true);
 #if UseControlKeys
 	ReserveAllocOneBlock(&CntrlDisplayBuff,
-		vMacScreenNumBytes, 5, falseblnr);
+		vMacScreenNumBytes, 5, false);
 #endif
 
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMemory(void)
+LOCALFUNC bool AllocMemory(void)
 {
 	uimr n;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	ReserveAllocOffset = 0;
 	ReserveAllocBigBlock = nullpr;
 	ReserveAllocAll();
 	n = ReserveAllocOffset;
-	ReserveAllocBigBlock = (ui3p)calloc(1, n);
+	ReserveAllocBigBlock = (uint8_t *)calloc(1, n);
 	if (NULL == ReserveAllocBigBlock) {
-		MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, trueblnr);
+		MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, true);
 	} else {
 		ReserveAllocOffset = 0;
 		ReserveAllocAll();
 		if (n != ReserveAllocOffset) {
 			/* oops, program error */
 		} else {
-			IsOk = trueblnr;
+			IsOk = true;
 		}
 	}
 
@@ -1560,7 +1560,7 @@ LOCALPROC UnallocMemory(void)
 	}
 }
 
-LOCALFUNC blnr InitOSGLU(void)
+LOCALFUNC bool InitOSGLU(void)
 {
 	if (AllocMemory())
 #if dbglog_HAVE
@@ -1574,9 +1574,9 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (KC2MKCInit())
 	if (WaitForRom())
 	{
-		return trueblnr;
+		return true;
 	}
-	return falseblnr;
+	return false;
 }
 
 LOCALPROC UnInitOSGLU(void)
@@ -1638,27 +1638,27 @@ int main(int argc, char *argv[])
 	the_menu = gtk_menu_new();
 
 	AppendConvertMenuItem(the_menu,
-		G_CALLBACK(do_open_item), NULL, kStrMenuItemOpen, trueblnr);
+		G_CALLBACK(do_open_item), NULL, kStrMenuItemOpen, true);
 
 	the_item = gtk_separator_menu_item_new();
 	gtk_menu_shell_append(GTK_MENU_SHELL(the_menu), the_item);
 
 	AppendConvertMenuItem(the_menu,
-		G_CALLBACK(do_quit_item), NULL, kStrMenuItemQuit, falseblnr);
+		G_CALLBACK(do_quit_item), NULL, kStrMenuItemQuit, false);
 
 	AppendSubmenuConvertName(menubar, the_menu, kStrMenuFile);
 
 	the_menu = gtk_menu_new();
 
 	AppendConvertMenuItem(the_menu, G_CALLBACK(do_more_commands_item),
-		NULL, kStrMenuItemMore, trueblnr);
+		NULL, kStrMenuItemMore, true);
 
 	AppendSubmenuConvertName(menubar, the_menu, kStrMenuSpecial);
 
 	the_menu = gtk_menu_new();
 
 	AppendConvertMenuItem(the_menu,
-		G_CALLBACK(do_about_item), NULL, kStrMenuItemAbout, trueblnr);
+		G_CALLBACK(do_about_item), NULL, kStrMenuItemAbout, true);
 
 	AppendSubmenuConvertName(menubar, the_menu, kStrMenuHelp);
 
@@ -1748,8 +1748,8 @@ int main(int argc, char *argv[])
 
 	g_idle_add(MainEventLoop0, NULL);
 
-	my_argc = argc;
-	my_argv = argv;
+	argc = argc;
+	argv = argv;
 
 	ZapOSGLUVars();
 	if (InitOSGLU()) {

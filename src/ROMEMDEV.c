@@ -53,7 +53,7 @@ INCBIN(SonyDriver, "PATCHES/SONY.bin");
 #endif
 
 #if UseSonyPatch
-LOCALVAR const uint8_t my_disk_icon[] = {
+LOCALVAR const uint8_t disk_icon[] = {
 	0x7F, 0xFF, 0xFF, 0xF0,
 	0x81, 0x00, 0x01, 0x08,
 	0x81, 0x00, 0x71, 0x04,
@@ -146,7 +146,7 @@ LOCALVAR const uint8_t my_disk_icon[] = {
 #if UseSonyPatch
 LOCALPROC Sony_Install(void)
 {
-	ui3p pto = Sony_DriverBase + ROM;
+	uint8_t * pto = Sony_DriverBase + ROM;
 
 	MoveBytes((anyp)gSonyDriverData, (anyp)pto, gSonyDriverSize);
 #if CurEmMd <= kEmMd_Twiggy
@@ -168,13 +168,13 @@ LOCALPROC Sony_Install(void)
 	do_put_mem_long(pto, kExtn_Block_Base); /* pokeaddr */
 	pto += 4;
 
-	my_disk_icon_addr = (pto - ROM) + kROM_Base;
-	MoveBytes((anyp)my_disk_icon, (anyp)pto, sizeof(my_disk_icon));
-	pto += sizeof(my_disk_icon);
+	disk_icon_addr = (pto - ROM) + kROM_Base;
+	MoveBytes((anyp)disk_icon, (anyp)pto, sizeof(disk_icon));
+	pto += sizeof(disk_icon);
 
 #if UseLargeScreenHack
 	{
-		ui3p patchp = pto;
+		uint8_t * patchp = pto;
 
 #include "SCRNHACK.h"
 	}
@@ -200,8 +200,8 @@ LOCALPROC Sony_Install(void)
 LOCALPROC ROMscrambleForMTB(void)
 {
 	int32_t j;
-	ui3p p = ROM;
-	ui3p p2 = ROM + (1 << ln2mtb);
+	uint8_t * p = ROM;
+	uint8_t * p2 = ROM + (1 << ln2mtb);
 
 	for (j = kROM_Size / (1 << ln2mtb) / 2; --j >= 0; ) {
 		int32_t i;
@@ -219,7 +219,7 @@ LOCALPROC ROMscrambleForMTB(void)
 }
 #endif
 
-GLOBALFUNC blnr ROM_Init(void)
+GLOBALFUNC bool ROM_Init(void)
 {
 #if DisableRomCheck
 
@@ -273,5 +273,5 @@ GLOBALFUNC blnr ROM_Init(void)
 	ROMscrambleForMTB();
 #endif
 
-	return trueblnr;
+	return true;
 }

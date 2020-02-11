@@ -252,7 +252,7 @@ LOCALFUNC uint16_t OpEADestCalcCyc(WorkR *p, uint8_t m, uint8_t r)
 }
 #endif
 
-LOCALPROC SetDcoArgFields(WorkR *p, blnr src,
+LOCALPROC SetDcoArgFields(WorkR *p, bool src,
 	uint8_t CurAMd, uint8_t CurArgDat)
 {
 	if (src) {
@@ -264,12 +264,12 @@ LOCALPROC SetDcoArgFields(WorkR *p, blnr src,
 	}
 }
 
-LOCALFUNC blnr CheckValidAddrMode(WorkR *p,
-	uint8_t m, uint8_t r, uint8_t v, blnr src)
+LOCALFUNC bool CheckValidAddrMode(WorkR *p,
+	uint8_t m, uint8_t r, uint8_t v, bool src)
 {
 	uint8_t CurAMd = 0; /* init to keep compiler happy */
 	uint8_t CurArgDat = 0;
-	blnr IsOk;
+	bool IsOk;
 
 	switch (m) {
 		case 0:
@@ -476,12 +476,12 @@ LOCALFUNC blnr CheckValidAddrMode(WorkR *p,
 						kAddrValidMaskAny | kAddrValidMaskData);
 					break;
 				default:
-					IsOk = falseblnr;
+					IsOk = false;
 					break;
 			}
 			break;
 		default: /* keep compiler happy */
-			IsOk = falseblnr;
+			IsOk = false;
 			break;
 	}
 
@@ -493,7 +493,7 @@ LOCALFUNC blnr CheckValidAddrMode(WorkR *p,
 }
 
 #if WantCycByPriOp
-LOCALFUNC blnr LeaPeaEACalcCyc(WorkR *p, uint8_t m, uint8_t r)
+LOCALFUNC bool LeaPeaEACalcCyc(WorkR *p, uint8_t m, uint8_t r)
 {
 	uint16_t v;
 
@@ -536,40 +536,40 @@ LOCALFUNC blnr LeaPeaEACalcCyc(WorkR *p, uint8_t m, uint8_t r)
 }
 #endif
 
-LOCALFUNC blnr IsValidAddrMode(WorkR *p)
+LOCALFUNC bool IsValidAddrMode(WorkR *p)
 {
 	return CheckValidAddrMode(p,
-		mode(p), reg(p), kAddrValidAny, falseblnr);
+		mode(p), reg(p), kAddrValidAny, false);
 }
 
-LOCALFUNC blnr CheckDataAltAddrMode(WorkR *p)
+LOCALFUNC bool CheckDataAltAddrMode(WorkR *p)
 {
 	return CheckValidAddrMode(p,
-		mode(p), reg(p), kAddrValidDataAlt, falseblnr);
+		mode(p), reg(p), kAddrValidDataAlt, false);
 }
 
-LOCALFUNC blnr CheckDataAddrMode(WorkR *p)
+LOCALFUNC bool CheckDataAddrMode(WorkR *p)
 {
 	return CheckValidAddrMode(p,
-		mode(p), reg(p), kAddrValidData, falseblnr);
+		mode(p), reg(p), kAddrValidData, false);
 }
 
-LOCALFUNC blnr CheckControlAddrMode(WorkR *p)
+LOCALFUNC bool CheckControlAddrMode(WorkR *p)
 {
 	return CheckValidAddrMode(p,
-		mode(p), reg(p), kAddrValidControl, falseblnr);
+		mode(p), reg(p), kAddrValidControl, false);
 }
 
-LOCALFUNC blnr CheckControlAltAddrMode(WorkR *p)
+LOCALFUNC bool CheckControlAltAddrMode(WorkR *p)
 {
 	return CheckValidAddrMode(p,
-		mode(p), reg(p), kAddrValidControlAlt, falseblnr);
+		mode(p), reg(p), kAddrValidControlAlt, false);
 }
 
-LOCALFUNC blnr CheckAltMemAddrMode(WorkR *p)
+LOCALFUNC bool CheckAltMemAddrMode(WorkR *p)
 {
 	return CheckValidAddrMode(p,
-		mode(p), reg(p), kAddrValidAltMem, falseblnr);
+		mode(p), reg(p), kAddrValidAltMem, false);
 }
 
 LOCALPROC FindOpSizeFromb76(WorkR *p)
@@ -645,9 +645,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 			}
 #endif
 			if (CheckValidAddrMode(p, 1, reg(p),
-				kAddrValidAny, trueblnr))
+				kAddrValidAny, true))
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 				p->MainClass = kIKindMoveP0 + b76(p);
 			}
@@ -672,12 +672,12 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 				}
 #endif
 				p->MainClass = kIKindBTstL + b76(p);
-				SetDcoArgFields(p, trueblnr, kAMdRegL, rg9(p));
-				SetDcoArgFields(p, falseblnr, kAMdRegL, reg(p));
+				SetDcoArgFields(p, true, kAMdRegL, rg9(p));
+				SetDcoArgFields(p, false, kAMdRegL, reg(p));
 			} else {
 				p->opsize = 1;
 				p->MainClass = kIKindBTstB + b76(p);
-				SetDcoArgFields(p, trueblnr, kAMdRegB, rg9(p));
+				SetDcoArgFields(p, true, kAMdRegB, rg9(p));
 				if (b76(p) == 0) { /* BTst */
 					if (CheckDataAddrMode(p)) {
 #if WantCycByPriOp
@@ -721,16 +721,16 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 						break;
 				}
 #endif
-				SetDcoArgFields(p, trueblnr, kAMdImmedB, 0);
-				SetDcoArgFields(p, falseblnr, kAMdRegL, reg(p));
+				SetDcoArgFields(p, true, kAMdImmedB, 0);
+				SetDcoArgFields(p, false, kAMdRegL, reg(p));
 				p->MainClass = kIKindBTstL + b76(p);
 			} else {
 				p->opsize = 1;
-				SetDcoArgFields(p, trueblnr, kAMdImmedB, 0);
+				SetDcoArgFields(p, true, kAMdImmedB, 0);
 				p->MainClass = kIKindBTstB + b76(p);
 				if (b76(p) == 0) { /* BTst */
 					if (CheckValidAddrMode(p,
-						mode(p), reg(p), kAddrValidDataNoCn, falseblnr))
+						mode(p), reg(p), kAddrValidDataNoCn, false))
 					{
 #if WantCycByPriOp
 						p->Cycles =
@@ -814,9 +814,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 			}
 #endif
 			FindOpSizeFromb76(p);
-			if (CheckValidAddrMode(p, 7, 4, kAddrValidAny, trueblnr))
+			if (CheckValidAddrMode(p, 7, 4, kAddrValidAny, true))
 			if (CheckValidAddrMode(p,
-				mode(p), reg(p), kAddrValidDataNoCn, falseblnr))
+				mode(p), reg(p), kAddrValidDataNoCn, false))
 			{
 #if WantCycByPriOp
 				if (0 == mode(p)) {
@@ -887,9 +887,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 #endif
 						FindOpSizeFromb76(p);
 						if (CheckValidAddrMode(p, 7, 4,
-							kAddrValidAny, trueblnr))
+							kAddrValidAny, true))
 						if (CheckValidAddrMode(p, mode(p), reg(p),
-							kAddrValidDataAlt, falseblnr))
+							kAddrValidDataAlt, false))
 						{
 #if WantCycByPriOp
 							if (0 != mode(p)) {
@@ -921,9 +921,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 #endif
 						FindOpSizeFromb76(p);
 						if (CheckValidAddrMode(p, 7, 4,
-							kAddrValidAny, trueblnr))
+							kAddrValidAny, true))
 						if (CheckValidAddrMode(p, mode(p), reg(p),
-							kAddrValidDataAlt, falseblnr))
+							kAddrValidDataAlt, false))
 						{
 #if WantCycByPriOp
 							if (0 != mode(p)) {
@@ -955,9 +955,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 #endif
 						FindOpSizeFromb76(p);
 						if (CheckValidAddrMode(p, 7, 4,
-							kAddrValidAny, trueblnr))
+							kAddrValidAny, true))
 						if (CheckValidAddrMode(p, mode(p), reg(p),
-							kAddrValidDataAlt, falseblnr))
+							kAddrValidDataAlt, false))
 						{
 #if WantCycByPriOp
 							if (0 != mode(p)) {
@@ -989,9 +989,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 #endif
 						FindOpSizeFromb76(p);
 						if (CheckValidAddrMode(p, 7, 4,
-							kAddrValidAny, trueblnr))
+							kAddrValidAny, true))
 						if (CheckValidAddrMode(p, mode(p), reg(p),
-							kAddrValidDataAlt, falseblnr))
+							kAddrValidDataAlt, false))
 						{
 #if WantCycByPriOp
 							if (0 != mode(p)) {
@@ -1023,9 +1023,9 @@ LOCALPROCUSEDONCE DeCode0(WorkR *p)
 #endif
 						FindOpSizeFromb76(p);
 						if (CheckValidAddrMode(p, 7, 4,
-							kAddrValidAny, trueblnr))
+							kAddrValidAny, true))
 						if (CheckValidAddrMode(p, mode(p), reg(p),
-							kAddrValidDataAlt, falseblnr))
+							kAddrValidDataAlt, false))
 						{
 #if WantCycByPriOp
 							if (0 != mode(p)) {
@@ -1069,9 +1069,9 @@ LOCALPROCUSEDONCE DeCode1(WorkR *p)
 		p->MainClass = kIKindIllegal;
 	} else {
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		if (CheckValidAddrMode(p, md6(p), rg9(p),
-			kAddrValidDataAlt, falseblnr))
+			kAddrValidDataAlt, false))
 		{
 #if WantCycByPriOp
 			p->Cycles = (4 * kCycleScale + RdAvgXtraCyc);
@@ -1088,9 +1088,9 @@ LOCALPROCUSEDONCE DeCode2(WorkR *p)
 	p->opsize = 4;
 	if (md6(p) == 1) { /* MOVEA */
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		if (CheckValidAddrMode(p, 1, rg9(p),
-			kAddrValidAny, falseblnr))
+			kAddrValidAny, false))
 		{
 #if WantCycByPriOp
 			p->Cycles = (4 * kCycleScale + RdAvgXtraCyc);
@@ -1101,9 +1101,9 @@ LOCALPROCUSEDONCE DeCode2(WorkR *p)
 		}
 	} else {
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		if (CheckValidAddrMode(p, md6(p), rg9(p),
-			kAddrValidDataAlt, falseblnr))
+			kAddrValidDataAlt, false))
 		{
 #if WantCycByPriOp
 			p->Cycles = (4 * kCycleScale + RdAvgXtraCyc);
@@ -1120,9 +1120,9 @@ LOCALPROCUSEDONCE DeCode3(WorkR *p)
 	p->opsize = 2;
 	if (md6(p) == 1) { /* MOVEA */
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		if (CheckValidAddrMode(p, 1, rg9(p),
-			kAddrValidAny, falseblnr))
+			kAddrValidAny, false))
 		{
 #if WantCycByPriOp
 			p->Cycles = (4 * kCycleScale + RdAvgXtraCyc);
@@ -1133,9 +1133,9 @@ LOCALPROCUSEDONCE DeCode3(WorkR *p)
 		}
 	} else {
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		if (CheckValidAddrMode(p, md6(p), rg9(p),
-			kAddrValidDataAlt, falseblnr))
+			kAddrValidDataAlt, false))
 		{
 #if WantCycByPriOp
 			p->Cycles = (4 * kCycleScale + RdAvgXtraCyc);
@@ -1204,9 +1204,9 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 				/* Chk.L 0100ddd100mmmrrr */
 				p->opsize = 4;
 				if (CheckValidAddrMode(p, mode(p), reg(p),
-					kAddrValidData, falseblnr))
+					kAddrValidData, false))
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				{
 #if WantCycByPriOp
 					p->Cycles += OpEACalcCyc(p, mode(p), reg(p));
@@ -1224,9 +1224,9 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 				/* Chk.W 0100ddd110mmmrrr */
 				p->opsize = 2;
 				if (CheckValidAddrMode(p, mode(p), reg(p),
-					kAddrValidData, falseblnr))
+					kAddrValidData, false))
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				{
 #if WantCycByPriOp
 					p->Cycles = (10 * kCycleScale + RdAvgXtraCyc);
@@ -1240,7 +1240,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 #if Use68020
 				if ((0 == mode(p)) && (4 == rg9(p))) {
 					/* EXTB.L */
-					SetDcoArgFields(p, falseblnr,
+					SetDcoArgFields(p, false,
 						kAMdRegL, reg(p));
 					p->MainClass = kIKindEXTBL;
 				} else
@@ -1412,7 +1412,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 #if Use68020
 						if (mode(p) == 1) {
 							/* Link.L 0100100000001rrr */
-							SetDcoArgFields(p, falseblnr,
+							SetDcoArgFields(p, false,
 								kAMdRegL, reg(p) + 8);
 							p->MainClass = kIKindLinkL;
 						} else
@@ -1444,7 +1444,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 								(4 * kCycleScale + RdAvgXtraCyc);
 #endif
 							p->MainClass = kIKindSwap;
-							SetDcoArgFields(p, falseblnr,
+							SetDcoArgFields(p, false,
 								kAMdRegL, reg(p));
 						} else
 #if Use68020
@@ -1473,7 +1473,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 							p->Cycles =
 								(4 * kCycleScale + RdAvgXtraCyc);
 #endif
-							SetDcoArgFields(p, falseblnr,
+							SetDcoArgFields(p, false,
 								kAMdRegW, reg(p));
 							p->MainClass = kIKindEXTW;
 						} else {
@@ -1486,7 +1486,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 								p->Cycles += MoveAvgN * 4 * kCycleScale
 									+ MoveAvgN * WrAvgXtraCyc;
 #endif
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdAPreDecL, reg(p) + 8);
 								p->MainClass = kIKindMOVEMRmMW;
 							} else {
@@ -1511,7 +1511,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 							p->Cycles =
 								(4 * kCycleScale + RdAvgXtraCyc);
 #endif
-							SetDcoArgFields(p, falseblnr,
+							SetDcoArgFields(p, false,
 								kAMdRegL, reg(p));
 							p->MainClass = kIKindEXTL;
 						} else {
@@ -1524,7 +1524,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 #endif
 							p->opsize = 4;
 							if (mode(p) == 4) {
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdAPreDecL, reg(p) + 8);
 								p->MainClass = kIKindMOVEMRmML;
 							} else {
@@ -1601,7 +1601,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 								+ MoveAvgN * RdAvgXtraCyc;
 						}
 #endif
-						SetDcoArgFields(p, falseblnr,
+						SetDcoArgFields(p, false,
 							kAMdAPosIncL, reg(p) + 8);
 						if (b76(p) == 2) {
 							p->MainClass = kIKindMOVEMApRW;
@@ -1665,7 +1665,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 									+ 4 * RdAvgXtraCyc
 									+ 3 * WrAvgXtraCyc);
 #endif
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdDat4, (p->opcode & 15) + 32);
 								p->MainClass = kIKindTrap;
 								break;
@@ -1676,7 +1676,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 									+ 2 * RdAvgXtraCyc
 									+ 2 * WrAvgXtraCyc);
 #endif
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdRegL, reg(p) + 8);
 								if (reg(p) == 6) {
 									p->MainClass = kIKindLinkA6;
@@ -1690,7 +1690,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 								p->Cycles = (12 * kCycleScale
 									+ 3 * RdAvgXtraCyc);
 #endif
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdRegL, reg(p) + 8);
 								if (reg(p) == 6) {
 									p->MainClass = kIKindUnlkA6;
@@ -1704,7 +1704,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 								p->Cycles =
 									(4 * kCycleScale + RdAvgXtraCyc);
 #endif
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdRegL, reg(p) + 8);
 								p->MainClass = kIKindMoveRUSP;
 								break;
@@ -1714,7 +1714,7 @@ LOCALPROCUSEDONCE DeCode4(WorkR *p)
 								p->Cycles =
 									(4 * kCycleScale + RdAvgXtraCyc);
 #endif
-								SetDcoArgFields(p, falseblnr,
+								SetDcoArgFields(p, false,
 									kAMdRegL, reg(p) + 8);
 								p->MainClass = kIKindMoveUSPR;
 								break;
@@ -1937,7 +1937,7 @@ LOCALPROCUSEDONCE DeCode5(WorkR *p)
 				*/
 #endif
 #endif
-			SetDcoArgFields(p, falseblnr, kAMdRegW, reg(p));
+			SetDcoArgFields(p, false, kAMdRegW, reg(p));
 			if (1 == ((p->opcode >> 8) & 15)) {
 				p->MainClass = kIKindDBF;
 			} else {
@@ -1976,9 +1976,9 @@ LOCALPROCUSEDONCE DeCode5(WorkR *p)
 	} else {
 		if (mode(p) == 1) {
 			p->opsize = b8(p) * 2 + 2;
-			SetDcoArgFields(p, trueblnr, kAMdDat4,
+			SetDcoArgFields(p, true, kAMdDat4,
 				octdat(rg9(p)));
-			SetDcoArgFields(p, falseblnr, kAMdRegL,
+			SetDcoArgFields(p, false, kAMdRegL,
 				reg(p) + 8);
 				/* always long, regardless of opsize */
 			if (b8(p) == 0) {
@@ -1996,10 +1996,10 @@ LOCALPROCUSEDONCE DeCode5(WorkR *p)
 			}
 		} else {
 			FindOpSizeFromb76(p);
-			SetDcoArgFields(p, trueblnr, kAMdDat4,
+			SetDcoArgFields(p, true, kAMdDat4,
 				octdat(rg9(p)));
 			if (CheckValidAddrMode(p,
-				mode(p), reg(p), kAddrValidDataAlt, falseblnr))
+				mode(p), reg(p), kAddrValidDataAlt, false))
 			{
 #if WantCycByPriOp
 				if (0 != mode(p)) {
@@ -2131,9 +2131,9 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 	if (b76(p) == 3) {
 		p->opsize = 2;
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidData, trueblnr))
+			kAddrValidData, true))
 		if (CheckValidAddrMode(p, 0, rg9(p),
-			kAddrValidAny, falseblnr))
+			kAddrValidAny, false))
 		{
 			if (b8(p) == 0) {
 				/* DivU 1000ddd011mmmrrr */
@@ -2175,9 +2175,9 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 #endif
 			FindOpSizeFromb76(p);
 			if (CheckValidAddrMode(p, mode(p), reg(p),
-				kAddrValidData, trueblnr))
+				kAddrValidData, true))
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 				if (4 == p->opsize) {
@@ -2212,17 +2212,17 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 						p->opsize = 1;
 						if (mode(p) == 0) {
 							if (CheckValidAddrMode(p, 0, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 0, rg9(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindSbcd;
 							}
 						} else {
 							if (CheckValidAddrMode(p, 4, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 4, rg9(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindSbcd;
 							}
@@ -2234,11 +2234,11 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 						if (mode(p) == 0) {
 							p->opsize = 2;
 							if (CheckValidAddrMode(p, 0, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							{
 								p->opsize = 1;
 								if (CheckValidAddrMode(p, 0, rg9(p),
-									kAddrValidAny, falseblnr))
+									kAddrValidAny, false))
 								{
 									p->MainClass = kIKindPack;
 								}
@@ -2246,11 +2246,11 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 						} else {
 							p->opsize = 2;
 							if (CheckValidAddrMode(p, 4, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							{
 								p->opsize = 1;
 								if (CheckValidAddrMode(p, 4, rg9(p),
-									kAddrValidAny, falseblnr))
+									kAddrValidAny, false))
 								{
 									p->MainClass = kIKindPack;
 								}
@@ -2262,11 +2262,11 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 						if (mode(p) == 0) {
 							p->opsize = 1;
 							if (CheckValidAddrMode(p, 0, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							{
 								p->opsize = 2;
 								if (CheckValidAddrMode(p, 0, rg9(p),
-									kAddrValidAny, falseblnr))
+									kAddrValidAny, false))
 								{
 									p->MainClass = kIKindUnpk;
 								}
@@ -2274,11 +2274,11 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 						} else {
 							p->opsize = 1;
 							if (CheckValidAddrMode(p, 4, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							{
 								p->opsize = 2;
 								if (CheckValidAddrMode(p, 4, rg9(p),
-									kAddrValidAny, falseblnr))
+									kAddrValidAny, false))
 								{
 									p->MainClass = kIKindUnpk;
 								}
@@ -2299,9 +2299,9 @@ LOCALPROCUSEDONCE DeCode8(WorkR *p)
 #endif
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, mode(p), reg(p),
-					kAddrValidAltMem, falseblnr))
+					kAddrValidAltMem, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2328,10 +2328,10 @@ LOCALPROCUSEDONCE DeCode9(WorkR *p)
 		}
 #endif
 		p->opsize = b8(p) * 2 + 2;
-		SetDcoArgFields(p, falseblnr, kAMdRegL, rg9(p) + 8);
+		SetDcoArgFields(p, false, kAMdRegL, rg9(p) + 8);
 			/* always long, regardless of opsize */
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		{
 #if WantCycByPriOp
 			if (4 == p->opsize) {
@@ -2358,9 +2358,9 @@ LOCALPROCUSEDONCE DeCode9(WorkR *p)
 #endif
 			FindOpSizeFromb76(p);
 			if (CheckValidAddrMode(p, mode(p), reg(p),
-				kAddrValidAny, trueblnr))
+				kAddrValidAny, true))
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 				if (4 == p->opsize) {
@@ -2384,9 +2384,9 @@ LOCALPROCUSEDONCE DeCode9(WorkR *p)
 				/* p->MainClass = kIKindSubXd; */
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 0, reg(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, falseblnr))
+					kAddrValidAny, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2400,9 +2400,9 @@ LOCALPROCUSEDONCE DeCode9(WorkR *p)
 				/* p->MainClass = kIKindSubXm; */
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 4, reg(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, 4, rg9(p),
-					kAddrValidAny, falseblnr))
+					kAddrValidAny, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2422,9 +2422,9 @@ LOCALPROCUSEDONCE DeCode9(WorkR *p)
 #endif
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, mode(p),
-					reg(p), kAddrValidAltMem, falseblnr))
+					reg(p), kAddrValidAltMem, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2460,10 +2460,10 @@ LOCALPROCUSEDONCE DeCodeB(WorkR *p)
 		}
 #endif
 		p->opsize = b8(p) * 2 + 2;
-		SetDcoArgFields(p, falseblnr, kAMdRegL, rg9(p) + 8);
+		SetDcoArgFields(p, false, kAMdRegL, rg9(p) + 8);
 			/* always long, regardless of opsize */
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		{
 #if WantCycByPriOp
 			p->Cycles = (6 * kCycleScale + RdAvgXtraCyc);
@@ -2479,9 +2479,9 @@ LOCALPROCUSEDONCE DeCodeB(WorkR *p)
 #endif
 			FindOpSizeFromb76(p);
 			if (CheckValidAddrMode(p, 3, reg(p),
-				kAddrValidAny, trueblnr))
+				kAddrValidAny, true))
 			if (CheckValidAddrMode(p, 3, rg9(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 				p->Cycles = (4 == p->opsize)
@@ -2499,9 +2499,9 @@ LOCALPROCUSEDONCE DeCodeB(WorkR *p)
 #endif
 			FindOpSizeFromb76(p);
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, trueblnr))
+				kAddrValidAny, true))
 			if (CheckValidAddrMode(p, mode(p), reg(p),
-				kAddrValidDataAlt, falseblnr))
+				kAddrValidDataAlt, false))
 			{
 #if WantCycByPriOp
 				if (0 != mode(p)) {
@@ -2529,9 +2529,9 @@ LOCALPROCUSEDONCE DeCodeB(WorkR *p)
 #endif
 		FindOpSizeFromb76(p);
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		if (CheckValidAddrMode(p, 0, rg9(p),
-			kAddrValidAny, falseblnr))
+			kAddrValidAny, false))
 		{
 #if WantCycByPriOp
 			p->Cycles = (4 == p->opsize)
@@ -2549,9 +2549,9 @@ LOCALPROCUSEDONCE DeCodeC(WorkR *p)
 	if (b76(p) == 3) {
 		p->opsize = 2;
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidData, trueblnr))
+			kAddrValidData, true))
 		if (CheckValidAddrMode(p, 0, rg9(p),
-			kAddrValidAny, falseblnr))
+			kAddrValidAny, false))
 		{
 #if WantCycByPriOp
 #if WantCloserCyc
@@ -2580,9 +2580,9 @@ LOCALPROCUSEDONCE DeCodeC(WorkR *p)
 #endif
 			FindOpSizeFromb76(p);
 			if (CheckValidAddrMode(p, mode(p), reg(p),
-				kAddrValidData, trueblnr))
+				kAddrValidData, true))
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 				if (4 == p->opsize) {
@@ -2617,17 +2617,17 @@ LOCALPROCUSEDONCE DeCodeC(WorkR *p)
 						p->opsize = 1;
 						if (mode(p) == 0) {
 							if (CheckValidAddrMode(p, 0, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 0, rg9(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindAbcd;
 							}
 						} else {
 							if (CheckValidAddrMode(p, 4, reg(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 4, rg9(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindAbcd;
 							}
@@ -2641,17 +2641,17 @@ LOCALPROCUSEDONCE DeCodeC(WorkR *p)
 						p->opsize = 4;
 						if (mode(p) == 0) {
 							if (CheckValidAddrMode(p, 0, rg9(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 0, reg(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindExg;
 							}
 						} else {
 							if (CheckValidAddrMode(p, 1, rg9(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 1, reg(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindExg;
 							}
@@ -2668,9 +2668,9 @@ LOCALPROCUSEDONCE DeCodeC(WorkR *p)
 								+ RdAvgXtraCyc);
 #endif
 							if (CheckValidAddrMode(p, 0, rg9(p),
-								kAddrValidAny, trueblnr))
+								kAddrValidAny, true))
 							if (CheckValidAddrMode(p, 1, reg(p),
-								kAddrValidAny, falseblnr))
+								kAddrValidAny, false))
 							{
 								p->MainClass = kIKindExg;
 							}
@@ -2686,9 +2686,9 @@ LOCALPROCUSEDONCE DeCodeC(WorkR *p)
 #endif
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, mode(p), reg(p),
-					kAddrValidAltMem, falseblnr))
+					kAddrValidAltMem, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2710,10 +2710,10 @@ LOCALPROCUSEDONCE DeCodeD(WorkR *p)
 	if (b76(p) == 3) {
 		/* ADDA 1101dddm11mmmrrr */
 		p->opsize = b8(p) * 2 + 2;
-		SetDcoArgFields(p, falseblnr, kAMdRegL, rg9(p) + 8);
+		SetDcoArgFields(p, false, kAMdRegL, rg9(p) + 8);
 			/* always long, regardless of opsize */
 		if (CheckValidAddrMode(p, mode(p), reg(p),
-			kAddrValidAny, trueblnr))
+			kAddrValidAny, true))
 		{
 #if WantCycByPriOp
 			if (4 == p->opsize) {
@@ -2735,9 +2735,9 @@ LOCALPROCUSEDONCE DeCodeD(WorkR *p)
 			/* ADD 1101ddd0ssmmmrrr */
 			FindOpSizeFromb76(p);
 			if (CheckValidAddrMode(p, mode(p), reg(p),
-				kAddrValidAny, trueblnr))
+				kAddrValidAny, true))
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 				if (4 == p->opsize) {
@@ -2761,9 +2761,9 @@ LOCALPROCUSEDONCE DeCodeD(WorkR *p)
 				/* p->MainClass = kIKindAddXd; */
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 0, reg(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, falseblnr))
+					kAddrValidAny, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2776,9 +2776,9 @@ LOCALPROCUSEDONCE DeCodeD(WorkR *p)
 				/* p->MainClass = kIKindAddXm; */
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 4, reg(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, 4, rg9(p),
-					kAddrValidAny, falseblnr))
+					kAddrValidAny, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2793,9 +2793,9 @@ LOCALPROCUSEDONCE DeCodeD(WorkR *p)
 				/* ADD 1101ddd1ssmmmrrr */
 				FindOpSizeFromb76(p);
 				if (CheckValidAddrMode(p, 0, rg9(p),
-					kAddrValidAny, trueblnr))
+					kAddrValidAny, true))
 				if (CheckValidAddrMode(p, mode(p), reg(p),
-					kAddrValidAltMem, falseblnr))
+					kAddrValidAltMem, false))
 				{
 #if WantCycByPriOp
 					p->Cycles = (4 == p->opsize)
@@ -2833,7 +2833,7 @@ LOCALPROCUSEDONCE DeCodeE(WorkR *p)
 			p->DecOp.y.v[0].AMd = mode(p);
 			p->DecOp.y.v[0].ArgDat = (p->opcode >> 8) & 7;
 			if (0 == mode(p)) {
-				SetDcoArgFields(p, falseblnr, kAMdRegL, reg(p));
+				SetDcoArgFields(p, false, kAMdRegL, reg(p));
 				p->MainClass = kIKindBitField;
 			} else {
 				switch ((p->opcode >> 8) & 7) {
@@ -2868,7 +2868,7 @@ LOCALPROCUSEDONCE DeCodeE(WorkR *p)
 				p->Cycles += OpEACalcCyc(p, mode(p), reg(p));
 #endif
 				p->MainClass = rolops(p, rg9(p));
-				SetDcoArgFields(p, trueblnr, kAMdDat4, 1);
+				SetDcoArgFields(p, true, kAMdDat4, 1);
 			}
 		}
 	} else {
@@ -2876,7 +2876,7 @@ LOCALPROCUSEDONCE DeCodeE(WorkR *p)
 		if (mode(p) < 4) {
 			/* 1110cccdss0ttddd */
 			if (CheckValidAddrMode(p, 0, reg(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 				p->Cycles = ((4 == p->opsize)
@@ -2888,14 +2888,14 @@ LOCALPROCUSEDONCE DeCodeE(WorkR *p)
 					;
 #endif
 				p->MainClass = rolops(p, mode(p) & 3);
-				SetDcoArgFields(p, trueblnr, kAMdDat4, octdat(rg9(p)));
+				SetDcoArgFields(p, true, kAMdDat4, octdat(rg9(p)));
 			}
 		} else {
 			/* 1110rrrdss1ttddd */
 			if (CheckValidAddrMode(p, 0, rg9(p),
-				kAddrValidAny, trueblnr))
+				kAddrValidAny, true))
 			if (CheckValidAddrMode(p, 0, reg(p),
-				kAddrValidAny, falseblnr))
+				kAddrValidAny, false))
 			{
 #if WantCycByPriOp
 #if WantCloserCyc

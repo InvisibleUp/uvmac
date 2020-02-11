@@ -39,7 +39,7 @@ LOCALVAR uint32_t Disasm_pc;
 		(if pc points to memory mapped device)
 */
 
-LOCALVAR ui3p Disasm_pcp;
+LOCALVAR uint8_t * Disasm_pcp;
 LOCALVAR uint32_t Disasm_pc_blockmask;
 LOCALVAR uint8_t Disasm_pcp_dummy[2] = {
 	0, 0
@@ -1692,24 +1692,24 @@ LOCALPROCUSEDONCE DisasmBitField(void)
 }
 #endif
 
-LOCALFUNC blnr IsValidAddrMode(void)
+LOCALFUNC bool IsValidAddrMode(void)
 {
 	return (Disasm_mode != 7) || (Disasm_reg < 5);
 }
 
-LOCALFUNC blnr IsValidDstAddrMode(void)
+LOCALFUNC bool IsValidDstAddrMode(void)
 {
 	return (Disasm_md6 != 7) || (Disasm_rg9 < 2);
 }
 
-LOCALFUNC blnr IsValidDataAltAddrMode(void)
+LOCALFUNC bool IsValidDataAltAddrMode(void)
 {
-	blnr IsOk;
+	bool IsOk;
 
 	switch (Disasm_mode) {
 		case 1:
 		default: /* keep compiler happy */
-			IsOk = falseblnr;
+			IsOk = false;
 			break;
 		case 0:
 		case 2:
@@ -1717,7 +1717,7 @@ LOCALFUNC blnr IsValidDataAltAddrMode(void)
 		case 4:
 		case 5:
 		case 6:
-			IsOk = trueblnr;
+			IsOk = true;
 			break;
 		case 7:
 			IsOk = Disasm_reg < 2;
@@ -1727,14 +1727,14 @@ LOCALFUNC blnr IsValidDataAltAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC blnr IsValidDataAddrMode(void)
+LOCALFUNC bool IsValidDataAddrMode(void)
 {
-	blnr IsOk;
+	bool IsOk;
 
 	switch (Disasm_mode) {
 		case 1:
 		default: /* keep compiler happy */
-			IsOk = falseblnr;
+			IsOk = false;
 			break;
 		case 0:
 		case 2:
@@ -1742,7 +1742,7 @@ LOCALFUNC blnr IsValidDataAddrMode(void)
 		case 4:
 		case 5:
 		case 6:
-			IsOk = trueblnr;
+			IsOk = true;
 			break;
 		case 7:
 			IsOk = Disasm_reg < 5;
@@ -1752,9 +1752,9 @@ LOCALFUNC blnr IsValidDataAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC blnr IsValidControlAddrMode(void)
+LOCALFUNC bool IsValidControlAddrMode(void)
 {
-	blnr IsOk;
+	bool IsOk;
 
 	switch (Disasm_mode) {
 		case 0:
@@ -1762,12 +1762,12 @@ LOCALFUNC blnr IsValidControlAddrMode(void)
 		case 3:
 		case 4:
 		default: /* keep compiler happy */
-			IsOk = falseblnr;
+			IsOk = false;
 			break;
 		case 2:
 		case 5:
 		case 6:
-			IsOk = trueblnr;
+			IsOk = true;
 			break;
 		case 7:
 			IsOk = Disasm_reg < 4;
@@ -1777,9 +1777,9 @@ LOCALFUNC blnr IsValidControlAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC blnr IsValidControlAltAddrMode(void)
+LOCALFUNC bool IsValidControlAltAddrMode(void)
 {
-	blnr IsOk;
+	bool IsOk;
 
 	switch (Disasm_mode) {
 		case 0:
@@ -1787,12 +1787,12 @@ LOCALFUNC blnr IsValidControlAltAddrMode(void)
 		case 3:
 		case 4:
 		default: /* keep compiler happy */
-			IsOk = falseblnr;
+			IsOk = false;
 			break;
 		case 2:
 		case 5:
 		case 6:
-			IsOk = trueblnr;
+			IsOk = true;
 			break;
 		case 7:
 			IsOk = Disasm_reg < 2;
@@ -1802,22 +1802,22 @@ LOCALFUNC blnr IsValidControlAltAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC blnr IsValidAltMemAddrMode(void)
+LOCALFUNC bool IsValidAltMemAddrMode(void)
 {
-	blnr IsOk;
+	bool IsOk;
 
 	switch (Disasm_mode) {
 		case 0:
 		case 1:
 		default: /* keep compiler happy */
-			IsOk = falseblnr;
+			IsOk = false;
 			break;
 		case 2:
 		case 3:
 		case 4:
 		case 5:
 		case 6:
-			IsOk = trueblnr;
+			IsOk = true;
 			break;
 		case 7:
 			IsOk = Disasm_reg < 2;
@@ -2861,7 +2861,7 @@ LOCALPROCUSEDONCE DisasmSavedPCs(void)
 		uint32_t i;
 #endif
 #if 0
-		blnr Skipped = falseblnr;
+		bool Skipped = false;
 #endif
 		uint32_t j = SavedPCsOut;
 
@@ -2881,7 +2881,7 @@ LOCALPROCUSEDONCE DisasmSavedPCs(void)
 			j = SavedPCsIn - NumSavedPCs;
 			dbglog_writeReturn();
 #if 0
-			Skipped = trueblnr;
+			Skipped = true;
 #endif
 		}
 

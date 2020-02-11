@@ -22,9 +22,9 @@
 
 EXPORTPROC SCC_Reset(void);
 
-EXPORTFUNC uint32_t SCC_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+EXPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
 
-EXPORTFUNC blnr SCC_InterruptsEnabled(void);
+EXPORTFUNC bool SCC_InterruptsEnabled(void);
 
 #if EmLocalTalk
 EXPORTPROC LocalTalkTick(void);

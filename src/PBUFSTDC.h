@@ -97,9 +97,9 @@ LOCALPROC UnInitPbufs(void)
 #endif
 
 #if IncludePbufs
-LOCALFUNC ui3p PbufLock(tPbuf i)
+LOCALFUNC uint8_t * PbufLock(tPbuf i)
 {
-	return (ui3p)PbufDat[i];
+	return (uint8_t *)PbufDat[i];
 }
 #endif
 
@@ -108,10 +108,10 @@ LOCALFUNC ui3p PbufLock(tPbuf i)
 #endif
 
 #if IncludePbufs
-GLOBALOSGLUPROC PbufTransfer(ui3p Buffer,
-	tPbuf i, uint32_t offset, uint32_t count, blnr IsWrite)
+GLOBALOSGLUPROC PbufTransfer(uint8_t * Buffer,
+	tPbuf i, uint32_t offset, uint32_t count, bool IsWrite)
 {
-	void *p = ((ui3p)PbufDat[i]) + offset;
+	void *p = ((uint8_t *)PbufDat[i]) + offset;
 	if (IsWrite) {
 		(void) memcpy(p, Buffer, count);
 	} else {

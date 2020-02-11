@@ -48,13 +48,13 @@ EXPORTOSGLUPROC dbglog_writeln(char *s);
 EXPORTOSGLUPROC dbglog_writelnNum(char *s, simr v);
 #endif
 
-EXPORTOSGLUPROC ReserveAllocOneBlock(ui3p *p, uimr n, uint8_t align,
-	blnr FillOnes);
+EXPORTOSGLUPROC ReserveAllocOneBlock(uint8_t * *p, uimr n, uint8_t align,
+	bool FillOnes);
 
 EXPORTOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount);
 
 
-EXPORTVAR(ui3p, ROM)
+EXPORTVAR(uint8_t *, ROM)
 
 /*
 	error codes returned by Mini vMac extensions
@@ -113,8 +113,8 @@ EXPORTOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, uint32_t *Count);
 
 EXPORTOSGLUFUNC tMacErr PbufNew(uint32_t count, tPbuf *r);
 EXPORTOSGLUPROC PbufDispose(tPbuf i);
-EXPORTOSGLUPROC PbufTransfer(ui3p Buffer,
-	tPbuf i, uint32_t offset, uint32_t count, blnr IsWrite);
+EXPORTOSGLUPROC PbufTransfer(uint8_t * Buffer,
+	tPbuf i, uint32_t offset, uint32_t count, bool IsWrite);
 
 #endif
 
@@ -126,21 +126,21 @@ EXPORTVAR(uint32_t, vSonyInsertedMask)
 #define vSonyIsInserted(Drive_No) \
 	((vSonyInsertedMask & ((uint32_t)1 << (Drive_No))) != 0)
 
-EXPORTOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
+EXPORTOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount);
 EXPORTOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No);
 EXPORTOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count);
 
-EXPORTOSGLUFUNC blnr AnyDiskInserted(void);
+EXPORTOSGLUFUNC bool AnyDiskInserted(void);
 EXPORTOSGLUPROC DiskRevokeWritable(tDrive Drive_No);
 
 #if IncludeSonyRawMode
-EXPORTVAR(blnr, vSonyRawMode)
+EXPORTVAR(bool, vSonyRawMode)
 #endif
 
 #if IncludeSonyNew
-EXPORTVAR(blnr, vSonyNewDiskWanted)
+EXPORTVAR(bool, vSonyNewDiskWanted)
 EXPORTVAR(uint32_t, vSonyNewDiskSize)
 EXPORTOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No);
 #endif
@@ -182,12 +182,12 @@ EXPORTVAR(uint32_t, CurMacDelta)
 #define vMacScreenMonoByteWidth ((long)vMacScreenWidth / 8)
 
 #if 0 != vMacScreenDepth
-EXPORTVAR(blnr, UseColorMode)
-EXPORTVAR(blnr, ColorModeWorks)
+EXPORTVAR(bool, UseColorMode)
+EXPORTVAR(bool, ColorModeWorks)
 #endif
 
 #if 0 != vMacScreenDepth
-EXPORTVAR(blnr, ColorMappingChanged)
+EXPORTVAR(bool, ColorMappingChanged)
 #endif
 
 #if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
@@ -198,24 +198,24 @@ EXPORTVAR(uint16_t, CLUT_greens[CLUT_size])
 EXPORTVAR(uint16_t, CLUT_blues[CLUT_size])
 #endif
 
-EXPORTVAR(blnr, EmVideoDisable)
+EXPORTVAR(bool, EmVideoDisable)
 EXPORTVAR(int8_t, EmLagTime)
 
-EXPORTOSGLUPROC Screen_OutputFrame(ui3p screencurrentbuff);
+EXPORTOSGLUPROC Screen_OutputFrame(uint8_t * screencurrentbuff);
 EXPORTOSGLUPROC DoneWithDrawingForTick(void);
 
-EXPORTVAR(blnr, ForceMacOff)
+EXPORTVAR(bool, ForceMacOff)
 
-EXPORTVAR(blnr, WantMacInterrupt)
+EXPORTVAR(bool, WantMacInterrupt)
 
-EXPORTVAR(blnr, WantMacReset)
+EXPORTVAR(bool, WantMacReset)
 
-EXPORTOSGLUFUNC blnr ExtraTimeNotOver(void);
+EXPORTOSGLUFUNC bool ExtraTimeNotOver(void);
 
 EXPORTVAR(uint8_t, SpeedValue)
 
 #if EnableAutoSlow
-EXPORTVAR(blnr, WantNotAutoSlow)
+EXPORTVAR(bool, WantNotAutoSlow)
 #endif
 
 /* where emulated machine thinks mouse is */
@@ -238,12 +238,12 @@ EXPORTVAR(uint32_t, QuietSubTicks)
 #if 3 == kLn2SoundSampSz
 #define trSoundSamp uint8_t
 #define tbSoundSamp uint8_t
-#define tpSoundSamp ui3p
+#define tpSoundSamp uint8_t *
 #define kCenterSound 0x80
 #elif 4 == kLn2SoundSampSz
 #define trSoundSamp uint16_t
 #define tbSoundSamp uint16_t
-#define tpSoundSamp ui4p
+#define tpSoundSamp uint16_t *
 #define kCenterSound 0x8000
 #else
 #error "unsupported kLn2SoundSampSz"
@@ -260,12 +260,12 @@ EXPORTOSGLUPROC Sound_EndWrite(uint16_t actL);
 #if EmLocalTalk
 
 #define LT_TxBfMxSz 1024
-EXPORTVAR(ui3p, LT_TxBuffer)
+EXPORTVAR(uint8_t *, LT_TxBuffer)
 EXPORTVAR(uint16_t, LT_TxBuffSz)
 
 EXPORTOSGLUPROC LT_TransmitPacket(void);
 
-EXPORTVAR(ui3p, LT_RxBuffer)
+EXPORTVAR(uint8_t *, LT_RxBuffer)
 EXPORTVAR(uint32_t, LT_RxBuffSz)
 
 EXPORTOSGLUPROC LT_ReceivePacket(void);

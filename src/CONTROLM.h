@@ -38,7 +38,7 @@ enum {
 
 LOCALVAR uimr SpecialModes = 0;
 
-LOCALVAR blnr NeedWholeScreenDraw = falseblnr;
+LOCALVAR bool NeedWholeScreenDraw = false;
 
 #define SpecialModeSet(i) SpecialModes |= (1 << (i))
 #define SpecialModeClr(i) SpecialModes &= ~ (1 << (i))
@@ -46,7 +46,7 @@ LOCALVAR blnr NeedWholeScreenDraw = falseblnr;
 
 #define MacMsgDisplayed SpecialModeTst(SpclModeMessage)
 
-LOCALVAR ui3p CntrlDisplayBuff = nullpr;
+LOCALVAR uint8_t * CntrlDisplayBuff = nullpr;
 
 LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 {
@@ -57,11 +57,11 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 #endif
 	{
 		int i;
-		ui3p p0 = ((ui3p)CellData) + 16 * x;
+		uint8_t * p0 = ((uint8_t *)CellData) + 16 * x;
 
 #if 0 != vMacScreenDepth
 		if (UseColorMode) {
-			ui3p p = CntrlDisplayBuff
+			uint8_t * p = CntrlDisplayBuff
 				+ ((h + 1) << vMacScreenDepth)
 				+ (v * 16 + 11) * vMacScreenByteWidth;
 
@@ -69,7 +69,7 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 #if 1 == vMacScreenDepth
 				int k;
 				uint8_t t0 = *p0;
-				ui3p p2 = p;
+				uint8_t * p2 = p;
 				for (k = 2; --k >= 0; ) {
 					*p2++ = (((t0) & 0x80) ? 0xC0 : 0x00)
 						| (((t0) & 0x40) ? 0x30 : 0x00)
@@ -81,7 +81,7 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 #elif 2 == vMacScreenDepth
 				int k;
 				uint8_t t0 = *p0;
-				ui3p p2 = p;
+				uint8_t * p2 = p;
 				for (k = 4; --k >= 0; ) {
 					*p2++ = (((t0) & 0x40) ? 0x0F : 0x00)
 						| (((t0) & 0x80) ? 0xF0 : 0x00);
@@ -91,7 +91,7 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 #elif 3 == vMacScreenDepth
 				int k;
 				uint8_t t0 = *p0;
-				ui3p p2 = p;
+				uint8_t * p2 = p;
 				for (k = 8; --k >= 0; ) {
 					*p2++ = ((t0 >> k) & 0x01) ? 0xFF : 0x00;
 						/* black RRGGBBAA, white RRGGBBAA */
@@ -100,7 +100,7 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 				int k;
 				uint16_t v;
 				uint8_t t0 = *p0;
-				ui3p p2 = p;
+				uint8_t * p2 = p;
 				for (k = 8; --k >= 0; ) {
 					v = ((t0 >> k) & 0x01) ? 0x0000 : 0x7FFF;
 						/* black RRGGBBAA, white RRGGBBAA */
@@ -112,7 +112,7 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 				int k;
 				uint32_t v;
 				uint8_t t0 = *p0;
-				ui3p p2 = p;
+				uint8_t * p2 = p;
 				for (k = 8; --k >= 0; ) {
 					v = ((t0 >> k) & 0x01) ? 0x00000000 : 0x00FFFFFF;
 						/* black RRGGBBAA, white RRGGBBAA */
@@ -129,7 +129,7 @@ LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)
 		} else
 #endif
 		{
-			ui3p p = CntrlDisplayBuff + (h + 1)
+			uint8_t * p = CntrlDisplayBuff + (h + 1)
 				+ (v * 16 + 11) * vMacScreenMonoByteWidth;
 
 			for (i = 16; --i >= 0; ) {
@@ -387,12 +387,12 @@ LOCALPROC MacMsgDisplayOff(void)
 #if WantAbnormalReports
 	SavedIDMsg = 0;
 #endif
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 }
 
 LOCALPROC MacMsgDisplayOn(void)
 {
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 	DisconnectKeyCodes1(kKeepMaskControl | kKeepMaskCapsLock);
 		/* command */
 	SpecialModeSet(SpclModeMessage);
@@ -410,7 +410,7 @@ LOCALPROC MacMsgOverride(char *briefMsg, char *longMsg)
 	if (MacMsgDisplayed) {
 		MacMsgDisplayOff();
 	}
-	MacMsg(briefMsg, longMsg, falseblnr);
+	MacMsg(briefMsg, longMsg, false);
 }
 
 #if NeedDoMoreCommandsMsg
@@ -432,12 +432,12 @@ LOCALPROC DoAboutMsg(void)
 LOCALPROC NoRomMsgDisplayOff(void)
 {
 	SpecialModeClr(SpclModeNoRom);
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 }
 
 LOCALPROC NoRomMsgDisplayOn(void)
 {
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 	SpecialModeSet(SpclModeNoRom);
 }
 
@@ -453,7 +453,7 @@ LOCALPROC DrawNoRomMode(void)
 
 #if UseControlKeys
 
-LOCALVAR blnr LastControlKey = falseblnr;
+LOCALVAR bool LastControlKey = false;
 LOCALVAR int CurControlMode = 0;
 LOCALVAR int ControlMessage = 0;
 
@@ -514,7 +514,7 @@ LOCALPROC DoEnterControlMode(void)
 {
 	CurControlMode = kCntrlModeBase;
 	ControlMessage = kCntrlMsgBaseStart;
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 	DisconnectKeyCodes1(kKeepMaskControl | kKeepMaskCapsLock);
 	SpecialModeSet(SpclModeControl);
 }
@@ -523,10 +523,10 @@ LOCALPROC DoLeaveControlMode(void)
 {
 	SpecialModeClr(SpclModeControl);
 	CurControlMode = kCntrlModeOff;
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 }
 
-LOCALPROC Keyboard_UpdateControlKey(blnr down)
+LOCALPROC Keyboard_UpdateControlKey(bool down)
 {
 	if (down != LastControlKey) {
 		LastControlKey = down;
@@ -559,8 +559,8 @@ LOCALPROC HTCEexportSubstCStr(char *s)
 	int n = ClStrSizeSubstCStr(s);
 
 	if (mnvm_noErr == PbufNew(n, &j)) {
-		blnr IsOk = falseblnr;
-		ui3p p = PbufLock(j);
+		bool IsOk = false;
+		uint8_t * p = PbufLock(j);
 
 		if (nullpr != p) {
 			L = 0;
@@ -570,7 +570,7 @@ LOCALPROC HTCEexportSubstCStr(char *s)
 				for (i = 0; i < n; ++i) {
 					p[i] = Cell2MacAsciiMap[p[i]];
 				}
-				IsOk = trueblnr;
+				IsOk = true;
 			}
 
 			PbufUnlock(j);
@@ -592,7 +592,7 @@ LOCALPROC HTCEexportSubstCStr(char *s)
 	}
 
 	if (mnvm_noErr == PbufNew(L, &j)) {
-		PbufTransfer(ps, j, 0, L, trueblnr);
+		PbufTransfer(ps, j, 0, L, true);
 		HTCEexport(j);
 	}
 #endif
@@ -632,7 +632,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 #if WantEnblCtrlRst
 				case MKC_R:
 					if (! AnyDiskInserted()) {
-						WantMacReset = trueblnr;
+						WantMacReset = true;
 						ControlMessage = kCntrlMsgHaveReset;
 					} else {
 						CurControlMode = kCntrlModeConfirmReset;
@@ -642,7 +642,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 #endif
 				case MKC_Q:
 					if (! AnyDiskInserted()) {
-						ForceMacOff = trueblnr;
+						ForceMacOff = true;
 					} else {
 						CurControlMode = kCntrlModeConfirmQuit;
 						ControlMessage = kCntrlMsgConfirmQuitStart;
@@ -656,7 +656,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 					break;
 #if NeedRequestInsertDisk
 				case MKC_O:
-					RequestInsertDisk = trueblnr;
+					RequestInsertDisk = true;
 					break;
 #endif
 #if EnableMagnify
@@ -712,7 +712,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 		case kCntrlModeConfirmReset:
 			switch (key) {
 				case MKC_Y:
-					WantMacReset = trueblnr;
+					WantMacReset = true;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgHaveReset;
 					break;
@@ -731,7 +731,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 		case kCntrlModeConfirmInterrupt:
 			switch (key) {
 				case MKC_Y:
-					WantMacInterrupt = trueblnr;
+					WantMacInterrupt = true;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgHaveInterrupted;
 					break;
@@ -749,7 +749,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 		case kCntrlModeConfirmQuit:
 			switch (key) {
 				case MKC_Y:
-					ForceMacOff = trueblnr;
+					ForceMacOff = true;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgBaseStart;
 						/* shouldn't see this message since quitting */
@@ -813,7 +813,7 @@ LOCALPROC DoControlModeKey(uint8_t key)
 			}
 			break;
 	}
-	NeedWholeScreenDraw = trueblnr;
+	NeedWholeScreenDraw = true;
 }
 
 LOCALFUNC char * ControlMode2TitleStr(void)
@@ -1026,9 +1026,9 @@ LOCALPROC DrawSpclMode(void)
 	}
 }
 
-LOCALFUNC ui3p GetCurDrawBuff(void)
+LOCALFUNC uint8_t * GetCurDrawBuff(void)
 {
-	ui3p p = screencomparebuff;
+	uint8_t * p = screencomparebuff;
 
 	if (0 != SpecialModes) {
 		MoveBytes((anyp)p, (anyp)CntrlDisplayBuff,
@@ -1162,7 +1162,7 @@ LOCALFUNC uint8_t Keyboard_RemapMac(uint8_t key)
 }
 #endif /* WantKeyboard_RemapMac */
 
-LOCALPROC Keyboard_UpdateKeyMap2(uint8_t key, blnr down)
+LOCALPROC Keyboard_UpdateKeyMap2(uint8_t key, bool down)
 {
 #if UseControlKeys
 	if (MKC_CM == key) {
@@ -1200,7 +1200,7 @@ LOCALPROC DisconnectKeyCodes2(void)
 {
 	DisconnectKeyCodes1(kKeepMaskControl | kKeepMaskCapsLock);
 #if UseControlKeys
-	Keyboard_UpdateControlKey(falseblnr);
+	Keyboard_UpdateControlKey(false);
 #endif
 }
 
@@ -1213,7 +1213,7 @@ LOCALFUNC uint32_t Calc_Checksum(void)
 {
 	long int i;
 	uint32_t CheckSum = 0;
-	ui3p p = 4 + ROM;
+	uint8_t * p = 4 + ROM;
 
 	for (i = (kCheckSumRom_Size - 4) >> 1; --i >= 0; ) {
 		CheckSum += do_get_mem_word(p);
@@ -1274,28 +1274,28 @@ LOCALFUNC tMacErr ROM_IsValid(void)
 
 #endif /* CheckRomCheckSum */
 
-	ROM_loaded = trueblnr;
-	SpeedStopped = falseblnr;
+	ROM_loaded = true;
+	SpeedStopped = false;
 
 	return mnvm_noErr;
 }
 
-LOCALFUNC blnr WaitForRom(void)
+LOCALFUNC bool WaitForRom(void)
 {
 	if (! ROM_loaded) {
 		NoRomMsgDisplayOn();
 
-		SpeedStopped = trueblnr;
+		SpeedStopped = true;
 		do {
 			WaitForNextTick();
 
 			if (ForceMacOff) {
-				return falseblnr;
+				return false;
 			}
 		} while (SpeedStopped);
 
 		NoRomMsgDisplayOff();
 	}
 
-	return trueblnr;
+	return true;
 }

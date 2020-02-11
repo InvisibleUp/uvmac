@@ -43,7 +43,7 @@
 
 GLOBALPROC Screen_EndTickNotify(void)
 {
-	ui3p screencurrentbuff;
+	uint8_t * screencurrentbuff;
 
 #if IncludeVidMem
 	screencurrentbuff = VidMem;

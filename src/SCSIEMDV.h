@@ -22,4 +22,4 @@
 
 EXPORTPROC SCSI_Reset(void);
 
-EXPORTFUNC uint32_t SCSI_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+EXPORTFUNC uint32_t SCSI_Access(uint32_t Data, bool WriteMem, CPTR addr);

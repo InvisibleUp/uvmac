@@ -71,10 +71,10 @@ LOCALVAR int Display_bg2_Main = 0;
 LOCALVAR FILE *dbglog_File = NULL;
 #endif
 
-LOCALFUNC blnr dbglog_open0(void)
+LOCALFUNC bool dbglog_open0(void)
 {
 #if dbglog_ToStdErr
-	return trueblnr;
+	return true;
 #else
 	dbglog_File = fopen("dbglog.txt", "w");
 	return (NULL != dbglog_File);
@@ -164,7 +164,7 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
+GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
@@ -208,7 +208,7 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 	return err; /*& figure out what really to return &*/
 }
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
+LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	FILE *refnum = Drives[Drive_No];
 
@@ -235,13 +235,13 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
 
 GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
 {
-	return vSonyEject0(Drive_No, falseblnr);
+	return vSonyEject0(Drive_No, false);
 }
 
 #if IncludeSonyNew
 GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
 {
-	return vSonyEject0(Drive_No, trueblnr);
+	return vSonyEject0(Drive_No, true);
 }
 #endif
 
@@ -274,15 +274,15 @@ GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
 }
 #endif
 
-LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
+LOCALFUNC bool Sony_Insert0(FILE *refnum, bool locked,
 	char *drivepath)
 {
 	tDrive Drive_No;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	if (! FirstFreeDisk(&Drive_No)) {
 		MacMsg(kStrTooManyImagesTitle, kStrTooManyImagesMessage,
-			falseblnr);
+			false);
 	} else {
 		/* printf("Sony_Insert0 %d\n", (int)Drive_No); */
 
@@ -301,7 +301,7 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 			}
 #endif
 
-			IsOk = trueblnr;
+			IsOk = true;
 		}
 	}
 
@@ -312,19 +312,19 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 	return IsOk;
 }
 
-LOCALFUNC blnr Sony_Insert1(char *drivepath, blnr silentfail)
+LOCALFUNC bool Sony_Insert1(char *drivepath, bool silentfail)
 {
-	blnr locked = falseblnr;
+	bool locked = false;
 	/* printf("Sony_Insert1 %s\n", drivepath); */
 	FILE *refnum = fopen(drivepath, "rb+");
 	if (NULL == refnum) {
-		locked = trueblnr;
+		locked = true;
 		refnum = fopen(drivepath, "rb");
 		CONSOLE_TRACE();
 	}
 	if (NULL == refnum) {
 		if (! silentfail) {
-			MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, falseblnr);
+			MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, false);
 			CONSOLE_TRACE();
 		}
 	} else {
@@ -332,17 +332,17 @@ LOCALFUNC blnr Sony_Insert1(char *drivepath, blnr silentfail)
 		return Sony_Insert0(refnum, locked, drivepath);
 	}
 
-	return falseblnr;
+	return false;
 }
 
-#define Sony_Insert2(s) Sony_Insert1(s, trueblnr)
+#define Sony_Insert2(s) Sony_Insert1(s, true)
 
-LOCALFUNC blnr Sony_InsertIth(int i)
+LOCALFUNC bool Sony_InsertIth(int i)
 {
-	blnr v;
+	bool v;
 
 	if ((i > 9) || ! FirstFreeDisk(nullpr)) {
-		v = falseblnr;
+		v = false;
 	} else {
 		char s[] = "disk?.dsk";
 
@@ -354,7 +354,7 @@ LOCALFUNC blnr Sony_InsertIth(int i)
 	return v;
 }
 
-LOCALFUNC blnr LoadInitialImages(void)
+LOCALFUNC bool LoadInitialImages(void)
 {
 	int i;
 
@@ -364,11 +364,11 @@ LOCALFUNC blnr LoadInitialImages(void)
 		/* stop on first error (including file not found) */
 	}
 
-	return trueblnr;
+	return true;
 }
 
 #if IncludeSonyNew
-LOCALFUNC blnr WriteZero(FILE *refnum, uint32_t L)
+LOCALFUNC bool WriteZero(FILE *refnum, uint32_t L)
 {
 #define ZeroBufferSize 2048
 	uint32_t i;
@@ -379,24 +379,24 @@ LOCALFUNC blnr WriteZero(FILE *refnum, uint32_t L)
 	while (L > 0) {
 		i = (L > ZeroBufferSize) ? ZeroBufferSize : L;
 		if (fwrite(buffer, 1, i, refnum) != i) {
-			return falseblnr;
+			return false;
 		}
 		L -= i;
 	}
-	return trueblnr;
+	return true;
 }
 #endif
 
 #if IncludeSonyNew
 LOCALPROC MakeNewDisk(uint32_t L, char *drivepath)
 {
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 	FILE *refnum = fopen(drivepath, "wb+");
 	if (NULL == refnum) {
-		MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, falseblnr);
+		MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, false);
 	} else {
 		if (WriteZero(refnum, L)) {
-			IsOk = Sony_Insert0(refnum, falseblnr, drivepath);
+			IsOk = Sony_Insert0(refnum, false, drivepath);
 			refnum = NULL;
 		}
 		if (refnum != NULL) {
@@ -451,7 +451,7 @@ LOCALFUNC tMacErr LoadMacRomFrom(char *path)
 	return err;
 }
 
-LOCALFUNC blnr LoadMacRom(void)
+LOCALFUNC bool LoadMacRom(void)
 {
 	tMacErr err;
 
@@ -459,7 +459,7 @@ LOCALFUNC blnr LoadMacRom(void)
 	{
 	}
 
-	return trueblnr; /* keep launching Mini vMac, regardless */
+	return true; /* keep launching Mini vMac, regardless */
 }
 
 /* --- video out --- */
@@ -470,14 +470,14 @@ LOCALVAR short vOffset;
 #endif
 
 #if VarFullScreen
-LOCALVAR blnr UseFullScreen = (WantInitFullScreen != 0);
+LOCALVAR bool UseFullScreen = (WantInitFullScreen != 0);
 #endif
 
 #if EnableMagnify
-LOCALVAR blnr UseMagnify = (WantInitMagnify != 0);
+LOCALVAR bool UseMagnify = (WantInitMagnify != 0);
 #endif
 
-LOCALVAR blnr CurSpeedStopped = trueblnr;
+LOCALVAR bool CurSpeedStopped = true;
 
 #if EnableMagnify
 #define MaxScale WindowScale
@@ -554,7 +554,7 @@ LOCALPROC CheckMouseState(void)
 		MotionY = 4;
 	}
 
-	HaveMouseMotion = trueblnr;
+	HaveMouseMotion = true;
 
 	MousePositionSetDelta(MotionX, MotionY);
 	MouseButtonSet(0 != (KeysHeld & KEY_A));
@@ -580,7 +580,7 @@ LOCALPROC AssignKeyToMKC(int UKey, int LKey, uint8_t MKC)
 	}
 }
 
-LOCALFUNC blnr KC2MKCInit(void)
+LOCALFUNC bool KC2MKCInit(void)
 {
 	int i;
 
@@ -645,10 +645,10 @@ LOCALFUNC blnr KC2MKCInit(void)
 
 	InitKeyCodes();
 
-	return trueblnr;
+	return true;
 }
 
-LOCALPROC DoKeyCode0(int i, blnr down)
+LOCALPROC DoKeyCode0(int i, bool down)
 {
 	uint8_t key = KC2MKC[i];
 	if (MKC_None != key) {
@@ -658,7 +658,7 @@ LOCALPROC DoKeyCode0(int i, blnr down)
 	}
 }
 
-LOCALPROC DoKeyCode(int i, blnr down)
+LOCALPROC DoKeyCode(int i, bool down)
 {
 	if ((i >= 0) && (i < 256)) {
 		DoKeyCode0(i, down);
@@ -673,10 +673,10 @@ LOCALPROC DoKeyCode(int i, blnr down)
 	is weird about those.
 */
 
-LOCALVAR blnr DS_Keystate_Menu = falseblnr;
-LOCALVAR blnr DS_Keystate_Shift = falseblnr;
+LOCALVAR bool DS_Keystate_Menu = false;
+LOCALVAR bool DS_Keystate_Shift = false;
 
-LOCALPROC DS_HandleKey(int32_t Key, blnr Down)
+LOCALPROC DS_HandleKey(int32_t Key, bool Down)
 {
 	if (Key == NOKEY) {
 		return;
@@ -700,13 +700,13 @@ LOCALPROC DS_HandleKey(int32_t Key, blnr Down)
 			break;
 
 		case DVK_SHIFT:
-			Keyboard_UpdateKeyMap2(MKC_formac_Shift, trueblnr);
+			Keyboard_UpdateKeyMap2(MKC_formac_Shift, true);
 			break;
 
 		default:
 			if (Key > 0) {
 				DoKeyCode(Key, Down);
-				Keyboard_UpdateKeyMap2(MKC_formac_Shift, falseblnr);
+				Keyboard_UpdateKeyMap2(MKC_formac_Shift, false);
 			}
 			break;
 	}
@@ -718,10 +718,10 @@ LOCALPROC DS_HandleKeyboard(void)
 	KeyboardKey = keyboardUpdate();
 
 	if ((KeyboardKey == NOKEY) && (LastKeyboardKey != NOKEY)) {
-		DS_HandleKey(LastKeyboardKey, falseblnr);
+		DS_HandleKey(LastKeyboardKey, false);
 		LastKeyboardKey = NOKEY;
 	} else {
-		DS_HandleKey(KeyboardKey, trueblnr);
+		DS_HandleKey(KeyboardKey, true);
 		LastKeyboardKey = KeyboardKey;
 	}
 }
@@ -735,7 +735,7 @@ LOCALVAR uint32_t TrueEmulatedTime = 0;
 #define TicksPerSecond 1000000
 /* #define TicksPerSecond  1000 */
 
-LOCALVAR blnr HaveTimeDelta = falseblnr;
+LOCALVAR bool HaveTimeDelta = false;
 LOCALVAR uint32_t TimeDelta;
 
 LOCALVAR uint32_t NewMacDateInSeconds;
@@ -767,7 +767,7 @@ LOCALPROC GetCurrentTicks(void)
 		CurMacDelta = ((uint32_t)(s->tm_gmtoff) & 0x00FFFFFF)
 			| ((s->tm_isdst ? 0x80 : 0) << 24);
 #endif
-		HaveTimeDelta = trueblnr;
+		HaveTimeDelta = true;
 	}
 
 	NewMacDateInSeconds = t.tv_sec + TimeDelta;
@@ -834,22 +834,22 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 	}
 }
 
-LOCALFUNC blnr CheckDateTime(void)
+LOCALFUNC bool CheckDateTime(void)
 {
 	if (CurMacDateInSeconds != NewMacDateInSeconds) {
 		CurMacDateInSeconds = NewMacDateInSeconds;
-		return trueblnr;
+		return true;
 	} else {
-		return falseblnr;
+		return false;
 	}
 }
 
-LOCALFUNC blnr InitLocationDat(void)
+LOCALFUNC bool InitLocationDat(void)
 {
 	GetCurrentTicks();
 	CurMacDateInSeconds = NewMacDateInSeconds;
 
-	return trueblnr;
+	return true;
 }
 
 /* --- basic dialogs --- */
@@ -883,7 +883,7 @@ LOCALPROC CheckSavedMacMsg(void)
 	Also we need to map 2 banks of vram so we have enough space for
 	our 512x512 surface.
 */
-LOCALFUNC blnr Screen_Init(void)
+LOCALFUNC bool Screen_Init(void)
 {
 	videoSetMode(MODE_5_2D);
 	vramSetBankA(VRAM_A_MAIN_BG_0x06000000);
@@ -894,7 +894,7 @@ LOCALFUNC blnr Screen_Init(void)
 	BG_PALETTE[0] = RGB15(31, 31, 31);
 	BG_PALETTE[1] = RGB15(0, 0, 0);
 
-	return trueblnr;
+	return true;
 }
 
 #if VarFullScreen
@@ -925,19 +925,19 @@ LOCALPROC EnterSpeedStopped(void)
 LOCALPROC CheckForSavedTasks(void)
 {
 	if (EvtQNeedRecover) {
-		EvtQNeedRecover = falseblnr;
+		EvtQNeedRecover = false;
 
 		/* attempt cleanup, EvtQNeedRecover may get set again */
 		EvtQTryRecoverFromFull();
 	}
 
 	if (RequestMacOff) {
-		RequestMacOff = falseblnr;
+		RequestMacOff = false;
 		if (AnyDiskInserted()) {
 			MacMsgOverride(kStrQuitWarningTitle,
 				kStrQuitWarningMessage);
 		} else {
-			ForceMacOff = trueblnr;
+			ForceMacOff = true;
 		}
 	}
 
@@ -958,8 +958,8 @@ LOCALPROC CheckForSavedTasks(void)
 	if (vSonyNewDiskWanted) {
 #if IncludeSonyNameNew
 		if (vSonyNewDiskName != NotAPbuf) {
-			ui3p NewDiskNameDat;
-			if (MacRomanTextToNativePtr(vSonyNewDiskName, trueblnr,
+			uint8_t * NewDiskNameDat;
+			if (MacRomanTextToNativePtr(vSonyNewDiskName, true,
 				&NewDiskNameDat))
 			{
 				MakeNewDisk(vSonyNewDiskSize, (char *)NewDiskNameDat);
@@ -972,7 +972,7 @@ LOCALPROC CheckForSavedTasks(void)
 		{
 			MakeNewDiskAtDefault(vSonyNewDiskSize);
 		}
-		vSonyNewDiskWanted = falseblnr;
+		vSonyNewDiskWanted = false;
 			/* must be done after may have gotten disk */
 	}
 #endif
@@ -982,7 +982,7 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 
 	if (NeedWholeScreenDraw) {
-		NeedWholeScreenDraw = falseblnr;
+		NeedWholeScreenDraw = false;
 		ScreenChangedAll();
 	}
 
@@ -996,7 +996,7 @@ LOCALPROC CheckForSavedTasks(void)
 
 /* --- main program flow --- */
 
-GLOBALOSGLUFUNC blnr ExtraTimeNotOver(void)
+GLOBALOSGLUFUNC bool ExtraTimeNotOver(void)
 {
 	UpdateTrueEmulatedTime();
 	return TrueEmulatedTime == OnTrueTime;
@@ -1254,42 +1254,42 @@ LOCALPROC ReserveAllocAll(void)
 #if dbglog_HAVE
 	dbglog_ReserveAlloc();
 #endif
-	ReserveAllocOneBlock(&ROM, kROM_Size, 5, falseblnr);
+	ReserveAllocOneBlock(&ROM, kROM_Size, 5, false);
 
 	ReserveAllocOneBlock(&screencomparebuff,
-		vMacScreenNumBytes, 5, trueblnr);
+		vMacScreenNumBytes, 5, true);
 #if UseControlKeys
 	ReserveAllocOneBlock(&CntrlDisplayBuff,
-		vMacScreenNumBytes, 5, falseblnr);
+		vMacScreenNumBytes, 5, false);
 #endif
 
 #if SoundEnabled
-	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
-		dbhBufferSize, 5, falseblnr);
+	ReserveAllocOneBlock((uint8_t * *)&TheSoundBuffer,
+		dbhBufferSize, 5, false);
 #endif
 
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMemory(void)
+LOCALFUNC bool AllocMemory(void)
 {
 	uimr n;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	ReserveAllocOffset = 0;
 	ReserveAllocBigBlock = nullpr;
 	ReserveAllocAll();
 	n = ReserveAllocOffset;
-	ReserveAllocBigBlock = (ui3p)calloc(1, n);
+	ReserveAllocBigBlock = (uint8_t *)calloc(1, n);
 	if (NULL == ReserveAllocBigBlock) {
-		MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, trueblnr);
+		MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, true);
 	} else {
 		ReserveAllocOffset = 0;
 		ReserveAllocAll();
 		if (n != ReserveAllocOffset) {
 			/* oops, program error */
 		} else {
-			IsOk = trueblnr;
+			IsOk = true;
 		}
 	}
 
@@ -1309,7 +1309,7 @@ LOCALPROC ZapOSGLUVars(void)
 	DS_ClearVRAM();
 }
 
-LOCALFUNC blnr InitOSGLU(void)
+LOCALFUNC bool InitOSGLU(void)
 {
 	DS_SysInit();
 
@@ -1327,10 +1327,10 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (KC2MKCInit())
 	if (WaitForRom())
 	{
-		return trueblnr;
+		return true;
 	}
 
-	return falseblnr;
+	return false;
 }
 
 LOCALPROC UnInitOSGLU(void)

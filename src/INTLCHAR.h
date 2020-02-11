@@ -1643,20 +1643,20 @@ LOCALVAR const uint16_t Cell2UnicodeMap[] = {
 };
 #endif
 
-LOCALVAR blnr SpeedStopped = falseblnr;
+LOCALVAR bool SpeedStopped = false;
 
-LOCALVAR blnr RunInBackground = (WantInitRunInBackground != 0);
+LOCALVAR bool RunInBackground = (WantInitRunInBackground != 0);
 
 #if VarFullScreen
-LOCALVAR blnr WantFullScreen = (WantInitFullScreen != 0);
+LOCALVAR bool WantFullScreen = (WantInitFullScreen != 0);
 #endif
 
 #if EnableMagnify
-LOCALVAR blnr WantMagnify = (WantInitMagnify != 0);
+LOCALVAR bool WantMagnify = (WantInitMagnify != 0);
 #endif
 
 #if NeedRequestInsertDisk
-LOCALVAR blnr RequestInsertDisk = falseblnr;
+LOCALVAR bool RequestInsertDisk = false;
 #endif
 
 #ifndef NeedRequestIthDisk
@@ -1668,7 +1668,7 @@ LOCALVAR uint8_t RequestIthDisk = 0;
 #endif
 
 #if UseControlKeys
-LOCALVAR blnr ControlKeyPressed = falseblnr;
+LOCALVAR bool ControlKeyPressed = false;
 #endif
 
 #ifndef kStrCntrlKyName

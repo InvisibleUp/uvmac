@@ -20,7 +20,7 @@
 #define VIDEMDEV_H
 #endif
 
-EXPORTFUNC blnr Vid_Init(void);
+EXPORTFUNC bool Vid_Init(void);
 EXPORTFUNC uint16_t Vid_Reset(void);
 EXPORTPROC Vid_Update(void);
 

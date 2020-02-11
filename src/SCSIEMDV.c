@@ -141,7 +141,7 @@ LOCALPROC SCSI_Check(void)
 	}
 }
 
-GLOBALFUNC uint32_t SCSI_Access(uint32_t Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t SCSI_Access(uint32_t Data, bool WriteMem, CPTR addr)
 {
 	if (addr < (kSCSI_Size / 2)) {
 		addr *= 2;

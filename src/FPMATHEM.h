@@ -5688,22 +5688,22 @@ LOCALFUNC uint32_t myfp_ToLong(myfpr *x)
 	return floatx80_to_int32( *x );
 }
 
-LOCALFUNC blnr myfp_IsNan(myfpr *x)
+LOCALFUNC bool myfp_IsNan(myfpr *x)
 {
 	return floatx80_is_nan(*x);
 }
 
-LOCALFUNC blnr myfp_IsInf(myfpr *x)
+LOCALFUNC bool myfp_IsInf(myfpr *x)
 {
 	return ( ( x->high & 0x7FFF ) == 0x7FFF ) && (0 == ((uint64_t) ( x->low<<1 )));
 }
 
-LOCALFUNC blnr myfp_IsZero(myfpr *x)
+LOCALFUNC bool myfp_IsZero(myfpr *x)
 {
 	return ( ( x->high & 0x7FFF ) == 0x0000 ) && (0 == ((uint64_t) ( x->low<<1 )));
 }
 
-LOCALFUNC blnr myfp_IsNeg(myfpr *x)
+LOCALFUNC bool myfp_IsNeg(myfpr *x)
 {
 	return ( ( x->high & 0x8000 ) != 0x0000 );
 }
@@ -6002,7 +6002,7 @@ LOCALPROC myfp_SinCos(myfpr *r_sin, myfpr *r_cos, myfpr *source)
 	(void) fsincos(*source, r_sin, r_cos);
 }
 
-LOCALFUNC blnr myfp_getCR(myfpr *r, uint16_t opmode)
+LOCALFUNC bool myfp_getCR(myfpr *r, uint16_t opmode)
 {
 	switch (opmode) {
 		case 0x00:
@@ -6144,9 +6144,9 @@ LOCALFUNC blnr myfp_getCR(myfpr *r, uint16_t opmode)
 			}
 			break;
 		default:
-			return falseblnr;
+			return false;
 	}
-	return trueblnr;
+	return true;
 }
 
 /* Floating point control register */

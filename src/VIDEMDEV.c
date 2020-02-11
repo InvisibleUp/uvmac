@@ -88,7 +88,7 @@ LOCALPROC ChecksumSlotROM(void)
 	/* Calculate CRC */
 	/* assuming check sum field initialized to zero */
 	int i;
-	ui3p p = VidROM;
+	uint8_t * p = VidROM;
 	uint32_t crc = 0;
 
 	for (i = kVidROM_Size; --i >= 0; ) {
@@ -97,7 +97,7 @@ LOCALPROC ChecksumSlotROM(void)
 	do_put_mem_long(p - 12, crc);
 }
 
-LOCALVAR ui3p pPatch;
+LOCALVAR uint8_t * pPatch;
 
 LOCALPROC PatchAByte(uint8_t v)
 {
@@ -123,21 +123,21 @@ LOCALPROC PatchAOSLstEntry0(uint8_t Id, uint32_t Offset)
 }
 #endif
 
-LOCALPROC PatchAOSLstEntry(uint8_t Id, ui3p Offset)
+LOCALPROC PatchAOSLstEntry(uint8_t Id, uint8_t * Offset)
 {
 	PatchALong((Id << 24) | ((Offset - pPatch) & 0x00FFFFFF));
 }
 
-LOCALFUNC ui3p ReservePatchOSLstEntry(void)
+LOCALFUNC uint8_t * ReservePatchOSLstEntry(void)
 {
-	ui3p v = pPatch;
+	uint8_t * v = pPatch;
 	pPatch += 4;
 	return v;
 }
 
-LOCALPROC PatchAReservedOSLstEntry(ui3p p, uint8_t Id)
+LOCALPROC PatchAReservedOSLstEntry(uint8_t * p, uint8_t Id)
 {
-	ui3p pPatchSave = pPatch;
+	uint8_t * pPatchSave = pPatch;
 	pPatch = p;
 	PatchAOSLstEntry(Id, pPatchSave);
 	pPatch = pPatchSave;
@@ -153,35 +153,35 @@ LOCALPROC PatchAnEndOfLst(void)
 	PatchADatLstEntry(0xFF /* endOfList */, 0x00000000);
 }
 
-GLOBALFUNC blnr Vid_Init(void)
+GLOBALFUNC bool Vid_Init(void)
 {
 	int i;
 	uint32_t UsedSoFar;
 
-	ui3p pAt_sRsrcDir;
-	ui3p pTo_sRsrc_Board;
-	ui3p pTo_BoardType;
-	ui3p pTo_BoardName;
-	ui3p pTo_VenderInfo;
-	ui3p pTo_VendorID;
-	ui3p pTo_RevLevel;
-	ui3p pTo_PartNum;
-	ui3p pTo_sRsrc_Video;
-	ui3p pTo_VideoType;
-	ui3p pTo_VideoName;
-	ui3p pTo_MinorBase;
-	ui3p pTo_MinorLength;
+	uint8_t * pAt_sRsrcDir;
+	uint8_t * pTo_sRsrc_Board;
+	uint8_t * pTo_BoardType;
+	uint8_t * pTo_BoardName;
+	uint8_t * pTo_VenderInfo;
+	uint8_t * pTo_VendorID;
+	uint8_t * pTo_RevLevel;
+	uint8_t * pTo_PartNum;
+	uint8_t * pTo_sRsrc_Video;
+	uint8_t * pTo_VideoType;
+	uint8_t * pTo_VideoName;
+	uint8_t * pTo_MinorBase;
+	uint8_t * pTo_MinorLength;
 #if 0
-	ui3p pTo_MajorBase;
-	ui3p pTo_MajorLength;
+	uint8_t * pTo_MajorBase;
+	uint8_t * pTo_MajorLength;
 #endif
-	ui3p pTo_VidDrvrDir;
-	ui3p pTo_sMacOS68020;
-	ui3p pTo_OneBitMode;
-	ui3p pTo_OneVidParams;
+	uint8_t * pTo_VidDrvrDir;
+	uint8_t * pTo_sMacOS68020;
+	uint8_t * pTo_OneBitMode;
+	uint8_t * pTo_OneVidParams;
 #if 0 != vMacScreenDepth
-	ui3p pTo_ColorBitMode = nullpr;
-	ui3p pTo_ColorVidParams;
+	uint8_t * pTo_ColorBitMode = nullpr;
+	uint8_t * pTo_ColorVidParams;
 #endif
 
 	pPatch = VidROM;
@@ -314,7 +314,7 @@ GLOBALFUNC blnr Vid_Init(void)
 	PatchAReservedOSLstEntry(pTo_sMacOS68020, 0x02 /* sMacOS68020 */);
 
 	PatchALong(4 + sizeof(VidDrvr_contents) + 8);
-	MoveBytes((ui3p)VidDrvr_contents,
+	MoveBytes((uint8_t *)VidDrvr_contents,
 		pPatch, sizeof(VidDrvr_contents));
 	pPatch += sizeof(VidDrvr_contents);
 	PatchAWord(kcom_callcheck);
@@ -391,7 +391,7 @@ GLOBALFUNC blnr Vid_Init(void)
 	UsedSoFar = (pPatch - VidROM) + 20;
 	if (UsedSoFar > kVidROM_Size) {
 		ReportAbnormalID(0x0A01, "kVidROM_Size to small");
-		return falseblnr;
+		return false;
 	}
 
 	for (i = kVidROM_Size - UsedSoFar; --i >= 0; ) {
@@ -419,7 +419,7 @@ GLOBALFUNC blnr Vid_Init(void)
 	CLUT_blues[CLUT_size - 1] = 0;
 #endif
 
-	return trueblnr;
+	return true;
 }
 
 IMPORTPROC Vid_VBLinterrupt_PulseNotify(void);
@@ -448,7 +448,7 @@ LOCALFUNC tMacErr Vid_SetMode(uint16_t v)
 #else
 	if (UseColorMode != ((v != 128) && ColorModeWorks)) {
 		UseColorMode = ! UseColorMode;
-		ColorMappingChanged = trueblnr;
+		ColorMappingChanged = true;
 	}
 #endif
 	return mnvm_noErr;
@@ -457,7 +457,7 @@ LOCALFUNC tMacErr Vid_SetMode(uint16_t v)
 GLOBALFUNC uint16_t Vid_Reset(void)
 {
 #if 0 != vMacScreenDepth
-	UseColorMode = falseblnr;
+	UseColorMode = false;
 #endif
 	return 128;
 }
@@ -486,7 +486,7 @@ GLOBALFUNC uint16_t Vid_Reset(void)
 #define VidBaseAddr 0xF9900000
 	/* appears to be completely ignored */
 
-LOCALVAR blnr UseGrayTones = falseblnr;
+LOCALVAR bool UseGrayTones = false;
 
 LOCALPROC FillScreenWithGrayPattern(void)
 {
@@ -665,7 +665,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 									}
 									csTable += 8;
 								}
-								ColorMappingChanged = trueblnr;
+								ColorMappingChanged = true;
 							} else
 							if (csStart + csCount < csStart) {
 								/* overflow */
@@ -699,7 +699,7 @@ GLOBALPROC ExtnVideo_Access(CPTR p)
 									}
 									csTable += 8;
 								}
-								ColorMappingChanged = trueblnr;
+								ColorMappingChanged = true;
 								result = mnvm_noErr;
 							}
 						} else

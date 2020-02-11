@@ -70,15 +70,15 @@ IMPORTPROC SetCyclesRemaining(uint32_t n);
 IMPORTPROC SetHeadATTel(ATTep p);
 IMPORTFUNC ATTep FindATTel(CPTR addr);
 
-IMPORTFUNC uint32_t SCSI_Access(uint32_t Data, blnr WriteMem, CPTR addr);
-IMPORTFUNC uint32_t SCC_Access(uint32_t Data, blnr WriteMem, CPTR addr);
-IMPORTFUNC uint32_t IWM_Access(uint32_t Data, blnr WriteMem, CPTR addr);
-IMPORTFUNC uint32_t VIA1_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t SCSI_Access(uint32_t Data, bool WriteMem, CPTR addr);
+IMPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
+IMPORTFUNC uint32_t IWM_Access(uint32_t Data, bool WriteMem, CPTR addr);
+IMPORTFUNC uint32_t VIA1_Access(uint32_t Data, bool WriteMem, CPTR addr);
 #if EmVIA2
-IMPORTFUNC uint32_t VIA2_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t VIA2_Access(uint32_t Data, bool WriteMem, CPTR addr);
 #endif
 #if EmASC
-IMPORTFUNC uint32_t ASC_Access(uint32_t Data, blnr WriteMem, CPTR addr);
+IMPORTFUNC uint32_t ASC_Access(uint32_t Data, bool WriteMem, CPTR addr);
 #endif
 
 IMPORTFUNC uint8_t get_vm_byte(CPTR addr);
@@ -89,7 +89,7 @@ IMPORTPROC put_vm_byte(CPTR addr, uint8_t b);
 IMPORTPROC put_vm_word(CPTR addr, uint16_t w);
 IMPORTPROC put_vm_long(CPTR addr, uint32_t l);
 
-GLOBALVAR uint32_t my_disk_icon_addr;
+GLOBALVAR uint32_t disk_icon_addr;
 
 GLOBALPROC customreset(void)
 {
@@ -103,7 +103,7 @@ GLOBALPROC customreset(void)
 	Sony_Reset();
 	Extn_Reset();
 #if CurEmMd <= kEmMd_Plus
-	WantMacReset = trueblnr;
+	WantMacReset = true;
 	/*
 		kludge, code in Finder appears
 		to do RESET and not expect
@@ -115,14 +115,14 @@ GLOBALPROC customreset(void)
 #endif
 }
 
-GLOBALVAR ui3p RAM = nullpr;
+GLOBALVAR uint8_t * RAM = nullpr;
 
 #if EmVidCard
-GLOBALVAR ui3p VidROM = nullpr;
+GLOBALVAR uint8_t * VidROM = nullpr;
 #endif
 
 #if IncludeVidMem
-GLOBALVAR ui3p VidMem = nullpr;
+GLOBALVAR uint8_t * VidMem = nullpr;
 #endif
 
 GLOBALVAR uint8_t Wires[kNumWires];
@@ -141,7 +141,7 @@ GLOBALPROC dbglog_StartLine(void)
 #endif
 
 #if dbglog_HAVE
-GLOBALPROC dbglog_WriteMemArrow(blnr WriteMem)
+GLOBALPROC dbglog_WriteMemArrow(bool WriteMem)
 {
 	if (WriteMem) {
 		dbglog_writeCStr(" <- ");
@@ -153,7 +153,7 @@ GLOBALPROC dbglog_WriteMemArrow(blnr WriteMem)
 
 #if dbglog_HAVE
 GLOBALPROC dbglog_AddrAccess(char *s, uint32_t Data,
-	blnr WriteMem, uint32_t addr)
+	bool WriteMem, uint32_t addr)
 {
 	dbglog_StartLine();
 	dbglog_writeCStr(s);
@@ -167,7 +167,7 @@ GLOBALPROC dbglog_AddrAccess(char *s, uint32_t Data,
 #endif
 
 #if dbglog_HAVE
-GLOBALPROC dbglog_Access(char *s, uint32_t Data, blnr WriteMem)
+GLOBALPROC dbglog_Access(char *s, uint32_t Data, bool WriteMem)
 {
 	dbglog_StartLine();
 	dbglog_writeCStr(s);
@@ -187,7 +187,7 @@ GLOBALPROC dbglog_WriteNote(char *s)
 #endif
 
 #if dbglog_HAVE
-GLOBALPROC dbglog_WriteSetBool(char *s, blnr v)
+GLOBALPROC dbglog_WriteSetBool(char *s, bool v)
 {
 	dbglog_StartLine();
 	dbglog_writeCStr(s);
@@ -202,7 +202,7 @@ GLOBALPROC dbglog_WriteSetBool(char *s, blnr v)
 #endif
 
 #if WantAbnormalReports
-LOCALVAR blnr GotOneAbnormal = falseblnr;
+LOCALVAR bool GotOneAbnormal = false;
 #endif
 
 #ifndef ReportAbnormalInterrupt
@@ -226,9 +226,9 @@ GLOBALPROC DoReportAbnormalID(uint16_t id
 	if (! GotOneAbnormal) {
 		WarnMsgAbnormalID(id);
 #if ReportAbnormalInterrupt
-		SetInterruptButton(trueblnr);
+		SetInterruptButton(true);
 #endif
-		GotOneAbnormal = trueblnr;
+		GotOneAbnormal = true;
 	}
 }
 #endif
@@ -303,11 +303,11 @@ GLOBALPROC DoReportAbnormalID(uint16_t id
 
 #if IncludeExtnPbufs
 LOCALFUNC tMacErr PbufTransferVM(CPTR Buffera,
-	tPbuf i, uint32_t offset, uint32_t count, blnr IsWrite)
+	tPbuf i, uint32_t offset, uint32_t count, bool IsWrite)
 {
 	tMacErr result;
 	uint32_t contig;
-	ui3p Buffer;
+	uint8_t * Buffer;
 
 label_1:
 	if (0 == count) {
@@ -392,7 +392,7 @@ LOCALPROC ExtnParamBuffers_Access(CPTR p)
 				uint32_t offset = get_vm_long(p + ExtnDat_params + 4);
 				uint32_t count = get_vm_long(p + ExtnDat_params + 8);
 				CPTR Buffera = get_vm_long(p + ExtnDat_params + 12);
-				blnr IsWrite =
+				bool IsWrite =
 					(get_vm_word(p + ExtnDat_params + 16) != 0);
 				result = PbufGetSize(Pbuf_No, &PbufCount);
 				if (mnvm_noErr == result) {
@@ -1300,7 +1300,7 @@ LOCALPROC get_fail_realblock(ATTep p)
 #endif
 
 GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
-	blnr WriteMem, blnr ByteSize, CPTR addr)
+	bool WriteMem, bool ByteSize, CPTR addr)
 {
 	switch (p->MMDV) {
 		case kMMDV_VIA1:
@@ -1529,9 +1529,9 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 	return Data;
 }
 
-GLOBALFUNC blnr MemAccessNtfy(ATTep pT)
+GLOBALFUNC bool MemAccessNtfy(ATTep pT)
 {
-	blnr v = falseblnr;
+	bool v = false;
 
 	switch (pT->Ntfy) {
 #if CurEmMd >= kEmMd_SE
@@ -1541,7 +1541,7 @@ GLOBALFUNC blnr MemAccessNtfy(ATTep pT)
 			MemOverlay = 0;
 			SetUpMemBanks();
 
-			v = trueblnr;
+			v = true;
 
 			break;
 #endif
@@ -1566,7 +1566,7 @@ GLOBALPROC Addr32_ChangeNtfy(void)
 }
 #endif
 
-LOCALFUNC ATTep get_address_realblock1(blnr WriteMem, CPTR addr)
+LOCALFUNC ATTep get_address_realblock1(bool WriteMem, CPTR addr)
 {
 	ATTep p;
 
@@ -1588,11 +1588,11 @@ Label_Retry:
 	return p;
 }
 
-GLOBALFUNC ui3p get_real_address0(uint32_t L, blnr WritableMem, CPTR addr,
+GLOBALFUNC uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
 	uint32_t *actL)
 {
 	uint32_t bankleft;
-	ui3p p;
+	uint8_t * p;
 	ATTep q;
 
 	q = get_address_realblock1(WritableMem, addr);
@@ -1615,9 +1615,9 @@ GLOBALFUNC ui3p get_real_address0(uint32_t L, blnr WritableMem, CPTR addr,
 	return p;
 }
 
-GLOBALVAR blnr InterruptButton = falseblnr;
+GLOBALVAR bool InterruptButton = false;
 
-GLOBALPROC SetInterruptButton(blnr v)
+GLOBALPROC SetInterruptButton(bool v)
 {
 	if (InterruptButton != v) {
 		InterruptButton = v;
@@ -1656,7 +1656,7 @@ GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 	}
 }
 
-GLOBALFUNC blnr AddrSpac_Init(void)
+GLOBALFUNC bool AddrSpac_Init(void)
 {
 	int i;
 
@@ -1666,7 +1666,7 @@ GLOBALFUNC blnr AddrSpac_Init(void)
 
 	MINEM68K_Init(
 		&CurIPL);
-	return trueblnr;
+	return true;
 }
 
 GLOBALPROC Memory_Reset(void)
@@ -1680,7 +1680,7 @@ EXPORTPROC PowerOff_ChangeNtfy(void);
 GLOBALPROC PowerOff_ChangeNtfy(void)
 {
 	if (! VIA2_iB2) {
-		ForceMacOff = trueblnr;
+		ForceMacOff = true;
 	}
 }
 #endif
@@ -1696,7 +1696,7 @@ GLOBALVAR uint16_t MasterEvtQLock = 0;
 	*/
 #endif
 
-GLOBALFUNC blnr FindKeyEvent(int *VirtualKey, blnr *KeyDown)
+GLOBALFUNC bool FindKeyEvent(int *VirtualKey, bool *KeyDown)
 {
 	EvtQEl *p;
 
@@ -1710,11 +1710,11 @@ GLOBALFUNC blnr FindKeyEvent(int *VirtualKey, blnr *KeyDown)
 			*VirtualKey = p->u.press.key;
 			*KeyDown = p->u.press.down;
 			EvtQOutDone();
-			return trueblnr;
+			return true;
 		}
 	}
 
-	return falseblnr;
+	return false;
 }
 
 /* task management */

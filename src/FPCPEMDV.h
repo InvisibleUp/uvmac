@@ -40,7 +40,7 @@ LOCALFUNC uint32_t myfp_GetFPIAR(void)
 	return fpu_dat.FPIAR;
 }
 
-LOCALFUNC blnr DecodeAddrModeRegister(uint32_t sz)
+LOCALFUNC bool DecodeAddrModeRegister(uint32_t sz)
 {
 	uint16_t Dat = V_regs.CurDecOpY.v[0].ArgDat;
 	uint16_t themode = (Dat >> 3) & 7;
@@ -64,12 +64,12 @@ LOCALFUNC blnr DecodeAddrModeRegister(uint32_t sz)
 					return DecodeModeRegister(sz);
 					break;
 				default :
-					return falseblnr;
+					return false;
 					break;
 			}
 			break;
 		default :
-			return falseblnr;
+			return false;
 			break;
 	}
 }

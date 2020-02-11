@@ -140,10 +140,10 @@ LOCALPROC MayFree(char *p)
 LOCALVAR FILE *dbglog_File = NULL;
 #endif
 
-LOCALFUNC blnr dbglog_open0(void)
+LOCALFUNC bool dbglog_open0(void)
 {
 #if dbglog_ToStdErr
-	return trueblnr;
+	return true;
 #else
 	dbglog_File = fopen("dbglog.txt", "w");
 	return (NULL != dbglog_File);
@@ -263,7 +263,7 @@ LOCALPROC LoadXA(void)
 }
 
 #if EnableDragDrop
-LOCALFUNC blnr NetSupportedContains(Atom x)
+LOCALFUNC bool NetSupportedContains(Atom x)
 {
 	/*
 		Note that the window manager could be replaced at
@@ -275,7 +275,7 @@ LOCALFUNC blnr NetSupportedContains(Atom x)
 	unsigned long remain_byte;
 	unsigned long i;
 	unsigned char *s = 0;
-	blnr foundit = falseblnr;
+	bool foundit = false;
 	Window rootwin = XRootWindow(x_display,
 		DefaultScreen(x_display));
 
@@ -294,7 +294,7 @@ LOCALFUNC blnr NetSupportedContains(Atom x)
 
 		for (i = 0; i < ret_item; ++i) {
 			if (v[i] == x) {
-				foundit = trueblnr;
+				foundit = true;
 				/* fprintf(stderr, "found the hint\n"); */
 			}
 		}
@@ -344,10 +344,10 @@ LOCALFUNC tMacErr NativeTextToMacRomanPbuf(char *x, tPbuf *r)
 	if (NULL == x) {
 		return mnvm_miscErr;
 	} else {
-		ui3p p;
+		uint8_t * p;
 		uint32_t L = strlen(x);
 
-		p = (ui3p)malloc(L);
+		p = (uint8_t *)malloc(L);
 		if (NULL == p) {
 			return mnvm_miscErr;
 		} else {
@@ -394,14 +394,14 @@ LOCALVAR const uint8_t MacRoman2NativeTab[] = {
 #endif
 
 #if IncludePbufs
-LOCALFUNC blnr MacRomanTextToNativePtr(tPbuf i, blnr IsFileName,
-	ui3p *r)
+LOCALFUNC bool MacRomanTextToNativePtr(tPbuf i, bool IsFileName,
+	uint8_t * *r)
 {
-	ui3p p;
+	uint8_t * p;
 	void *Buffer = PbufDat[i];
 	uint32_t L = PbufSize[i];
 
-	p = (ui3p)malloc(L + 1);
+	p = (uint8_t *)malloc(L + 1);
 	if (p != NULL) {
 		uint8_t *p0 = (uint8_t *)Buffer;
 		uint8_t *p1 = (uint8_t *)p;
@@ -445,9 +445,9 @@ LOCALFUNC blnr MacRomanTextToNativePtr(tPbuf i, blnr IsFileName,
 		*p1 = 0;
 
 		*r = p;
-		return trueblnr;
+		return true;
 	}
-	return falseblnr;
+	return false;
 }
 #endif
 
@@ -491,7 +491,7 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(blnr IsWrite, ui3p Buffer,
+GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
@@ -545,9 +545,9 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 */
 
 #if HaveAdvisoryLocks
-LOCALFUNC blnr LockFile(FILE *refnum)
+LOCALFUNC bool LockFile(FILE *refnum)
 {
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 #if 1
 	struct flock fl;
@@ -560,18 +560,18 @@ LOCALFUNC blnr LockFile(FILE *refnum)
 	fl.l_whence = SEEK_SET; /* type of l_start */
 	if (-1 == fcntl(fd, F_SETLK, &fl)) {
 		MacMsg(kStrImageInUseTitle, kStrImageInUseMessage,
-			falseblnr);
+			false);
 	} else {
-		IsOk = trueblnr;
+		IsOk = true;
 	}
 #else
 	int fd = fileno(refnum);
 
 	if (-1 == flock(fd, LOCK_EX | LOCK_NB)) {
 		MacMsg(kStrImageInUseTitle, kStrImageInUseMessage,
-			falseblnr);
+			false);
 	} else {
-		IsOk = trueblnr;
+		IsOk = true;
 	}
 #endif
 
@@ -603,7 +603,7 @@ LOCALPROC UnlockFile(FILE *refnum)
 }
 #endif
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
+LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	FILE *refnum = Drives[Drive_No];
 
@@ -634,13 +634,13 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
 
 GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
 {
-	return vSonyEject0(Drive_No, falseblnr);
+	return vSonyEject0(Drive_No, false);
 }
 
 #if IncludeSonyNew
 GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
 {
-	return vSonyEject0(Drive_No, trueblnr);
+	return vSonyEject0(Drive_No, true);
 }
 #endif
 
@@ -673,15 +673,15 @@ GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
 }
 #endif
 
-LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
+LOCALFUNC bool Sony_Insert0(FILE *refnum, bool locked,
 	char *drivepath)
 {
 	tDrive Drive_No;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	if (! FirstFreeDisk(&Drive_No)) {
 		MacMsg(kStrTooManyImagesTitle, kStrTooManyImagesMessage,
-			falseblnr);
+			false);
 	} else {
 		/* printf("Sony_Insert0 %d\n", (int)Drive_No); */
 
@@ -703,7 +703,7 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 			}
 #endif
 
-			IsOk = trueblnr;
+			IsOk = true;
 		}
 	}
 
@@ -714,23 +714,23 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 	return IsOk;
 }
 
-LOCALFUNC blnr Sony_Insert1(char *drivepath, blnr silentfail)
+LOCALFUNC bool Sony_Insert1(char *drivepath, bool silentfail)
 {
-	blnr locked = falseblnr;
+	bool locked = false;
 	/* printf("Sony_Insert1 %s\n", drivepath); */
 	FILE *refnum = fopen(drivepath, "rb+");
 	if (NULL == refnum) {
-		locked = trueblnr;
+		locked = true;
 		refnum = fopen(drivepath, "rb");
 	}
 	if (NULL == refnum) {
 		if (! silentfail) {
-			MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, falseblnr);
+			MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, false);
 		}
 	} else {
 		return Sony_Insert0(refnum, locked, drivepath);
 	}
-	return falseblnr;
+	return false;
 }
 
 LOCALFUNC tMacErr LoadMacRomFrom(char *path)
@@ -763,9 +763,9 @@ LOCALFUNC tMacErr LoadMacRomFrom(char *path)
 	return err;
 }
 
-LOCALFUNC blnr Sony_Insert1a(char *drivepath, blnr silentfail)
+LOCALFUNC bool Sony_Insert1a(char *drivepath, bool silentfail)
 {
-	blnr v;
+	bool v;
 
 	if (! ROM_loaded) {
 		v = (mnvm_noErr == LoadMacRomFrom(drivepath));
@@ -776,22 +776,22 @@ LOCALFUNC blnr Sony_Insert1a(char *drivepath, blnr silentfail)
 	return v;
 }
 
-LOCALFUNC blnr Sony_Insert2(char *s)
+LOCALFUNC bool Sony_Insert2(char *s)
 {
 	char *d =
 #if CanGetAppPath
 		(NULL == d_arg) ? app_parent :
 #endif
 		d_arg;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	if (NULL == d) {
-		IsOk = Sony_Insert1(s, trueblnr);
+		IsOk = Sony_Insert1(s, true);
 	} else {
 		char *t;
 
 		if (mnvm_noErr == ChildPath(d, s, &t)) {
-			IsOk = Sony_Insert1(t, trueblnr);
+			IsOk = Sony_Insert1(t, true);
 			free(t);
 		}
 	}
@@ -799,12 +799,12 @@ LOCALFUNC blnr Sony_Insert2(char *s)
 	return IsOk;
 }
 
-LOCALFUNC blnr Sony_InsertIth(int i)
+LOCALFUNC bool Sony_InsertIth(int i)
 {
-	blnr v;
+	bool v;
 
 	if ((i > 9) || ! FirstFreeDisk(nullpr)) {
-		v = falseblnr;
+		v = false;
 	} else {
 		char s[] = "disk?.dsk";
 
@@ -816,7 +816,7 @@ LOCALFUNC blnr Sony_InsertIth(int i)
 	return v;
 }
 
-LOCALFUNC blnr LoadInitialImages(void)
+LOCALFUNC bool LoadInitialImages(void)
 {
 	if (! AnyDiskInserted()) {
 		int i;
@@ -826,11 +826,11 @@ LOCALFUNC blnr LoadInitialImages(void)
 		}
 	}
 
-	return trueblnr;
+	return true;
 }
 
 #if IncludeSonyNew
-LOCALFUNC blnr WriteZero(FILE *refnum, uint32_t L)
+LOCALFUNC bool WriteZero(FILE *refnum, uint32_t L)
 {
 #define ZeroBufferSize 2048
 	uint32_t i;
@@ -841,24 +841,24 @@ LOCALFUNC blnr WriteZero(FILE *refnum, uint32_t L)
 	while (L > 0) {
 		i = (L > ZeroBufferSize) ? ZeroBufferSize : L;
 		if (fwrite(buffer, 1, i, refnum) != i) {
-			return falseblnr;
+			return false;
 		}
 		L -= i;
 	}
-	return trueblnr;
+	return true;
 }
 #endif
 
 #if IncludeSonyNew
 LOCALPROC MakeNewDisk0(uint32_t L, char *drivepath)
 {
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 	FILE *refnum = fopen(drivepath, "wb+");
 	if (NULL == refnum) {
-		MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, falseblnr);
+		MacMsg(kStrOpenFailTitle, kStrOpenFailMessage, false);
 	} else {
 		if (WriteZero(refnum, L)) {
-			IsOk = Sony_Insert0(refnum, falseblnr, drivepath);
+			IsOk = Sony_Insert0(refnum, false, drivepath);
 			refnum = NULL;
 		}
 		if (refnum != NULL) {
@@ -1006,7 +1006,7 @@ LOCALFUNC tMacErr LoadMacRomFromAppPar(void)
 }
 #endif
 
-LOCALFUNC blnr LoadMacRom(void)
+LOCALFUNC bool LoadMacRom(void)
 {
 	tMacErr err;
 
@@ -1020,14 +1020,14 @@ LOCALFUNC blnr LoadMacRom(void)
 	{
 	}
 
-	return trueblnr; /* keep launching Mini vMac, regardless */
+	return true; /* keep launching Mini vMac, regardless */
 }
 
 #if UseActvFile
 
 #define ActvCodeFileName "act_1"
 
-LOCALFUNC tMacErr ActvCodeFileLoad(ui3p p)
+LOCALFUNC tMacErr ActvCodeFileLoad(uint8_t * p)
 {
 	tMacErr err;
 	char *s;
@@ -1068,7 +1068,7 @@ LOCALFUNC tMacErr ActvCodeFileLoad(ui3p p)
 	return err;
 }
 
-LOCALFUNC tMacErr ActvCodeFileSave(ui3p p)
+LOCALFUNC tMacErr ActvCodeFileSave(uint8_t * p)
 {
 	tMacErr err;
 	char *s;
@@ -1109,10 +1109,10 @@ LOCALFUNC tMacErr ActvCodeFileSave(ui3p p)
 
 /* --- video out --- */
 
-LOCALVAR Window my_main_wind = 0;
-LOCALVAR GC my_gc = NULL;
-LOCALVAR blnr NeedFinishOpen1 = falseblnr;
-LOCALVAR blnr NeedFinishOpen2 = falseblnr;
+LOCALVAR Window main_wind = 0;
+LOCALVAR GC gc = NULL;
+LOCALVAR bool NeedFinishOpen1 = false;
+LOCALVAR bool NeedFinishOpen2 = false;
 
 LOCALVAR XColor x_black;
 LOCALVAR XColor x_white;
@@ -1123,25 +1123,25 @@ LOCALVAR short vOffset;
 #endif
 
 #if VarFullScreen
-LOCALVAR blnr UseFullScreen = (WantInitFullScreen != 0);
+LOCALVAR bool UseFullScreen = (WantInitFullScreen != 0);
 #endif
 
 #if EnableMagnify
-LOCALVAR blnr UseMagnify = (WantInitMagnify != 0);
+LOCALVAR bool UseMagnify = (WantInitMagnify != 0);
 #endif
 
-LOCALVAR blnr gBackgroundFlag = falseblnr;
-LOCALVAR blnr gTrueBackgroundFlag = falseblnr;
-LOCALVAR blnr CurSpeedStopped = trueblnr;
+LOCALVAR bool gBackgroundFlag = false;
+LOCALVAR bool gTrueBackgroundFlag = false;
+LOCALVAR bool CurSpeedStopped = true;
 
 #ifndef UseColorImage
 #define UseColorImage (0 != vMacScreenDepth)
 #endif
 
-LOCALVAR XImage *my_image = NULL;
+LOCALVAR XImage *image = NULL;
 
 #if EnableMagnify
-LOCALVAR XImage *my_Scaled_image = NULL;
+LOCALVAR XImage *Scaled_image = NULL;
 #endif
 
 #if EnableMagnify
@@ -1154,7 +1154,7 @@ LOCALVAR XImage *my_Scaled_image = NULL;
 
 #if WantScalingTabl
 
-LOCALVAR ui3p ScalingTabl = nullpr;
+LOCALVAR uint8_t * ScalingTabl = nullpr;
 
 #define ScalingTablsz1 (256 * MaxScale)
 
@@ -1171,7 +1171,7 @@ LOCALVAR ui3p ScalingTabl = nullpr;
 
 #if WantScalingBuff
 
-LOCALVAR ui3p ScalingBuff = nullpr;
+LOCALVAR uint8_t * ScalingBuff = nullpr;
 
 
 #if UseColorImage
@@ -1223,9 +1223,9 @@ LOCALPROC SetUpColorScalingTabl(void)
 	int k;
 	int a;
 	uint32_t v;
-	ui5p p4;
+	uint32_t * p4;
 
-	p4 = (ui5p)ScalingTabl;
+	p4 = (uint32_t *)ScalingTabl;
 	for (i = 0; i < 256; ++i) {
 		for (k = 1 << (3 - vMacScreenDepth); --k >= 0; ) {
 			j = (i >> (k << vMacScreenDepth)) & (CLUT_size - 1);
@@ -1246,9 +1246,9 @@ LOCALPROC SetUpColorTabl(void)
 	int i;
 	int j;
 	int k;
-	ui5p p4;
+	uint32_t * p4;
 
-	p4 = (ui5p)ScalingTabl;
+	p4 = (uint32_t *)ScalingTabl;
 	for (i = 0; i < 256; ++i) {
 		for (k = 1 << (3 - vMacScreenDepth); --k >= 0; ) {
 			j = (i >> (k << vMacScreenDepth)) & (CLUT_size - 1);
@@ -1267,9 +1267,9 @@ LOCALPROC SetUpBW2ColorScalingTabl(void)
 	int k;
 	int a;
 	uint32_t v;
-	ui5p p4;
+	uint32_t * p4;
 
-	p4 = (ui5p)ScalingTabl;
+	p4 = (uint32_t *)ScalingTabl;
 	for (i = 0; i < 256; ++i) {
 		for (k = 8; --k >= 0; ) {
 			if (0 != ((i >> k) & 1)) {
@@ -1292,9 +1292,9 @@ LOCALPROC SetUpBW2ColorTabl(void)
 	int i;
 	int k;
 	uint32_t v;
-	ui5p p4;
+	uint32_t * p4;
 
-	p4 = (ui5p)ScalingTabl;
+	p4 = (uint32_t *)ScalingTabl;
 	for (i = 0; i < 256; ++i) {
 		for (k = 8; --k >= 0; ) {
 			if (0 != ((i >> k) & 1)) {
@@ -1477,7 +1477,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 #if vMacScreenDepth < 4
 			if (! ColorTransValid) {
 				SetUpColorScalingTabl();
-				ColorTransValid = trueblnr;
+				ColorTransValid = true;
 			}
 
 			UpdateMappedScaledColorCopy(top, left, bottom, right);
@@ -1489,7 +1489,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 		{
 			if (! ColorTransValid) {
 				SetUpBW2ColorScalingTabl();
-				ColorTransValid = trueblnr;
+				ColorTransValid = true;
 			}
 
 			UpdateMappedScaledBW2ColorCopy(top, left, bottom, right);
@@ -1499,7 +1499,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 		{
 			if (! ColorTransValid) {
 				SetUpScalingTabl();
-				ColorTransValid = trueblnr;
+				ColorTransValid = true;
 			}
 
 			UpdateScaledBWCopy(top, left, bottom, right);
@@ -1507,16 +1507,16 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 #endif /* UseColorImage */
 
 		{
-			char *saveData = my_Scaled_image->data;
-			my_Scaled_image->data = (char *)ScalingBuff;
+			char *saveData = Scaled_image->data;
+			Scaled_image->data = (char *)ScalingBuff;
 
-			XPutImage(x_display, my_main_wind, my_gc, my_Scaled_image,
+			XPutImage(x_display, main_wind, gc, Scaled_image,
 				left * WindowScale, top * WindowScale,
 				XDest, YDest,
 				(right - left) * WindowScale,
 				(bottom - top) * WindowScale);
 
-			my_Scaled_image->data = saveData;
+			Scaled_image->data = saveData;
 		}
 	} else
 #endif /* EnableMagnify */
@@ -1528,7 +1528,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 			if (! ColorTransValid) {
 				SetUpColorTabl();
-				ColorTransValid = trueblnr;
+				ColorTransValid = true;
 			}
 
 			UpdateMappedColorCopy(top, left, bottom, right);
@@ -1548,7 +1548,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 		{
 			if (! ColorTransValid) {
 				SetUpBW2ColorTabl();
-				ColorTransValid = trueblnr;
+				ColorTransValid = true;
 			}
 
 			UpdateMappedBW2ColorCopy(top, left, bottom, right);
@@ -1562,14 +1562,14 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 #endif /* UseColorImage */
 
 		{
-			char *saveData = my_image->data;
-			my_image->data = the_data;
+			char *saveData = image->data;
+			image->data = the_data;
 
-			XPutImage(x_display, my_main_wind, my_gc, my_image,
+			XPutImage(x_display, main_wind, gc, image,
 				left, top, XDest, YDest,
 				right - left, bottom - top);
 
-			my_image->data = saveData;
+			image->data = saveData;
 		}
 	}
 
@@ -1592,22 +1592,22 @@ LOCALPROC DrawChangesAndClear(void)
 
 /* cursor hiding */
 
-LOCALVAR blnr HaveCursorHidden = falseblnr;
-LOCALVAR blnr WantCursorHidden = falseblnr;
+LOCALVAR bool HaveCursorHidden = false;
+LOCALVAR bool WantCursorHidden = false;
 
 LOCALPROC ForceShowCursor(void)
 {
 	if (HaveCursorHidden) {
-		HaveCursorHidden = falseblnr;
-		if (my_main_wind) {
-			XUndefineCursor(x_display, my_main_wind);
+		HaveCursorHidden = false;
+		if (main_wind) {
+			XUndefineCursor(x_display, main_wind);
 		}
 	}
 }
 
 LOCALVAR Cursor blankCursor = None;
 
-LOCALFUNC blnr CreateBlankCursor(Window rootwin)
+LOCALFUNC bool CreateBlankCursor(Window rootwin)
 /*
 	adapted from X11_CreateNullCursor in context.x11.c
 	in quakeforge 0.5.5, copyright Id Software, Inc.
@@ -1617,7 +1617,7 @@ LOCALFUNC blnr CreateBlankCursor(Window rootwin)
 	Pixmap cursormask;
 	XGCValues xgc;
 	GC gc;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	cursormask = XCreatePixmap(x_display, rootwin, 1, 1, 1);
 	if (None == cursormask) {
@@ -1636,7 +1636,7 @@ LOCALFUNC blnr CreateBlankCursor(Window rootwin)
 			if (None == blankCursor) {
 				WriteExtraErr("XCreatePixmapCursor failed.");
 			} else {
-				IsOk = trueblnr;
+				IsOk = true;
 			}
 		}
 
@@ -1654,7 +1654,7 @@ LOCALFUNC blnr CreateBlankCursor(Window rootwin)
 /* cursor moving */
 
 #if EnableMoveMouse
-LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
+LOCALFUNC bool MoveMouse(int16_t h, int16_t v)
 {
 	int NewMousePosh;
 	int NewMousePosv;
@@ -1663,7 +1663,7 @@ LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
 	Window root_return;
 	Window child_return;
 	unsigned int mask_return;
-	blnr IsOk;
+	bool IsOk;
 	int attempts = 0;
 
 #if VarFullScreen
@@ -1694,8 +1694,8 @@ LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
 #endif
 
 	do {
-		XWarpPointer(x_display, None, my_main_wind, 0, 0, 0, 0, h, v);
-		XQueryPointer(x_display, my_main_wind,
+		XWarpPointer(x_display, None, main_wind, 0, 0, 0, 0, h, v);
+		XQueryPointer(x_display, main_wind,
 			&root_return, &child_return,
 			&root_x_return, &root_y_return,
 			&NewMousePosh, &NewMousePosv,
@@ -1716,7 +1716,7 @@ LOCALPROC StartSaveMouseMotion(void)
 		{
 			SavedMouseH = ViewHStart + (ViewHSize / 2);
 			SavedMouseV = ViewVStart + (ViewVSize / 2);
-			HaveMouseMotion = trueblnr;
+			HaveMouseMotion = true;
 		}
 	}
 }
@@ -1727,7 +1727,7 @@ LOCALPROC StopSaveMouseMotion(void)
 {
 	if (HaveMouseMotion) {
 		(void) MoveMouse(CurMouseH, CurMouseV);
-		HaveMouseMotion = falseblnr;
+		HaveMouseMotion = false;
 	}
 }
 #endif
@@ -1758,7 +1758,7 @@ LOCALPROC MouseConstrain(void)
 		SavedMouseH += shiftdh;
 		SavedMouseV += shiftdv;
 		if (! MoveMouse(SavedMouseH, SavedMouseV)) {
-			HaveMouseMotion = falseblnr;
+			HaveMouseMotion = false;
 		}
 	}
 }
@@ -1766,7 +1766,7 @@ LOCALPROC MouseConstrain(void)
 
 LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 {
-	blnr ShouldHaveCursorHidden = trueblnr;
+	bool ShouldHaveCursorHidden = true;
 
 #if VarFullScreen
 	if (UseFullScreen)
@@ -1806,17 +1806,17 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 	{
 		if (NewMousePosh < 0) {
 			NewMousePosh = 0;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		} else if (NewMousePosh >= vMacScreenWidth) {
 			NewMousePosh = vMacScreenWidth - 1;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		}
 		if (NewMousePosv < 0) {
 			NewMousePosv = 0;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		} else if (NewMousePosv >= vMacScreenHeight) {
 			NewMousePosv = vMacScreenHeight - 1;
-			ShouldHaveCursorHidden = falseblnr;
+			ShouldHaveCursorHidden = false;
 		}
 
 #if VarFullScreen
@@ -1824,7 +1824,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 #endif
 #if MayFullScreen
 		{
-			ShouldHaveCursorHidden = trueblnr;
+			ShouldHaveCursorHidden = true;
 		}
 #endif
 
@@ -1849,7 +1849,7 @@ LOCALPROC CheckMouseState(void)
 	Window child_return;
 	unsigned int mask_return;
 
-	XQueryPointer(x_display, my_main_wind,
+	XQueryPointer(x_display, main_wind,
 		&root_return, &child_return,
 		&root_x_return, &root_y_return,
 		&NewMousePosh, &NewMousePosv,
@@ -1874,7 +1874,7 @@ LOCALPROC KC2MKCAssignOne(KeySym ks, uint8_t key)
 #endif
 }
 
-LOCALFUNC blnr KC2MKCInit(void)
+LOCALFUNC bool KC2MKCInit(void)
 {
 	int i;
 
@@ -2144,7 +2144,7 @@ LOCALFUNC blnr KC2MKCInit(void)
 
 	InitKeyCodes();
 
-	return trueblnr;
+	return true;
 }
 
 LOCALPROC CheckTheCapsLock(void)
@@ -2157,7 +2157,7 @@ LOCALPROC CheckTheCapsLock(void)
 	Window child_return;
 	unsigned int mask_return;
 
-	XQueryPointer(x_display, my_main_wind,
+	XQueryPointer(x_display, main_wind,
 		&root_return, &child_return,
 		&root_x_return, &root_y_return,
 		&NewMousePosh, &NewMousePosv,
@@ -2167,7 +2167,7 @@ LOCALPROC CheckTheCapsLock(void)
 		(mask_return & LockMask) != 0);
 }
 
-LOCALPROC DoKeyCode0(int i, blnr down)
+LOCALPROC DoKeyCode0(int i, bool down)
 {
 	uint8_t key = KC2MKC[i];
 	if (MKC_None != key) {
@@ -2175,7 +2175,7 @@ LOCALPROC DoKeyCode0(int i, blnr down)
 	}
 }
 
-LOCALPROC DoKeyCode(int i, blnr down)
+LOCALPROC DoKeyCode(int i, bool down)
 {
 	if (i == TheCapsLockCode) {
 		CheckTheCapsLock();
@@ -2185,17 +2185,17 @@ LOCALPROC DoKeyCode(int i, blnr down)
 }
 
 #if MayFullScreen && GrabKeysFullScreen
-LOCALVAR blnr KeyboardIsGrabbed = falseblnr;
+LOCALVAR bool KeyboardIsGrabbed = false;
 #endif
 
 #if MayFullScreen && GrabKeysFullScreen
 LOCALPROC GrabKeyboard(void)
 {
 	if (! KeyboardIsGrabbed) {
-		(void) XGrabKeyboard(x_display, my_main_wind,
+		(void) XGrabKeyboard(x_display, main_wind,
 			False, GrabModeAsync, GrabModeAsync,
 			CurrentTime);
-		KeyboardIsGrabbed = trueblnr;
+		KeyboardIsGrabbed = true;
 	}
 }
 #endif
@@ -2203,14 +2203,14 @@ LOCALPROC GrabKeyboard(void)
 #if MayFullScreen && GrabKeysFullScreen
 LOCALPROC UnGrabKeyboard(void)
 {
-	if (KeyboardIsGrabbed && my_main_wind) {
+	if (KeyboardIsGrabbed && main_wind) {
 		XUngrabKeyboard(x_display, CurrentTime);
-		KeyboardIsGrabbed = falseblnr;
+		KeyboardIsGrabbed = false;
 	}
 }
 #endif
 
-LOCALVAR blnr NoKeyRepeat = falseblnr;
+LOCALVAR bool NoKeyRepeat = false;
 LOCALVAR int SaveKeyRepeat;
 
 LOCALPROC DisableKeyRepeat(void)
@@ -2219,7 +2219,7 @@ LOCALPROC DisableKeyRepeat(void)
 	XKeyboardControl k;
 
 	if ((! NoKeyRepeat) && (x_display != NULL)) {
-		NoKeyRepeat = trueblnr;
+		NoKeyRepeat = true;
 
 		XGetKeyboardControl(x_display, &r);
 		SaveKeyRepeat = r.global_auto_repeat;
@@ -2234,14 +2234,14 @@ LOCALPROC RestoreKeyRepeat(void)
 	XKeyboardControl k;
 
 	if (NoKeyRepeat && (x_display != NULL)) {
-		NoKeyRepeat = falseblnr;
+		NoKeyRepeat = false;
 
 		k.auto_repeat_mode = SaveKeyRepeat;
 		XChangeKeyboardControl(x_display, KBAutoRepeatMode, &k);
 	}
 }
 
-LOCALVAR blnr WantCmdOptOnReconnect = falseblnr;
+LOCALVAR bool WantCmdOptOnReconnect = false;
 
 LOCALPROC GetTheDownKeys(void)
 {
@@ -2258,7 +2258,7 @@ LOCALPROC GetTheDownKeys(void)
 			if (0 != ((1 << j) & v)) {
 				int k = i * 8 + j;
 				if (k != TheCapsLockCode) {
-					DoKeyCode0(k, trueblnr);
+					DoKeyCode0(k, true);
 				}
 			}
 		}
@@ -2270,7 +2270,7 @@ LOCALPROC ReconnectKeyCodes3(void)
 	CheckTheCapsLock();
 
 	if (WantCmdOptOnReconnect) {
-		WantCmdOptOnReconnect = falseblnr;
+		WantCmdOptOnReconnect = false;
 
 		GetTheDownKeys();
 	}
@@ -2279,7 +2279,7 @@ LOCALPROC ReconnectKeyCodes3(void)
 LOCALPROC DisconnectKeyCodes3(void)
 {
 	DisconnectKeyCodes2();
-	MouseButtonSet(falseblnr);
+	MouseButtonSet(false);
 }
 
 /* --- time, date, location --- */
@@ -2292,7 +2292,7 @@ LOCALVAR uint32_t TrueEmulatedTime = 0;
 
 #define TicksPerSecond 1000000
 
-LOCALVAR blnr HaveTimeDelta = falseblnr;
+LOCALVAR bool HaveTimeDelta = false;
 LOCALVAR uint32_t TimeDelta;
 
 LOCALVAR uint32_t NewMacDateInSeconds;
@@ -2317,7 +2317,7 @@ LOCALPROC GetCurrentTicks(void)
 		CurMacDelta = ((uint32_t)(s->tm_gmtoff) & 0x00FFFFFF)
 			| ((s->tm_isdst ? 0x80 : 0) << 24);
 #endif
-		HaveTimeDelta = trueblnr;
+		HaveTimeDelta = true;
 	}
 
 	NewMacDateInSeconds = t.tv_sec + TimeDelta;
@@ -2392,22 +2392,22 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 	}
 }
 
-LOCALFUNC blnr CheckDateTime(void)
+LOCALFUNC bool CheckDateTime(void)
 {
 	if (CurMacDateInSeconds != NewMacDateInSeconds) {
 		CurMacDateInSeconds = NewMacDateInSeconds;
-		return trueblnr;
+		return true;
 	} else {
-		return falseblnr;
+		return false;
 	}
 }
 
-LOCALFUNC blnr InitLocationDat(void)
+LOCALFUNC bool InitLocationDat(void)
 {
 	GetCurrentTicks();
 	CurMacDateInSeconds = NewMacDateInSeconds;
 
-	return trueblnr;
+	return true;
 }
 
 /* --- sound --- */
@@ -2475,20 +2475,20 @@ GLOBALOSGLUFUNC tpSoundSamp Sound_BeginWrite(uint16_t n, uint16_t *actL)
 	return TheSoundBuffer + (TheWriteOffset & kAllBuffMask);
 }
 
-LOCALFUNC blnr Sound_EndWrite0(uint16_t actL)
+LOCALFUNC bool Sound_EndWrite0(uint16_t actL)
 {
-	blnr v;
+	bool v;
 
 	TheWriteOffset += actL;
 
 	if (0 != (TheWriteOffset & kOneBuffMask)) {
-		v = falseblnr;
+		v = false;
 	} else {
 		/* just finished a block */
 
 		TheFillOffset = TheWriteOffset;
 
-		v = trueblnr;
+		v = true;
 	}
 
 	return v;
@@ -2539,7 +2539,7 @@ LOCALPROC CheckSavedMacMsg(void)
 /* --- clipboard --- */
 
 #if IncludeHostTextClipExchange
-LOCALVAR ui3p ClipBuffer = NULL;
+LOCALVAR uint8_t * ClipBuffer = NULL;
 #endif
 
 #if IncludeHostTextClipExchange
@@ -2558,11 +2558,11 @@ GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
 	tMacErr err = mnvm_miscErr;
 
 	FreeClipBuffer();
-	if (MacRomanTextToNativePtr(i, falseblnr,
+	if (MacRomanTextToNativePtr(i, false,
 		&ClipBuffer))
 	{
 		XSetSelectionOwner(x_display, XA_CLIPBOARD,
-			my_main_wind, CurrentTime);
+			main_wind, CurrentTime);
 		err = mnvm_noErr;
 	}
 
@@ -2573,14 +2573,14 @@ GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALFUNC blnr WaitForClipboardSelection(XEvent *xevent)
+LOCALFUNC bool WaitForClipboardSelection(XEvent *xevent)
 {
 	struct timespec rqt;
 	struct timespec rmt;
 	int i;
 
 	for (i = 100; --i >= 0; ) {
-		while (XCheckTypedWindowEvent(x_display, my_main_wind,
+		while (XCheckTypedWindowEvent(x_display, main_wind,
 			SelectionNotify, xevent))
 		{
 			if (xevent->xselection.selection != XA_CLIPBOARD) {
@@ -2591,7 +2591,7 @@ LOCALFUNC blnr WaitForClipboardSelection(XEvent *xevent)
 				WriteExtraErr("Discarding unwanted SelectionNotify");
 			} else {
 				/* this is our event */
-				return trueblnr;
+				return true;
 			}
 		}
 
@@ -2599,7 +2599,7 @@ LOCALFUNC blnr WaitForClipboardSelection(XEvent *xevent)
 		rqt.tv_nsec = 10000000;
 		(void) nanosleep(&rqt, &rmt);
 	}
-	return falseblnr;
+	return false;
 }
 #endif
 
@@ -2608,17 +2608,17 @@ LOCALPROC HTCEimport_do(void)
 {
 	Window w = XGetSelectionOwner(x_display, XA_CLIPBOARD);
 
-	if (w == my_main_wind) {
+	if (w == main_wind) {
 		/* We own the clipboard, already have ClipBuffer */
 	} else {
 		FreeClipBuffer();
 		if (w != None) {
 			XEvent xevent;
 
-			XDeleteProperty(x_display, my_main_wind,
+			XDeleteProperty(x_display, main_wind,
 				XA_MinivMac_Clip);
 			XConvertSelection(x_display, XA_CLIPBOARD, XA_STRING,
-				XA_MinivMac_Clip, my_main_wind, CurrentTime);
+				XA_MinivMac_Clip, main_wind, CurrentTime);
 
 			if (WaitForClipboardSelection(&xevent)) {
 				if (None == xevent.xselection.property) {
@@ -2636,7 +2636,7 @@ LOCALPROC HTCEimport_do(void)
 						unsigned char *s = NULL;
 
 						if ((Success != XGetWindowProperty(
-							x_display, my_main_wind, XA_MinivMac_Clip,
+							x_display, main_wind, XA_MinivMac_Clip,
 							0, 65535, False, AnyPropertyType, &ret_type,
 							&ret_format, &ret_item, &remain_byte, &s))
 							|| (ret_type != XA_STRING)
@@ -2647,10 +2647,10 @@ LOCALPROC HTCEimport_do(void)
 								"XGetWindowProperty failed"
 								" in HTCEimport_do");
 						} else {
-							ClipBuffer = (ui3p)malloc(ret_item + 1);
+							ClipBuffer = (uint8_t *)malloc(ret_item + 1);
 							if (NULL == ClipBuffer) {
 								MacMsg(kStrOutOfMemTitle,
-									kStrOutOfMemMessage, falseblnr);
+									kStrOutOfMemMessage, false);
 							} else {
 								MoveBytes((anyp)s, (anyp)ClipBuffer,
 									ret_item);
@@ -2659,7 +2659,7 @@ LOCALPROC HTCEimport_do(void)
 							XFree(s);
 						}
 					}
-					XDeleteProperty(x_display, my_main_wind,
+					XDeleteProperty(x_display, main_wind,
 						XA_MinivMac_Clip);
 				}
 			}
@@ -2678,9 +2678,9 @@ GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALFUNC blnr HandleSelectionRequestClipboard(XEvent *theEvent)
+LOCALFUNC bool HandleSelectionRequestClipboard(XEvent *theEvent)
 {
-	blnr RequestFilled = falseblnr;
+	bool RequestFilled = false;
 
 #if DbgEvents
 	dbglog_writeln("Requested XA_CLIPBOARD");
@@ -2708,7 +2708,7 @@ LOCALFUNC blnr HandleSelectionRequestClipboard(XEvent *theEvent)
 			(unsigned char *)a,
 			sizeof(a) / sizeof(Atom));
 
-		RequestFilled = trueblnr;
+		RequestFilled = true;
 	} else if (theEvent->xselectionrequest.target == XA_STRING) {
 		XChangeProperty(x_display,
 			theEvent->xselectionrequest.requestor,
@@ -2719,7 +2719,7 @@ LOCALFUNC blnr HandleSelectionRequestClipboard(XEvent *theEvent)
 			(unsigned char *)ClipBuffer,
 			strlen((char *)ClipBuffer));
 
-		RequestFilled = trueblnr;
+		RequestFilled = true;
 	}
 
 	return RequestFilled;
@@ -2740,7 +2740,7 @@ LOCALPROC ActivateWind(Time time)
 
 		xevent.xany.type = ClientMessage;
 		xevent.xclient.send_event = True;
-		xevent.xclient.window = my_main_wind;
+		xevent.xclient.window = main_wind;
 		xevent.xclient.message_type = XA_NetActiveWindow;
 		xevent.xclient.format = 32;
 		xevent.xclient.data.l[0] = 1;
@@ -2754,7 +2754,7 @@ LOCALPROC ActivateWind(Time time)
 		}
 	}
 
-	XRaiseWindow(x_display, my_main_wind);
+	XRaiseWindow(x_display, main_wind);
 		/*
 			In RedHat 7.1, _NET_ACTIVE_WINDOW supported,
 			but XSendEvent of _NET_ACTIVE_WINDOW
@@ -2764,7 +2764,7 @@ LOCALPROC ActivateWind(Time time)
 			managers where it isn't needed.
 			(Such as in Ubuntu 5.10)
 		*/
-	XSetInputFocus(x_display, my_main_wind,
+	XSetInputFocus(x_display, main_wind,
 		RevertToPointerRoot, time);
 		/* And call this always too, just in case */
 }
@@ -2790,7 +2790,7 @@ LOCALPROC ParseOneUri(char *s)
 				++s;
 			}
 		}
-		(void) Sony_Insert1a(s, falseblnr);
+		(void) Sony_Insert1a(s, false);
 	}
 }
 #endif
@@ -2852,7 +2852,7 @@ LOCALVAR Window PendingDragWindow = None;
 #if EnableDragDrop
 LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 {
-	blnr DropOk = falseblnr;
+	bool DropOk = false;
 
 #if DbgEvents
 	dbglog_writeln("Got XA_DndSelection");
@@ -2867,7 +2867,7 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 		unsigned long remain_byte;
 		unsigned char *s = NULL;
 
-		if ((Success != XGetWindowProperty(x_display, my_main_wind,
+		if ((Success != XGetWindowProperty(x_display, main_wind,
 			XA_MinivMac_DndXchng,
 			0, 65535, False, XA_UriList, &ret_type, &ret_format,
 			&ret_item, &remain_byte, &s))
@@ -2877,14 +2877,14 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 				"XGetWindowProperty failed in SelectionNotify");
 		} else {
 			ParseUriList((char *)s);
-			DropOk = trueblnr;
+			DropOk = true;
 			XFree(s);
 		}
 	} else {
 		WriteExtraErr("Got Unknown SelectionNotify");
 	}
 
-	XDeleteProperty(x_display, my_main_wind,
+	XDeleteProperty(x_display, main_wind,
 		XA_MinivMac_DndXchng);
 
 	if (PendingDragWindow != None) {
@@ -2898,7 +2898,7 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 		xevent.xclient.message_type = XA_DndFinished;
 		xevent.xclient.format = 32;
 
-		xevent.xclient.data.l[0] = my_main_wind;
+		xevent.xclient.data.l[0] = main_wind;
 		if (DropOk) {
 			xevent.xclient.data.l[1] = 1;
 		}
@@ -2913,7 +2913,7 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 	if (DropOk && gTrueBackgroundFlag) {
 		ActivateWind(theEvent->xselection.time);
 
-		WantCmdOptOnReconnect = trueblnr;
+		WantCmdOptOnReconnect = true;
 	}
 }
 #endif
@@ -2935,7 +2935,7 @@ LOCALPROC HandleClientMessageDndPosition(XEvent *theEvent)
 	dbglog_writeln("Got XdndPosition");
 #endif
 
-	XGetGeometry(x_display, my_main_wind,
+	XGetGeometry(x_display, main_wind,
 		&rr, &xr, &yr, &wr, &hr, &bwr, &dr);
 	memset (&xevent, 0, sizeof(xevent));
 	xevent.xany.type = ClientMessage;
@@ -2969,14 +2969,14 @@ LOCALPROC HandleClientMessageDndDrop(XEvent *theEvent)
 #endif
 
 	XConvertSelection(x_display, XA_DndSelection, XA_UriList,
-		XA_MinivMac_DndXchng, my_main_wind, timestamp);
+		XA_MinivMac_DndXchng, main_wind, timestamp);
 }
 #endif
 
 #define UseMotionEvents 1
 
 #if UseMotionEvents
-LOCALVAR blnr CaughtMouse = falseblnr;
+LOCALVAR bool CaughtMouse = false;
 #endif
 
 #if MayNotFullScreen
@@ -2992,7 +2992,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 		WriteExtraErr("Got event for some other display");
 	} else switch(theEvent->type) {
 		case KeyPress:
-			if (theEvent->xkey.window != my_main_wind) {
+			if (theEvent->xkey.window != main_wind) {
 				WriteExtraErr("Got KeyPress for some other window");
 			} else {
 #if DbgEvents
@@ -3000,11 +3000,11 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 #endif
 
 				MousePositionNotify(theEvent->xkey.x, theEvent->xkey.y);
-				DoKeyCode(theEvent->xkey.keycode, trueblnr);
+				DoKeyCode(theEvent->xkey.keycode, true);
 			}
 			break;
 		case KeyRelease:
-			if (theEvent->xkey.window != my_main_wind) {
+			if (theEvent->xkey.window != main_wind) {
 				WriteExtraErr("Got KeyRelease for some other window");
 			} else {
 #if DbgEvents
@@ -3012,12 +3012,12 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 #endif
 
 				MousePositionNotify(theEvent->xkey.x, theEvent->xkey.y);
-				DoKeyCode(theEvent->xkey.keycode, falseblnr);
+				DoKeyCode(theEvent->xkey.keycode, false);
 			}
 			break;
 		case ButtonPress:
 			/* any mouse button, we don't care which */
-			if (theEvent->xbutton.window != my_main_wind) {
+			if (theEvent->xbutton.window != main_wind) {
 				WriteExtraErr("Got ButtonPress for some other window");
 			} else {
 				/*
@@ -3027,23 +3027,23 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				*/
 				MousePositionNotify(
 					theEvent->xbutton.x, theEvent->xbutton.y);
-				MouseButtonSet(trueblnr);
+				MouseButtonSet(true);
 			}
 			break;
 		case ButtonRelease:
 			/* any mouse button, we don't care which */
-			if (theEvent->xbutton.window != my_main_wind) {
+			if (theEvent->xbutton.window != main_wind) {
 				WriteExtraErr(
 					"Got ButtonRelease for some other window");
 			} else {
 				MousePositionNotify(
 					theEvent->xbutton.x, theEvent->xbutton.y);
-				MouseButtonSet(falseblnr);
+				MouseButtonSet(false);
 			}
 			break;
 #if UseMotionEvents
 		case MotionNotify:
-			if (theEvent->xmotion.window != my_main_wind) {
+			if (theEvent->xmotion.window != main_wind) {
 				WriteExtraErr("Got MotionNotify for some other window");
 			} else {
 				MousePositionNotify(
@@ -3051,20 +3051,20 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			}
 			break;
 		case EnterNotify:
-			if (theEvent->xcrossing.window != my_main_wind) {
+			if (theEvent->xcrossing.window != main_wind) {
 				WriteExtraErr("Got EnterNotify for some other window");
 			} else {
 #if DbgEvents
 				dbglog_writeln("- event - EnterNotify");
 #endif
 
-				CaughtMouse = trueblnr;
+				CaughtMouse = true;
 				MousePositionNotify(
 					theEvent->xcrossing.x, theEvent->xcrossing.y);
 			}
 			break;
 		case LeaveNotify:
-			if (theEvent->xcrossing.window != my_main_wind) {
+			if (theEvent->xcrossing.window != main_wind) {
 				WriteExtraErr("Got LeaveNotify for some other window");
 			} else {
 #if DbgEvents
@@ -3073,12 +3073,12 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 
 				MousePositionNotify(
 					theEvent->xcrossing.x, theEvent->xcrossing.y);
-				CaughtMouse = falseblnr;
+				CaughtMouse = false;
 			}
 			break;
 #endif
 		case Expose:
-			if (theEvent->xexpose.window != my_main_wind) {
+			if (theEvent->xexpose.window != main_wind) {
 				WriteExtraErr(
 					"Got SelectionRequest for some other window");
 			} else {
@@ -3140,17 +3140,17 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 					HaveChangedScreenBuff(y0, x0, y1, x1);
 				}
 
-				NeedFinishOpen1 = falseblnr;
+				NeedFinishOpen1 = false;
 			}
 			break;
 #if IncludeHostTextClipExchange
 		case SelectionRequest:
-			if (theEvent->xselectionrequest.owner != my_main_wind) {
+			if (theEvent->xselectionrequest.owner != main_wind) {
 				WriteExtraErr(
 					"Got SelectionRequest for some other window");
 			} else {
 				XEvent xevent;
-				blnr RequestFilled = falseblnr;
+				bool RequestFilled = false;
 
 #if DbgEvents
 				dbglog_writeln("- event - SelectionRequest");
@@ -3193,7 +3193,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			}
 			break;
 		case SelectionClear:
-			if (theEvent->xselectionclear.window != my_main_wind) {
+			if (theEvent->xselectionclear.window != main_wind) {
 				WriteExtraErr(
 					"Got SelectionClear for some other window");
 			} else {
@@ -3213,7 +3213,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 #endif
 #if EnableDragDrop
 		case SelectionNotify:
-			if (theEvent->xselection.requestor != my_main_wind) {
+			if (theEvent->xselection.requestor != main_wind) {
 				WriteExtraErr(
 					"Got SelectionNotify for some other window");
 			} else {
@@ -3236,7 +3236,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			break;
 #endif
 		case ClientMessage:
-			if (theEvent->xclient.window != my_main_wind) {
+			if (theEvent->xclient.window != main_wind) {
 				WriteExtraErr(
 					"Got ClientMessage for some other window");
 			} else {
@@ -3273,20 +3273,20 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 							but none of the other programs I looked
 							at did.
 						*/
-						RequestMacOff = trueblnr;
+						RequestMacOff = true;
 					}
 				}
 			}
 			break;
 		case FocusIn:
-			if (theEvent->xfocus.window != my_main_wind) {
+			if (theEvent->xfocus.window != main_wind) {
 				WriteExtraErr("Got FocusIn for some other window");
 			} else {
 #if DbgEvents
 				dbglog_writeln("- event - FocusIn");
 #endif
 
-				gTrueBackgroundFlag = falseblnr;
+				gTrueBackgroundFlag = false;
 #if UseMotionEvents
 				CheckMouseState();
 					/*
@@ -3298,14 +3298,14 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			}
 			break;
 		case FocusOut:
-			if (theEvent->xfocus.window != my_main_wind) {
+			if (theEvent->xfocus.window != main_wind) {
 				WriteExtraErr("Got FocusOut for some other window");
 			} else {
 #if DbgEvents
 				dbglog_writeln("- event - FocusOut");
 #endif
 
-				gTrueBackgroundFlag = trueblnr;
+				gTrueBackgroundFlag = true;
 			}
 			break;
 		default:
@@ -3315,12 +3315,12 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 
 /* --- main window creation and disposal --- */
 
-LOCALVAR int my_argc;
-LOCALVAR char **my_argv;
+LOCALVAR int argc;
+LOCALVAR char **argv;
 
 LOCALVAR char *display_name = NULL;
 
-LOCALFUNC blnr Screen_Init(void)
+LOCALFUNC bool Screen_Init(void)
 {
 	Window rootwin;
 	int screen;
@@ -3330,7 +3330,7 @@ LOCALFUNC blnr Screen_Init(void)
 	x_display = XOpenDisplay(display_name);
 	if (NULL == x_display) {
 		fprintf(stderr, "Cannot connect to X server.\n");
-		return falseblnr;
+		return false;
 	}
 
 	screen = DefaultScreen(x_display);
@@ -3353,37 +3353,37 @@ LOCALFUNC blnr Screen_Init(void)
 	}
 
 	if (! CreateBlankCursor(rootwin)) {
-		return falseblnr;
+		return false;
 	}
 
 #if ! UseColorImage
-	my_image = XCreateImage(x_display, Xvisual, 1, XYBitmap, 0,
+	image = XCreateImage(x_display, Xvisual, 1, XYBitmap, 0,
 		NULL /* (char *)image_Mem1 */,
 		vMacScreenWidth, vMacScreenHeight, 32,
 		vMacScreenMonoByteWidth);
-	if (NULL == my_image) {
+	if (NULL == image) {
 		fprintf(stderr, "XCreateImage failed.\n");
-		return falseblnr;
+		return false;
 	}
 
 #if 0
 	fprintf(stderr, "bitmap_bit_order = %d\n",
-		(int)my_image->bitmap_bit_order);
-	fprintf(stderr, "byte_order = %d\n", (int)my_image->byte_order);
+		(int)image->bitmap_bit_order);
+	fprintf(stderr, "byte_order = %d\n", (int)image->byte_order);
 #endif
 
-	my_image->bitmap_bit_order = MSBFirst;
-	my_image->byte_order = MSBFirst;
+	image->bitmap_bit_order = MSBFirst;
+	image->byte_order = MSBFirst;
 #endif
 
 #if UseColorImage
-	my_image = XCreateImage(x_display, Xvisual, 24, ZPixmap, 0,
+	image = XCreateImage(x_display, Xvisual, 24, ZPixmap, 0,
 		NULL /* (char *)image_Mem1 */,
 		vMacScreenWidth, vMacScreenHeight, 32,
 			4 * (uint32_t)vMacScreenWidth);
-	if (NULL == my_image) {
+	if (NULL == image) {
 		fprintf(stderr, "XCreateImage Color failed.\n");
-		return falseblnr;
+		return false;
 	}
 
 #if 0
@@ -3394,70 +3394,70 @@ LOCALFUNC blnr Screen_Init(void)
 	fprintf(stderr, "LSBFirst = %d\n", (int)LSBFirst);
 
 	fprintf(stderr, "bitmap_bit_order = %d\n",
-		(int)my_image->bitmap_bit_order);
+		(int)image->bitmap_bit_order);
 	fprintf(stderr, "byte_order = %d\n",
-		(int)my_image->byte_order);
+		(int)image->byte_order);
 	fprintf(stderr, "bitmap_unit = %d\n",
-		(int)my_image->bitmap_unit);
+		(int)image->bitmap_unit);
 	fprintf(stderr, "bits_per_pixel = %d\n",
-		(int)my_image->bits_per_pixel);
+		(int)image->bits_per_pixel);
 	fprintf(stderr, "red_mask = %d\n",
-		(int)my_image->red_mask);
+		(int)image->red_mask);
 	fprintf(stderr, "green_mask = %d\n",
-		(int)my_image->green_mask);
+		(int)image->green_mask);
 	fprintf(stderr, "blue_mask = %d\n",
-		(int)my_image->blue_mask);
+		(int)image->blue_mask);
 #endif
 
 #endif /* UseColorImage */
 
 #if EnableMagnify && (! UseColorImage)
-	my_Scaled_image = XCreateImage(x_display, Xvisual,
+	Scaled_image = XCreateImage(x_display, Xvisual,
 		1, XYBitmap, 0,
 		NULL /* (char *)image_Mem1 */,
 		vMacScreenWidth * WindowScale,
 		vMacScreenHeight * WindowScale,
 		32, vMacScreenMonoByteWidth * WindowScale);
-	if (NULL == my_Scaled_image) {
+	if (NULL == Scaled_image) {
 		fprintf(stderr, "XCreateImage failed.\n");
-		return falseblnr;
+		return false;
 	}
 
-	my_Scaled_image->bitmap_bit_order = MSBFirst;
-	my_Scaled_image->byte_order = MSBFirst;
+	Scaled_image->bitmap_bit_order = MSBFirst;
+	Scaled_image->byte_order = MSBFirst;
 #endif
 
 #if EnableMagnify && UseColorImage
-	my_Scaled_image = XCreateImage(x_display, Xvisual,
+	Scaled_image = XCreateImage(x_display, Xvisual,
 		24, ZPixmap, 0,
 		NULL /* (char *)image_Mem1 */,
 		vMacScreenWidth * WindowScale,
 		vMacScreenHeight * WindowScale,
 		32, 4 * (uint32_t)vMacScreenWidth * WindowScale);
-	if (NULL == my_Scaled_image) {
+	if (NULL == Scaled_image) {
 		fprintf(stderr, "XCreateImage Scaled failed.\n");
-		return falseblnr;
+		return false;
 	}
 #endif
 
 #if 0 != vMacScreenDepth
-	ColorModeWorks = trueblnr;
+	ColorModeWorks = true;
 #endif
 
 	DisableKeyRepeat();
 
-	return trueblnr;
+	return true;
 }
 
 LOCALPROC CloseMainWindow(void)
 {
-	if (my_gc != NULL) {
-		XFreeGC(x_display, my_gc);
-		my_gc = NULL;
+	if (gc != NULL) {
+		XFreeGC(x_display, gc);
+		gc = NULL;
 	}
-	if (my_main_wind) {
-		XDestroyWindow(x_display, my_main_wind);
-		my_main_wind = 0;
+	if (main_wind) {
+		XDestroyWindow(x_display, main_wind);
+		main_wind = 0;
 	}
 }
 
@@ -3473,7 +3473,7 @@ enum {
 
 #if MayNotFullScreen
 LOCALVAR int CurWinIndx;
-LOCALVAR blnr HavePositionWins[kNumMagStates];
+LOCALVAR bool HavePositionWins[kNumMagStates];
 LOCALVAR int WinPositionWinsH[kNumMagStates];
 LOCALVAR int WinPositionWinsV[kNumMagStates];
 #endif
@@ -3481,12 +3481,12 @@ LOCALVAR int WinPositionWinsV[kNumMagStates];
 #if EnableRecreateW
 LOCALPROC ZapWState(void)
 {
-	my_main_wind = 0;
-	my_gc = NULL;
+	main_wind = 0;
+	gc = NULL;
 }
 #endif
 
-LOCALFUNC blnr CreateMainWindow(void)
+LOCALFUNC bool CreateMainWindow(void)
 {
 	Window rootwin;
 	int screen;
@@ -3579,7 +3579,7 @@ LOCALFUNC blnr CreateMainWindow(void)
 		if (! HavePositionWins[WinIndx]) {
 			WinPositionWinsH[WinIndx] = leftPos;
 			WinPositionWinsV[WinIndx] = topPos;
-			HavePositionWins[WinIndx] = trueblnr;
+			HavePositionWins[WinIndx] = true;
 		} else {
 			leftPos = WinPositionWinsH[WinIndx];
 			topPos = WinPositionWinsV[WinIndx];
@@ -3597,7 +3597,7 @@ LOCALFUNC blnr CreateMainWindow(void)
 		xattr.background_pixel = x_black.pixel;
 		xattr.border_pixel = x_white.pixel;
 
-		my_main_wind = XCreateWindow(x_display, rr,
+		main_wind = XCreateWindow(x_display, rr,
 			0, 0, wr, hr, 0,
 			CopyFromParent, /* depth */
 			InputOutput, /* class */
@@ -3612,7 +3612,7 @@ LOCALFUNC blnr CreateMainWindow(void)
 #endif
 #if MayNotFullScreen
 	{
-		my_main_wind = XCreateSimpleWindow(x_display, rootwin,
+		main_wind = XCreateSimpleWindow(x_display, rootwin,
 			leftPos,
 			topPos,
 			NewWindowWidth, NewWindowHeight, 4,
@@ -3621,9 +3621,9 @@ LOCALFUNC blnr CreateMainWindow(void)
 	}
 #endif
 
-	if (! my_main_wind) {
+	if (! main_wind) {
 		WriteExtraErr("XCreateSimpleWindow failed.");
-		return falseblnr;
+		return false;
 	} else {
 		char *win_name =
 			(NULL != n_arg) ? n_arg : (
@@ -3631,7 +3631,7 @@ LOCALFUNC blnr CreateMainWindow(void)
 			(NULL != app_name) ? app_name :
 #endif
 			kStrAppName);
-		XSelectInput(x_display, my_main_wind,
+		XSelectInput(x_display, main_wind,
 			ExposureMask | KeyPressMask | KeyReleaseMask
 			| ButtonPressMask | ButtonReleaseMask
 #if UseMotionEvents
@@ -3639,15 +3639,15 @@ LOCALFUNC blnr CreateMainWindow(void)
 #endif
 			| FocusChangeMask);
 
-		XStoreName(x_display, my_main_wind, win_name);
-		XSetIconName(x_display, my_main_wind, win_name);
+		XStoreName(x_display, main_wind, win_name);
+		XSetIconName(x_display, main_wind, win_name);
 
 		{
 			XClassHint *hints = XAllocClassHint();
 			if (hints) {
 				hints->res_name = "minivmac";
 				hints->res_class = "minivmac";
-				XSetClassHint(x_display, my_main_wind, hints);
+				XSetClassHint(x_display, main_wind, hints);
 				XFree(hints);
 			}
 		}
@@ -3658,29 +3658,29 @@ LOCALFUNC blnr CreateMainWindow(void)
 				hints->input = True;
 				hints->initial_state = NormalState;
 				hints->flags = InputHint | StateHint;
-				XSetWMHints(x_display, my_main_wind, hints);
+				XSetWMHints(x_display, main_wind, hints);
 				XFree(hints);
 			}
 
 		}
 
-		XSetCommand(x_display, my_main_wind, my_argv, my_argc);
+		XSetCommand(x_display, main_wind, argv, argc);
 
 		/* let us handle a click on the close box */
-		XSetWMProtocols(x_display, my_main_wind, &XA_DeleteW, 1);
+		XSetWMProtocols(x_display, main_wind, &XA_DeleteW, 1);
 
 #if EnableDragDrop
-		XChangeProperty (x_display, my_main_wind, XA_DndAware,
+		XChangeProperty (x_display, main_wind, XA_DndAware,
 			XA_ATOM, 32, PropModeReplace,
 			(unsigned char *) &xdnd_version, 1);
 #endif
 
-		my_gc = XCreateGC(x_display, my_main_wind, 0, NULL);
-		if (NULL == my_gc) {
+		gc = XCreateGC(x_display, main_wind, 0, NULL);
+		if (NULL == gc) {
 			WriteExtraErr("XCreateGC failed.");
-			return falseblnr;
+			return false;
 		}
-		XSetState(x_display, my_gc, x_black.pixel, x_white.pixel,
+		XSetState(x_display, gc, x_black.pixel, x_white.pixel,
 			GXcopy, AllPlanes);
 
 #if VarFullScreen
@@ -3707,7 +3707,7 @@ LOCALFUNC blnr CreateMainWindow(void)
 				hints->height = NewWindowHeight;
 
 				hints->flags = PMinSize | PMaxSize | PPosition | PSize;
-				XSetWMNormalHints(x_display, my_main_wind, hints);
+				XSetWMNormalHints(x_display, main_wind, hints);
 				XFree(hints);
 			}
 		}
@@ -3730,7 +3730,7 @@ LOCALFUNC blnr CreateMainWindow(void)
 		CurWinIndx = WinIndx;
 #endif
 
-		XMapRaised(x_display, my_main_wind);
+		XMapRaised(x_display, main_wind);
 
 #if 0
 		XSync(x_display, 0);
@@ -3754,19 +3754,19 @@ LOCALFUNC blnr CreateMainWindow(void)
 				XNextEvent(x_display, &event);
 				HandleTheEvent(&event);
 			} while (! ((Expose == event.type)
-				&& (event.xexpose.window == my_main_wind)));
+				&& (event.xexpose.window == main_wind)));
 		}
 #endif
 
-		NeedFinishOpen1 = trueblnr;
-		NeedFinishOpen2 = trueblnr;
+		NeedFinishOpen1 = true;
+		NeedFinishOpen2 = true;
 
-		return trueblnr;
+		return true;
 	}
 }
 
 #if MayFullScreen
-LOCALVAR blnr GrabMachine = falseblnr;
+LOCALVAR bool GrabMachine = false;
 #endif
 
 #if MayFullScreen
@@ -3795,8 +3795,8 @@ LOCALPROC UngrabMachine(void)
 
 #if EnableRecreateW
 struct WState {
-	Window f_my_main_wind;
-	GC f_my_gc;
+	Window f_main_wind;
+	GC f_gc;
 #if MayFullScreen
 	short f_hOffset;
 	short f_vOffset;
@@ -3806,10 +3806,10 @@ struct WState {
 	uint16_t f_ViewVStart;
 #endif
 #if VarFullScreen
-	blnr f_UseFullScreen;
+	bool f_UseFullScreen;
 #endif
 #if EnableMagnify
-	blnr f_UseMagnify;
+	bool f_UseMagnify;
 #endif
 };
 typedef struct WState WState;
@@ -3818,8 +3818,8 @@ typedef struct WState WState;
 #if EnableRecreateW
 LOCALPROC GetWState(WState *r)
 {
-	r->f_my_main_wind = my_main_wind;
-	r->f_my_gc = my_gc;
+	r->f_main_wind = main_wind;
+	r->f_gc = gc;
 #if MayFullScreen
 	r->f_hOffset = hOffset;
 	r->f_vOffset = vOffset;
@@ -3840,8 +3840,8 @@ LOCALPROC GetWState(WState *r)
 #if EnableRecreateW
 LOCALPROC SetWState(WState *r)
 {
-	my_main_wind = r->f_my_main_wind;
-	my_gc = r->f_my_gc;
+	main_wind = r->f_main_wind;
+	gc = r->f_gc;
 #if MayFullScreen
 	hOffset = r->f_hOffset;
 	vOffset = r->f_vOffset;
@@ -3860,22 +3860,22 @@ LOCALPROC SetWState(WState *r)
 #endif
 
 #if EnableRecreateW
-LOCALVAR blnr WantRestoreCursPos = falseblnr;
+LOCALVAR bool WantRestoreCursPos = false;
 LOCALVAR uint16_t RestoreMouseH;
 LOCALVAR uint16_t RestoreMouseV;
 #endif
 
 #if EnableRecreateW
-LOCALFUNC blnr ReCreateMainWindow(void)
+LOCALFUNC bool ReCreateMainWindow(void)
 {
 	WState old_state;
 	WState new_state;
 #if IncludeHostTextClipExchange
-	blnr OwnClipboard = falseblnr;
+	bool OwnClipboard = false;
 #endif
 
 	if (HaveCursorHidden) {
-		WantRestoreCursPos = trueblnr;
+		WantRestoreCursPos = true;
 		RestoreMouseH = CurMouseH;
 		RestoreMouseV = CurMouseV;
 	}
@@ -3886,7 +3886,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 #if VarFullScreen
 	if (! UseFullScreen)
 #endif
-	if (my_main_wind)
+	if (main_wind)
 	if (! NeedFinishOpen2)
 	{
 		/* save old position */
@@ -3914,7 +3914,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 			track how far window has moved.
 		*/
 		XSync(x_display, 0);
-		if (XTranslateCoordinates(x_display, my_main_wind, rootwin,
+		if (XTranslateCoordinates(x_display, main_wind, rootwin,
 			0, 0, &xr, &yr, &rr2))
 		{
 			int newposh =
@@ -3933,7 +3933,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 
 #if MayFullScreen
 	if (GrabMachine) {
-		GrabMachine = falseblnr;
+		GrabMachine = false;
 		UngrabMachine();
 	}
 #endif
@@ -3948,7 +3948,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 	UseFullScreen = WantFullScreen;
 #endif
 
-	ColorTransValid = falseblnr;
+	ColorTransValid = false;
 
 	if (! CreateMainWindow()) {
 		CloseMainWindow();
@@ -3962,17 +3962,17 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 		WantMagnify = UseMagnify;
 #endif
 
-		return falseblnr;
+		return false;
 	} else {
 		GetWState(&new_state);
 		SetWState(&old_state);
 
 #if IncludeHostTextClipExchange
-		if (my_main_wind) {
+		if (main_wind) {
 			if (XGetSelectionOwner(x_display, XA_CLIPBOARD) ==
-				my_main_wind)
+				main_wind)
 			{
-				OwnClipboard = trueblnr;
+				OwnClipboard = true;
 			}
 		}
 #endif
@@ -3984,12 +3984,12 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 #if IncludeHostTextClipExchange
 		if (OwnClipboard) {
 			XSetSelectionOwner(x_display, XA_CLIPBOARD,
-				my_main_wind, CurrentTime);
+				main_wind, CurrentTime);
 		}
 #endif
 	}
 
-	return trueblnr;
+	return true;
 }
 #endif
 
@@ -4014,7 +4014,7 @@ LOCALPROC ZapWinStateVars(void)
 		int i;
 
 		for (i = 0; i < kNumMagStates; ++i) {
-			HavePositionWins[i] = falseblnr;
+			HavePositionWins[i] = false;
 		}
 	}
 #endif
@@ -4048,7 +4048,7 @@ LOCALPROC ToggleWantFullScreen(void)
 		if (kMagStateAuto != NewMagState) {
 			WantMagnify = (kMagStateMagnifgy == NewMagState);
 		} else {
-			WantMagnify = falseblnr;
+			WantMagnify = false;
 			if (WantFullScreen) {
 				Window rootwin;
 				int xr;
@@ -4067,7 +4067,7 @@ LOCALPROC ToggleWantFullScreen(void)
 					&& (hr >= vMacScreenHeight * WindowScale)
 					)
 				{
-					WantMagnify = trueblnr;
+					WantMagnify = true;
 				}
 			}
 		}
@@ -4111,21 +4111,21 @@ LOCALPROC EnterSpeedStopped(void)
 LOCALPROC CheckForSavedTasks(void)
 {
 	if (EvtQNeedRecover) {
-		EvtQNeedRecover = falseblnr;
+		EvtQNeedRecover = false;
 
 		/* attempt cleanup, EvtQNeedRecover may get set again */
 		EvtQTryRecoverFromFull();
 	}
 
 	if (NeedFinishOpen2 && ! NeedFinishOpen1) {
-		NeedFinishOpen2 = falseblnr;
+		NeedFinishOpen2 = false;
 
 #if VarFullScreen
 		if (UseFullScreen)
 #endif
 #if MayFullScreen
 		{
-			XSetInputFocus(x_display, my_main_wind,
+			XSetInputFocus(x_display, main_wind,
 				RevertToPointerRoot, CurrentTime);
 		}
 #endif
@@ -4142,7 +4142,7 @@ LOCALPROC CheckForSavedTasks(void)
 				This doesn't work right in Red Hat 6, and may not
 				be needed anymore, now that using PPosition hint.
 			*/
-			XMoveWindow(x_display, my_main_wind,
+			XMoveWindow(x_display, main_wind,
 				leftPos, topPos);
 				/*
 					Needed after XMapRaised, because some window
@@ -4156,7 +4156,7 @@ LOCALPROC CheckForSavedTasks(void)
 					apparently, XTranslateCoordinates can be inaccurate
 					without this
 				*/
-			XTranslateCoordinates(x_display, my_main_wind, rootwin,
+			XTranslateCoordinates(x_display, main_wind, rootwin,
 				0, 0, &SavedTransH, &SavedTransV, &rr);
 		}
 #endif
@@ -4168,9 +4168,9 @@ LOCALPROC CheckForSavedTasks(void)
 #endif
 			{
 				(void) MoveMouse(RestoreMouseH, RestoreMouseV);
-				WantCursorHidden = trueblnr;
+				WantCursorHidden = true;
 			}
-			WantRestoreCursPos = falseblnr;
+			WantRestoreCursPos = false;
 		}
 #endif
 	}
@@ -4182,12 +4182,12 @@ LOCALPROC CheckForSavedTasks(void)
 #endif
 
 	if (RequestMacOff) {
-		RequestMacOff = falseblnr;
+		RequestMacOff = false;
 		if (AnyDiskInserted()) {
 			MacMsgOverride(kStrQuitWarningTitle,
 				kStrQuitWarningMessage);
 		} else {
-			ForceMacOff = trueblnr;
+			ForceMacOff = true;
 		}
 	}
 
@@ -4235,8 +4235,8 @@ LOCALPROC CheckForSavedTasks(void)
 #if 0
 		ToggleWantFullScreen();
 #else
-		XRaiseWindow(x_display, my_main_wind);
-		XSetInputFocus(x_display, my_main_wind,
+		XRaiseWindow(x_display, main_wind);
+		XSetInputFocus(x_display, main_wind,
 			RevertToPointerRoot, CurrentTime);
 #endif
 	}
@@ -4277,8 +4277,8 @@ LOCALPROC CheckForSavedTasks(void)
 	if (vSonyNewDiskWanted) {
 #if IncludeSonyNameNew
 		if (vSonyNewDiskName != NotAPbuf) {
-			ui3p NewDiskNameDat;
-			if (MacRomanTextToNativePtr(vSonyNewDiskName, trueblnr,
+			uint8_t * NewDiskNameDat;
+			if (MacRomanTextToNativePtr(vSonyNewDiskName, true,
 				&NewDiskNameDat))
 			{
 				MakeNewDisk(vSonyNewDiskSize, (char *)NewDiskNameDat);
@@ -4291,7 +4291,7 @@ LOCALPROC CheckForSavedTasks(void)
 		{
 			MakeNewDiskAtDefault(vSonyNewDiskSize);
 		}
-		vSonyNewDiskWanted = falseblnr;
+		vSonyNewDiskWanted = false;
 			/* must be done after may have gotten disk */
 	}
 #endif
@@ -4301,7 +4301,7 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 
 	if (NeedWholeScreenDraw) {
-		NeedWholeScreenDraw = falseblnr;
+		NeedWholeScreenDraw = false;
 		ScreenChangedAll();
 	}
 
@@ -4317,51 +4317,51 @@ LOCALPROC CheckForSavedTasks(void)
 	{
 		HaveCursorHidden = ! HaveCursorHidden;
 		if (HaveCursorHidden) {
-			XDefineCursor(x_display, my_main_wind, blankCursor);
+			XDefineCursor(x_display, main_wind, blankCursor);
 		} else {
-			XUndefineCursor(x_display, my_main_wind);
+			XUndefineCursor(x_display, main_wind);
 		}
 	}
 }
 
 /* --- command line parsing --- */
 
-LOCALFUNC blnr ScanCommandLine(void)
+LOCALFUNC bool ScanCommandLine(void)
 {
 	char *pa;
 	int i = 1;
 
 label_retry:
-	if (i < my_argc) {
-		pa = my_argv[i++];
+	if (i < argc) {
+		pa = argv[i++];
 		if ('-' == pa[0]) {
 			if ((0 == strcmp(pa, "--display"))
 				|| (0 == strcmp(pa, "-display")))
 			{
-				if (i < my_argc) {
-					display_name = my_argv[i++];
+				if (i < argc) {
+					display_name = argv[i++];
 					goto label_retry;
 				}
 			} else
 			if ((0 == strcmp(pa, "--rom"))
 				|| (0 == strcmp(pa, "-r")))
 			{
-				if (i < my_argc) {
-					rom_path = my_argv[i++];
+				if (i < argc) {
+					rom_path = argv[i++];
 					goto label_retry;
 				}
 			} else
 			if (0 == strcmp(pa, "-n"))
 			{
-				if (i < my_argc) {
-					n_arg = my_argv[i++];
+				if (i < argc) {
+					n_arg = argv[i++];
 					goto label_retry;
 				}
 			} else
 			if (0 == strcmp(pa, "-d"))
 			{
-				if (i < my_argc) {
-					d_arg = my_argv[i++];
+				if (i < argc) {
+					d_arg = argv[i++];
 					goto label_retry;
 				}
 			} else
@@ -4373,8 +4373,8 @@ label_retry:
 			if ((0 == strcmp(pa, "--alsadev"))
 				|| (0 == strcmp(pa, "-alsadev")))
 			{
-				if (i < my_argc) {
-					alsadev_name = my_argv[i++];
+				if (i < argc) {
+					alsadev_name = argv[i++];
 					goto label_retry;
 				}
 			} else
@@ -4386,15 +4386,15 @@ label_retry:
 			} else
 #endif
 			{
-				MacMsg(kStrBadArgTitle, kStrBadArgMessage, falseblnr);
+				MacMsg(kStrBadArgTitle, kStrBadArgMessage, false);
 			}
 		} else {
-			(void) Sony_Insert1(pa, falseblnr);
+			(void) Sony_Insert1(pa, false);
 			goto label_retry;
 		}
 	}
 
-	return trueblnr;
+	return true;
 }
 
 /* --- main program flow --- */
@@ -4410,7 +4410,7 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 	XFlush(x_display);
 }
 
-GLOBALOSGLUFUNC blnr ExtraTimeNotOver(void)
+GLOBALOSGLUFUNC bool ExtraTimeNotOver(void)
 {
 	UpdateTrueEmulatedTime();
 	return TrueEmulatedTime == OnTrueTime;
@@ -4500,50 +4500,50 @@ LOCALPROC ReserveAllocAll(void)
 #if dbglog_HAVE
 	dbglog_ReserveAlloc();
 #endif
-	ReserveAllocOneBlock(&ROM, kROM_Size, 5, falseblnr);
+	ReserveAllocOneBlock(&ROM, kROM_Size, 5, false);
 
 	ReserveAllocOneBlock(&screencomparebuff,
-		vMacScreenNumBytes, 5, trueblnr);
+		vMacScreenNumBytes, 5, true);
 #if UseControlKeys
 	ReserveAllocOneBlock(&CntrlDisplayBuff,
-		vMacScreenNumBytes, 5, falseblnr);
+		vMacScreenNumBytes, 5, false);
 #endif
 #if WantScalingBuff
 	ReserveAllocOneBlock(&ScalingBuff,
-		ScalingBuffsz, 5, falseblnr);
+		ScalingBuffsz, 5, false);
 #endif
 #if WantScalingTabl
 	ReserveAllocOneBlock(&ScalingTabl,
-		ScalingTablsz, 5, falseblnr);
+		ScalingTablsz, 5, false);
 #endif
 
 #if SoundEnabled
-	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
-		dbhBufferSize, 5, falseblnr);
+	ReserveAllocOneBlock((uint8_t * *)&TheSoundBuffer,
+		dbhBufferSize, 5, false);
 #endif
 
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMemory(void)
+LOCALFUNC bool AllocMemory(void)
 {
 	uimr n;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	ReserveAllocOffset = 0;
 	ReserveAllocBigBlock = nullpr;
 	ReserveAllocAll();
 	n = ReserveAllocOffset;
-	ReserveAllocBigBlock = (ui3p)calloc(1, n);
+	ReserveAllocBigBlock = (uint8_t *)calloc(1, n);
 	if (NULL == ReserveAllocBigBlock) {
-		MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, trueblnr);
+		MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, true);
 	} else {
 		ReserveAllocOffset = 0;
 		ReserveAllocAll();
 		if (n != ReserveAllocOffset) {
 			/* oops, program error */
 		} else {
-			IsOk = trueblnr;
+			IsOk = true;
 		}
 	}
 
@@ -4558,7 +4558,7 @@ LOCALPROC UnallocMemory(void)
 }
 
 #if HaveAppPathLink
-LOCALFUNC blnr ReadLink_Alloc(char *path, char **r)
+LOCALFUNC bool ReadLink_Alloc(char *path, char **r)
 {
 	/*
 		This should work to find size:
@@ -4567,7 +4567,7 @@ LOCALFUNC blnr ReadLink_Alloc(char *path, char **r)
 
 		if (lstat(path, &r) != -1) {
 			r = r.st_size;
-			IsOk = trueblnr;
+			IsOk = true;
 		}
 
 		But observed to return 0 in Ubuntu 10.04 x86-64
@@ -4576,7 +4576,7 @@ LOCALFUNC blnr ReadLink_Alloc(char *path, char **r)
 	char *s;
 	int sz;
 	char *p;
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 	size_t s_alloc = 256;
 
 label_retry:
@@ -4602,7 +4602,7 @@ label_retry:
 				(void) memcpy(p, s, sz);
 				p[sz] = 0;
 				*r = p;
-				IsOk = trueblnr;
+				IsOk = true;
 			}
 			free(s);
 		}
@@ -4613,7 +4613,7 @@ label_retry:
 #endif
 
 #if HaveSysctlPath
-LOCALFUNC blnr ReadKernProcPathname(char **r)
+LOCALFUNC bool ReadKernProcPathname(char **r)
 {
 	size_t s_alloc;
 	char *s;
@@ -4623,7 +4623,7 @@ LOCALFUNC blnr ReadKernProcPathname(char **r)
 		KERN_PROC_PATHNAME,
 		-1
 	};
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	if (0 != sysctl(mib, sizeof(mib) / sizeof(int),
 		NULL, &s_alloc, NULL, 0))
@@ -4640,7 +4640,7 @@ LOCALFUNC blnr ReadKernProcPathname(char **r)
 				fprintf(stderr, "sysctl 2 failed.\n");
 			} else {
 				*r = s;
-				IsOk = trueblnr;
+				IsOk = true;
 			}
 			if (! IsOk) {
 				free(s);
@@ -4653,10 +4653,10 @@ LOCALFUNC blnr ReadKernProcPathname(char **r)
 #endif
 
 #if CanGetAppPath
-LOCALFUNC blnr Path2ParentAndName(char *path,
+LOCALFUNC bool Path2ParentAndName(char *path,
 	char **parent, char **name)
 {
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	char *t = strrchr(path, '/');
 	if (NULL == t) {
@@ -4680,7 +4680,7 @@ LOCALFUNC blnr Path2ParentAndName(char *path,
 					child[child_sz] = 0;
 
 					*name = child;
-					IsOk = trueblnr;
+					IsOk = true;
 					/* free(child); */
 				}
 			}
@@ -4697,7 +4697,7 @@ LOCALFUNC blnr Path2ParentAndName(char *path,
 #endif
 
 #if CanGetAppPath
-LOCALFUNC blnr InitWhereAmI(void)
+LOCALFUNC bool InitWhereAmI(void)
 {
 	char *s;
 
@@ -4725,7 +4725,7 @@ LOCALFUNC blnr InitWhereAmI(void)
 		free(s);
 	}
 
-	return trueblnr; /* keep going regardless */
+	return true; /* keep going regardless */
 }
 #endif
 
@@ -4737,7 +4737,7 @@ LOCALPROC UninitWhereAmI(void)
 }
 #endif
 
-LOCALFUNC blnr InitOSGLU(void)
+LOCALFUNC bool InitOSGLU(void)
 {
 	if (AllocMemory())
 #if CanGetAppPath
@@ -4758,9 +4758,9 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (KC2MKCInit())
 	if (WaitForRom())
 	{
-		return trueblnr;
+		return true;
 	}
-	return falseblnr;
+	return false;
 }
 
 LOCALPROC UnInitOSGLU(void)
@@ -4792,12 +4792,12 @@ LOCALPROC UnInitOSGLU(void)
 		XFreeCursor(x_display, blankCursor);
 	}
 
-	if (my_image != NULL) {
-		XDestroyImage(my_image);
+	if (image != NULL) {
+		XDestroyImage(image);
 	}
 #if EnableMagnify
-	if (my_Scaled_image != NULL) {
-		XDestroyImage(my_Scaled_image);
+	if (Scaled_image != NULL) {
+		XDestroyImage(Scaled_image);
 	}
 #endif
 
@@ -4820,8 +4820,8 @@ LOCALPROC UnInitOSGLU(void)
 
 int main(int argc, char **argv)
 {
-	my_argc = argc;
-	my_argv = argv;
+	argc = argc;
+	argv = argv;
 
 	ZapOSGLUVars();
 	if (InitOSGLU()) {

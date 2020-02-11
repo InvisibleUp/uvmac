@@ -237,16 +237,16 @@
 
 static void *alsa_handle = NULL;
 
-LOCALVAR blnr DidAlsaLib = falseblnr;
+LOCALVAR bool DidAlsaLib = false;
 
-LOCALFUNC blnr HaveAlsaLib(void)
+LOCALFUNC bool HaveAlsaLib(void)
 {
 	if (! DidAlsaLib) {
 		alsa_handle = dlopen("libasound.so.2", RTLD_NOW);
 		if (NULL == alsa_handle) {
 			fprintf(stderr, "dlopen libasound failed\n");
 		}
-		DidAlsaLib = trueblnr;
+		DidAlsaLib = true;
 	}
 	return (alsa_handle != NULL);
 }
@@ -466,9 +466,9 @@ typedef int (*snd_pcm_open_ProcPtr)
 	(_snd_pcm_t **pcm, const char *name, _snd_pcm_stream_t stream,
 		int mode);
 LOCALVAR snd_pcm_open_ProcPtr _snd_pcm_open = NULL;
-LOCALVAR blnr Did_snd_pcm_open = falseblnr;
+LOCALVAR bool Did_snd_pcm_open = false;
 
-LOCALFUNC blnr Have_snd_pcm_open(void)
+LOCALFUNC bool Have_snd_pcm_open(void)
 {
 	if (! Did_snd_pcm_open) {
 		if (HaveAlsaLib()) {
@@ -478,16 +478,16 @@ LOCALFUNC blnr Have_snd_pcm_open(void)
 				fprintf(stderr, "dlsym snd_pcm_open failed\n");
 			}
 		}
-		Did_snd_pcm_open = trueblnr;
+		Did_snd_pcm_open = true;
 	}
 	return (_snd_pcm_open != NULL);
 }
 
 typedef int (*snd_pcm_close_ProcPtr)(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_close_ProcPtr _snd_pcm_close = NULL;
-LOCALVAR blnr Did_snd_pcm_close = falseblnr;
+LOCALVAR bool Did_snd_pcm_close = false;
 
-LOCALFUNC blnr Have_snd_pcm_close(void)
+LOCALFUNC bool Have_snd_pcm_close(void)
 {
 	if (! Did_snd_pcm_close) {
 		if (HaveAlsaLib()) {
@@ -497,7 +497,7 @@ LOCALFUNC blnr Have_snd_pcm_close(void)
 				fprintf(stderr, "dlsym snd_pcm_close failed\n");
 			}
 		}
-		Did_snd_pcm_close = trueblnr;
+		Did_snd_pcm_close = true;
 	}
 	return (_snd_pcm_close != NULL);
 }
@@ -506,9 +506,9 @@ typedef int (*snd_pcm_hw_params_malloc_ProcPtr)
 	(_snd_pcm_hw_params_t **ptr);
 LOCALVAR snd_pcm_hw_params_malloc_ProcPtr _snd_pcm_hw_params_malloc
 	= NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_malloc = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_malloc = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_malloc(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_malloc(void)
 {
 	if (! Did_snd_pcm_hw_params_malloc) {
 		if (HaveAlsaLib()) {
@@ -520,7 +520,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_malloc(void)
 					"dlsym snd_pcm_hw_params_malloc failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_malloc = trueblnr;
+		Did_snd_pcm_hw_params_malloc = true;
 	}
 	return (_snd_pcm_hw_params_malloc != NULL);
 }
@@ -529,9 +529,9 @@ typedef void (*snd_pcm_hw_params_free_ProcPtr)
 	(_snd_pcm_hw_params_t *obj);
 LOCALVAR snd_pcm_hw_params_free_ProcPtr
 	_snd_pcm_hw_params_free = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_free = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_free = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_free(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_free(void)
 {
 	if (! Did_snd_pcm_hw_params_free) {
 		if (HaveAlsaLib()) {
@@ -542,7 +542,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_free(void)
 					"dlsym snd_pcm_hw_params_free failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_free = trueblnr;
+		Did_snd_pcm_hw_params_free = true;
 	}
 	return (_snd_pcm_hw_params_free != NULL);
 }
@@ -550,9 +550,9 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_free(void)
 typedef int (*snd_pcm_hw_params_any_ProcPtr)
 	(_snd_pcm_t *pcm, _snd_pcm_hw_params_t *params);
 LOCALVAR snd_pcm_hw_params_any_ProcPtr _snd_pcm_hw_params_any = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_any = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_any = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_any(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_any(void)
 {
 	if (! Did_snd_pcm_hw_params_any) {
 		if (HaveAlsaLib()) {
@@ -562,7 +562,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_any(void)
 				fprintf(stderr, "dlsym snd_pcm_hw_params_any failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_any = trueblnr;
+		Did_snd_pcm_hw_params_any = true;
 	}
 	return (_snd_pcm_hw_params_any != NULL);
 }
@@ -572,9 +572,9 @@ typedef int (*snd_pcm_hw_params_set_access_ProcPtr)
 		_snd_pcm_access_t _access);
 LOCALVAR snd_pcm_hw_params_set_access_ProcPtr
 	_snd_pcm_hw_params_set_access = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_set_access = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_set_access = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_set_access(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_set_access(void)
 {
 	if (! Did_snd_pcm_hw_params_set_access) {
 		if (HaveAlsaLib()) {
@@ -586,7 +586,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_access(void)
 					"dlsym snd_pcm_hw_params_set_access failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_set_access = trueblnr;
+		Did_snd_pcm_hw_params_set_access = true;
 	}
 	return (_snd_pcm_hw_params_set_access != NULL);
 }
@@ -596,9 +596,9 @@ typedef int (*snd_pcm_hw_params_set_format_ProcPtr)
 		_snd_pcm_format_t val);
 LOCALVAR snd_pcm_hw_params_set_format_ProcPtr
 	_snd_pcm_hw_params_set_format = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_set_format = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_set_format = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_set_format(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_set_format(void)
 {
 	if (! Did_snd_pcm_hw_params_set_format) {
 		if (HaveAlsaLib()) {
@@ -610,7 +610,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_format(void)
 					"dlsym snd_pcm_hw_params_set_format failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_set_format = trueblnr;
+		Did_snd_pcm_hw_params_set_format = true;
 	}
 	return (_snd_pcm_hw_params_set_format != NULL);
 }
@@ -620,9 +620,9 @@ typedef int (*snd_pcm_hw_params_set_rate_near_ProcPtr)
 		unsigned int *val, int *dir);
 LOCALVAR snd_pcm_hw_params_set_rate_near_ProcPtr
 	_snd_pcm_hw_params_set_rate_near = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_set_rate_near = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_set_rate_near = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_set_rate_near(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_set_rate_near(void)
 {
 	if (! Did_snd_pcm_hw_params_set_rate_near) {
 		if (HaveAlsaLib()) {
@@ -634,7 +634,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_rate_near(void)
 					"dlsym snd_pcm_hw_params_set_rate_near failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_set_rate_near = trueblnr;
+		Did_snd_pcm_hw_params_set_rate_near = true;
 	}
 	return (_snd_pcm_hw_params_set_rate_near != NULL);
 }
@@ -644,9 +644,9 @@ typedef int (*snd_pcm_hw_params_set_channels_ProcPtr)
 	unsigned int val);
 LOCALVAR snd_pcm_hw_params_set_channels_ProcPtr
 	_snd_pcm_hw_params_set_channels = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_set_channels = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_set_channels = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_set_channels(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_set_channels(void)
 {
 	if (! Did_snd_pcm_hw_params_set_channels) {
 		if (HaveAlsaLib()) {
@@ -658,7 +658,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_channels(void)
 					"dlsym snd_pcm_hw_params_set_channels failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_set_channels = trueblnr;
+		Did_snd_pcm_hw_params_set_channels = true;
 	}
 	return (_snd_pcm_hw_params_set_channels != NULL);
 }
@@ -668,9 +668,9 @@ typedef int (*snd_pcm_hw_params_set_buffer_size_near_ProcPtr)
 		_snd_pcm_uframes_t *val);
 LOCALVAR snd_pcm_hw_params_set_buffer_size_near_ProcPtr
 	_snd_pcm_hw_params_set_buffer_size_near = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_set_buffer_size_near = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_set_buffer_size_near = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_set_buffer_size_near(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_set_buffer_size_near(void)
 {
 	if (! Did_snd_pcm_hw_params_set_buffer_size_near) {
 		if (HaveAlsaLib()) {
@@ -684,7 +684,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_buffer_size_near(void)
 					" failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_set_buffer_size_near = trueblnr;
+		Did_snd_pcm_hw_params_set_buffer_size_near = true;
 	}
 	return (_snd_pcm_hw_params_set_buffer_size_near != NULL);
 }
@@ -694,9 +694,9 @@ typedef int (*snd_pcm_hw_params_set_period_size_near_ProcPtr)
 		_snd_pcm_uframes_t *val, int *dir);
 LOCALVAR snd_pcm_hw_params_set_period_size_near_ProcPtr
 	_snd_pcm_hw_params_set_period_size_near = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params_set_period_size_near = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params_set_period_size_near = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params_set_period_size_near(void)
+LOCALFUNC bool Have_snd_pcm_hw_params_set_period_size_near(void)
 {
 	if (! Did_snd_pcm_hw_params_set_period_size_near) {
 		if (HaveAlsaLib()) {
@@ -710,7 +710,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_period_size_near(void)
 					" failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params_set_period_size_near = trueblnr;
+		Did_snd_pcm_hw_params_set_period_size_near = true;
 	}
 	return (_snd_pcm_hw_params_set_period_size_near != NULL);
 }
@@ -718,9 +718,9 @@ LOCALFUNC blnr Have_snd_pcm_hw_params_set_period_size_near(void)
 typedef int (*snd_pcm_hw_params_ProcPtr)
 	(_snd_pcm_t *pcm, _snd_pcm_hw_params_t *params);
 LOCALVAR snd_pcm_hw_params_ProcPtr _snd_pcm_hw_params = NULL;
-LOCALVAR blnr Did_snd_pcm_hw_params = falseblnr;
+LOCALVAR bool Did_snd_pcm_hw_params = false;
 
-LOCALFUNC blnr Have_snd_pcm_hw_params(void)
+LOCALFUNC bool Have_snd_pcm_hw_params(void)
 {
 	if (! Did_snd_pcm_hw_params) {
 		if (HaveAlsaLib()) {
@@ -730,7 +730,7 @@ LOCALFUNC blnr Have_snd_pcm_hw_params(void)
 				fprintf(stderr, "dlsym snd_pcm_hw_params failed\n");
 			}
 		}
-		Did_snd_pcm_hw_params = trueblnr;
+		Did_snd_pcm_hw_params = true;
 	}
 	return (_snd_pcm_hw_params != NULL);
 }
@@ -739,9 +739,9 @@ typedef int (*snd_pcm_sw_params_malloc_ProcPtr)
 	(_snd_pcm_sw_params_t **ptr);
 LOCALVAR snd_pcm_sw_params_malloc_ProcPtr
 	_snd_pcm_sw_params_malloc = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params_malloc = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params_malloc = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params_malloc(void)
+LOCALFUNC bool Have_snd_pcm_sw_params_malloc(void)
 {
 	if (! Did_snd_pcm_sw_params_malloc) {
 		if (HaveAlsaLib()) {
@@ -753,7 +753,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_malloc(void)
 					"dlsym snd_pcm_sw_params_malloc failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params_malloc = trueblnr;
+		Did_snd_pcm_sw_params_malloc = true;
 	}
 	return (_snd_pcm_sw_params_malloc != NULL);
 }
@@ -762,9 +762,9 @@ typedef void (*snd_pcm_sw_params_free_ProcPtr)
 	(_snd_pcm_sw_params_t *obj);
 LOCALVAR snd_pcm_sw_params_free_ProcPtr
 	_snd_pcm_sw_params_free = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params_free = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params_free = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params_free(void)
+LOCALFUNC bool Have_snd_pcm_sw_params_free(void)
 {
 	if (! Did_snd_pcm_sw_params_free) {
 		if (HaveAlsaLib()) {
@@ -775,7 +775,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_free(void)
 					"dlsym snd_pcm_sw_params_free failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params_free = trueblnr;
+		Did_snd_pcm_sw_params_free = true;
 	}
 	return (_snd_pcm_sw_params_free != NULL);
 }
@@ -784,9 +784,9 @@ typedef int (*snd_pcm_sw_params_current_ProcPtr)
 	(_snd_pcm_t *pcm, _snd_pcm_sw_params_t *params);
 LOCALVAR snd_pcm_sw_params_current_ProcPtr
 	_snd_pcm_sw_params_current = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params_current = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params_current = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params_current(void)
+LOCALFUNC bool Have_snd_pcm_sw_params_current(void)
 {
 	if (! Did_snd_pcm_sw_params_current) {
 		if (HaveAlsaLib()) {
@@ -798,7 +798,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_current(void)
 					"dlsym snd_pcm_sw_params_current failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params_current = trueblnr;
+		Did_snd_pcm_sw_params_current = true;
 	}
 	return (_snd_pcm_sw_params_current != NULL);
 }
@@ -808,9 +808,9 @@ typedef int (*snd_pcm_sw_params_set_start_threshold_ProcPtr)
 		_snd_pcm_uframes_t val);
 LOCALVAR snd_pcm_sw_params_set_start_threshold_ProcPtr
 	_snd_pcm_sw_params_set_start_threshold = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params_set_start_threshold = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params_set_start_threshold = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params_set_start_threshold(void)
+LOCALFUNC bool Have_snd_pcm_sw_params_set_start_threshold(void)
 {
 	if (! Did_snd_pcm_sw_params_set_start_threshold) {
 		if (HaveAlsaLib()) {
@@ -824,7 +824,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_set_start_threshold(void)
 					" failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params_set_start_threshold = trueblnr;
+		Did_snd_pcm_sw_params_set_start_threshold = true;
 	}
 	return (_snd_pcm_sw_params_set_start_threshold != NULL);
 }
@@ -834,9 +834,9 @@ typedef int (*snd_pcm_sw_params_set_avail_min_ProcPtr)
 		_snd_pcm_uframes_t val);
 LOCALVAR snd_pcm_sw_params_set_avail_min_ProcPtr
 	_snd_pcm_sw_params_set_avail_min = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params_set_avail_min = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params_set_avail_min = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params_set_avail_min(void)
+LOCALFUNC bool Have_snd_pcm_sw_params_set_avail_min(void)
 {
 	if (! Did_snd_pcm_sw_params_set_avail_min) {
 		if (HaveAlsaLib()) {
@@ -848,7 +848,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_set_avail_min(void)
 					"dlsym snd_pcm_sw_params_set_avail_min failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params_set_avail_min = trueblnr;
+		Did_snd_pcm_sw_params_set_avail_min = true;
 	}
 	return (_snd_pcm_sw_params_set_avail_min != NULL);
 }
@@ -858,9 +858,9 @@ typedef int (*snd_pcm_sw_params_set_xfer_align_ProcPtr)
 		_snd_pcm_uframes_t val);
 LOCALVAR snd_pcm_sw_params_set_xfer_align_ProcPtr
 	_snd_pcm_sw_params_set_xfer_align = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params_set_xfer_align = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params_set_xfer_align = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params_set_xfer_align(void)
+LOCALFUNC bool Have_snd_pcm_sw_params_set_xfer_align(void)
 {
 	if (! Did_snd_pcm_sw_params_set_xfer_align) {
 		if (HaveAlsaLib()) {
@@ -872,7 +872,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_set_xfer_align(void)
 					"dlsym snd_pcm_sw_params_set_xfer_align failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params_set_xfer_align = trueblnr;
+		Did_snd_pcm_sw_params_set_xfer_align = true;
 	}
 	return (_snd_pcm_sw_params_set_xfer_align != NULL);
 }
@@ -880,9 +880,9 @@ LOCALFUNC blnr Have_snd_pcm_sw_params_set_xfer_align(void)
 typedef int (*snd_pcm_sw_params_ProcPtr)
 	(_snd_pcm_t *pcm, _snd_pcm_sw_params_t *params);
 LOCALVAR snd_pcm_sw_params_ProcPtr _snd_pcm_sw_params = NULL;
-LOCALVAR blnr Did_snd_pcm_sw_params = falseblnr;
+LOCALVAR bool Did_snd_pcm_sw_params = false;
 
-LOCALFUNC blnr Have_snd_pcm_sw_params(void)
+LOCALFUNC bool Have_snd_pcm_sw_params(void)
 {
 	if (! Did_snd_pcm_sw_params) {
 		if (HaveAlsaLib()) {
@@ -892,7 +892,7 @@ LOCALFUNC blnr Have_snd_pcm_sw_params(void)
 				fprintf(stderr, "dlsym snd_pcm_sw_params failed\n");
 			}
 		}
-		Did_snd_pcm_sw_params = trueblnr;
+		Did_snd_pcm_sw_params = true;
 	}
 	return (_snd_pcm_sw_params != NULL);
 }
@@ -900,9 +900,9 @@ LOCALFUNC blnr Have_snd_pcm_sw_params(void)
 typedef int (*snd_pcm_nonblock_ProcPtr)
 	(_snd_pcm_t *pcm, int nonblock);
 LOCALVAR snd_pcm_nonblock_ProcPtr _snd_pcm_nonblock = NULL;
-LOCALVAR blnr Did_snd_pcm_nonblock = falseblnr;
+LOCALVAR bool Did_snd_pcm_nonblock = false;
 
-LOCALFUNC blnr Have_snd_pcm_nonblock(void)
+LOCALFUNC bool Have_snd_pcm_nonblock(void)
 {
 	if (! Did_snd_pcm_nonblock) {
 		if (HaveAlsaLib()) {
@@ -912,16 +912,16 @@ LOCALFUNC blnr Have_snd_pcm_nonblock(void)
 				fprintf(stderr, "dlsym snd_pcm_nonblock failed\n");
 			}
 		}
-		Did_snd_pcm_nonblock = trueblnr;
+		Did_snd_pcm_nonblock = true;
 	}
 	return (_snd_pcm_nonblock != NULL);
 }
 
 typedef _snd_pcm_state_t (*snd_pcm_state_ProcPtr)(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_state_ProcPtr _snd_pcm_state = NULL;
-LOCALVAR blnr Did_snd_pcm_state = falseblnr;
+LOCALVAR bool Did_snd_pcm_state = false;
 
-LOCALFUNC blnr Have_snd_pcm_state(void)
+LOCALFUNC bool Have_snd_pcm_state(void)
 {
 	if (! Did_snd_pcm_state) {
 		if (HaveAlsaLib()) {
@@ -931,16 +931,16 @@ LOCALFUNC blnr Have_snd_pcm_state(void)
 				fprintf(stderr, "dlsym snd_pcm_state failed\n");
 			}
 		}
-		Did_snd_pcm_state = trueblnr;
+		Did_snd_pcm_state = true;
 	}
 	return (_snd_pcm_state != NULL);
 }
 
 typedef int (*snd_pcm_prepare_ProcPtr)(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_prepare_ProcPtr _snd_pcm_prepare = NULL;
-LOCALVAR blnr Did_snd_pcm_prepare = falseblnr;
+LOCALVAR bool Did_snd_pcm_prepare = false;
 
-LOCALFUNC blnr Have_snd_pcm_prepare(void)
+LOCALFUNC bool Have_snd_pcm_prepare(void)
 {
 	if (! Did_snd_pcm_prepare) {
 		if (HaveAlsaLib()) {
@@ -950,16 +950,16 @@ LOCALFUNC blnr Have_snd_pcm_prepare(void)
 				fprintf(stderr, "dlsym snd_pcm_prepare failed\n");
 			}
 		}
-		Did_snd_pcm_prepare = trueblnr;
+		Did_snd_pcm_prepare = true;
 	}
 	return (_snd_pcm_prepare != NULL);
 }
 
 typedef int (*snd_pcm_start_ProcPtr)(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_start_ProcPtr _snd_pcm_start = NULL;
-LOCALVAR blnr Did_snd_pcm_start = falseblnr;
+LOCALVAR bool Did_snd_pcm_start = false;
 
-LOCALFUNC blnr Have_snd_pcm_start(void)
+LOCALFUNC bool Have_snd_pcm_start(void)
 {
 	if (! Did_snd_pcm_start) {
 		if (HaveAlsaLib()) {
@@ -969,16 +969,16 @@ LOCALFUNC blnr Have_snd_pcm_start(void)
 				fprintf(stderr, "dlsym snd_pcm_start failed\n");
 			}
 		}
-		Did_snd_pcm_start = trueblnr;
+		Did_snd_pcm_start = true;
 	}
 	return (_snd_pcm_start != NULL);
 }
 
 typedef int (*snd_pcm_resume_ProcPtr)(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_resume_ProcPtr _snd_pcm_resume = NULL;
-LOCALVAR blnr Did_snd_pcm_resume = falseblnr;
+LOCALVAR bool Did_snd_pcm_resume = false;
 
-LOCALFUNC blnr Have_snd_pcm_resume(void)
+LOCALFUNC bool Have_snd_pcm_resume(void)
 {
 	if (! Did_snd_pcm_resume) {
 		if (HaveAlsaLib()) {
@@ -988,7 +988,7 @@ LOCALFUNC blnr Have_snd_pcm_resume(void)
 				fprintf(stderr, "dlsym snd_pcm_resume failed\n");
 			}
 		}
-		Did_snd_pcm_resume = trueblnr;
+		Did_snd_pcm_resume = true;
 	}
 	return (_snd_pcm_resume != NULL);
 }
@@ -996,9 +996,9 @@ LOCALFUNC blnr Have_snd_pcm_resume(void)
 typedef _snd_pcm_sframes_t (*snd_pcm_avail_update_ProcPtr)
 	(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_avail_update_ProcPtr _snd_pcm_avail_update = NULL;
-LOCALVAR blnr Did_snd_pcm_avail_update = falseblnr;
+LOCALVAR bool Did_snd_pcm_avail_update = false;
 
-LOCALFUNC blnr Have_snd_pcm_avail_update(void)
+LOCALFUNC bool Have_snd_pcm_avail_update(void)
 {
 	if (! Did_snd_pcm_avail_update) {
 		if (HaveAlsaLib()) {
@@ -1008,7 +1008,7 @@ LOCALFUNC blnr Have_snd_pcm_avail_update(void)
 				fprintf(stderr, "dlsym snd_pcm_avail_update failed\n");
 			}
 		}
-		Did_snd_pcm_avail_update = trueblnr;
+		Did_snd_pcm_avail_update = true;
 	}
 	return (_snd_pcm_avail_update != NULL);
 }
@@ -1016,9 +1016,9 @@ LOCALFUNC blnr Have_snd_pcm_avail_update(void)
 typedef _snd_pcm_sframes_t (*snd_pcm_writei_ProcPtr)
 	(_snd_pcm_t *pcm, const void *buffer, _snd_pcm_uframes_t size);
 LOCALVAR snd_pcm_writei_ProcPtr _snd_pcm_writei = NULL;
-LOCALVAR blnr Did_snd_pcm_writei = falseblnr;
+LOCALVAR bool Did_snd_pcm_writei = false;
 
-LOCALFUNC blnr Have_snd_pcm_writei(void)
+LOCALFUNC bool Have_snd_pcm_writei(void)
 {
 	if (! Did_snd_pcm_writei) {
 		if (HaveAlsaLib()) {
@@ -1028,16 +1028,16 @@ LOCALFUNC blnr Have_snd_pcm_writei(void)
 				fprintf(stderr, "dlsym snd_pcm_writei failed\n");
 			}
 		}
-		Did_snd_pcm_writei = trueblnr;
+		Did_snd_pcm_writei = true;
 	}
 	return (_snd_pcm_writei != NULL);
 }
 
 typedef int (*snd_pcm_drop_ProcPtr)(_snd_pcm_t *pcm);
 LOCALVAR snd_pcm_drop_ProcPtr _snd_pcm_drop = NULL;
-LOCALVAR blnr Did_snd_pcm_drop = falseblnr;
+LOCALVAR bool Did_snd_pcm_drop = false;
 
-LOCALFUNC blnr Have_snd_pcm_drop(void)
+LOCALFUNC bool Have_snd_pcm_drop(void)
 {
 	if (! Did_snd_pcm_drop) {
 		if (HaveAlsaLib()) {
@@ -1047,7 +1047,7 @@ LOCALFUNC blnr Have_snd_pcm_drop(void)
 				fprintf(stderr, "dlsym snd_pcm_drop failed\n");
 			}
 		}
-		Did_snd_pcm_drop = trueblnr;
+		Did_snd_pcm_drop = true;
 	}
 	return (_snd_pcm_drop != NULL);
 }
@@ -1056,9 +1056,9 @@ LOCALFUNC blnr Have_snd_pcm_drop(void)
 typedef int (*snd_pcm_status_malloc_ProcPtr)
 	(_snd_pcm_status_t **ptr);
 LOCALVAR snd_pcm_status_malloc_ProcPtr _snd_pcm_status_malloc = NULL;
-LOCALVAR blnr Did_snd_pcm_status_malloc = falseblnr;
+LOCALVAR bool Did_snd_pcm_status_malloc = false;
 
-LOCALFUNC blnr Have_snd_pcm_status_malloc(void)
+LOCALFUNC bool Have_snd_pcm_status_malloc(void)
 {
 	if (! Did_snd_pcm_status_malloc) {
 		if (HaveAlsaLib()) {
@@ -1068,7 +1068,7 @@ LOCALFUNC blnr Have_snd_pcm_status_malloc(void)
 				fprintf(stderr, "dlsym snd_pcm_status_malloc failed\n");
 			}
 		}
-		Did_snd_pcm_status_malloc = trueblnr;
+		Did_snd_pcm_status_malloc = true;
 	}
 	return (_snd_pcm_status_malloc != NULL);
 }
@@ -1078,9 +1078,9 @@ LOCALFUNC blnr Have_snd_pcm_status_malloc(void)
 typedef int (*snd_pcm_status_ProcPtr)(_snd_pcm_t *pcm,
 	_snd_pcm_status_t *status);
 LOCALVAR snd_pcm_status_ProcPtr _snd_pcm_status = NULL;
-LOCALVAR blnr Did_snd_pcm_status = falseblnr;
+LOCALVAR bool Did_snd_pcm_status = false;
 
-LOCALFUNC blnr Have_snd_pcm_status(void)
+LOCALFUNC bool Have_snd_pcm_status(void)
 {
 	if (! Did_snd_pcm_status) {
 		if (HaveAlsaLib()) {
@@ -1090,7 +1090,7 @@ LOCALFUNC blnr Have_snd_pcm_status(void)
 				fprintf(stderr, "dlsym snd_pcm_status failed\n");
 			}
 		}
-		Did_snd_pcm_status = trueblnr;
+		Did_snd_pcm_status = true;
 	}
 	return (_snd_pcm_status != NULL);
 }
@@ -1101,9 +1101,9 @@ typedef _snd_pcm_uframes_t (*snd_pcm_status_get_avail_ProcPtr)
 	(const _snd_pcm_status_t *obj);
 LOCALVAR snd_pcm_status_get_avail_ProcPtr
 	_snd_pcm_status_get_avail = NULL;
-LOCALVAR blnr Did_snd_pcm_status_get_avail = falseblnr;
+LOCALVAR bool Did_snd_pcm_status_get_avail = false;
 
-LOCALFUNC blnr Have_snd_pcm_status_get_avail(void)
+LOCALFUNC bool Have_snd_pcm_status_get_avail(void)
 {
 	if (! Did_snd_pcm_status_get_avail) {
 		if (HaveAlsaLib()) {
@@ -1115,7 +1115,7 @@ LOCALFUNC blnr Have_snd_pcm_status_get_avail(void)
 					"dlsym snd_pcm_status_get_avail failed\n");
 			}
 		}
-		Did_snd_pcm_status_get_avail = trueblnr;
+		Did_snd_pcm_status_get_avail = true;
 	}
 	return (_snd_pcm_status_get_avail != NULL);
 }
@@ -1123,9 +1123,9 @@ LOCALFUNC blnr Have_snd_pcm_status_get_avail(void)
 
 typedef const char * (*snd_strerror_ProcPtr)(int errnum);
 LOCALVAR snd_strerror_ProcPtr _snd_strerror = NULL;
-LOCALVAR blnr Did_snd_strerror = falseblnr;
+LOCALVAR bool Did_snd_strerror = false;
 
-LOCALFUNC blnr Have_snd_strerror(void)
+LOCALFUNC bool Have_snd_strerror(void)
 {
 	if (! Did_snd_strerror) {
 		if (HaveAlsaLib()) {
@@ -1135,7 +1135,7 @@ LOCALFUNC blnr Have_snd_strerror(void)
 				fprintf(stderr, "dlsym snd_strerror failed\n");
 			}
 		}
-		Did_snd_strerror = trueblnr;
+		Did_snd_strerror = true;
 	}
 	return (_snd_strerror != NULL);
 }
@@ -1176,27 +1176,27 @@ LOCALVAR _snd_pcm_uframes_t buffer_size;
 LOCALVAR _snd_pcm_uframes_t period_size;
 
 
-LOCALVAR blnr Sound_StartPend = falseblnr;
+LOCALVAR bool Sound_StartPend = false;
 
 #if RaspbianWorkAround
-LOCALVAR _snd_pcm_status_t *my_status = NULL;
+LOCALVAR _snd_pcm_status_t *status = NULL;
 
-LOCALFUNC blnr HaveStatusAlloc(void)
+LOCALFUNC bool HaveStatusAlloc(void)
 {
-	if (NULL == my_status) {
+	if (NULL == status) {
 		if (Have_snd_pcm_status_malloc())
 		if (Have_snd_pcm_status())
 		if (Have_snd_pcm_status_get_avail())
 		{
-			if (_snd_pcm_status_malloc(&my_status) < 0) {
-				my_status = NULL; /* just to make sure */
+			if (_snd_pcm_status_malloc(&status) < 0) {
+				status = NULL; /* just to make sure */
 			} else {
-				/* snd_pcm_status_free(my_status); */
+				/* snd_pcm_status_free(status); */
 			}
 		}
 	}
 
-	return NULL != my_status;
+	return NULL != status;
 }
 #endif
 
@@ -1213,7 +1213,7 @@ label_retry:
 		if (_SND_PCM_STATE_PREPARED == cur_state) {
 			if (! Sound_StartPend) {
 				if (TheFillOffset - ThePlayOffset >= kAllBuffLen) {
-					Sound_StartPend = trueblnr;
+					Sound_StartPend = true;
 				}
 			}
 			if (Sound_StartPend) {
@@ -1270,8 +1270,8 @@ label_retry:
 				*/
 				/* work around bug observed in Raspbian */
 				if (HaveStatusAlloc()) {
-					if (_snd_pcm_status(pcm_handle, my_status) >= 0) {
-						avail = _snd_pcm_status_get_avail(my_status);
+					if (_snd_pcm_status(pcm_handle, status) >= 0) {
+						avail = _snd_pcm_status_get_avail(status);
 					}
 				}
 			}
@@ -1331,7 +1331,7 @@ label_retry:
 					goto label_retry;
 				}
 			} else if (Sound_StartPend) {
-				Sound_StartPend = falseblnr;
+				Sound_StartPend = false;
 				if ((err = _snd_pcm_start(pcm_handle)) < 0) {
 					fprintf(stderr, "pcm start error: %s\n",
 						_snd_strerror(err));
@@ -1355,9 +1355,9 @@ LOCALPROC Sound_Stop(void)
 	}
 }
 
-LOCALFUNC blnr HaveAlsaRoutines(void)
+LOCALFUNC bool HaveAlsaRoutines(void)
 {
-	blnr IsOk = falseblnr;
+	bool IsOk = false;
 
 	if (Have_snd_pcm_open())
 	if (Have_snd_pcm_close())
@@ -1387,7 +1387,7 @@ LOCALFUNC blnr HaveAlsaRoutines(void)
 	if (Have_snd_pcm_drop())
 	if (Have_snd_strerror())
 	{
-		IsOk = trueblnr;
+		IsOk = true;
 	}
 
 	return IsOk;
@@ -1577,13 +1577,13 @@ label_done:
 	;
 }
 
-LOCALFUNC blnr Sound_Init(void)
+LOCALFUNC bool Sound_Init(void)
 {
 	if (HaveAlsaRoutines()) {
 		Sound_Init0();
 	}
 
-	return trueblnr; /* keep going, even if no sound */
+	return true; /* keep going, even if no sound */
 }
 
 LOCALPROC Sound_UnInit(void)

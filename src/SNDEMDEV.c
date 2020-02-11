@@ -117,7 +117,7 @@ GLOBALPROC MacSound_SubTick(int SubTick)
 #endif
 		kSnd_Main_Buffer;
 #ifndef ln2mtb
-	ui3p addr = addy + (2 * StartOffset) + RAM;
+	uint8_t * addr = addy + (2 * StartOffset) + RAM;
 #else
 	CPTR addr = addy + (2 * StartOffset);
 #endif

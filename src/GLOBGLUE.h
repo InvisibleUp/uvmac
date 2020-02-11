@@ -36,7 +36,7 @@
 #define RAMSafetyMarginFudge 4
 
 #define kRAM_Size (kRAMa_Size + kRAMb_Size)
-EXPORTVAR(ui3p, RAM)
+EXPORTVAR(uint8_t *, RAM)
 	/*
 		allocated by MYOSGLUE to be at least
 			kRAM_Size + RAMSafetyMarginFudge
@@ -45,11 +45,11 @@ EXPORTVAR(ui3p, RAM)
 	*/
 
 #if EmVidCard
-EXPORTVAR(ui3p, VidROM)
+EXPORTVAR(uint8_t *, VidROM)
 #endif
 
 #if IncludeVidMem
-EXPORTVAR(ui3p, VidMem)
+EXPORTVAR(uint8_t *, VidMem)
 #endif
 
 EXPORTPROC MemOverlay_ChangeNtfy(void);
@@ -67,7 +67,7 @@ typedef uint32_t CPTR;
 	mapping of address space to real memory
 */
 
-EXPORTFUNC ui3p get_real_address0(uint32_t L, blnr WritableMem, CPTR addr,
+EXPORTFUNC uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
 	uint32_t *actL);
 
 /*
@@ -105,7 +105,7 @@ EXPORTFUNC ui3p get_real_address0(uint32_t L, blnr WritableMem, CPTR addr,
 	real memory, i.e. memory mapped devices
 */
 
-EXPORTFUNC blnr AddrSpac_Init(void);
+EXPORTFUNC bool AddrSpac_Init(void);
 
 
 #define uint32_t_FromSByte(x) ((uint32_t)(int32_t)(int8_t)(uint8_t)(x))
@@ -124,13 +124,13 @@ EXPORTPROC dbglog_StartLine(void);
 #endif
 
 #if dbglog_HAVE
-EXPORTPROC dbglog_WriteMemArrow(blnr WriteMem);
+EXPORTPROC dbglog_WriteMemArrow(bool WriteMem);
 
 EXPORTPROC dbglog_WriteNote(char *s);
-EXPORTPROC dbglog_WriteSetBool(char *s, blnr v);
+EXPORTPROC dbglog_WriteSetBool(char *s, bool v);
 EXPORTPROC dbglog_AddrAccess(char *s,
-	uint32_t Data, blnr WriteMem, uint32_t addr);
-EXPORTPROC dbglog_Access(char *s, uint32_t Data, blnr WriteMem);
+	uint32_t Data, bool WriteMem, uint32_t addr);
+EXPORTPROC dbglog_Access(char *s, uint32_t Data, bool WriteMem);
 #endif
 
 #if ! WantAbnormalReports
@@ -150,8 +150,8 @@ EXPORTPROC DoReportAbnormalID(uint16_t id
 
 EXPORTPROC VIAorSCCinterruptChngNtfy(void);
 
-EXPORTVAR(blnr, InterruptButton)
-EXPORTPROC SetInterruptButton(blnr v);
+EXPORTVAR(bool, InterruptButton)
+EXPORTPROC SetInterruptButton(bool v);
 
 enum {
 	kICT_SubTick,
@@ -202,7 +202,7 @@ EXPORTVAR(uint8_t, Wires[kNumWires])
 #if HaveMasterEvtQLock
 EXPORTVAR(uint16_t, MasterEvtQLock)
 #endif
-EXPORTFUNC blnr FindKeyEvent(int *VirtualKey, blnr *KeyDown);
+EXPORTFUNC bool FindKeyEvent(int *VirtualKey, bool *KeyDown);
 
 
 /* minivmac extensions */
@@ -236,7 +236,7 @@ enum {
 
 #define kcom_callcheck 0x5B17
 
-EXPORTVAR(uint32_t, my_disk_icon_addr)
+EXPORTVAR(uint32_t, disk_icon_addr)
 
 EXPORTPROC Memory_Reset(void);
 
@@ -250,7 +250,7 @@ struct ATTer {
 	uint32_t cmpvalu;
 	uint32_t Access;
 	uint32_t usemask; /* Should be one less than a power of two. */
-	ui3p usebase;
+	uint8_t * usebase;
 	uint8_t MMDV;
 	uint8_t Ntfy;
 	uint16_t Pad0;
@@ -272,5 +272,5 @@ typedef ATTer *ATTep;
 #define kATTA_ntfymask (1 << kATTA_ntfybit)
 
 EXPORTFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
-	blnr WriteMem, blnr ByteSize, CPTR addr);
-EXPORTFUNC blnr MemAccessNtfy(ATTep pT);
+	bool WriteMem, bool ByteSize, CPTR addr);
+EXPORTFUNC bool MemAccessNtfy(ATTep pT);

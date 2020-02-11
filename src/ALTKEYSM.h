@@ -24,16 +24,16 @@
 #define ALTKEYSM_H
 #endif
 
-LOCALVAR blnr AltKeysLockText = falseblnr;
-LOCALVAR blnr AltKeysTrueCmnd = falseblnr;
-LOCALVAR blnr AltKeysTrueOption = falseblnr;
-LOCALVAR blnr AltKeysTrueShift = falseblnr;
-LOCALVAR blnr AltKeysModOn = falseblnr;
-LOCALVAR blnr AltKeysTextOn = falseblnr;
+LOCALVAR bool AltKeysLockText = false;
+LOCALVAR bool AltKeysTrueCmnd = false;
+LOCALVAR bool AltKeysTrueOption = false;
+LOCALVAR bool AltKeysTrueShift = false;
+LOCALVAR bool AltKeysModOn = false;
+LOCALVAR bool AltKeysTextOn = false;
 
 LOCALPROC CheckAltKeyUseMode(void)
 {
-	blnr NewAltKeysTextOn;
+	bool NewAltKeysTextOn;
 
 	AltKeysModOn = AltKeysTrueCmnd
 		|| AltKeysTrueOption || AltKeysTrueShift;
@@ -47,7 +47,7 @@ LOCALPROC CheckAltKeyUseMode(void)
 	}
 }
 
-LOCALPROC Keyboard_UpdateKeyMap1(uint8_t key, blnr down)
+LOCALPROC Keyboard_UpdateKeyMap1(uint8_t key, bool down)
 {
 	if (MKC_Command == key) {
 		AltKeysTrueCmnd = down;
@@ -64,8 +64,8 @@ LOCALPROC Keyboard_UpdateKeyMap1(uint8_t key, blnr down)
 	} else if (MKC_SemiColon == key) {
 		if (down && ! AltKeysModOn) {
 			if (AltKeysLockText) {
-				AltKeysLockText = falseblnr;
-				NeedWholeScreenDraw = trueblnr;
+				AltKeysLockText = false;
+				NeedWholeScreenDraw = true;
 				SpecialModeClr(SpclModeAltKeyText);
 
 				CheckAltKeyUseMode();
@@ -78,9 +78,9 @@ LOCALPROC Keyboard_UpdateKeyMap1(uint8_t key, blnr down)
 	} else if (MKC_M == key) {
 		if (down) {
 			if (! AltKeysLockText) {
-				AltKeysLockText = trueblnr;
+				AltKeysLockText = true;
 				SpecialModeSet(SpclModeAltKeyText);
-				NeedWholeScreenDraw = trueblnr;
+				NeedWholeScreenDraw = true;
 				CheckAltKeyUseMode();
 			}
 		}
@@ -176,13 +176,13 @@ LOCALPROC DisconnectKeyCodes1(uint32_t KeepMask)
 	DisconnectKeyCodes(KeepMask);
 
 	if (! (0 != (KeepMask & kKeepMaskCommand))) {
-		AltKeysTrueCmnd = falseblnr;
+		AltKeysTrueCmnd = false;
 	}
 	if (! (0 != (KeepMask & kKeepMaskOption))) {
-		AltKeysTrueOption = falseblnr;
+		AltKeysTrueOption = false;
 	}
 	if (! (0 != (KeepMask & kKeepMaskShift))) {
-		AltKeysTrueShift = falseblnr;
+		AltKeysTrueShift = false;
 	}
 	AltKeysModOn = AltKeysTrueCmnd
 		|| AltKeysTrueOption || AltKeysTrueShift;

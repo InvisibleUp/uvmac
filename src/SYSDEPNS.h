@@ -24,12 +24,9 @@
 #define SYSDEPNS_H
 #endif
 
+#include <stdint.h>
+#include <stdbool.h>
 #include "CNFGGLOB.h"
-
-
-typedef uint8_t *ui3p;
-typedef uint16_t *ui4p;
-typedef uint32_t *ui5p;
 
 /*
 	Largest efficiently supported
@@ -40,27 +37,23 @@ typedef uint32_t *ui5p;
 typedef uint32_t uimr;
 typedef int32_t simr;
 
-#define blnr uint8_t
-#define trueblnr 1
-#define falseblnr 0
-
 #define nullpr ((void *) 0)
 
-#define anyp ui3p
+#define anyp uint8_t *
 
 /* pascal string, single byte characters */
-#define ps3p ui3p
+#define ps3p uint8_t *
 
 #ifndef MayInline
 #define MayInline
 #endif
 
-#ifndef my_reg_call
-#define my_reg_call
+#ifndef reg_call
+#define reg_call
 #endif
 
-#ifndef my_osglu_call
-#define my_osglu_call
+#ifndef osglu_call
+#define osglu_call
 #endif
 
 #define LOCALVAR static
@@ -97,10 +90,10 @@ typedef int32_t simr;
 #define LOCALFUNCUSEDONCE LOCALINLINEFUNC
 #define LOCALPROCUSEDONCE LOCALINLINEPROC
 
-#define GLOBALOSGLUFUNC GLOBALFUNC my_osglu_call
-#define EXPORTOSGLUFUNC EXPORTFUNC my_osglu_call
-#define GLOBALOSGLUPROC GLOBALFUNC my_osglu_call void
-#define EXPORTOSGLUPROC EXPORTFUNC my_osglu_call void
+#define GLOBALOSGLUFUNC GLOBALFUNC osglu_call
+#define EXPORTOSGLUFUNC EXPORTFUNC osglu_call
+#define GLOBALOSGLUPROC GLOBALFUNC osglu_call void
+#define EXPORTOSGLUPROC EXPORTFUNC osglu_call void
 	/*
 		For functions in operating system glue that
 		are called by rest of program.
@@ -119,24 +112,12 @@ typedef int32_t simr;
 #define LittleEndianUnaligned 0
 #endif
 
-#ifndef uint8_tr
-#define uint8_tr uint8_t
+#ifndef align_8
+#define align_8
 #endif
 
-#ifndef uint16_tr
-#define uint16_tr uint16_t
-#endif
-
-#ifndef int32_tr
-#define int32_tr int32_t
-#endif
-
-#ifndef my_align_8
-#define my_align_8
-#endif
-
-#ifndef my_cond_rare
-#define my_cond_rare(x) (x)
+#ifndef cond_rare
+#define cond_rare(x) (x)
 #endif
 
 #ifndef Have_ASR

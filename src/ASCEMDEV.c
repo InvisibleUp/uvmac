@@ -54,7 +54,7 @@ LOCALVAR ASC_ChanR ASC_ChanA[4];
 LOCALVAR uint16_t ASC_FIFO_Out = 0;
 LOCALVAR uint16_t ASC_FIFO_InA = 0;
 LOCALVAR uint16_t ASC_FIFO_InB = 0;
-LOCALVAR blnr ASC_Playing = falseblnr;
+LOCALVAR bool ASC_Playing = false;
 
 #define ASC_dolog (dbglog_HAVE && 0)
 
@@ -95,11 +95,11 @@ LOCALPROC ASC_ClearFIFO(void)
 	ASC_FIFO_Out = 0;
 	ASC_FIFO_InA = 0;
 	ASC_FIFO_InB = 0;
-	ASC_Playing = falseblnr;
+	ASC_Playing = false;
 	ASC_RecalcStatus();
 }
 
-GLOBALFUNC uint32_t ASC_Access(uint32_t Data, blnr WriteMem, CPTR addr)
+GLOBALFUNC uint32_t ASC_Access(uint32_t Data, bool WriteMem, CPTR addr)
 {
 	if (addr < 0x800) {
 		if (WriteMem) {
@@ -558,7 +558,7 @@ label_retry:
 
 		if (1 == SoundReg801) {
 #if SoundEnabled
-			ui3p addr;
+			uint8_t * addr;
 #endif
 
 			if (0 != (SoundReg802 & 2)) {
@@ -569,7 +569,7 @@ label_retry:
 					{
 						SoundReg804 &= ~ 0x01;
 						SoundReg804 &= ~ 0x04;
-						ASC_Playing = trueblnr;
+						ASC_Playing = true;
 #if ASC_dolog
 						dbglog_WriteNote("ASC : start stereo playing");
 #endif
@@ -593,10 +593,10 @@ label_retry:
 
 			for (i = 0; i < actL; i++) {
 				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) == 0) {
-					ASC_Playing = falseblnr;
+					ASC_Playing = false;
 				}
 				if (((uint16_t)(ASC_FIFO_InB - ASC_FIFO_Out)) == 0) {
-					ASC_Playing = falseblnr;
+					ASC_Playing = false;
 				}
 				if (! ASC_Playing) {
 #if SoundEnabled
@@ -641,7 +641,7 @@ label_retry:
 				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200)
 				{
 					SoundReg804 &= ~ 0x01;
-					ASC_Playing = trueblnr;
+					ASC_Playing = true;
 #if ASC_dolog
 					dbglog_WriteNote("ASC : start mono playing");
 #endif
@@ -650,7 +650,7 @@ label_retry:
 
 			for (i = 0; i < actL; i++) {
 				if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) == 0) {
-					ASC_Playing = falseblnr;
+					ASC_Playing = false;
 				}
 				if (! ASC_Playing) {
 #if SoundEnabled

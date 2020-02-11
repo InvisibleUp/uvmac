@@ -8,7 +8,7 @@ mk_COptions = $(mk_COptionsCommon) -Os
 
 TheDefaultOutput : minivmac.exe
 
-bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
+bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/LANG/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
 	gcc "src/UI/WIN32/OSGLUWIN.c" -o "bld/OSGLUWIN.o" $(mk_COptions)
 bld/GLOBGLUE.o : src/GLOBGLUE.c cfg/CNFGGLOB.h
 	gcc "src/GLOBGLUE.c" -o "bld/GLOBGLUE.o" $(mk_COptions)

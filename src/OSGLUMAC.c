@@ -5494,9 +5494,6 @@ label_retry:
 #if MySoundEnabled
 		MySound_SecondNotify();
 #endif
-#if EnableDemoMsg
-		DemoModeSecondNotify();
-#endif
 	}
 
 	if (! (gBackgroundFlag)) {
@@ -5692,9 +5689,6 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (ReCreateMainWindow())
 	if (LoadMacRom())
 	if (LoadInitialImages())
-#if UseActvCode
-	if (ActvCodeInit())
-#endif
 	if (InitLocationDat())
 	if (WaitForRom())
 	{

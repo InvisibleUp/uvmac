@@ -5282,9 +5282,6 @@ label_retry:
 #if MySoundEnabled
 		MySound_SecondNotify();
 #endif
-#if EnableDemoMsg
-		DemoModeSecondNotify();
-#endif
 	}
 
 	if (gWeAreActive) {
@@ -5367,9 +5364,6 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (CreateMainWindow())
 	if (LoadMacRom())
 	if (LoadInitialImages())
-#if UseActvCode
-	if (ActvCodeInit())
-#endif
 #if EmLocalTalk
 	if (InitLocalTalk())
 #endif

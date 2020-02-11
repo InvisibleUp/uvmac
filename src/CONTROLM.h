@@ -25,21 +25,14 @@
 #endif
 
 enum {
-#if EnableDemoMsg
-	SpclModeDemo,
-#endif
 #if EnableAltKeysMode
 	SpclModeAltKeyText,
-#endif
-#if UseActvCode
-	SpclModeActvCode,
 #endif
 	SpclModeNoRom,
 	SpclModeMessage,
 #if UseControlKeys
 	SpclModeControl,
 #endif
-
 	kNumSpclModes
 };
 
@@ -325,7 +318,7 @@ LOCALPROC DrawSpclMode0(char *Title, SpclModeBody Body)
 #define DisconnectKeyCodes1 DisconnectKeyCodes
 #endif
 
-#if WantAbnormalReports || UseActvFile
+#if WantAbnormalReports
 LOCALPROC ClStrAppendHexNib(int *L0, ui3b *r, ui3r v)
 {
 	if (v < 10) {
@@ -336,7 +329,7 @@ LOCALPROC ClStrAppendHexNib(int *L0, ui3b *r, ui3r v)
 }
 #endif
 
-#if WantAbnormalReports || UseActvFile
+#if WantAbnormalReports
 LOCALPROC ClStrAppendHexByte(int *L0, ui3b *r, ui3r v)
 {
 	ClStrAppendHexNib(L0, r, (v >> 4) & 0x0F);
@@ -344,7 +337,7 @@ LOCALPROC ClStrAppendHexByte(int *L0, ui3b *r, ui3r v)
 }
 #endif
 
-#if WantAbnormalReports || UseActvFile
+#if WantAbnormalReports
 LOCALPROC ClStrAppendHexWord(int *L0, ui3b *r, ui4r v)
 {
 	ClStrAppendHexByte(L0, r, (v >> 8) & 0xFF);
@@ -514,10 +507,6 @@ enum {
 #if IncludePbufs
 	kCntrlMsgOptionsStrCopied,
 #endif
-#if 0 && (UseActvCode || EnableDemoMsg)
-	kCntrlMsgRegStrCopied,
-#endif
-
 	kNumCntrlMsgs
 };
 
@@ -617,18 +606,6 @@ LOCALPROC CopyOptionsStr(void)
 }
 #endif
 
-#if 0
-#if UseActvCode
-FORWARDPROC CopyRegistrationStr(void);
-#elif EnableDemoMsg
-LOCALPROC CopyRegistrationStr(void)
-{
-	HTCEexportSubstCStr("^v");
-}
-#endif
-#endif
-
-
 LOCALPROC DoControlModeKey(ui3r key)
 {
 	switch (CurControlMode) {
@@ -698,12 +675,6 @@ LOCALPROC DoControlModeKey(ui3r key)
 				case MKC_P:
 					CopyOptionsStr();
 					ControlMessage = kCntrlMsgOptionsStrCopied;
-					break;
-#endif
-#if 0 && (UseActvCode || EnableDemoMsg)
-				case MKC_P:
-					CopyRegistrationStr();
-					ControlMessage = kCntrlMsgRegStrCopied;
 					break;
 #endif
 #if NeedRequestIthDisk
@@ -976,17 +947,6 @@ LOCALPROC DrawCellsControlModeBody(void)
 			DrawCellsOneLineStr(kStrHaveCopiedOptions);
 			break;
 #endif
-#if 0
-#if UseActvCode
-		case kCntrlMsgRegStrCopied:
-			DrawCellsOneLineStr("Registration String copied.");
-			break;
-#elif EnableDemoMsg
-		case kCntrlMsgRegStrCopied:
-			DrawCellsOneLineStr("Variation name copied.");
-			break;
-#endif
-#endif
 #if WantEnblCtrlRst
 		case kCntrlMsgConfirmResetStart:
 			DrawCellsOneLineStr(kStrConfirmReset);
@@ -1043,39 +1003,6 @@ LOCALPROC DrawControlMode(void)
 
 #endif /* UseControlKeys */
 
-#if EnableDemoMsg
-
-LOCALPROC DrawDemoMode(void)
-{
-	CurCellv0 = ControlBoxv0 + ((9 * CurMacDateInSeconds) & 0x0F);
-	CurCellh0 = ControlBoxh0 + ((15 * CurMacDateInSeconds) & 0x1F);
-
-	DrawCellAdvance(kCellDemo0);
-	DrawCellAdvance(kCellDemo6);
-	DrawCellAdvance(kCellDemo6);
-	DrawCellAdvance(kCellDemo7);
-	DrawCellAdvance(kCellDemo1);
-	DrawCellAdvance(kCellDemo2);
-	DrawCellAdvance(kCellDemo3);
-	DrawCellAdvance(kCellDemo4);
-	DrawCellAdvance(kCellDemo7);
-	DrawCellAdvance(kCellDemo6);
-	DrawCellAdvance(kCellDemo6);
-	DrawCellAdvance(kCellDemo5);
-}
-
-LOCALPROC DemoModeSecondNotify(void)
-{
-	NeedWholeScreenDraw = trueblnr;
-	SpecialModeSet(SpclModeDemo);
-}
-
-#endif /* EnableDemoMsg */
-
-#if UseActvCode
-#include "ACTVCODE.h"
-#endif
-
 LOCALPROC DrawSpclMode(void)
 {
 #if UseControlKeys
@@ -1089,19 +1016,9 @@ LOCALPROC DrawSpclMode(void)
 	if (SpecialModeTst(SpclModeNoRom)) {
 		DrawNoRomMode();
 	} else
-#if UseActvCode
-	if (SpecialModeTst(SpclModeActvCode)) {
-		DrawActvCodeMode();
-	} else
-#endif
 #if EnableAltKeysMode
 	if (SpecialModeTst(SpclModeAltKeyText)) {
 		DrawAltKeyMode();
-	} else
-#endif
-#if EnableDemoMsg
-	if (SpecialModeTst(SpclModeDemo)) {
-		DrawDemoMode();
 	} else
 #endif
 	{
@@ -1253,16 +1170,10 @@ LOCALPROC Keyboard_UpdateKeyMap2(ui3r key, blnr down)
 	} else
 #endif
 	if ((0 == SpecialModes)
-#if EnableAltKeysMode || EnableDemoMsg
-			|| (0 == (SpecialModes & ~ (
-				0
 #if EnableAltKeysMode
-				| (1 << SpclModeAltKeyText)
-#endif
-#if EnableDemoMsg
-				| (1 << SpclModeDemo)
-#endif
-				)))
+			|| (0 == (SpecialModes & ~ (
+				0 | (1 << SpclModeAltKeyText)
+			)))
 #endif
 			|| (MKC_CapsLock == key)
 		)
@@ -1279,11 +1190,6 @@ LOCALPROC Keyboard_UpdateKeyMap2(ui3r key, blnr down)
 			if (SpecialModeTst(SpclModeMessage)) {
 				DoMessageModeKey(key);
 			} else
-#if UseActvCode
-			if (SpecialModeTst(SpclModeActvCode)) {
-				DoActvCodeModeKey(key);
-			} else
-#endif
 			{
 			}
 		} /* else if not down ignore */

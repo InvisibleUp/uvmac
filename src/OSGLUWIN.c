@@ -4659,7 +4659,7 @@ LOCALFUNC blnr ResolveNamedChildFile(LPTSTR pathName, char *Child)
 		&& ! directory;
 }
 
-#if UseActvFile || (IncludeSonyNew && ! SaveDialogEnable)
+#if (IncludeSonyNew && ! SaveDialogEnable)
 LOCALFUNC blnr MakeNamedChildDir(LPTSTR pathName, char *Child)
 {
 	blnr directory;
@@ -4825,132 +4825,6 @@ LOCALFUNC blnr LoadInitialImages(void)
 
 	return trueblnr;
 }
-
-#if UseActvFile
-
-#define ActvCodeFileName "act_1"
-
-LOCALFUNC tMacErr ActvCodeFileLoad(ui3p p)
-{
-	TCHAR pathName[_MAX_PATH];
-	DWORD BytesRead;
-	HANDLE refnum = INVALID_HANDLE_VALUE;
-	blnr IsOk = falseblnr;
-
-	if (MyGetAppDataPath(pathName, FALSE))
-	if (ResolveNamedChildDir(pathName, "Gryphel"))
-	if (ResolveNamedChildDir(pathName, "mnvm_act"))
-	if (ResolveNamedChildFile(pathName, ActvCodeFileName))
-	{
-		refnum = CreateFile(
-			pathName, /* pointer to name of the file */
-			GENERIC_READ, /* access (read-write) mode */
-			FILE_SHARE_READ, /* share mode */
-			NULL, /* pointer to security descriptor */
-			OPEN_EXISTING, /* how to create */
-			FILE_ATTRIBUTE_NORMAL, /* file attributes */
-			NULL /* handle to file with attributes to copy */
-		);
-		if (INVALID_HANDLE_VALUE == refnum) {
-			/* report error */
-		} else {
-			if (SetFilePointer(
-				refnum, /* handle of file */
-				0, /* number of bytes to move file pointer */
-				nullpr,
-					/* address of high-order word of distance to move */
-				FILE_BEGIN /* how to move */
-				) != 0)
-			{
-				/* report error */
-			} else if (! ReadFile(refnum, /* handle of file to read */
-				(LPVOID)p, /* address of buffer that receives data */
-				(DWORD)ActvCodeFileLen, /* number of bytes to read */
-				&BytesRead, /* address of number of bytes read */
-				nullpr) /* address of structure for data */
-				|| ((ui5b)BytesRead != ActvCodeFileLen))
-			{
-				/* report error */
-			} else {
-				IsOk = trueblnr;
-			}
-			(void) CloseHandle(refnum);
-		}
-	}
-
-	return IsOk ? mnvm_noErr : mnvm_miscErr;
-}
-
-LOCALFUNC blnr NewNamedChildFile(LPTSTR pathName, char *Child)
-{
-	blnr directory;
-	blnr IsOk = falseblnr;
-	tMacErr err = ResolveNamedChild(pathName, Child, &directory);
-
-	if (mnvm_noErr == err) {
-		IsOk = ! directory;
-	} else if (mnvm_fnfErr == err) {
-		IsOk = trueblnr;
-	}
-
-	return IsOk;
-}
-
-LOCALFUNC tMacErr ActvCodeFileSave(ui3p p)
-{
-	TCHAR pathName[_MAX_PATH];
-	DWORD BytesWritten;
-	HANDLE refnum = INVALID_HANDLE_VALUE;
-	blnr IsOk = falseblnr;
-
-	if (MyGetAppDataPath(pathName, TRUE))
-	if (MakeNamedChildDir(pathName, "Gryphel"))
-	if (MakeNamedChildDir(pathName, "mnvm_act"))
-	if (NewNamedChildFile(pathName, ActvCodeFileName))
-	{
-		refnum = CreateFile(
-			pathName, /* pointer to name of the file */
-			GENERIC_READ + GENERIC_WRITE, /* access (read-write) mode */
-			0, /* share mode */
-			NULL, /* pointer to security descriptor */
-			CREATE_ALWAYS, /* how to create */
-			FILE_ATTRIBUTE_NORMAL, /* file attributes */
-			NULL /* handle to file with attributes to copy */
-		);
-		if (INVALID_HANDLE_VALUE == refnum) {
-			/* report error */
-		} else {
-			if (SetFilePointer(
-				refnum, /* handle of file */
-				0, /* number of bytes to move file pointer */
-				nullpr,
-					/* address of high-order word of distance to move */
-				FILE_BEGIN /* how to move */
-				) != 0)
-			{
-				/* report error */
-			} else if (! WriteFile(refnum, /* handle of file to read */
-				(LPVOID)p, /* address of buffer that receives data */
-				(DWORD)ActvCodeFileLen, /* number of bytes to read */
-				&BytesWritten, /* address of number of bytes read */
-				nullpr) /* address of structure for data */
-				|| ((ui5b)BytesWritten != ActvCodeFileLen))
-			{
-				/* report error */
-			} else {
-				IsOk = trueblnr;
-			}
-			(void) CloseHandle(refnum);
-			if (! IsOk) {
-				(void) DeleteFile(pathName);
-			}
-		}
-	}
-
-	return IsOk ? mnvm_noErr : mnvm_miscErr;
-}
-
-#endif /* UseActvFile */
 
 #if IncludeSonyNew
 LOCALFUNC blnr WriteZero(HANDLE refnum, ui5b L)
@@ -5907,9 +5781,6 @@ label_retry:
 #if MySoundEnabled
 		MySound_SecondNotify();
 #endif
-#if EnableDemoMsg
-		DemoModeSecondNotify();
-#endif
 	}
 
 	if (! (gBackgroundFlag)) {
@@ -6126,9 +5997,6 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (RegisterInRegistry())
 #endif
 	if (LoadMacRom())
-#if UseActvCode
-	if (ActvCodeInit())
-#endif
 #if UseWinCE
 	if (Init_ChangeOrientation())
 #endif

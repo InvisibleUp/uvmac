@@ -4578,9 +4578,6 @@ label_retry:
 #if MySoundEnabled
 		MySound_SecondNotify();
 #endif
-#if EnableDemoMsg
-		DemoModeSecondNotify();
-#endif
 	}
 
 	OnTrueTime = TrueEmulatedTime;
@@ -4908,9 +4905,6 @@ LOCALFUNC blnr InitOSGLU(void)
 			for initial files.
 			So must load ROM, disk1.dsk, etc first.
 		*/
-#if UseActvCode
-	if (ActvCodeInit())
-#endif
 #if EmLocalTalk
 	if (InitLocalTalk())
 #endif

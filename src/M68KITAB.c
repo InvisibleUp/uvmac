@@ -22,7 +22,7 @@
 #include "SYSDEPNS.h"
 #endif
 
-#include "MYOSGLUE.h"
+#include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 

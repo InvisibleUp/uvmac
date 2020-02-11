@@ -8,8 +8,8 @@ mk_COptions = $(mk_COptionsCommon) -Os
 
 TheDefaultOutput : minivmac.exe
 
-bld/OSGLUWIN.o : src/OSGLUWIN.c src/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
-	gcc "src/OSGLUWIN.c" -o "bld/OSGLUWIN.o" $(mk_COptions)
+bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
+	gcc "src/UI/WIN32/OSGLUWIN.c" -o "bld/OSGLUWIN.o" $(mk_COptions)
 bld/GLOBGLUE.o : src/GLOBGLUE.c cfg/CNFGGLOB.h
 	gcc "src/GLOBGLUE.c" -o "bld/GLOBGLUE.o" $(mk_COptions)
 bld/M68KITAB.o : src/M68KITAB.c cfg/CNFGGLOB.h
@@ -60,8 +60,8 @@ ObjFiles = \
 	bld/PROGMAIN.o \
 
 
-bld/: cfg/main.rc
-	windres.exe -i "cfg/main.rc" --input-format=rc -o "bld/" -O coff  --include-dir SRC
+bld/main.res: src/UI/WIN32/main.rc
+	windres.exe -i "src/UI/WIN32/main.rc" --input-format=rc -o "bld/main.res" -O coff  --include-dir SRC
 
 
 minivmac.exe : $(ObjFiles) bld/

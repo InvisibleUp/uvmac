@@ -31,7 +31,7 @@
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
+GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -361,7 +361,7 @@ LOCALVAR blnr gTrueBackgroundFlag = falseblnr;
 LOCALVAR blnr CurSpeedStopped = trueblnr;
 
 #if EnableMagnify
-#define MaxScale MyWindowScale
+#define MaxScale WindowScale
 #else
 #define MaxScale 1
 #endif
@@ -378,7 +378,7 @@ LOCALVAR ui3p CLUT_final;
 		256 possible values of one byte
 		8 pixels per byte maximum (when black and white)
 		4 bytes per destination pixel maximum
-			multiplied by MyWindowScale if EnableMagnify
+			multiplied by WindowScale if EnableMagnify
 	*/
 
 #define ScrnMapr_DoMap UpdateBWDepth3Copy
@@ -414,7 +414,7 @@ LOCALVAR ui3p CLUT_final;
 #define ScrnMapr_SrcDepth 0
 #define ScrnMapr_DstDepth 3
 #define ScrnMapr_Map CLUT_final
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -424,7 +424,7 @@ LOCALVAR ui3p CLUT_final;
 #define ScrnMapr_SrcDepth 0
 #define ScrnMapr_DstDepth 4
 #define ScrnMapr_Map CLUT_final
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -434,7 +434,7 @@ LOCALVAR ui3p CLUT_final;
 #define ScrnMapr_SrcDepth 0
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map CLUT_final
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -474,7 +474,7 @@ LOCALVAR ui3p CLUT_final;
 #define ScrnMapr_SrcDepth vMacScreenDepth
 #define ScrnMapr_DstDepth 3
 #define ScrnMapr_Map CLUT_final
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -484,7 +484,7 @@ LOCALVAR ui3p CLUT_final;
 #define ScrnMapr_SrcDepth vMacScreenDepth
 #define ScrnMapr_DstDepth 4
 #define ScrnMapr_Map CLUT_final
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -494,7 +494,7 @@ LOCALVAR ui3p CLUT_final;
 #define ScrnMapr_SrcDepth vMacScreenDepth
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map CLUT_final
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -519,10 +519,10 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if EnableMagnify
 	if (UseMagnify) {
-		top2 *= MyWindowScale;
-		left2 *= MyWindowScale;
-		bottom2 *= MyWindowScale;
-		right2 *= MyWindowScale;
+		top2 *= WindowScale;
+		left2 *= WindowScale;
+		bottom2 *= WindowScale;
+		right2 *= WindowScale;
 	}
 #endif
 
@@ -539,7 +539,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if EnableMagnify
 	if (UseMagnify) {
-		ExpectedPitch *= MyWindowScale;
+		ExpectedPitch *= WindowScale;
 	}
 #endif
 
@@ -601,7 +601,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 				}
 
 #if EnableMagnify
-				for (a = UseMagnify ? MyWindowScale : 1; --a >= 0; )
+				for (a = UseMagnify ? WindowScale : 1; --a >= 0; )
 #endif
 				{
 					switch (bpp) {
@@ -706,8 +706,8 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if EnableMagnify
 				if (UseMagnify) {
-					i0 /= MyWindowScale;
-					j0 /= MyWindowScale;
+					i0 /= WindowScale;
+					j0 /= WindowScale;
 				}
 #endif
 
@@ -786,7 +786,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 		right2 - left2, bottom2 - top2);
 }
 
-LOCALPROC MyDrawChangesAndClear(void)
+LOCALPROC DrawChangesAndClear(void)
 {
 	if (ScreenChangedBottom > ScreenChangedTop) {
 		HaveChangedScreenBuff(ScreenChangedTop, ScreenChangedLeft,
@@ -802,7 +802,7 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 		AutoScrollScreen();
 	}
 #endif
-	MyDrawChangesAndClear();
+	DrawChangesAndClear();
 }
 
 /* --- mouse --- */
@@ -822,12 +822,12 @@ LOCALPROC ForceShowCursor(void)
 
 /* cursor moving */
 
-LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
+LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
 {
 #if EnableMagnify
 	if (UseMagnify) {
-		h *= MyWindowScale;
-		v *= MyWindowScale;
+		h *= WindowScale;
+		v *= WindowScale;
 	}
 #endif
 
@@ -844,14 +844,14 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		NewMousePosh /= MyWindowScale;
-		NewMousePosv /= MyWindowScale;
+		NewMousePosh /= WindowScale;
+		NewMousePosv /= WindowScale;
 	}
 #endif
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMousePositionSetDelta(NewMousePosh - SavedMouseH,
+		MousePositionSetDelta(NewMousePosh - SavedMouseH,
 			NewMousePosv - SavedMouseV);
 		SavedMouseH = NewMousePosh;
 		SavedMouseV = NewMousePosv;
@@ -887,7 +887,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 			for a game like arkanoid, would like mouse to still
 			move even when outside window in one direction
 		*/
-		MyMousePositionSet(NewMousePosh, NewMousePosv);
+		MousePositionSet(NewMousePosh, NewMousePosv);
 	}
 
 	WantCursorHidden = ShouldHaveCursorHidden;
@@ -1089,7 +1089,7 @@ LOCALPROC ReconnectKeyCodes3(void)
 LOCALPROC DisconnectKeyCodes3(void)
 {
 	DisconnectKeyCodes2();
-	MyMouseButtonSet(falseblnr);
+	MouseButtonSet(falseblnr);
 }
 
 /* --- time, date, location --- */
@@ -1098,10 +1098,10 @@ LOCALPROC DisconnectKeyCodes3(void)
 
 LOCALVAR uint32_t TrueEmulatedTime = 0;
 
-#define MyInvTimeDivPow 16
-#define MyInvTimeDiv (1 << MyInvTimeDivPow)
-#define MyInvTimeDivMask (MyInvTimeDiv - 1)
-#define MyInvTimeStep 1089590 /* 1000 / 60.14742 * MyInvTimeDiv */
+#define InvTimeDivPow 16
+#define InvTimeDiv (1 << InvTimeDivPow)
+#define InvTimeDivMask (InvTimeDiv - 1)
+#define InvTimeStep 1089590 /* 1000 / 60.14742 * InvTimeDiv */
 
 LOCALVAR Uint32 LastTime;
 
@@ -1110,9 +1110,9 @@ LOCALVAR uint32_t NextFracTime;
 
 LOCALPROC IncrNextTime(void)
 {
-	NextFracTime += MyInvTimeStep;
-	NextIntTime += (NextFracTime >> MyInvTimeDivPow);
-	NextFracTime &= MyInvTimeDivMask;
+	NextFracTime += InvTimeStep;
+	NextIntTime += (NextFracTime >> InvTimeDivPow);
+	NextFracTime &= InvTimeDivMask;
 }
 
 LOCALPROC InitNextTime(void)
@@ -1198,7 +1198,7 @@ LOCALFUNC blnr InitLocationDat(void)
 
 /* --- sound --- */
 
-#if MySoundEnabled
+#if SoundEnabled
 
 #define kLn2SoundBuffers 4 /* kSoundBuffers must be a power of two */
 #define kSoundBuffers (1 << kLn2SoundBuffers)
@@ -1234,14 +1234,14 @@ LOCALVAR uint16_t MaxFilledSoundBuffs;
 #endif
 LOCALVAR uint16_t TheWriteOffset;
 
-LOCALPROC MySound_Init0(void)
+LOCALPROC Sound_Init0(void)
 {
 	ThePlayOffset = 0;
 	TheFillOffset = 0;
 	TheWriteOffset = 0;
 }
 
-LOCALPROC MySound_Start0(void)
+LOCALPROC Sound_Start0(void)
 {
 	/* Reset variables */
 	MinFilledSoundBuffs = kSoundBuffers + 1;
@@ -1250,7 +1250,7 @@ LOCALPROC MySound_Start0(void)
 #endif
 }
 
-GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
+GLOBALOSGLUFUNC tpSoundSamp Sound_BeginWrite(uint16_t n, uint16_t *actL)
 {
 	uint16_t ToFillLen = kAllBuffLen - (TheWriteOffset - ThePlayOffset);
 	uint16_t WriteBuffContig =
@@ -1284,7 +1284,7 @@ LOCALPROC ConvertSoundBlockToNative(tpSoundSamp p)
 #define ConvertSoundBlockToNative(p)
 #endif
 
-LOCALPROC MySound_WroteABlock(void)
+LOCALPROC Sound_WroteABlock(void)
 {
 #if (4 == kLn2SoundSampSz)
 	uint16_t PrevWriteOffset = TheWriteOffset - kOneBuffLen;
@@ -1292,7 +1292,7 @@ LOCALPROC MySound_WroteABlock(void)
 #endif
 
 #if dbglog_SoundStuff
-	dbglog_writeln("enter MySound_WroteABlock");
+	dbglog_writeln("enter Sound_WroteABlock");
 #endif
 
 	ConvertSoundBlockToNative(p);
@@ -1312,7 +1312,7 @@ LOCALPROC MySound_WroteABlock(void)
 #endif
 }
 
-LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
+LOCALFUNC blnr Sound_EndWrite0(uint16_t actL)
 {
 	blnr v;
 
@@ -1323,7 +1323,7 @@ LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
 	} else {
 		/* just finished a block */
 
-		MySound_WroteABlock();
+		Sound_WroteABlock();
 
 		v = trueblnr;
 	}
@@ -1331,7 +1331,7 @@ LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
 	return v;
 }
 
-LOCALPROC MySound_SecondNotify0(void)
+LOCALPROC Sound_SecondNotify0(void)
 {
 	if (MinFilledSoundBuffs <= kSoundBuffers) {
 		if (MinFilledSoundBuffs > DesiredMinFilledSoundBuffs) {
@@ -1412,7 +1412,7 @@ LOCALPROC SoundRampTo(trSoundTemp *last_val, trSoundTemp dst_val,
 	*last_val = v1;
 }
 
-struct MySoundR {
+struct SoundR {
 	tpSoundSamp fTheSoundBuffer;
 	volatile uint16_t (*fPlayOffset);
 	volatile uint16_t (*fFillOffset);
@@ -1423,14 +1423,14 @@ struct MySoundR {
 	blnr wantplaying;
 	blnr HaveStartedPlaying;
 };
-typedef struct MySoundR MySoundR;
+typedef struct SoundR SoundR;
 
 static void my_audio_callback(void *udata, Uint8 *stream, int len)
 {
 	uint16_t ToPlayLen;
 	uint16_t FilledSoundBuffs;
 	int i;
-	MySoundR *datp = (MySoundR *)udata;
+	SoundR *datp = (SoundR *)udata;
 	tpSoundSamp CurSoundBuffer = datp->fTheSoundBuffer;
 	uint16_t CurPlayOffset = *datp->fPlayOffset;
 	trSoundTemp v0 = datp->lastv;
@@ -1531,14 +1531,14 @@ label_retry:
 	datp->lastv = v1;
 }
 
-LOCALVAR MySoundR cur_audio;
+LOCALVAR SoundR cur_audio;
 
 LOCALVAR blnr HaveSoundOut = falseblnr;
 
-LOCALPROC MySound_Stop(void)
+LOCALPROC Sound_Stop(void)
 {
 #if dbglog_SoundStuff
-	dbglog_writeln("enter MySound_Stop");
+	dbglog_writeln("enter Sound_Stop");
 #endif
 
 	if (cur_audio.wantplaying && HaveSoundOut) {
@@ -1578,14 +1578,14 @@ label_retry:
 	}
 
 #if dbglog_SoundStuff
-	dbglog_writeln("leave MySound_Stop");
+	dbglog_writeln("leave Sound_Stop");
 #endif
 }
 
-LOCALPROC MySound_Start(void)
+LOCALPROC Sound_Start(void)
 {
 	if ((! cur_audio.wantplaying) && HaveSoundOut) {
-		MySound_Start0();
+		Sound_Start0();
 		cur_audio.lastv = kCenterTempSound;
 		cur_audio.HaveStartedPlaying = falseblnr;
 		cur_audio.wantplaying = trueblnr;
@@ -1594,7 +1594,7 @@ LOCALPROC MySound_Start(void)
 	}
 }
 
-LOCALPROC MySound_UnInit(void)
+LOCALPROC Sound_UnInit(void)
 {
 	if (HaveSoundOut) {
 		SDL_CloseAudio();
@@ -1603,11 +1603,11 @@ LOCALPROC MySound_UnInit(void)
 
 #define SOUND_SAMPLERATE 22255 /* = round(7833600 * 2 / 704) */
 
-LOCALFUNC blnr MySound_Init(void)
+LOCALFUNC blnr Sound_Init(void)
 {
 	SDL_AudioSpec desired;
 
-	MySound_Init0();
+	Sound_Init0();
 
 	cur_audio.fTheSoundBuffer = TheSoundBuffer;
 	cur_audio.fPlayOffset = &ThePlayOffset;
@@ -1636,7 +1636,7 @@ LOCALFUNC blnr MySound_Init(void)
 	} else {
 		HaveSoundOut = trueblnr;
 
-		MySound_Start();
+		Sound_Start();
 			/*
 				This should be taken care of by LeaveSpeedStopped,
 				but since takes a while to get going properly,
@@ -1647,16 +1647,16 @@ LOCALFUNC blnr MySound_Init(void)
 	return trueblnr; /* keep going, even if no sound */
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
+GLOBALOSGLUPROC Sound_EndWrite(uint16_t actL)
 {
-	if (MySound_EndWrite0(actL)) {
+	if (Sound_EndWrite0(actL)) {
 	}
 }
 
-LOCALPROC MySound_SecondNotify(void)
+LOCALPROC Sound_SecondNotify(void)
 {
 	if (HaveSoundOut) {
-		MySound_SecondNotify0();
+		Sound_SecondNotify0();
 	}
 }
 
@@ -1721,12 +1721,12 @@ LOCALPROC HandleTheEvent(SDL_Event *event)
 			/* any mouse button, we don't care which */
 			MousePositionNotify(
 				event->button.x, event->button.y);
-			MyMouseButtonSet(trueblnr);
+			MouseButtonSet(trueblnr);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			MousePositionNotify(
 				event->button.x, event->button.y);
-			MyMouseButtonSet(falseblnr);
+			MouseButtonSet(falseblnr);
 			break;
 		case SDL_KEYDOWN:
 			DoKeyCode(&event->key.keysym, trueblnr);
@@ -1799,7 +1799,7 @@ LOCALPROC GrabTheMachine(void)
 		if magnification changes, need to reset,
 		even if HaveMouseMotion already true
 	*/
-	if (MyMoveMouse(ViewHStart + (ViewHSize / 2),
+	if (MoveMouse(ViewHStart + (ViewHSize / 2),
 		ViewVStart + (ViewVSize / 2)))
 	{
 		SavedMouseH = ViewHStart + (ViewHSize / 2);
@@ -1815,7 +1815,7 @@ LOCALPROC UngrabMachine(void)
 {
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		(void) MyMoveMouse(CurMouseH, CurMouseV);
+		(void) MoveMouse(CurMouseH, CurMouseV);
 		HaveMouseMotion = falseblnr;
 	}
 #endif
@@ -1827,7 +1827,7 @@ LOCALPROC UngrabMachine(void)
 #endif
 
 #if EnableFSMouseMotion
-LOCALPROC MyMouseConstrain(void)
+LOCALPROC MouseConstrain(void)
 {
 	int16_t shiftdh;
 	int16_t shiftdv;
@@ -1849,7 +1849,7 @@ LOCALPROC MyMouseConstrain(void)
 	if ((shiftdh != 0) || (shiftdv != 0)) {
 		SavedMouseH += shiftdh;
 		SavedMouseV += shiftdv;
-		if (! MyMoveMouse(SavedMouseH, SavedMouseV)) {
+		if (! MoveMouse(SavedMouseH, SavedMouseV)) {
 			HaveMouseMotion = falseblnr;
 		}
 	}
@@ -1865,8 +1865,8 @@ LOCALFUNC blnr CreateMainWindow(void)
 
 #if EnableMagnify && 1
 	if (UseMagnify) {
-		NewWindowHeight *= MyWindowScale;
-		NewWindowWidth *= MyWindowScale;
+		NewWindowHeight *= WindowScale;
+		NewWindowWidth *= WindowScale;
 	}
 #endif
 
@@ -1926,7 +1926,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 	(void) CreateMainWindow();
 
 	if (HaveCursorHidden) {
-		(void) MyMoveMouse(CurMouseH, CurMouseV);
+		(void) MoveMouse(CurMouseH, CurMouseV);
 	}
 
 	return trueblnr;
@@ -1962,8 +1962,8 @@ LOCALPROC EnterBackground(void)
 
 LOCALPROC LeaveSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Start();
+#if SoundEnabled
+	Sound_Start();
 #endif
 
 	StartUpTimeAdjust();
@@ -1971,23 +1971,23 @@ LOCALPROC LeaveSpeedStopped(void)
 
 LOCALPROC EnterSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
 }
 
 LOCALPROC CheckForSavedTasks(void)
 {
-	if (MyEvtQNeedRecover) {
-		MyEvtQNeedRecover = falseblnr;
+	if (EvtQNeedRecover) {
+		EvtQNeedRecover = falseblnr;
 
-		/* attempt cleanup, MyEvtQNeedRecover may get set again */
-		MyEvtQTryRecoverFromFull();
+		/* attempt cleanup, EvtQNeedRecover may get set again */
+		EvtQTryRecoverFromFull();
 	}
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMouseConstrain();
+		MouseConstrain();
 	}
 #endif
 
@@ -2164,8 +2164,8 @@ label_retry:
 	}
 
 	if (CheckDateTime()) {
-#if MySoundEnabled
-		MySound_SecondNotify();
+#if SoundEnabled
+		Sound_SecondNotify();
 #endif
 	}
 
@@ -2210,7 +2210,7 @@ LOCALPROC ReserveAllocAll(void)
 #endif
 
 	ReserveAllocOneBlock(&CLUT_final, CLUT_finalsz, 5, falseblnr);
-#if MySoundEnabled
+#if SoundEnabled
 	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
 		dbhBufferSize, 5, falseblnr);
 #endif
@@ -2218,7 +2218,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMyMemory(void)
+LOCALFUNC blnr AllocMemory(void)
 {
 	uimr n;
 	blnr IsOk = falseblnr;
@@ -2243,7 +2243,7 @@ LOCALFUNC blnr AllocMyMemory(void)
 	return IsOk;
 }
 
-LOCALPROC UnallocMyMemory(void)
+LOCALPROC UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		free((char *)ReserveAllocBigBlock);
@@ -2252,7 +2252,7 @@ LOCALPROC UnallocMyMemory(void)
 
 LOCALFUNC blnr InitOSGLU(void)
 {
-	if (AllocMyMemory())
+	if (AllocMemory())
 #if dbglog_HAVE
 	if (dbglog_open())
 #endif
@@ -2260,8 +2260,8 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (LoadMacRom())
 	if (LoadInitialImages())
 	if (InitLocationDat())
-#if MySoundEnabled
-	if (MySound_Init())
+#if SoundEnabled
+	if (Sound_Init())
 #endif
 	if (Screen_Init())
 	if (CreateMainWindow())
@@ -2282,11 +2282,11 @@ LOCALPROC UnInitOSGLU(void)
 #if MayFullScreen
 	UngrabMachine();
 #endif
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
-#if MySoundEnabled
-	MySound_UnInit();
+#if SoundEnabled
+	Sound_UnInit();
 #endif
 #if IncludePbufs
 	UnInitPbufs();
@@ -2299,7 +2299,7 @@ LOCALPROC UnInitOSGLU(void)
 	dbglog_close();
 #endif
 
-	UnallocMyMemory();
+	UnallocMemory();
 
 	CheckSavedMacMsg();
 

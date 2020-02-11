@@ -54,7 +54,7 @@
 #define MayNotFullScreen 1
 #define WantInitMagnify 0
 #define EnableMagnify 1
-#define MyWindowScale 2
+#define WindowScale 2
 #define WantInitRunInBackground 0
 #define WantInitNotAutoSlow 0
 #define WantInitSpeedValue 3

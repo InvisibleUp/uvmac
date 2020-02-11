@@ -314,7 +314,7 @@ GLOBALFUNC blnr Vid_Init(void)
 	PatchAReservedOSLstEntry(pTo_sMacOS68020, 0x02 /* sMacOS68020 */);
 
 	PatchALong(4 + sizeof(VidDrvr_contents) + 8);
-	MyMoveBytes((ui3p)VidDrvr_contents,
+	MoveBytes((ui3p)VidDrvr_contents,
 		pPatch, sizeof(VidDrvr_contents));
 	pPatch += sizeof(VidDrvr_contents);
 	PatchAWord(kcom_callcheck);

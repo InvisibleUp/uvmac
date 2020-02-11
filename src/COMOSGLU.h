@@ -582,7 +582,7 @@ Label_2:
 		copysize = copyrows * vMacScreenMonoByteWidth;
 	}
 
-	MyMoveBytes((anyp)screencurrentbuff + copyoffset,
+	MoveBytes((anyp)screencurrentbuff + copyoffset,
 		(anyp)screencomparebuff + copyoffset,
 		copysize);
 
@@ -868,14 +868,14 @@ label_retry:
 	bufposmod = ModPow2(dbglog_bufpos, dbglog_buflnsz);
 	if (newbufdiv != curbufdiv) {
 		r = dbglog_bufsz - bufposmod;
-		MyMoveBytes((anyp)p, (anyp)(dbglog_bufp + bufposmod), r);
+		MoveBytes((anyp)p, (anyp)(dbglog_bufp + bufposmod), r);
 		dbglog_write0(dbglog_bufp, dbglog_bufsz);
 		L -= r;
 		p += r;
 		dbglog_bufpos += r;
 		goto label_retry;
 	}
-	MyMoveBytes((anyp)p, (anyp)dbglog_bufp + bufposmod, L);
+	MoveBytes((anyp)p, (anyp)dbglog_bufp + bufposmod, L);
 	dbglog_bufpos = newbufpos;
 }
 
@@ -976,50 +976,50 @@ GLOBALOSGLUPROC dbglog_writelnNum(char *s, simr v)
 
 /* my event queue */
 
-#define MyEvtQLg2Sz 4
-#define MyEvtQSz (1 << MyEvtQLg2Sz)
-#define MyEvtQIMask (MyEvtQSz - 1)
+#define EvtQLg2Sz 4
+#define EvtQSz (1 << EvtQLg2Sz)
+#define EvtQIMask (EvtQSz - 1)
 
-LOCALVAR MyEvtQEl MyEvtQA[MyEvtQSz];
-LOCALVAR uint16_t MyEvtQIn = 0;
-LOCALVAR uint16_t MyEvtQOut = 0;
+LOCALVAR EvtQEl EvtQA[EvtQSz];
+LOCALVAR uint16_t EvtQIn = 0;
+LOCALVAR uint16_t EvtQOut = 0;
 
-GLOBALOSGLUFUNC MyEvtQEl * MyEvtQOutP(void)
+GLOBALOSGLUFUNC EvtQEl * EvtQOutP(void)
 {
-	MyEvtQEl *p = nullpr;
-	if (MyEvtQIn != MyEvtQOut) {
-		p = &MyEvtQA[MyEvtQOut & MyEvtQIMask];
+	EvtQEl *p = nullpr;
+	if (EvtQIn != EvtQOut) {
+		p = &EvtQA[EvtQOut & EvtQIMask];
 	}
 	return p;
 }
 
-GLOBALOSGLUPROC MyEvtQOutDone(void)
+GLOBALOSGLUPROC EvtQOutDone(void)
 {
-	++MyEvtQOut;
+	++EvtQOut;
 }
 
-LOCALVAR blnr MyEvtQNeedRecover = falseblnr;
+LOCALVAR blnr EvtQNeedRecover = falseblnr;
 	/* events lost because of full queue */
 
-LOCALFUNC MyEvtQEl * MyEvtQElPreviousIn(void)
+LOCALFUNC EvtQEl * EvtQElPreviousIn(void)
 {
-	MyEvtQEl *p = NULL;
-	if (MyEvtQIn - MyEvtQOut != 0) {
-		p = &MyEvtQA[(MyEvtQIn - 1) & MyEvtQIMask];
+	EvtQEl *p = NULL;
+	if (EvtQIn - EvtQOut != 0) {
+		p = &EvtQA[(EvtQIn - 1) & EvtQIMask];
 	}
 
 	return p;
 }
 
-LOCALFUNC MyEvtQEl * MyEvtQElAlloc(void)
+LOCALFUNC EvtQEl * EvtQElAlloc(void)
 {
-	MyEvtQEl *p = NULL;
-	if (MyEvtQIn - MyEvtQOut >= MyEvtQSz) {
-		MyEvtQNeedRecover = trueblnr;
+	EvtQEl *p = NULL;
+	if (EvtQIn - EvtQOut >= EvtQSz) {
+		EvtQNeedRecover = trueblnr;
 	} else {
-		p = &MyEvtQA[MyEvtQIn & MyEvtQIMask];
+		p = &EvtQA[EvtQIn & EvtQIMask];
 
-		++MyEvtQIn;
+		++EvtQIn;
 	}
 
 	return p;
@@ -1035,9 +1035,9 @@ LOCALPROC Keyboard_UpdateKeyMap(uint8_t key, blnr down)
 	uint8_t *kpi = &kp[k / 8];
 	blnr CurDown = ((*kpi & bit) != 0);
 	if (CurDown != down) {
-		MyEvtQEl *p = MyEvtQElAlloc();
+		EvtQEl *p = EvtQElAlloc();
 		if (NULL != p) {
-			p->kind = MyEvtQElKindKey;
+			p->kind = EvtQElKindKey;
 			p->u.press.key = k;
 			p->u.press.down = down;
 
@@ -1052,17 +1052,17 @@ LOCALPROC Keyboard_UpdateKeyMap(uint8_t key, blnr down)
 	}
 }
 
-LOCALVAR blnr MyMouseButtonState = falseblnr;
+LOCALVAR blnr MouseButtonState = falseblnr;
 
-LOCALPROC MyMouseButtonSet(blnr down)
+LOCALPROC MouseButtonSet(blnr down)
 {
-	if (MyMouseButtonState != down) {
-		MyEvtQEl *p = MyEvtQElAlloc();
+	if (MouseButtonState != down) {
+		EvtQEl *p = EvtQElAlloc();
 		if (NULL != p) {
-			p->kind = MyEvtQElKindMouseButton;
+			p->kind = EvtQElKindMouseButton;
 			p->u.press.down = down;
 
-			MyMouseButtonState = down;
+			MouseButtonState = down;
 		}
 
 		QuietEnds();
@@ -1070,17 +1070,17 @@ LOCALPROC MyMouseButtonSet(blnr down)
 }
 
 #if EnableFSMouseMotion
-LOCALPROC MyMousePositionSetDelta(uint16_t dh, uint16_t dv)
+LOCALPROC MousePositionSetDelta(uint16_t dh, uint16_t dv)
 {
 	if ((dh != 0) || (dv != 0)) {
-		MyEvtQEl *p = MyEvtQElPreviousIn();
-		if ((NULL != p) && (MyEvtQElKindMouseDelta == p->kind)) {
+		EvtQEl *p = EvtQElPreviousIn();
+		if ((NULL != p) && (EvtQElKindMouseDelta == p->kind)) {
 			p->u.pos.h += dh;
 			p->u.pos.v += dv;
 		} else {
-			p = MyEvtQElAlloc();
+			p = EvtQElAlloc();
 			if (NULL != p) {
-				p->kind = MyEvtQElKindMouseDelta;
+				p->kind = EvtQElKindMouseDelta;
 				p->u.pos.h = dh;
 				p->u.pos.v = dv;
 			}
@@ -1091,23 +1091,23 @@ LOCALPROC MyMousePositionSetDelta(uint16_t dh, uint16_t dv)
 }
 #endif
 
-LOCALVAR uint16_t MyMousePosCurV = 0;
-LOCALVAR uint16_t MyMousePosCurH = 0;
+LOCALVAR uint16_t MousePosCurV = 0;
+LOCALVAR uint16_t MousePosCurH = 0;
 
-LOCALPROC MyMousePositionSet(uint16_t h, uint16_t v)
+LOCALPROC MousePositionSet(uint16_t h, uint16_t v)
 {
-	if ((h != MyMousePosCurH) || (v != MyMousePosCurV)) {
-		MyEvtQEl *p = MyEvtQElPreviousIn();
-		if ((NULL == p) || (MyEvtQElKindMousePos != p->kind)) {
-			p = MyEvtQElAlloc();
+	if ((h != MousePosCurH) || (v != MousePosCurV)) {
+		EvtQEl *p = EvtQElPreviousIn();
+		if ((NULL == p) || (EvtQElKindMousePos != p->kind)) {
+			p = EvtQElAlloc();
 		}
 		if (NULL != p) {
-			p->kind = MyEvtQElKindMousePos;
+			p->kind = EvtQElKindMousePos;
 			p->u.pos.h = h;
 			p->u.pos.v = v;
 
-			MyMousePosCurH = h;
-			MyMousePosCurV = v;
+			MousePosCurH = h;
+			MousePosCurV = v;
 		}
 
 		QuietEnds();
@@ -1172,9 +1172,9 @@ LOCALPROC DisconnectKeyCodes(uint32_t KeepMask)
 	}
 }
 
-LOCALPROC MyEvtQTryRecoverFromFull(void)
+LOCALPROC EvtQTryRecoverFromFull(void)
 {
-	MyMouseButtonSet(falseblnr);
+	MouseButtonSet(falseblnr);
 	DisconnectKeyCodes(0);
 }
 

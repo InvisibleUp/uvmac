@@ -45,7 +45,7 @@
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
+GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -123,7 +123,7 @@ LOCALFUNC tMacErr FindOrMakeChild(char *x, char *y, char **r)
 }
 #endif
 
-LOCALPROC MyMayFree(char *p)
+LOCALPROC MayFree(char *p)
 {
 	if (NULL != p) {
 		free(p);
@@ -188,9 +188,9 @@ LOCALPROC WriteExtraErr(char *s)
 
 LOCALVAR Display *x_display = NULL;
 
-#define MyDbgEvents (dbglog_HAVE && 0)
+#define DbgEvents (dbglog_HAVE && 0)
 
-#if MyDbgEvents
+#if DbgEvents
 LOCALPROC WriteDbgAtom(char *s, Atom x)
 {
 	char *name = XGetAtomName(x_display, x);
@@ -207,57 +207,57 @@ LOCALPROC WriteDbgAtom(char *s, Atom x)
 
 /* --- information about the environment --- */
 
-LOCALVAR Atom MyXA_DeleteW = (Atom)0;
+LOCALVAR Atom XA_DeleteW = (Atom)0;
 #if EnableDragDrop
-LOCALVAR Atom MyXA_UriList = (Atom)0;
-LOCALVAR Atom MyXA_DndAware = (Atom)0;
-LOCALVAR Atom MyXA_DndEnter = (Atom)0;
-LOCALVAR Atom MyXA_DndLeave = (Atom)0;
-LOCALVAR Atom MyXA_DndDrop = (Atom)0;
-LOCALVAR Atom MyXA_DndPosition = (Atom)0;
-LOCALVAR Atom MyXA_DndStatus = (Atom)0;
-LOCALVAR Atom MyXA_DndActionCopy = (Atom)0;
-LOCALVAR Atom MyXA_DndActionPrivate = (Atom)0;
-LOCALVAR Atom MyXA_DndSelection = (Atom)0;
-LOCALVAR Atom MyXA_DndFinished = (Atom)0;
-LOCALVAR Atom MyXA_MinivMac_DndXchng = (Atom)0;
-LOCALVAR Atom MyXA_NetActiveWindow = (Atom)0;
-LOCALVAR Atom MyXA_NetSupported = (Atom)0;
+LOCALVAR Atom XA_UriList = (Atom)0;
+LOCALVAR Atom XA_DndAware = (Atom)0;
+LOCALVAR Atom XA_DndEnter = (Atom)0;
+LOCALVAR Atom XA_DndLeave = (Atom)0;
+LOCALVAR Atom XA_DndDrop = (Atom)0;
+LOCALVAR Atom XA_DndPosition = (Atom)0;
+LOCALVAR Atom XA_DndStatus = (Atom)0;
+LOCALVAR Atom XA_DndActionCopy = (Atom)0;
+LOCALVAR Atom XA_DndActionPrivate = (Atom)0;
+LOCALVAR Atom XA_DndSelection = (Atom)0;
+LOCALVAR Atom XA_DndFinished = (Atom)0;
+LOCALVAR Atom XA_MinivMac_DndXchng = (Atom)0;
+LOCALVAR Atom XA_NetActiveWindow = (Atom)0;
+LOCALVAR Atom XA_NetSupported = (Atom)0;
 #endif
 #if IncludeHostTextClipExchange
-LOCALVAR Atom MyXA_CLIPBOARD = (Atom)0;
-LOCALVAR Atom MyXA_TARGETS = (Atom)0;
-LOCALVAR Atom MyXA_MinivMac_Clip = (Atom)0;
+LOCALVAR Atom XA_CLIPBOARD = (Atom)0;
+LOCALVAR Atom XA_TARGETS = (Atom)0;
+LOCALVAR Atom XA_MinivMac_Clip = (Atom)0;
 #endif
 
-LOCALPROC LoadMyXA(void)
+LOCALPROC LoadXA(void)
 {
-	MyXA_DeleteW = XInternAtom(x_display, "WM_DELETE_WINDOW", False);
+	XA_DeleteW = XInternAtom(x_display, "WM_DELETE_WINDOW", False);
 #if EnableDragDrop
-	MyXA_UriList = XInternAtom (x_display, "text/uri-list", False);
-	MyXA_DndAware = XInternAtom (x_display, "XdndAware", False);
-	MyXA_DndEnter = XInternAtom(x_display, "XdndEnter", False);
-	MyXA_DndLeave = XInternAtom(x_display, "XdndLeave", False);
-	MyXA_DndDrop = XInternAtom(x_display, "XdndDrop", False);
-	MyXA_DndPosition = XInternAtom(x_display, "XdndPosition", False);
-	MyXA_DndStatus = XInternAtom(x_display, "XdndStatus", False);
-	MyXA_DndActionCopy = XInternAtom(x_display,
+	XA_UriList = XInternAtom (x_display, "text/uri-list", False);
+	XA_DndAware = XInternAtom (x_display, "XdndAware", False);
+	XA_DndEnter = XInternAtom(x_display, "XdndEnter", False);
+	XA_DndLeave = XInternAtom(x_display, "XdndLeave", False);
+	XA_DndDrop = XInternAtom(x_display, "XdndDrop", False);
+	XA_DndPosition = XInternAtom(x_display, "XdndPosition", False);
+	XA_DndStatus = XInternAtom(x_display, "XdndStatus", False);
+	XA_DndActionCopy = XInternAtom(x_display,
 		"XdndActionCopy", False);
-	MyXA_DndActionPrivate = XInternAtom(x_display,
+	XA_DndActionPrivate = XInternAtom(x_display,
 		"XdndActionPrivate", False);
-	MyXA_DndSelection = XInternAtom(x_display, "XdndSelection", False);
-	MyXA_DndFinished = XInternAtom(x_display, "XdndFinished", False);
-	MyXA_MinivMac_DndXchng = XInternAtom(x_display,
+	XA_DndSelection = XInternAtom(x_display, "XdndSelection", False);
+	XA_DndFinished = XInternAtom(x_display, "XdndFinished", False);
+	XA_MinivMac_DndXchng = XInternAtom(x_display,
 		"_MinivMac_DndXchng", False);
-	MyXA_NetActiveWindow = XInternAtom(x_display,
+	XA_NetActiveWindow = XInternAtom(x_display,
 		"_NET_ACTIVE_WINDOW", False);
-	MyXA_NetSupported = XInternAtom(x_display,
+	XA_NetSupported = XInternAtom(x_display,
 		"_NET_SUPPORTED", False);
 #endif
 #if IncludeHostTextClipExchange
-	MyXA_CLIPBOARD = XInternAtom(x_display, "CLIPBOARD", False);
-	MyXA_TARGETS = XInternAtom(x_display, "TARGETS", False);
-	MyXA_MinivMac_Clip = XInternAtom(x_display,
+	XA_CLIPBOARD = XInternAtom(x_display, "CLIPBOARD", False);
+	XA_TARGETS = XInternAtom(x_display, "TARGETS", False);
+	XA_MinivMac_Clip = XInternAtom(x_display,
 		"_MinivMac_Clip", False);
 #endif
 }
@@ -280,7 +280,7 @@ LOCALFUNC blnr NetSupportedContains(Atom x)
 		DefaultScreen(x_display));
 
 	if (Success != XGetWindowProperty(x_display, rootwin,
-		MyXA_NetSupported,
+		XA_NetSupported,
 		0, 65535, False, XA_ATOM, &ret_type, &ret_format,
 		&ret_item, &remain_byte, &s))
 	{
@@ -545,7 +545,7 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 */
 
 #if HaveAdvisoryLocks
-LOCALFUNC blnr MyLockFile(FILE *refnum)
+LOCALFUNC blnr LockFile(FILE *refnum)
 {
 	blnr IsOk = falseblnr;
 
@@ -580,7 +580,7 @@ LOCALFUNC blnr MyLockFile(FILE *refnum)
 #endif
 
 #if HaveAdvisoryLocks
-LOCALPROC MyUnlockFile(FILE *refnum)
+LOCALPROC UnlockFile(FILE *refnum)
 {
 #if 1
 	struct flock fl;
@@ -610,7 +610,7 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
 	DiskEjectedNotify(Drive_No);
 
 #if HaveAdvisoryLocks
-	MyUnlockFile(refnum);
+	UnlockFile(refnum);
 #endif
 
 	fclose(refnum);
@@ -686,7 +686,7 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 		/* printf("Sony_Insert0 %d\n", (int)Drive_No); */
 
 #if HaveAdvisoryLocks
-		if (locked || MyLockFile(refnum))
+		if (locked || LockFile(refnum))
 #endif
 		{
 			Drives[Drive_No] = refnum;
@@ -893,8 +893,8 @@ LOCALPROC MakeNewDisk(uint32_t L, char *drivename)
 			MakeNewDisk0(L, t2);
 		}
 
-		MyMayFree(t2);
-		MyMayFree(t);
+		MayFree(t2);
+		MayFree(t);
 	}
 }
 #endif
@@ -972,9 +972,9 @@ LOCALFUNC tMacErr LoadMacRomFromHome(void)
 		err = LoadMacRomFrom(t3);
 	}
 
-	MyMayFree(t3);
-	MyMayFree(t2);
-	MyMayFree(t);
+	MayFree(t3);
+	MayFree(t2);
+	MayFree(t);
 
 	return err;
 }
@@ -1000,7 +1000,7 @@ LOCALFUNC tMacErr LoadMacRomFromAppPar(void)
 		}
 	}
 
-	MyMayFree(t);
+	MayFree(t);
 
 	return err;
 }
@@ -1061,9 +1061,9 @@ LOCALFUNC tMacErr ActvCodeFileLoad(ui3p p)
 		}
 	}
 
-	MyMayFree(t3);
-	MyMayFree(t2);
-	MyMayFree(t);
+	MayFree(t3);
+	MayFree(t2);
+	MayFree(t);
 
 	return err;
 }
@@ -1098,9 +1098,9 @@ LOCALFUNC tMacErr ActvCodeFileSave(ui3p p)
 		}
 	}
 
-	MyMayFree(t3);
-	MyMayFree(t2);
-	MyMayFree(t);
+	MayFree(t3);
+	MayFree(t2);
+	MayFree(t);
 
 	return err;
 }
@@ -1145,7 +1145,7 @@ LOCALVAR XImage *my_Scaled_image = NULL;
 #endif
 
 #if EnableMagnify
-#define MaxScale MyWindowScale
+#define MaxScale WindowScale
 #else
 #define MaxScale 1
 #endif
@@ -1202,7 +1202,7 @@ LOCALPROC SetUpScalingTabl(void)
 		t2 = 0;
 		for (j = 8; --j >= 0; ) {
 			t1 = (i >> j) & 1;
-			for (k = MyWindowScale; --k >= 0; ) {
+			for (k = WindowScale; --k >= 0; ) {
 				t2 = (t2 << 1) | t1;
 				if (--bitsRemaining == 0) {
 					*p4++ = t2;
@@ -1232,7 +1232,7 @@ LOCALPROC SetUpColorScalingTabl(void)
 			v = (((long)CLUT_reds[j] & 0xFF00) << 8)
 				| ((long)CLUT_greens[j] & 0xFF00)
 				| (((long)CLUT_blues[j] & 0xFF00) >> 8);
-			for (a = MyWindowScale; --a >= 0; ) {
+			for (a = WindowScale; --a >= 0; ) {
 				*p4++ = v;
 			}
 		}
@@ -1278,7 +1278,7 @@ LOCALPROC SetUpBW2ColorScalingTabl(void)
 				v = 0xFFFFFF;
 			}
 
-			for (a = MyWindowScale; --a >= 0; ) {
+			for (a = WindowScale; --a >= 0; ) {
 				*p4++ = v;
 			}
 		}
@@ -1317,7 +1317,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_SrcDepth 0
 #define ScrnMapr_DstDepth 0
 #define ScrnMapr_Map ScalingTabl
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -1346,7 +1346,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_SrcDepth vMacScreenDepth
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map ScalingTabl
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -1372,7 +1372,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnTrns_Dst ScalingBuff
 #define ScrnTrns_SrcDepth vMacScreenDepth
 #define ScrnTrns_DstDepth 5
-#define ScrnTrns_Scale MyWindowScale
+#define ScrnTrns_Scale WindowScale
 
 #include "SCRNTRNS.h"
 
@@ -1387,7 +1387,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_SrcDepth 0
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map ScalingTabl
-#define ScrnMapr_Scale MyWindowScale
+#define ScrnMapr_Scale WindowScale
 
 #include "SCRNMAPR.h"
 
@@ -1454,8 +1454,8 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if EnableMagnify
 	if (UseMagnify) {
-		XDest *= MyWindowScale;
-		YDest *= MyWindowScale;
+		XDest *= WindowScale;
+		YDest *= WindowScale;
 	}
 #endif
 
@@ -1511,10 +1511,10 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 			my_Scaled_image->data = (char *)ScalingBuff;
 
 			XPutImage(x_display, my_main_wind, my_gc, my_Scaled_image,
-				left * MyWindowScale, top * MyWindowScale,
+				left * WindowScale, top * WindowScale,
 				XDest, YDest,
-				(right - left) * MyWindowScale,
-				(bottom - top) * MyWindowScale);
+				(right - left) * WindowScale,
+				(bottom - top) * WindowScale);
 
 			my_Scaled_image->data = saveData;
 		}
@@ -1579,7 +1579,7 @@ label_exit:
 #endif
 }
 
-LOCALPROC MyDrawChangesAndClear(void)
+LOCALPROC DrawChangesAndClear(void)
 {
 	if (ScreenChangedBottom > ScreenChangedTop) {
 		HaveChangedScreenBuff(ScreenChangedTop, ScreenChangedLeft,
@@ -1607,7 +1607,7 @@ LOCALPROC ForceShowCursor(void)
 
 LOCALVAR Cursor blankCursor = None;
 
-LOCALFUNC blnr CreateMyBlankCursor(Window rootwin)
+LOCALFUNC blnr CreateBlankCursor(Window rootwin)
 /*
 	adapted from X11_CreateNullCursor in context.x11.c
 	in quakeforge 0.5.5, copyright Id Software, Inc.
@@ -1654,7 +1654,7 @@ LOCALFUNC blnr CreateMyBlankCursor(Window rootwin)
 /* cursor moving */
 
 #if EnableMoveMouse
-LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
+LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
 {
 	int NewMousePosh;
 	int NewMousePosv;
@@ -1678,8 +1678,8 @@ LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		h *= MyWindowScale;
-		v *= MyWindowScale;
+		h *= WindowScale;
+		v *= WindowScale;
 	}
 #endif
 
@@ -1711,7 +1711,7 @@ LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 LOCALPROC StartSaveMouseMotion(void)
 {
 	if (! HaveMouseMotion) {
-		if (MyMoveMouse(ViewHStart + (ViewHSize / 2),
+		if (MoveMouse(ViewHStart + (ViewHSize / 2),
 			ViewVStart + (ViewVSize / 2)))
 		{
 			SavedMouseH = ViewHStart + (ViewHSize / 2);
@@ -1726,7 +1726,7 @@ LOCALPROC StartSaveMouseMotion(void)
 LOCALPROC StopSaveMouseMotion(void)
 {
 	if (HaveMouseMotion) {
-		(void) MyMoveMouse(CurMouseH, CurMouseV);
+		(void) MoveMouse(CurMouseH, CurMouseV);
 		HaveMouseMotion = falseblnr;
 	}
 }
@@ -1735,7 +1735,7 @@ LOCALPROC StopSaveMouseMotion(void)
 /* cursor state */
 
 #if EnableFSMouseMotion
-LOCALPROC MyMouseConstrain(void)
+LOCALPROC MouseConstrain(void)
 {
 	int16_t shiftdh;
 	int16_t shiftdv;
@@ -1757,7 +1757,7 @@ LOCALPROC MyMouseConstrain(void)
 	if ((shiftdh != 0) || (shiftdv != 0)) {
 		SavedMouseH += shiftdh;
 		SavedMouseV += shiftdv;
-		if (! MyMoveMouse(SavedMouseH, SavedMouseV)) {
+		if (! MoveMouse(SavedMouseH, SavedMouseV)) {
 			HaveMouseMotion = falseblnr;
 		}
 	}
@@ -1780,8 +1780,8 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		NewMousePosh /= MyWindowScale;
-		NewMousePosv /= MyWindowScale;
+		NewMousePosh /= WindowScale;
+		NewMousePosv /= WindowScale;
 	}
 #endif
 
@@ -1797,7 +1797,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMousePositionSetDelta(NewMousePosh - SavedMouseH,
+		MousePositionSetDelta(NewMousePosh - SavedMouseH,
 			NewMousePosv - SavedMouseV);
 		SavedMouseH = NewMousePosh;
 		SavedMouseV = NewMousePosv;
@@ -1833,7 +1833,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 			for a game like arkanoid, would like mouse to still
 			move even when outside window in one direction
 		*/
-		MyMousePositionSet(NewMousePosh, NewMousePosv);
+		MousePositionSet(NewMousePosh, NewMousePosv);
 	}
 
 	WantCursorHidden = ShouldHaveCursorHidden;
@@ -2189,7 +2189,7 @@ LOCALVAR blnr KeyboardIsGrabbed = falseblnr;
 #endif
 
 #if MayFullScreen && GrabKeysFullScreen
-LOCALPROC MyGrabKeyboard(void)
+LOCALPROC GrabKeyboard(void)
 {
 	if (! KeyboardIsGrabbed) {
 		(void) XGrabKeyboard(x_display, my_main_wind,
@@ -2201,7 +2201,7 @@ LOCALPROC MyGrabKeyboard(void)
 #endif
 
 #if MayFullScreen && GrabKeysFullScreen
-LOCALPROC MyUnGrabKeyboard(void)
+LOCALPROC UnGrabKeyboard(void)
 {
 	if (KeyboardIsGrabbed && my_main_wind) {
 		XUngrabKeyboard(x_display, CurrentTime);
@@ -2279,7 +2279,7 @@ LOCALPROC ReconnectKeyCodes3(void)
 LOCALPROC DisconnectKeyCodes3(void)
 {
 	DisconnectKeyCodes2();
-	MyMouseButtonSet(falseblnr);
+	MouseButtonSet(falseblnr);
 }
 
 /* --- time, date, location --- */
@@ -2325,14 +2325,14 @@ LOCALPROC GetCurrentTicks(void)
 	LastTimeUsec = (uint32_t)t.tv_usec;
 }
 
-#define MyInvTimeStep 16626 /* TicksPerSecond / 60.14742 */
+#define InvTimeStep 16626 /* TicksPerSecond / 60.14742 */
 
 LOCALVAR uint32_t NextTimeSec;
 LOCALVAR uint32_t NextTimeUsec;
 
 LOCALPROC IncrNextTime(void)
 {
-	NextTimeUsec += MyInvTimeStep;
+	NextTimeUsec += InvTimeStep;
 	if (NextTimeUsec >= TicksPerSecond) {
 		NextTimeUsec -= TicksPerSecond;
 		NextTimeSec += 1;
@@ -2366,7 +2366,7 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 
 	TimeDiff = GetTimeDiff();
 	if (TimeDiff >= 0) {
-		if (TimeDiff > 16 * MyInvTimeStep) {
+		if (TimeDiff > 16 * InvTimeStep) {
 			/* emulation interrupted, forget it */
 			++TrueEmulatedTime;
 			InitNextTime();
@@ -2382,7 +2382,7 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 				TimeDiff -= TicksPerSecond;
 			} while (TimeDiff >= 0);
 		}
-	} else if (TimeDiff < - 16 * MyInvTimeStep) {
+	} else if (TimeDiff < - 16 * InvTimeStep) {
 		/* clock goofed if ever get here, reset */
 #if dbglog_TimeStuff
 		dbglog_writeln("clock set back");
@@ -2412,7 +2412,7 @@ LOCALFUNC blnr InitLocationDat(void)
 
 /* --- sound --- */
 
-#if MySoundEnabled
+#if SoundEnabled
 
 #define kLn2SoundBuffers 4 /* kSoundBuffers must be a power of two */
 #define kSoundBuffers (1 << kLn2SoundBuffers)
@@ -2445,7 +2445,7 @@ LOCALVAR uint16_t TheFillOffset;
 LOCALVAR uint16_t TheWriteOffset;
 LOCALVAR uint16_t MinFilledSoundBuffs;
 
-LOCALPROC MySound_Start0(void)
+LOCALPROC Sound_Start0(void)
 {
 	/* Reset variables */
 	ThePlayOffset = 0;
@@ -2454,7 +2454,7 @@ LOCALPROC MySound_Start0(void)
 	MinFilledSoundBuffs = kSoundBuffers;
 }
 
-GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
+GLOBALOSGLUFUNC tpSoundSamp Sound_BeginWrite(uint16_t n, uint16_t *actL)
 {
 	uint16_t ToFillLen = kAllBuffLen - (TheWriteOffset - ThePlayOffset);
 	uint16_t WriteBuffContig =
@@ -2475,7 +2475,7 @@ GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
 	return TheSoundBuffer + (TheWriteOffset & kAllBuffMask);
 }
 
-LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
+LOCALFUNC blnr Sound_EndWrite0(uint16_t actL)
 {
 	blnr v;
 
@@ -2494,7 +2494,7 @@ LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
 	return v;
 }
 
-LOCALPROC MySound_SecondNotify0(void)
+LOCALPROC Sound_SecondNotify0(void)
 {
 	if (MinFilledSoundBuffs > DesiredMinFilledSoundBuffs) {
 #if dbglog_SoundStuff
@@ -2539,15 +2539,15 @@ LOCALPROC CheckSavedMacMsg(void)
 /* --- clipboard --- */
 
 #if IncludeHostTextClipExchange
-LOCALVAR ui3p MyClipBuffer = NULL;
+LOCALVAR ui3p ClipBuffer = NULL;
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALPROC FreeMyClipBuffer(void)
+LOCALPROC FreeClipBuffer(void)
 {
-	if (MyClipBuffer != NULL) {
-		free(MyClipBuffer);
-		MyClipBuffer = NULL;
+	if (ClipBuffer != NULL) {
+		free(ClipBuffer);
+		ClipBuffer = NULL;
 	}
 }
 #endif
@@ -2557,11 +2557,11 @@ GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
 {
 	tMacErr err = mnvm_miscErr;
 
-	FreeMyClipBuffer();
+	FreeClipBuffer();
 	if (MacRomanTextToNativePtr(i, falseblnr,
-		&MyClipBuffer))
+		&ClipBuffer))
 	{
-		XSetSelectionOwner(x_display, MyXA_CLIPBOARD,
+		XSetSelectionOwner(x_display, XA_CLIPBOARD,
 			my_main_wind, CurrentTime);
 		err = mnvm_noErr;
 	}
@@ -2583,7 +2583,7 @@ LOCALFUNC blnr WaitForClipboardSelection(XEvent *xevent)
 		while (XCheckTypedWindowEvent(x_display, my_main_wind,
 			SelectionNotify, xevent))
 		{
-			if (xevent->xselection.selection != MyXA_CLIPBOARD) {
+			if (xevent->xselection.selection != XA_CLIPBOARD) {
 				/*
 					not what we were looking for. lose it.
 					(and hope it wasn't too important).
@@ -2606,26 +2606,26 @@ LOCALFUNC blnr WaitForClipboardSelection(XEvent *xevent)
 #if IncludeHostTextClipExchange
 LOCALPROC HTCEimport_do(void)
 {
-	Window w = XGetSelectionOwner(x_display, MyXA_CLIPBOARD);
+	Window w = XGetSelectionOwner(x_display, XA_CLIPBOARD);
 
 	if (w == my_main_wind) {
-		/* We own the clipboard, already have MyClipBuffer */
+		/* We own the clipboard, already have ClipBuffer */
 	} else {
-		FreeMyClipBuffer();
+		FreeClipBuffer();
 		if (w != None) {
 			XEvent xevent;
 
 			XDeleteProperty(x_display, my_main_wind,
-				MyXA_MinivMac_Clip);
-			XConvertSelection(x_display, MyXA_CLIPBOARD, XA_STRING,
-				MyXA_MinivMac_Clip, my_main_wind, CurrentTime);
+				XA_MinivMac_Clip);
+			XConvertSelection(x_display, XA_CLIPBOARD, XA_STRING,
+				XA_MinivMac_Clip, my_main_wind, CurrentTime);
 
 			if (WaitForClipboardSelection(&xevent)) {
 				if (None == xevent.xselection.property) {
 					/* oops, target not supported */
 				} else {
 					if (xevent.xselection.property
-						!= MyXA_MinivMac_Clip)
+						!= XA_MinivMac_Clip)
 					{
 						/* not where we expected it */
 					} else {
@@ -2636,7 +2636,7 @@ LOCALPROC HTCEimport_do(void)
 						unsigned char *s = NULL;
 
 						if ((Success != XGetWindowProperty(
-							x_display, my_main_wind, MyXA_MinivMac_Clip,
+							x_display, my_main_wind, XA_MinivMac_Clip,
 							0, 65535, False, AnyPropertyType, &ret_type,
 							&ret_format, &ret_item, &remain_byte, &s))
 							|| (ret_type != XA_STRING)
@@ -2647,20 +2647,20 @@ LOCALPROC HTCEimport_do(void)
 								"XGetWindowProperty failed"
 								" in HTCEimport_do");
 						} else {
-							MyClipBuffer = (ui3p)malloc(ret_item + 1);
-							if (NULL == MyClipBuffer) {
+							ClipBuffer = (ui3p)malloc(ret_item + 1);
+							if (NULL == ClipBuffer) {
 								MacMsg(kStrOutOfMemTitle,
 									kStrOutOfMemMessage, falseblnr);
 							} else {
-								MyMoveBytes((anyp)s, (anyp)MyClipBuffer,
+								MoveBytes((anyp)s, (anyp)ClipBuffer,
 									ret_item);
-								MyClipBuffer[ret_item] = 0;
+								ClipBuffer[ret_item] = 0;
 							}
 							XFree(s);
 						}
 					}
 					XDeleteProperty(x_display, my_main_wind,
-						MyXA_MinivMac_Clip);
+						XA_MinivMac_Clip);
 				}
 			}
 		}
@@ -2673,7 +2673,7 @@ GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
 {
 	HTCEimport_do();
 
-	return NativeTextToMacRomanPbuf((char *)MyClipBuffer, r);
+	return NativeTextToMacRomanPbuf((char *)ClipBuffer, r);
 }
 #endif
 
@@ -2682,22 +2682,22 @@ LOCALFUNC blnr HandleSelectionRequestClipboard(XEvent *theEvent)
 {
 	blnr RequestFilled = falseblnr;
 
-#if MyDbgEvents
-	dbglog_writeln("Requested MyXA_CLIPBOARD");
+#if DbgEvents
+	dbglog_writeln("Requested XA_CLIPBOARD");
 #endif
 
-	if (NULL == MyClipBuffer) {
+	if (NULL == ClipBuffer) {
 		/* our clipboard is empty */
-	} else if (theEvent->xselectionrequest.target == MyXA_TARGETS) {
+	} else if (theEvent->xselectionrequest.target == XA_TARGETS) {
 		Atom a[2];
 
-		a[0] = MyXA_TARGETS;
+		a[0] = XA_TARGETS;
 		a[1] = XA_STRING;
 
 		XChangeProperty(x_display,
 			theEvent->xselectionrequest.requestor,
 			theEvent->xselectionrequest.property,
-			MyXA_TARGETS,
+			XA_TARGETS,
 			32,
 				/*
 					most, but not all, other programs I've
@@ -2716,8 +2716,8 @@ LOCALFUNC blnr HandleSelectionRequestClipboard(XEvent *theEvent)
 			XA_STRING,
 			8,
 			PropModeReplace,
-			(unsigned char *)MyClipBuffer,
-			strlen((char *)MyClipBuffer));
+			(unsigned char *)ClipBuffer,
+			strlen((char *)ClipBuffer));
 
 		RequestFilled = trueblnr;
 	}
@@ -2729,9 +2729,9 @@ LOCALFUNC blnr HandleSelectionRequestClipboard(XEvent *theEvent)
 /* --- drag and drop --- */
 
 #if EnableDragDrop
-LOCALPROC MyActivateWind(Time time)
+LOCALPROC ActivateWind(Time time)
 {
-	if (NetSupportedContains(MyXA_NetActiveWindow)) {
+	if (NetSupportedContains(XA_NetActiveWindow)) {
 		XEvent xevent;
 		Window rootwin = XRootWindow(x_display,
 			DefaultScreen(x_display));
@@ -2741,7 +2741,7 @@ LOCALPROC MyActivateWind(Time time)
 		xevent.xany.type = ClientMessage;
 		xevent.xclient.send_event = True;
 		xevent.xclient.window = my_main_wind;
-		xevent.xclient.message_type = MyXA_NetActiveWindow;
+		xevent.xclient.message_type = XA_NetActiveWindow;
 		xevent.xclient.format = 32;
 		xevent.xclient.data.l[0] = 1;
 		xevent.xclient.data.l[1]= time;
@@ -2750,7 +2750,7 @@ LOCALPROC MyActivateWind(Time time)
 			SubstructureRedirectMask | SubstructureNotifyMask,
 			&xevent))
 		{
-			WriteExtraErr("XSendEvent failed in MyActivateWind");
+			WriteExtraErr("XSendEvent failed in ActivateWind");
 		}
 	}
 
@@ -2854,12 +2854,12 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 {
 	blnr DropOk = falseblnr;
 
-#if MyDbgEvents
-	dbglog_writeln("Got MyXA_DndSelection");
+#if DbgEvents
+	dbglog_writeln("Got XA_DndSelection");
 #endif
 
-	if ((theEvent->xselection.property == MyXA_MinivMac_DndXchng)
-		&& (theEvent->xselection.target == MyXA_UriList))
+	if ((theEvent->xselection.property == XA_MinivMac_DndXchng)
+		&& (theEvent->xselection.target == XA_UriList))
 	{
 		Atom ret_type;
 		int ret_format;
@@ -2868,8 +2868,8 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 		unsigned char *s = NULL;
 
 		if ((Success != XGetWindowProperty(x_display, my_main_wind,
-			MyXA_MinivMac_DndXchng,
-			0, 65535, False, MyXA_UriList, &ret_type, &ret_format,
+			XA_MinivMac_DndXchng,
+			0, 65535, False, XA_UriList, &ret_type, &ret_format,
 			&ret_item, &remain_byte, &s))
 			|| (NULL == s))
 		{
@@ -2885,7 +2885,7 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 	}
 
 	XDeleteProperty(x_display, my_main_wind,
-		MyXA_MinivMac_DndXchng);
+		XA_MinivMac_DndXchng);
 
 	if (PendingDragWindow != None) {
 		XEvent xevent;
@@ -2895,14 +2895,14 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 		xevent.xany.type = ClientMessage;
 		xevent.xany.display = x_display;
 		xevent.xclient.window = PendingDragWindow;
-		xevent.xclient.message_type = MyXA_DndFinished;
+		xevent.xclient.message_type = XA_DndFinished;
 		xevent.xclient.format = 32;
 
 		xevent.xclient.data.l[0] = my_main_wind;
 		if (DropOk) {
 			xevent.xclient.data.l[1] = 1;
 		}
-		xevent.xclient.data.l[2] = MyXA_DndActionPrivate;
+		xevent.xclient.data.l[2] = XA_DndActionPrivate;
 
 		if (0 == XSendEvent(x_display,
 			PendingDragWindow, 0, 0, &xevent))
@@ -2911,7 +2911,7 @@ LOCALPROC HandleSelectionNotifyDnd(XEvent *theEvent)
 		}
 	}
 	if (DropOk && gTrueBackgroundFlag) {
-		MyActivateWind(theEvent->xselection.time);
+		ActivateWind(theEvent->xselection.time);
 
 		WantCmdOptOnReconnect = trueblnr;
 	}
@@ -2931,7 +2931,7 @@ LOCALPROC HandleClientMessageDndPosition(XEvent *theEvent)
 	Window rr;
 	Window srcwin = theEvent->xclient.data.l[0];
 
-#if MyDbgEvents
+#if DbgEvents
 	dbglog_writeln("Got XdndPosition");
 #endif
 
@@ -2941,7 +2941,7 @@ LOCALPROC HandleClientMessageDndPosition(XEvent *theEvent)
 	xevent.xany.type = ClientMessage;
 	xevent.xany.display = x_display;
 	xevent.xclient.window = srcwin;
-	xevent.xclient.message_type = MyXA_DndStatus;
+	xevent.xclient.message_type = XA_DndStatus;
 	xevent.xclient.format = 32;
 
 	xevent.xclient.data.l[0] = theEvent->xclient.window;
@@ -2949,7 +2949,7 @@ LOCALPROC HandleClientMessageDndPosition(XEvent *theEvent)
 	xevent.xclient.data.l[1] = 1; /* Accept */
 	xevent.xclient.data.l[2] = ((xr) << 16) | ((yr) & 0xFFFFUL);
 	xevent.xclient.data.l[3] = ((wr) << 16) | ((hr) & 0xFFFFUL);
-	xevent.xclient.data.l[4] = MyXA_DndActionPrivate; /* Action */
+	xevent.xclient.data.l[4] = XA_DndActionPrivate; /* Action */
 
 	if (0 == XSendEvent(x_display, srcwin, 0, 0, &xevent)) {
 		WriteExtraErr(
@@ -2964,12 +2964,12 @@ LOCALPROC HandleClientMessageDndDrop(XEvent *theEvent)
 	Time timestamp = theEvent->xclient.data.l[2];
 	PendingDragWindow = (Window) theEvent->xclient.data.l[0];
 
-#if MyDbgEvents
+#if DbgEvents
 	dbglog_writeln("Got XdndDrop");
 #endif
 
-	XConvertSelection(x_display, MyXA_DndSelection, MyXA_UriList,
-		MyXA_MinivMac_DndXchng, my_main_wind, timestamp);
+	XConvertSelection(x_display, XA_DndSelection, XA_UriList,
+		XA_MinivMac_DndXchng, my_main_wind, timestamp);
 }
 #endif
 
@@ -2995,7 +2995,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			if (theEvent->xkey.window != my_main_wind) {
 				WriteExtraErr("Got KeyPress for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - KeyPress");
 #endif
 
@@ -3007,7 +3007,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			if (theEvent->xkey.window != my_main_wind) {
 				WriteExtraErr("Got KeyRelease for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - KeyRelease");
 #endif
 
@@ -3027,7 +3027,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				*/
 				MousePositionNotify(
 					theEvent->xbutton.x, theEvent->xbutton.y);
-				MyMouseButtonSet(trueblnr);
+				MouseButtonSet(trueblnr);
 			}
 			break;
 		case ButtonRelease:
@@ -3038,7 +3038,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			} else {
 				MousePositionNotify(
 					theEvent->xbutton.x, theEvent->xbutton.y);
-				MyMouseButtonSet(falseblnr);
+				MouseButtonSet(falseblnr);
 			}
 			break;
 #if UseMotionEvents
@@ -3054,7 +3054,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			if (theEvent->xcrossing.window != my_main_wind) {
 				WriteExtraErr("Got EnterNotify for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - EnterNotify");
 #endif
 
@@ -3067,7 +3067,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			if (theEvent->xcrossing.window != my_main_wind) {
 				WriteExtraErr("Got LeaveNotify for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - LeaveNotify");
 #endif
 
@@ -3087,7 +3087,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				int x1 = x0 + theEvent->xexpose.width;
 				int y1 = y0 + theEvent->xexpose.height;
 
-#if 0 && MyDbgEvents
+#if 0 && DbgEvents
 				dbglog_writeln("- event - Expose");
 #endif
 
@@ -3105,10 +3105,10 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 
 #if EnableMagnify
 				if (UseMagnify) {
-					x0 /= MyWindowScale;
-					y0 /= MyWindowScale;
-					x1 = (x1 + (MyWindowScale - 1)) / MyWindowScale;
-					y1 = (y1 + (MyWindowScale - 1)) / MyWindowScale;
+					x0 /= WindowScale;
+					y0 /= WindowScale;
+					x1 = (x1 + (WindowScale - 1)) / WindowScale;
+					y1 = (y1 + (WindowScale - 1)) / WindowScale;
 				}
 #endif
 
@@ -3152,7 +3152,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				XEvent xevent;
 				blnr RequestFilled = falseblnr;
 
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - SelectionRequest");
 				WriteDbgAtom("selection",
 					theEvent->xselectionrequest.selection);
@@ -3163,7 +3163,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 #endif
 
 				if (theEvent->xselectionrequest.selection ==
-					MyXA_CLIPBOARD)
+					XA_CLIPBOARD)
 				{
 					RequestFilled =
 						HandleSelectionRequestClipboard(theEvent);
@@ -3197,16 +3197,16 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				WriteExtraErr(
 					"Got SelectionClear for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - SelectionClear");
 				WriteDbgAtom("selection",
 					theEvent->xselectionclear.selection);
 #endif
 
 				if (theEvent->xselectionclear.selection ==
-					MyXA_CLIPBOARD)
+					XA_CLIPBOARD)
 				{
-					FreeMyClipBuffer();
+					FreeClipBuffer();
 				}
 			}
 			break;
@@ -3217,7 +3217,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				WriteExtraErr(
 					"Got SelectionNotify for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - SelectionNotify");
 				WriteDbgAtom("selection",
 					theEvent->xselection.selection);
@@ -3225,7 +3225,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				WriteDbgAtom("property", theEvent->xselection.property);
 #endif
 
-				if (theEvent->xselection.selection == MyXA_DndSelection)
+				if (theEvent->xselection.selection == XA_DndSelection)
 				{
 					HandleSelectionNotifyDnd(theEvent);
 				} else {
@@ -3240,32 +3240,32 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 				WriteExtraErr(
 					"Got ClientMessage for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - ClientMessage");
 				WriteDbgAtom("message_type",
 					theEvent->xclient.message_type);
 #endif
 
 #if EnableDragDrop
-				if (theEvent->xclient.message_type == MyXA_DndEnter) {
+				if (theEvent->xclient.message_type == XA_DndEnter) {
 					/* printf("Got XdndEnter\n"); */
 				} else if (theEvent->xclient.message_type ==
-					MyXA_DndLeave)
+					XA_DndLeave)
 				{
 					/* printf("Got XdndLeave\n"); */
 				} else if (theEvent->xclient.message_type ==
-					MyXA_DndPosition)
+					XA_DndPosition)
 				{
 					HandleClientMessageDndPosition(theEvent);
 				} else if (theEvent->xclient.message_type ==
-					MyXA_DndDrop)
+					XA_DndDrop)
 				{
 					HandleClientMessageDndDrop(theEvent);
 				} else
 #endif
 				{
 					if ((32 == theEvent->xclient.format) &&
-						(theEvent->xclient.data.l[0] == MyXA_DeleteW))
+						(theEvent->xclient.data.l[0] == XA_DeleteW))
 					{
 						/*
 							I would think that should test that
@@ -3282,7 +3282,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			if (theEvent->xfocus.window != my_main_wind) {
 				WriteExtraErr("Got FocusIn for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - FocusIn");
 #endif
 
@@ -3301,7 +3301,7 @@ LOCALPROC HandleTheEvent(XEvent *theEvent)
 			if (theEvent->xfocus.window != my_main_wind) {
 				WriteExtraErr("Got FocusOut for some other window");
 			} else {
-#if MyDbgEvents
+#if DbgEvents
 				dbglog_writeln("- event - FocusOut");
 #endif
 
@@ -3341,7 +3341,7 @@ LOCALFUNC blnr Screen_Init(void)
 
 	Xvisual = DefaultVisual(x_display, screen);
 
-	LoadMyXA();
+	LoadXA();
 
 	XParseColor(x_display, Xcmap, "#000000", &x_black);
 	if (! XAllocColor(x_display, Xcmap, &x_black)) {
@@ -3352,7 +3352,7 @@ LOCALFUNC blnr Screen_Init(void)
 		WriteExtraErr("XParseColor white fails");
 	}
 
-	if (! CreateMyBlankCursor(rootwin)) {
+	if (! CreateBlankCursor(rootwin)) {
 		return falseblnr;
 	}
 
@@ -3415,9 +3415,9 @@ LOCALFUNC blnr Screen_Init(void)
 	my_Scaled_image = XCreateImage(x_display, Xvisual,
 		1, XYBitmap, 0,
 		NULL /* (char *)image_Mem1 */,
-		vMacScreenWidth * MyWindowScale,
-		vMacScreenHeight * MyWindowScale,
-		32, vMacScreenMonoByteWidth * MyWindowScale);
+		vMacScreenWidth * WindowScale,
+		vMacScreenHeight * WindowScale,
+		32, vMacScreenMonoByteWidth * WindowScale);
 	if (NULL == my_Scaled_image) {
 		fprintf(stderr, "XCreateImage failed.\n");
 		return falseblnr;
@@ -3431,9 +3431,9 @@ LOCALFUNC blnr Screen_Init(void)
 	my_Scaled_image = XCreateImage(x_display, Xvisual,
 		24, ZPixmap, 0,
 		NULL /* (char *)image_Mem1 */,
-		vMacScreenWidth * MyWindowScale,
-		vMacScreenHeight * MyWindowScale,
-		32, 4 * (uint32_t)vMacScreenWidth * MyWindowScale);
+		vMacScreenWidth * WindowScale,
+		vMacScreenHeight * WindowScale,
+		32, 4 * (uint32_t)vMacScreenWidth * WindowScale);
 	if (NULL == my_Scaled_image) {
 		fprintf(stderr, "XCreateImage Scaled failed.\n");
 		return falseblnr;
@@ -3479,7 +3479,7 @@ LOCALVAR int WinPositionWinsV[kNumMagStates];
 #endif
 
 #if EnableRecreateW
-LOCALPROC ZapMyWState(void)
+LOCALPROC ZapWState(void)
 {
 	my_main_wind = 0;
 	my_gc = NULL;
@@ -3518,8 +3518,8 @@ LOCALFUNC blnr CreateMainWindow(void)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		NewWindowHeight *= MyWindowScale;
-		NewWindowWidth *= MyWindowScale;
+		NewWindowHeight *= WindowScale;
+		NewWindowWidth *= WindowScale;
 	}
 #endif
 
@@ -3543,8 +3543,8 @@ LOCALFUNC blnr CreateMainWindow(void)
 		ViewVSize = hr;
 #if EnableMagnify
 		if (UseMagnify) {
-			ViewHSize /= MyWindowScale;
-			ViewVSize /= MyWindowScale;
+			ViewHSize /= WindowScale;
+			ViewVSize /= WindowScale;
 		}
 #endif
 		if (ViewHSize >= vMacScreenWidth) {
@@ -3667,10 +3667,10 @@ LOCALFUNC blnr CreateMainWindow(void)
 		XSetCommand(x_display, my_main_wind, my_argv, my_argc);
 
 		/* let us handle a click on the close box */
-		XSetWMProtocols(x_display, my_main_wind, &MyXA_DeleteW, 1);
+		XSetWMProtocols(x_display, my_main_wind, &XA_DeleteW, 1);
 
 #if EnableDragDrop
-		XChangeProperty (x_display, my_main_wind, MyXA_DndAware,
+		XChangeProperty (x_display, my_main_wind, XA_DndAware,
 			XA_ATOM, 32, PropModeReplace,
 			(unsigned char *) &xdnd_version, 1);
 #endif
@@ -3776,7 +3776,7 @@ LOCALPROC GrabTheMachine(void)
 	StartSaveMouseMotion();
 #endif
 #if GrabKeysFullScreen
-	MyGrabKeyboard();
+	GrabKeyboard();
 #endif
 }
 #endif
@@ -3788,13 +3788,13 @@ LOCALPROC UngrabMachine(void)
 	StopSaveMouseMotion();
 #endif
 #if GrabKeysFullScreen
-	MyUnGrabKeyboard();
+	UnGrabKeyboard();
 #endif
 }
 #endif
 
 #if EnableRecreateW
-struct MyWState {
+struct WState {
 	Window f_my_main_wind;
 	GC f_my_gc;
 #if MayFullScreen
@@ -3812,11 +3812,11 @@ struct MyWState {
 	blnr f_UseMagnify;
 #endif
 };
-typedef struct MyWState MyWState;
+typedef struct WState WState;
 #endif
 
 #if EnableRecreateW
-LOCALPROC GetMyWState(MyWState *r)
+LOCALPROC GetWState(WState *r)
 {
 	r->f_my_main_wind = my_main_wind;
 	r->f_my_gc = my_gc;
@@ -3838,7 +3838,7 @@ LOCALPROC GetMyWState(MyWState *r)
 #endif
 
 #if EnableRecreateW
-LOCALPROC SetMyWState(MyWState *r)
+LOCALPROC SetWState(WState *r)
 {
 	my_main_wind = r->f_my_main_wind;
 	my_gc = r->f_my_gc;
@@ -3868,8 +3868,8 @@ LOCALVAR uint16_t RestoreMouseV;
 #if EnableRecreateW
 LOCALFUNC blnr ReCreateMainWindow(void)
 {
-	MyWState old_state;
-	MyWState new_state;
+	WState old_state;
+	WState new_state;
 #if IncludeHostTextClipExchange
 	blnr OwnClipboard = falseblnr;
 #endif
@@ -3938,8 +3938,8 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 	}
 #endif
 
-	GetMyWState(&old_state);
-	ZapMyWState();
+	GetWState(&old_state);
+	ZapWState();
 
 #if EnableMagnify
 	UseMagnify = WantMagnify;
@@ -3952,7 +3952,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 
 	if (! CreateMainWindow()) {
 		CloseMainWindow();
-		SetMyWState(&old_state);
+		SetWState(&old_state);
 
 		/* avoid retry */
 #if VarFullScreen
@@ -3964,12 +3964,12 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 
 		return falseblnr;
 	} else {
-		GetMyWState(&new_state);
-		SetMyWState(&old_state);
+		GetWState(&new_state);
+		SetWState(&old_state);
 
 #if IncludeHostTextClipExchange
 		if (my_main_wind) {
-			if (XGetSelectionOwner(x_display, MyXA_CLIPBOARD) ==
+			if (XGetSelectionOwner(x_display, XA_CLIPBOARD) ==
 				my_main_wind)
 			{
 				OwnClipboard = trueblnr;
@@ -3979,11 +3979,11 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 
 		CloseMainWindow();
 
-		SetMyWState(&new_state);
+		SetWState(&new_state);
 
 #if IncludeHostTextClipExchange
 		if (OwnClipboard) {
-			XSetSelectionOwner(x_display, MyXA_CLIPBOARD,
+			XSetSelectionOwner(x_display, XA_CLIPBOARD,
 				my_main_wind, CurrentTime);
 		}
 #endif
@@ -4063,8 +4063,8 @@ LOCALPROC ToggleWantFullScreen(void)
 					XRootWindow(x_display, DefaultScreen(x_display));
 				XGetGeometry(x_display, rootwin,
 					&rr, &xr, &yr, &wr, &hr, &bwr, &dr);
-				if ((wr >= vMacScreenWidth * MyWindowScale)
-					&& (hr >= vMacScreenHeight * MyWindowScale)
+				if ((wr >= vMacScreenWidth * WindowScale)
+					&& (hr >= vMacScreenHeight * WindowScale)
 					)
 				{
 					WantMagnify = trueblnr;
@@ -4094,8 +4094,8 @@ LOCALPROC EnterBackground(void)
 
 LOCALPROC LeaveSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Start();
+#if SoundEnabled
+	Sound_Start();
 #endif
 
 	StartUpTimeAdjust();
@@ -4103,18 +4103,18 @@ LOCALPROC LeaveSpeedStopped(void)
 
 LOCALPROC EnterSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
 }
 
 LOCALPROC CheckForSavedTasks(void)
 {
-	if (MyEvtQNeedRecover) {
-		MyEvtQNeedRecover = falseblnr;
+	if (EvtQNeedRecover) {
+		EvtQNeedRecover = falseblnr;
 
-		/* attempt cleanup, MyEvtQNeedRecover may get set again */
-		MyEvtQTryRecoverFromFull();
+		/* attempt cleanup, EvtQNeedRecover may get set again */
+		EvtQTryRecoverFromFull();
 	}
 
 	if (NeedFinishOpen2 && ! NeedFinishOpen1) {
@@ -4167,7 +4167,7 @@ LOCALPROC CheckForSavedTasks(void)
 			if (! HaveMouseMotion)
 #endif
 			{
-				(void) MyMoveMouse(RestoreMouseH, RestoreMouseV);
+				(void) MoveMouse(RestoreMouseH, RestoreMouseV);
 				WantCursorHidden = trueblnr;
 			}
 			WantRestoreCursPos = falseblnr;
@@ -4177,7 +4177,7 @@ LOCALPROC CheckForSavedTasks(void)
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMouseConstrain();
+		MouseConstrain();
 	}
 #endif
 
@@ -4406,7 +4406,7 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 		AutoScrollScreen();
 	}
 #endif
-	MyDrawChangesAndClear();
+	DrawChangesAndClear();
 	XFlush(x_display);
 }
 
@@ -4464,8 +4464,8 @@ label_retry:
 	}
 
 	if (CheckDateTime()) {
-#if MySoundEnabled
-		MySound_SecondNotify();
+#if SoundEnabled
+		Sound_SecondNotify();
 #endif
 	}
 
@@ -4517,7 +4517,7 @@ LOCALPROC ReserveAllocAll(void)
 		ScalingTablsz, 5, falseblnr);
 #endif
 
-#if MySoundEnabled
+#if SoundEnabled
 	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
 		dbhBufferSize, 5, falseblnr);
 #endif
@@ -4525,7 +4525,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMyMemory(void)
+LOCALFUNC blnr AllocMemory(void)
 {
 	uimr n;
 	blnr IsOk = falseblnr;
@@ -4550,7 +4550,7 @@ LOCALFUNC blnr AllocMyMemory(void)
 	return IsOk;
 }
 
-LOCALPROC UnallocMyMemory(void)
+LOCALPROC UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		free((char *)ReserveAllocBigBlock);
@@ -4732,14 +4732,14 @@ LOCALFUNC blnr InitWhereAmI(void)
 #if CanGetAppPath
 LOCALPROC UninitWhereAmI(void)
 {
-	MyMayFree(app_parent);
-	MyMayFree(app_name);
+	MayFree(app_parent);
+	MayFree(app_name);
 }
 #endif
 
 LOCALFUNC blnr InitOSGLU(void)
 {
-	if (AllocMyMemory())
+	if (AllocMemory())
 #if CanGetAppPath
 	if (InitWhereAmI())
 #endif
@@ -4750,8 +4750,8 @@ LOCALFUNC blnr InitOSGLU(void)
 	if (LoadMacRom())
 	if (LoadInitialImages())
 	if (InitLocationDat())
-#if MySoundEnabled
-	if (MySound_Init())
+#if SoundEnabled
+	if (Sound_Init())
 #endif
 	if (Screen_Init())
 	if (CreateMainWindow())
@@ -4773,14 +4773,14 @@ LOCALPROC UnInitOSGLU(void)
 #if MayFullScreen
 	UngrabMachine();
 #endif
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
-#if MySoundEnabled
-	MySound_UnInit();
+#if SoundEnabled
+	Sound_UnInit();
 #endif
 #if IncludeHostTextClipExchange
-	FreeMyClipBuffer();
+	FreeClipBuffer();
 #endif
 #if IncludePbufs
 	UnInitPbufs();
@@ -4813,7 +4813,7 @@ LOCALPROC UnInitOSGLU(void)
 #if CanGetAppPath
 	UninitWhereAmI();
 #endif
-	UnallocMyMemory();
+	UnallocMemory();
 
 	CheckSavedMacMsg();
 }

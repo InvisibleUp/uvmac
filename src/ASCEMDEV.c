@@ -539,25 +539,25 @@ LOCALVAR const uint8_t SubTick_n[kNumSubTicks] = {
 GLOBALPROC ASC_SubTick(int SubTick)
 {
 	uint16_t actL;
-#if MySoundEnabled
+#if SoundEnabled
 	tpSoundSamp p;
 #endif
 	uint16_t i;
 	uint16_t n = SubTick_n[SubTick];
-#if MySoundEnabled
+#if SoundEnabled
 	uint8_t SoundVolume = SoundReg_Volume;
 #endif
 
-#if MySoundEnabled
+#if SoundEnabled
 label_retry:
-	p = MySound_BeginWrite(n, &actL);
+	p = Sound_BeginWrite(n, &actL);
 #else
 	actL = n;
 #endif
 	if (actL > 0) {
 
 		if (1 == SoundReg801) {
-#if MySoundEnabled
+#if SoundEnabled
 			ui3p addr;
 #endif
 
@@ -599,13 +599,13 @@ label_retry:
 					ASC_Playing = falseblnr;
 				}
 				if (! ASC_Playing) {
-#if MySoundEnabled
+#if SoundEnabled
 					*p++ = 0x80;
 #endif
 				} else
 				{
 
-#if MySoundEnabled
+#if SoundEnabled
 				addr = ASC_SampBuff + (ASC_FIFO_Out & 0x3FF);
 
 #if ASC_dolog && 1
@@ -626,7 +626,7 @@ label_retry:
 					<< 8
 #endif
 					) >> 1;
-#endif /* MySoundEnabled */
+#endif /* SoundEnabled */
 
 				ASC_FIFO_Out += 1;
 
@@ -653,13 +653,13 @@ label_retry:
 					ASC_Playing = falseblnr;
 				}
 				if (! ASC_Playing) {
-#if MySoundEnabled
+#if SoundEnabled
 					*p++ = 0x80;
 #endif
 				} else
 				{
 
-#if MySoundEnabled
+#if SoundEnabled
 				addr = ASC_SampBuff + (ASC_FIFO_Out & 0x3FF);
 
 #if ASC_dolog && 1
@@ -680,7 +680,7 @@ label_retry:
 					<< 8
 #endif
 					;
-#endif /* MySoundEnabled */
+#endif /* SoundEnabled */
 
 				/* Move the address on */
 				/* *addr = 0x80; */
@@ -692,7 +692,7 @@ label_retry:
 
 			}
 		} else if (2 == SoundReg801) {
-#if MySoundEnabled
+#if SoundEnabled
 			uint16_t v;
 			uint16_t i0;
 			uint16_t i1;
@@ -725,7 +725,7 @@ label_retry:
 				phase2 += freq2;
 				phase3 += freq3;
 
-#if MySoundEnabled
+#if SoundEnabled
 
 #if 1
 				i0 = ((phase0 + 0x4000) >> 15) & 0x1FF;
@@ -760,7 +760,7 @@ label_retry:
 #endif
 
 				*p++ = (v >> 2);
-#endif /* MySoundEnabled */
+#endif /* SoundEnabled */
 			}
 
 			do_put_mem_long(ASC_ChanA[0].phase, phase0);
@@ -768,7 +768,7 @@ label_retry:
 			do_put_mem_long(ASC_ChanA[2].phase, phase2);
 			do_put_mem_long(ASC_ChanA[3].phase, phase3);
 		} else {
-#if MySoundEnabled
+#if SoundEnabled
 			for (i = 0; i < actL; i++) {
 				*p++ = kCenterSound;
 			}
@@ -776,7 +776,7 @@ label_retry:
 		}
 
 
-#if MySoundEnabled
+#if SoundEnabled
 		if (SoundVolume < 7) {
 			/*
 				Usually have volume at 7, so this
@@ -792,7 +792,7 @@ label_retry:
 			}
 		}
 
-		MySound_EndWrite(actL);
+		Sound_EndWrite(actL);
 		n -= actL;
 		if (n > 0) {
 			goto label_retry;

@@ -164,7 +164,7 @@ GLOBALPROC ADBstate_ChangeNtfy(void)
 		ADB_st1, ADB_st0, GetCuriCount());
 #endif
 	ICT_add(kICT_ADB_NewState,
-		348160UL * kCycleScale / 64 * kMyClockMult);
+		348160UL * kCycleScale / 64 * ClockMult);
 		/*
 			Macintosh Family Hardware Reference say device "must respond
 			to talk command within 260 microseconds", which translates

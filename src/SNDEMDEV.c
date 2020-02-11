@@ -34,7 +34,7 @@
 #include "SNDEMDEV.h"
 
 
-#if MySoundEnabled
+#if SoundEnabled
 
 #define kSnd_Main_Offset   0x0300
 #define kSnd_Alt_Offset    0x5F00
@@ -136,7 +136,7 @@ GLOBALPROC MacSound_SubTick(int SubTick)
 #endif
 
 label_retry:
-	p = MySound_BeginWrite(n, &actL);
+	p = Sound_BeginWrite(n, &actL);
 	if (actL > 0) {
 		if (SoundDisable && (SoundInvertTime == 0)) {
 			for (i = 0; i < actL; i++) {
@@ -212,7 +212,7 @@ label_retry:
 			}
 		}
 
-		MySound_EndWrite(actL);
+		Sound_EndWrite(actL);
 		n -= actL;
 		if (n > 0) {
 			goto label_retry;

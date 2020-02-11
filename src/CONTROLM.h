@@ -1031,7 +1031,7 @@ LOCALFUNC ui3p GetCurDrawBuff(void)
 	ui3p p = screencomparebuff;
 
 	if (0 != SpecialModes) {
-		MyMoveBytes((anyp)p, (anyp)CntrlDisplayBuff,
+		MoveBytes((anyp)p, (anyp)CntrlDisplayBuff,
 #if 0 != vMacScreenDepth
 			UseColorMode ? vMacScreenNumBytes :
 #endif

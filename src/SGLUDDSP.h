@@ -35,7 +35,7 @@ LOCALPROC ConvertSoundBlockToNative(tpSoundSamp p)
 #define ConvertSoundBlockToNative(p)
 #endif
 
-LOCALPROC MySound_WriteOut(void)
+LOCALPROC Sound_WriteOut(void)
 {
 	int retry_count = 32;
 
@@ -119,15 +119,15 @@ label_retry:
 	}
 }
 
-LOCALPROC MySound_Start(void)
+LOCALPROC Sound_Start(void)
 {
 	if (audio_fd >= 0) {
-		MySound_Start0();
+		Sound_Start0();
 		audio_started = falseblnr;
 	}
 }
 
-LOCALPROC MySound_Stop(void)
+LOCALPROC Sound_Stop(void)
 {
 	if (audio_fd >= 0) {
 		if (0 !=
@@ -140,12 +140,12 @@ LOCALPROC MySound_Stop(void)
 }
 
 #if 4 == kLn2SoundSampSz
-#define MyDesiredFormat AFMT_S16_NE
+#define DesiredFormat AFMT_S16_NE
 #else
-#define MyDesiredFormat AFMT_U8
+#define DesiredFormat AFMT_U8
 #endif
 
-LOCALFUNC blnr MySound_Init(void)
+LOCALFUNC blnr Sound_Init(void)
 {
 	blnr IsOk = falseblnr;
 
@@ -161,7 +161,7 @@ LOCALFUNC blnr MySound_Init(void)
 #endif
 			;
 		int channels_value = 1;
-		int fmt_value = MyDesiredFormat;
+		int fmt_value = DesiredFormat;
 		int speed_value = SOUND_SAMPLERATE;
 
 		/* fprintf(stderr, "open /dev/dsp works\n"); */
@@ -177,7 +177,7 @@ LOCALFUNC blnr MySound_Init(void)
 			fprintf(stderr, "SNDCTL_DSP_CHANNELS fails\n");
 		} else if ((0 !=
 				ioctl(audio_fd, SNDCTL_DSP_SETFMT, &fmt_value))
-			|| (fmt_value != MyDesiredFormat))
+			|| (fmt_value != DesiredFormat))
 		{
 			fprintf(stderr, "SNDCTL_DSP_SETFMT fails\n");
 		} else if ((0 !=
@@ -199,7 +199,7 @@ LOCALFUNC blnr MySound_Init(void)
 	return trueblnr; /* keep going, even if no sound */
 }
 
-LOCALPROC MySound_UnInit(void)
+LOCALPROC Sound_UnInit(void)
 {
 	if (audio_fd >= 0) {
 		if (close(audio_fd) != 0) {
@@ -209,20 +209,20 @@ LOCALPROC MySound_UnInit(void)
 	}
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
+GLOBALOSGLUPROC Sound_EndWrite(uint16_t actL)
 {
-	if (MySound_EndWrite0(actL)) {
+	if (Sound_EndWrite0(actL)) {
 		ConvertSoundBlockToNative(TheSoundBuffer
 			+ ((TheFillOffset - kOneBuffLen) & kAllBuffMask));
 		if (audio_fd >= 0) {
-			MySound_WriteOut();
+			Sound_WriteOut();
 		}
 	}
 }
 
-LOCALPROC MySound_SecondNotify(void)
+LOCALPROC Sound_SecondNotify(void)
 {
 	if (audio_fd >= 0) {
-		MySound_SecondNotify0();
+		Sound_SecondNotify0();
 	}
 }

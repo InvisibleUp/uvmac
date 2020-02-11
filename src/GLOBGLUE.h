@@ -198,9 +198,9 @@ EXPORTVAR(uint8_t, Wires[kNumWires])
 #define kNumSubTicks 16
 
 
-#define HaveMasterMyEvtQLock EmClassicKbrd
-#if HaveMasterMyEvtQLock
-EXPORTVAR(uint16_t, MasterMyEvtQLock)
+#define HaveMasterEvtQLock EmClassicKbrd
+#if HaveMasterEvtQLock
+EXPORTVAR(uint16_t, MasterEvtQLock)
 #endif
 EXPORTFUNC blnr FindKeyEvent(int *VirtualKey, blnr *KeyDown);
 

@@ -51,7 +51,7 @@ EXPORTOSGLUPROC dbglog_writelnNum(char *s, simr v);
 EXPORTOSGLUPROC ReserveAllocOneBlock(ui3p *p, uimr n, uint8_t align,
 	blnr FillOnes);
 
-EXPORTOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount);
+EXPORTOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount);
 
 
 EXPORTVAR(ui3p, ROM)
@@ -249,10 +249,10 @@ EXPORTVAR(uint32_t, QuietSubTicks)
 #error "unsupported kLn2SoundSampSz"
 #endif
 
-#if MySoundEnabled
+#if SoundEnabled
 
-EXPORTOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL);
-EXPORTOSGLUPROC MySound_EndWrite(uint16_t actL);
+EXPORTOSGLUFUNC tpSoundSamp Sound_BeginWrite(uint16_t n, uint16_t *actL);
+EXPORTOSGLUPROC Sound_EndWrite(uint16_t actL);
 
 /* 370 samples per tick = 22,254.54 per second */
 #endif
@@ -274,12 +274,12 @@ EXPORTOSGLUPROC LT_ReceivePacket(void);
 
 EXPORTOSGLUPROC WaitForNextTick(void);
 
-#define MyEvtQElKindKey 0
-#define MyEvtQElKindMouseButton 1
-#define MyEvtQElKindMousePos 2
-#define MyEvtQElKindMouseDelta 3
+#define EvtQElKindKey 0
+#define EvtQElKindMouseButton 1
+#define EvtQElKindMousePos 2
+#define EvtQElKindMouseDelta 3
 
-struct MyEvtQEl {
+struct EvtQEl {
 	/* expected size : 8 bytes */
 	uint8_t kind;
 	uint8_t pad[3];
@@ -294,10 +294,10 @@ struct MyEvtQEl {
 		} pos;
 	} u;
 };
-typedef struct MyEvtQEl MyEvtQEl;
+typedef struct EvtQEl EvtQEl;
 
-EXPORTOSGLUFUNC MyEvtQEl * MyEvtQOutP(void);
-EXPORTOSGLUPROC MyEvtQOutDone(void);
+EXPORTOSGLUFUNC EvtQEl * EvtQOutP(void);
+EXPORTOSGLUPROC EvtQOutDone(void);
 
 #define MKC_A 0x00
 #define MKC_B 0x0B

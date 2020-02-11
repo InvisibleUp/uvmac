@@ -19,7 +19,7 @@
 
 #define CurEmMd kEmMd_Plus
 
-#define kMyClockMult 1
+#define ClockMult 1
 
 #define WantCycByPriOp 1
 #define WantCloserCyc 0

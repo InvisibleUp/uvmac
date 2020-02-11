@@ -260,7 +260,7 @@ LOCALFUNC int get_ethernet(void)
 	return trueblnr;
 }
 
-LOCALVAR unsigned char *MyRxBuffer = NULL;
+LOCALVAR unsigned char *RxBuffer = NULL;
 
 /*
 	External function needed at startup to initialize the LocalTalk
@@ -280,8 +280,8 @@ LOCALFUNC int InitLocalTalk(void)
 
 	LT_TxBuffer = (ui3p)&tx_buffer[20];
 
-	MyRxBuffer = malloc(device_buffer_size);
-	if (NULL == MyRxBuffer) {
+	RxBuffer = malloc(device_buffer_size);
+	if (NULL == RxBuffer) {
 		return falseblnr;
 	}
 
@@ -313,7 +313,7 @@ LOCALVAR unsigned char* EndPackets = NULL;
 LOCALPROC LocalTalkTick0(void)
 {
 	/* Get a single buffer worth of packets from BPF */
-	unsigned char* device_buffer = MyRxBuffer;
+	unsigned char* device_buffer = RxBuffer;
 	int bytes = read(fd, device_buffer, device_buffer_size);
 	if (bytes > 0) {
 		/* Maybe multiple packets in this buffer */

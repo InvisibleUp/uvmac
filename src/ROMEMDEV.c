@@ -203,7 +203,7 @@ LOCALPROC Sony_Install(void)
 {
 	ui3p pto = Sony_DriverBase + ROM;
 
-	MyMoveBytes((anyp)sony_driver, (anyp)pto, sizeof(sony_driver));
+	MoveBytes((anyp)sony_driver, (anyp)pto, sizeof(sony_driver));
 #if CurEmMd <= kEmMd_Twiggy
 	do_put_mem_long(pto + 0x14, 0x4469736B);
 		/* 'Disk' instead of 'Sony' */
@@ -224,7 +224,7 @@ LOCALPROC Sony_Install(void)
 	pto += 4;
 
 	my_disk_icon_addr = (pto - ROM) + kROM_Base;
-	MyMoveBytes((anyp)my_disk_icon, (anyp)pto, sizeof(my_disk_icon));
+	MoveBytes((anyp)my_disk_icon, (anyp)pto, sizeof(my_disk_icon));
 	pto += sizeof(my_disk_icon);
 
 #if UseLargeScreenHack

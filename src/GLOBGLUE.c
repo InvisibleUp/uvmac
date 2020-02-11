@@ -1687,8 +1687,8 @@ GLOBALPROC PowerOff_ChangeNtfy(void)
 
 /* user event queue utilities */
 
-#if HaveMasterMyEvtQLock
-GLOBALVAR uint16_t MasterMyEvtQLock = 0;
+#if HaveMasterEvtQLock
+GLOBALVAR uint16_t MasterEvtQLock = 0;
 	/*
 		Takes a few ticks to process button event because
 		of debounce code of Mac. So have this mechanism
@@ -1698,18 +1698,18 @@ GLOBALVAR uint16_t MasterMyEvtQLock = 0;
 
 GLOBALFUNC blnr FindKeyEvent(int *VirtualKey, blnr *KeyDown)
 {
-	MyEvtQEl *p;
+	EvtQEl *p;
 
 	if (
-#if HaveMasterMyEvtQLock
-		(0 == MasterMyEvtQLock) &&
+#if HaveMasterEvtQLock
+		(0 == MasterEvtQLock) &&
 #endif
-		(nullpr != (p = MyEvtQOutP())))
+		(nullpr != (p = EvtQOutP())))
 	{
-		if (MyEvtQElKindKey == p->kind) {
+		if (EvtQElKindKey == p->kind) {
 			*VirtualKey = p->u.press.key;
 			*KeyDown = p->u.press.down;
-			MyEvtQOutDone();
+			EvtQOutDone();
 			return trueblnr;
 		}
 	}

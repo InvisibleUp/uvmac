@@ -331,7 +331,7 @@ LOCALPROC PmuCheckCommandCompletion(void)
 			PMU_i = 0;
 			PMU_Sending = trueblnr;
 			ICT_add(kICT_PMU_Task,
-				20400UL * kCycleScale / 64 * kMyClockMult);
+				20400UL * kCycleScale / 64 * ClockMult);
 		}
 	}
 }
@@ -400,7 +400,7 @@ GLOBALPROC PmuToReady_ChangeNtfy(void)
 				PMUState = kPMUStateSendBuffer;
 				PMU_Sending = trueblnr;
 				ICT_add(kICT_PMU_Task,
-					20400UL * kCycleScale / 64 * kMyClockMult);
+					20400UL * kCycleScale / 64 * ClockMult);
 			}
 			break;
 		case kPMUStateSendBuffer:
@@ -425,7 +425,7 @@ GLOBALPROC PmuToReady_ChangeNtfy(void)
 					++PMU_i;
 					PMU_Sending = trueblnr;
 					ICT_add(kICT_PMU_Task,
-						20400UL * kCycleScale / 64 * kMyClockMult);
+						20400UL * kCycleScale / 64 * ClockMult);
 				}
 			}
 			break;

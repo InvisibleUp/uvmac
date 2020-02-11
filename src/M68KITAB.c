@@ -69,7 +69,7 @@ enum {
 
 #define CheckInSet(v, m) (0 != ((1 << (v)) & (m)))
 
-#define kMyAvgCycPerInstr (10 * kCycleScale + (40 * kCycleScale / 64))
+#define kAvgCycPerInstr (10 * kCycleScale + (40 * kCycleScale / 64))
 
 LOCALFUNC uint8_t GetAMdRegSz(WorkR *p)
 {
@@ -3044,7 +3044,7 @@ LOCALPROC DeCodeOneOp(WorkR *p)
 #if WantCycByPriOp
 	SetDcoCycles(&(p->DecOp), p->Cycles);
 #else
-	SetDcoCycles(&(p->DecOp), kMyAvgCycPerInstr);
+	SetDcoCycles(&(p->DecOp), kAvgCycPerInstr);
 #endif
 }
 
@@ -3062,7 +3062,7 @@ GLOBALPROC M68KITAB_setup(DecOpR *p)
 		r.DecOp.y.v[1].AMd = 0;
 		r.DecOp.y.v[1].ArgDat = 0;
 #if WantCycByPriOp
-		r.Cycles = kMyAvgCycPerInstr;
+		r.Cycles = kAvgCycPerInstr;
 #endif
 
 		DeCodeOneOp(&r);

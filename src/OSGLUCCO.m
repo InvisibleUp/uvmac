@@ -107,40 +107,40 @@ LOCALFUNC blnr HaveHIToolboxBunRef(void)
 
 /* SetSystemUIModeProcPtr API always not available */
 
-typedef UInt32                          MySystemUIMode;
-typedef OptionBits                      MySystemUIOptions;
+typedef UInt32                          SystemUIMode;
+typedef OptionBits                      SystemUIOptions;
 
 enum {
-	MykUIModeNormal                 = 0,
-	MykUIModeAllHidden              = 3
+	kUIModeNormal                 = 0,
+	kUIModeAllHidden              = 3
 };
 
 enum {
-	MykUIOptionAutoShowMenuBar      = 1 << 0,
-	MykUIOptionDisableAppleMenu     = 1 << 2,
-	MykUIOptionDisableProcessSwitch = 1 << 3,
-	MykUIOptionDisableForceQuit     = 1 << 4,
-	MykUIOptionDisableSessionTerminate = 1 << 5,
-	MykUIOptionDisableHide          = 1 << 6
+	kUIOptionAutoShowMenuBar      = 1 << 0,
+	kUIOptionDisableAppleMenu     = 1 << 2,
+	kUIOptionDisableProcessSwitch = 1 << 3,
+	kUIOptionDisableForceQuit     = 1 << 4,
+	kUIOptionDisableSessionTerminate = 1 << 5,
+	kUIOptionDisableHide          = 1 << 6
 };
 
 typedef OSStatus (*SetSystemUIModeProcPtr)
-	(MySystemUIMode inMode, MySystemUIOptions inOptions);
-LOCALVAR SetSystemUIModeProcPtr MySetSystemUIMode = NULL;
+	(SystemUIMode inMode, SystemUIOptions inOptions);
+LOCALVAR SetSystemUIModeProcPtr SetSystemUIMode = NULL;
 LOCALVAR blnr DidSetSystemUIMode = falseblnr;
 
-LOCALFUNC blnr HaveMySetSystemUIMode(void)
+LOCALFUNC blnr HaveSetSystemUIMode(void)
 {
 	if (! DidSetSystemUIMode) {
 		if (HaveHIToolboxBunRef()) {
-			MySetSystemUIMode =
+			SetSystemUIMode =
 				(SetSystemUIModeProcPtr)
 				CFBundleGetFunctionPointerForName(
 					HIToolboxBunRef, CFSTR("SetSystemUIMode"));
 		}
 		DidSetSystemUIMode = trueblnr;
 	}
-	return (MySetSystemUIMode != NULL);
+	return (SetSystemUIMode != NULL);
 }
 
 #endif
@@ -153,14 +153,14 @@ typedef Boolean (*CFURLCopyResourcePropertyForKeyProcPtr) (
 	CFErrorRef  *error
 	);
 LOCALVAR CFURLCopyResourcePropertyForKeyProcPtr
-	MyCFURLCopyResourcePropertyForKey = NULL;
+	CFURLCopyResourcePropertyForKey = NULL;
 LOCALVAR blnr DidCFURLCopyResourcePropertyForKey = falseblnr;
 
-LOCALFUNC blnr HaveMyCFURLCopyResourcePropertyForKey(void)
+LOCALFUNC blnr HaveCFURLCopyResourcePropertyForKey(void)
 {
 	if (! DidCFURLCopyResourcePropertyForKey) {
 		if (HaveApplicationServicesBun()) {
-			MyCFURLCopyResourcePropertyForKey =
+			CFURLCopyResourcePropertyForKey =
 				(CFURLCopyResourcePropertyForKeyProcPtr)
 				CFBundleGetFunctionPointerForName(
 					AppServBunRef,
@@ -168,118 +168,118 @@ LOCALFUNC blnr HaveMyCFURLCopyResourcePropertyForKey(void)
 		}
 		DidCFURLCopyResourcePropertyForKey = trueblnr;
 	}
-	return (MyCFURLCopyResourcePropertyForKey != NULL);
+	return (CFURLCopyResourcePropertyForKey != NULL);
 }
 
 
-LOCALVAR const CFStringRef *MykCFURLIsAliasFileKey
+LOCALVAR const CFStringRef *kCFURLIsAliasFileKey
 	= NULL;
 LOCALVAR blnr DidkCFURLIsAliasFileKey = falseblnr;
 
-LOCALFUNC blnr HaveMykCFURLIsAliasFileKey(void)
+LOCALFUNC blnr HavekCFURLIsAliasFileKey(void)
 {
 	if (! DidkCFURLIsAliasFileKey) {
 		if (HaveApplicationServicesBun()) {
-			MykCFURLIsAliasFileKey =
+			kCFURLIsAliasFileKey =
 				(const CFStringRef *)
 				CFBundleGetDataPointerForName(
 					AppServBunRef, CFSTR("kCFURLIsAliasFileKey"));
 		}
 		DidkCFURLIsAliasFileKey = trueblnr;
 	}
-	return (MykCFURLIsAliasFileKey != NULL);
+	return (kCFURLIsAliasFileKey != NULL);
 }
 
 
-LOCALVAR const CFStringRef *MykCFURLIsSymbolicLinkKey
+LOCALVAR const CFStringRef *kCFURLIsSymbolicLinkKey
 	= NULL;
 LOCALVAR blnr DidkCFURLIsSymbolicLinkKey = falseblnr;
 
-LOCALFUNC blnr HaveMykCFURLIsSymbolicLinkKey(void)
+LOCALFUNC blnr HavekCFURLIsSymbolicLinkKey(void)
 {
 	if (! DidkCFURLIsSymbolicLinkKey) {
 		if (HaveApplicationServicesBun()) {
-			MykCFURLIsSymbolicLinkKey =
+			kCFURLIsSymbolicLinkKey =
 				(const CFStringRef *)
 				CFBundleGetDataPointerForName(
 					AppServBunRef, CFSTR("kCFURLIsSymbolicLinkKey"));
 		}
 		DidkCFURLIsSymbolicLinkKey = trueblnr;
 	}
-	return (MykCFURLIsSymbolicLinkKey != NULL);
+	return (kCFURLIsSymbolicLinkKey != NULL);
 }
 
 
 typedef CFDataRef (*CFURLCreateBookmarkDataFromFileProcPtr) (
 	CFAllocatorRef allocator, CFURLRef fileURL, CFErrorRef *errorRef);
 LOCALVAR CFURLCreateBookmarkDataFromFileProcPtr
-	MyCFURLCreateBookmarkDataFromFile = NULL;
+	CFURLCreateBookmarkDataFromFile = NULL;
 LOCALVAR blnr DidCFURLCreateBookmarkDataFromFile = falseblnr;
 
-LOCALFUNC blnr HaveMyCFURLCreateBookmarkDataFromFile(void)
+LOCALFUNC blnr HaveCFURLCreateBookmarkDataFromFile(void)
 {
 	if (! DidCFURLCreateBookmarkDataFromFile) {
 		if (HaveApplicationServicesBun()) {
-			MyCFURLCreateBookmarkDataFromFile =
+			CFURLCreateBookmarkDataFromFile =
 				(CFURLCreateBookmarkDataFromFileProcPtr)
 				CFBundleGetFunctionPointerForName(AppServBunRef,
 					CFSTR("CFURLCreateBookmarkDataFromFile"));
 		}
 		DidCFURLCreateBookmarkDataFromFile = trueblnr;
 	}
-	return (MyCFURLCreateBookmarkDataFromFile != NULL);
+	return (CFURLCreateBookmarkDataFromFile != NULL);
 }
 
 
-typedef CFOptionFlags MyCFURLBookmarkResolutionOptions;
+typedef CFOptionFlags CFURLBookmarkResolutionOptions;
 
 typedef CFURLRef (*CFURLCreateByResolvingBookmarkDataProcPtr) (
 	CFAllocatorRef allocator, CFDataRef bookmark,
-	MyCFURLBookmarkResolutionOptions options, CFURLRef relativeToURL,
+	CFURLBookmarkResolutionOptions options, CFURLRef relativeToURL,
 	CFArrayRef resourcePropertiesToInclude,
 	Boolean* isStale, CFErrorRef* error);
 LOCALVAR CFURLCreateByResolvingBookmarkDataProcPtr
-	MyCFURLCreateByResolvingBookmarkData = NULL;
+	CFURLCreateByResolvingBookmarkData = NULL;
 LOCALVAR blnr DidCFURLCreateByResolvingBookmarkData = falseblnr;
 
-LOCALFUNC blnr HaveMyCFURLCreateByResolvingBookmarkData(void)
+LOCALFUNC blnr HaveCFURLCreateByResolvingBookmarkData(void)
 {
 	if (! DidCFURLCreateByResolvingBookmarkData) {
 		if (HaveApplicationServicesBun()) {
-			MyCFURLCreateByResolvingBookmarkData =
+			CFURLCreateByResolvingBookmarkData =
 				(CFURLCreateByResolvingBookmarkDataProcPtr)
 				CFBundleGetFunctionPointerForName(AppServBunRef,
 					CFSTR("CFURLCreateByResolvingBookmarkData"));
 		}
 		DidCFURLCreateByResolvingBookmarkData = trueblnr;
 	}
-	return (MyCFURLCreateByResolvingBookmarkData != NULL);
+	return (CFURLCreateByResolvingBookmarkData != NULL);
 }
 
 
 typedef boolean_t (*CGCursorIsVisibleProcPtr)(void);
 
-LOCALVAR CGCursorIsVisibleProcPtr MyCGCursorIsVisible = NULL;
+LOCALVAR CGCursorIsVisibleProcPtr CGCursorIsVisible = NULL;
 LOCALVAR blnr DidCGCursorIsVisible = falseblnr;
 
-LOCALFUNC blnr HaveMyCGCursorIsVisible(void)
+LOCALFUNC blnr HaveCGCursorIsVisible(void)
 {
 	if (! DidCGCursorIsVisible) {
 		if (HaveApplicationServicesBun()) {
-			MyCGCursorIsVisible =
+			CGCursorIsVisible =
 				(CGCursorIsVisibleProcPtr)
 				CFBundleGetFunctionPointerForName(
 					AppServBunRef, CFSTR("CGCursorIsVisible"));
 		}
 		DidCGCursorIsVisible = trueblnr;
 	}
-	return (MyCGCursorIsVisible != NULL);
+	return (CGCursorIsVisible != NULL);
 }
 
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
+GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -293,7 +293,7 @@ GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 /* --- sending debugging info to file --- */
 
 LOCALVAR NSString *myAppName = nil;
-LOCALVAR NSString *MyDataPath = nil;
+LOCALVAR NSString *DataPath = nil;
 
 #if dbglog_HAVE
 
@@ -308,7 +308,7 @@ LOCALFUNC blnr dbglog_open0(void)
 #if dbglog_ToStdErr
 	return trueblnr;
 #else
-	NSString *myLogPath = [MyDataPath
+	NSString *myLogPath = [DataPath
 		stringByAppendingPathComponent: @"dbglog.txt"];
 	const char *path = [myLogPath fileSystemRepresentation];
 
@@ -525,7 +525,7 @@ LOCALFUNC blnr FindNamedChildPath(NSString *parentPath,
 	return v;
 }
 
-LOCALFUNC NSString *MyResolveAlias(NSString *filePath,
+LOCALFUNC NSString *ResolveAlias(NSString *filePath,
 	Boolean *targetIsFolder)
 {
 	NSString *resolvedPath = nil;
@@ -534,11 +534,11 @@ LOCALFUNC NSString *MyResolveAlias(NSString *filePath,
 
 
 	if (url != NULL) {
-		if (HaveMyCFURLCopyResourcePropertyForKey()
-			&& HaveMykCFURLIsAliasFileKey()
-			&& HaveMykCFURLIsSymbolicLinkKey()
-			&& HaveMyCFURLCreateBookmarkDataFromFile()
-			&& HaveMyCFURLCreateByResolvingBookmarkData())
+		if (HaveCFURLCopyResourcePropertyForKey()
+			&& HavekCFURLIsAliasFileKey()
+			&& HavekCFURLIsSymbolicLinkKey()
+			&& HaveCFURLCreateBookmarkDataFromFile()
+			&& HaveCFURLCreateByResolvingBookmarkData())
 		{
 			BOOL isDir;
 			Boolean isStale;
@@ -547,19 +547,19 @@ LOCALFUNC NSString *MyResolveAlias(NSString *filePath,
 			CFDataRef bookmark = NULL;
 			CFURLRef resolvedurl = NULL;
 
-			if (MyCFURLCopyResourcePropertyForKey(url,
-				*MykCFURLIsAliasFileKey, &is_alias_file, NULL))
+			if (CFURLCopyResourcePropertyForKey(url,
+				*kCFURLIsAliasFileKey, &is_alias_file, NULL))
 			if (CFBooleanGetValue(is_alias_file))
-			if (MyCFURLCopyResourcePropertyForKey(url,
-				*MykCFURLIsSymbolicLinkKey, &is_symbolic_link, NULL))
+			if (CFURLCopyResourcePropertyForKey(url,
+				*kCFURLIsSymbolicLinkKey, &is_symbolic_link, NULL))
 			if (! CFBooleanGetValue(is_symbolic_link))
-			if (NULL != (bookmark = MyCFURLCreateBookmarkDataFromFile(
+			if (NULL != (bookmark = CFURLCreateBookmarkDataFromFile(
 				kCFAllocatorDefault, url, NULL)))
 			if (NULL != (resolvedurl =
-				MyCFURLCreateByResolvingBookmarkData(
+				CFURLCreateByResolvingBookmarkData(
 					kCFAllocatorDefault,
 					bookmark,
-					0 /* MyCFURLBookmarkResolutionOptions options */,
+					0 /* CFURLBookmarkResolutionOptions options */,
 					NULL /* relativeToURL */,
 					NULL /* resourcePropertiesToInclude */,
 					&isStale,
@@ -642,7 +642,7 @@ LOCALFUNC blnr FindNamedChildDirPath(NSString *parentPath,
 			*childPath = r;
 			v = trueblnr;
 		} else {
-			NSString *RslvPath = MyResolveAlias(r, &isDirectory);
+			NSString *RslvPath = ResolveAlias(r, &isDirectory);
 			if (nil != RslvPath) {
 				if (isDirectory) {
 					*childPath = RslvPath;
@@ -668,7 +668,7 @@ LOCALFUNC blnr FindNamedChildFilePath(NSString *parentPath,
 		fileExistsAtPath:r isDirectory: &isDir])
 	{
 		if (! isDir) {
-			NSString *RslvPath = MyResolveAlias(r, &isDirectory);
+			NSString *RslvPath = ResolveAlias(r, &isDirectory);
 			if (nil != RslvPath) {
 				if (! isDirectory) {
 					*childPath = RslvPath;
@@ -762,7 +762,7 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 */
 
 #if HaveAdvisoryLocks
-LOCALFUNC blnr MyLockFile(FILE *refnum)
+LOCALFUNC blnr LockFile(FILE *refnum)
 {
 	blnr IsOk = falseblnr;
 
@@ -808,7 +808,7 @@ LOCALFUNC blnr MyLockFile(FILE *refnum)
 #endif
 
 #if HaveAdvisoryLocks
-LOCALPROC MyUnlockFile(FILE *refnum)
+LOCALPROC UnlockFile(FILE *refnum)
 {
 #if 0
 	struct flock fl;
@@ -838,7 +838,7 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, blnr deleteit)
 	DiskEjectedNotify(Drive_No);
 
 #if HaveAdvisoryLocks
-	MyUnlockFile(refnum);
+	UnlockFile(refnum);
 #endif
 
 	fclose(refnum);
@@ -917,7 +917,7 @@ LOCALFUNC blnr Sony_Insert0(FILE *refnum, blnr locked,
 		/* printf("Sony_Insert0 %d\n", (int)Drive_No); */
 
 #if HaveAdvisoryLocks
-		if (locked || MyLockFile(refnum))
+		if (locked || LockFile(refnum))
 #endif
 		{
 			Drives[Drive_No] = refnum;
@@ -963,7 +963,7 @@ LOCALFUNC blnr Sony_Insert2(char *s)
 {
 	NSString *sPath;
 
-	if (! FindNamedChildFilePath(MyDataPath, s, &sPath)) {
+	if (! FindNamedChildFilePath(DataPath, s, &sPath)) {
 		return falseblnr;
 	} else {
 		return Sony_Insert1(sPath, trueblnr);
@@ -1015,7 +1015,7 @@ LOCALFUNC blnr Sony_Insert1a(NSString *filePath)
 LOCALPROC Sony_ResolveInsert(NSString *filePath)
 {
 	Boolean isDirectory;
-	NSString *RslvPath = MyResolveAlias(filePath, &isDirectory);
+	NSString *RslvPath = ResolveAlias(filePath, &isDirectory);
 	if (nil != RslvPath) {
 		if (! isDirectory) {
 			(void) Sony_Insert1a(RslvPath);
@@ -1114,7 +1114,7 @@ LOCALFUNC tMacErr LoadMacRomFrom(NSString *parentPath)
 
 LOCALFUNC tMacErr LoadMacRomFromAppDir(void)
 {
-	return LoadMacRomFrom(MyDataPath);
+	return LoadMacRomFrom(DataPath);
 }
 
 LOCALFUNC tMacErr LoadMacRomFromPrefDir(void)
@@ -1256,32 +1256,32 @@ GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
 
 #define UseCGContextDrawImage 0
 
-LOCALVAR NSWindow *MyWindow = nil;
-LOCALVAR NSView *MyNSview = nil;
+LOCALVAR NSWindow *Window = nil;
+LOCALVAR NSView *NSview = nil;
 #if UseCGContextDrawImage
-LOCALVAR NSGraphicsContext *MyNSgfxContext = nil;
-LOCALVAR CGContextRef MyCGcontext = nil;
-LOCALVAR void *MyPixels = NULL;
-LOCALVAR uint16_t MyPitch;
-LOCALVAR uint8_t MyBytesPerPixel;
+LOCALVAR NSGraphicsContext *NSgfxContext = nil;
+LOCALVAR CGContextRef CGcontext = nil;
+LOCALVAR void *Pixels = NULL;
+LOCALVAR uint16_t Pitch;
+LOCALVAR uint8_t BytesPerPixel;
 #endif
 
-LOCALVAR NSOpenGLContext *MyNSOpnGLCntxt = nil;
+LOCALVAR NSOpenGLContext *NSOpnGLCntxt = nil;
 LOCALVAR short GLhOffset;
 LOCALVAR short GLvOffset;
 	/* OpenGL coordinates of upper left point of drawing area */
 
 
-LOCALPROC MyHideCursor(void)
+LOCALPROC HideCursor(void)
 {
 	[NSCursor hide];
 }
 
-LOCALPROC MyShowCursor(void)
+LOCALPROC ShowCursor(void)
 {
-	if (nil != MyWindow) {
-		[MyWindow invalidateCursorRectsForView:
-			MyNSview];
+	if (nil != Window) {
+		[Window invalidateCursorRectsForView:
+			NSview];
 	}
 #if 0
 	[cursor->nscursor performSelectorOnMainThread: @selector(set)
@@ -1298,9 +1298,9 @@ LOCALFUNC CGPoint QZ_PrivateSDLToCG(NSPoint *p)
 {
 	CGPoint cgp;
 
-	*p = [MyNSview convertPoint: *p toView: nil];
-	p->y = [MyNSview frame].size.height - p->y;
-	*p = [MyWindow convertBaseToScreen: *p];
+	*p = [NSview convertPoint: *p toView: nil];
+	p->y = [NSview frame].size.height - p->y;
+	*p = [Window convertBaseToScreen: *p];
 
 	cgp.x = p->x;
 	cgp.y = CGDisplayPixelsHigh(kCGDirectMainDisplay)
@@ -1315,16 +1315,16 @@ LOCALPROC QZ_GetMouseLocation(NSPoint *p)
 	/* incorrect while window is being dragged */
 
 	*p = [NSEvent mouseLocation]; /* global coordinates */
-	if (nil != MyWindow) {
-		*p = [MyWindow convertScreenToBase: *p];
+	if (nil != Window) {
+		*p = [Window convertScreenToBase: *p];
 	}
-	*p = [MyNSview convertPoint: *p fromView: nil];
-	p->y = [MyNSview frame].size.height - p->y;
+	*p = [NSview convertPoint: *p fromView: nil];
+	p->y = [NSview frame].size.height - p->y;
 }
 
 /* --- keyboard --- */
 
-LOCALVAR NSUInteger MyCurrentMods = 0;
+LOCALVAR NSUInteger CurrentMods = 0;
 
 /*
 	Apple documentation says:
@@ -1333,22 +1333,22 @@ LOCALVAR NSUInteger MyCurrentMods = 0;
 
 	observed to be:
 */
-#define My_NSLShiftKeyMask   0x0002
-#define My_NSRShiftKeyMask   0x0004
-#define My_NSLControlKeyMask 0x0001
-#define My_NSRControlKeyMask 0x2000
-#define My_NSLCommandKeyMask 0x0008
-#define My_NSRCommandKeyMask 0x0010
-#define My_NSLOptionKeyMask  0x0020
-#define My_NSROptionKeyMask  0x0040
+#define _NSLShiftKeyMask   0x0002
+#define _NSRShiftKeyMask   0x0004
+#define _NSLControlKeyMask 0x0001
+#define _NSRControlKeyMask 0x2000
+#define _NSLCommandKeyMask 0x0008
+#define _NSRCommandKeyMask 0x0010
+#define _NSLOptionKeyMask  0x0020
+#define _NSROptionKeyMask  0x0040
 /*
 	Avoid using the above unless it is
 	really needed.
 */
 
-LOCALPROC MyUpdateKeyboardModifiers(NSUInteger newMods)
+LOCALPROC UpdateKeyboardModifiers(NSUInteger newMods)
 {
-	NSUInteger changeMask = MyCurrentMods ^ newMods;
+	NSUInteger changeMask = CurrentMods ^ newMods;
 
 	if (0 != changeMask) {
 		if (0 != (changeMask & NSAlphaShiftKeyMask)) {
@@ -1362,13 +1362,13 @@ LOCALPROC MyUpdateKeyboardModifiers(NSUInteger newMods)
 				0 != (newMods & NSShiftKeyMask));
 		}
 #else
-		if (0 != (changeMask & My_NSLShiftKeyMask)) {
+		if (0 != (changeMask & _NSLShiftKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_Shift,
-				0 != (newMods & My_NSLShiftKeyMask));
+				0 != (newMods & _NSLShiftKeyMask));
 		}
-		if (0 != (changeMask & My_NSRShiftKeyMask)) {
+		if (0 != (changeMask & _NSRShiftKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_RShift,
-				0 != (newMods & My_NSRShiftKeyMask));
+				0 != (newMods & _NSRShiftKeyMask));
 		}
 #endif
 
@@ -1378,13 +1378,13 @@ LOCALPROC MyUpdateKeyboardModifiers(NSUInteger newMods)
 				0 != (newMods & NSControlKeyMask));
 		}
 #else
-		if (0 != (changeMask & My_NSLControlKeyMask)) {
+		if (0 != (changeMask & _NSLControlKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_Control,
-				0 != (newMods & My_NSLControlKeyMask));
+				0 != (newMods & _NSLControlKeyMask));
 		}
-		if (0 != (changeMask & My_NSRControlKeyMask)) {
+		if (0 != (changeMask & _NSRControlKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_RControl,
-				0 != (newMods & My_NSRControlKeyMask));
+				0 != (newMods & _NSRControlKeyMask));
 		}
 #endif
 
@@ -1394,13 +1394,13 @@ LOCALPROC MyUpdateKeyboardModifiers(NSUInteger newMods)
 				0 != (newMods & NSCommandKeyMask));
 		}
 #else
-		if (0 != (changeMask & My_NSLCommandKeyMask)) {
+		if (0 != (changeMask & _NSLCommandKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_Command,
-				0 != (newMods & My_NSLCommandKeyMask));
+				0 != (newMods & _NSLCommandKeyMask));
 		}
-		if (0 != (changeMask & My_NSRCommandKeyMask)) {
+		if (0 != (changeMask & _NSRCommandKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_RCommand,
-				0 != (newMods & My_NSRCommandKeyMask));
+				0 != (newMods & _NSRCommandKeyMask));
 		}
 #endif
 
@@ -1410,17 +1410,17 @@ LOCALPROC MyUpdateKeyboardModifiers(NSUInteger newMods)
 				0 != (newMods & NSAlternateKeyMask));
 		}
 #else
-		if (0 != (changeMask & My_NSLOptionKeyMask)) {
+		if (0 != (changeMask & _NSLOptionKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_Option,
-				0 != (newMods & My_NSLOptionKeyMask));
+				0 != (newMods & _NSLOptionKeyMask));
 		}
-		if (0 != (changeMask & My_NSROptionKeyMask)) {
+		if (0 != (changeMask & _NSROptionKeyMask)) {
 			Keyboard_UpdateKeyMap2(MKC_formac_ROption,
-				0 != (newMods & My_NSROptionKeyMask));
+				0 != (newMods & _NSROptionKeyMask));
 		}
 #endif
 
-		MyCurrentMods = newMods;
+		CurrentMods = newMods;
 	}
 }
 
@@ -1453,7 +1453,7 @@ LOCALVAR blnr gBackgroundFlag = falseblnr;
 LOCALVAR blnr CurSpeedStopped = trueblnr;
 
 #if EnableMagnify
-#define MaxScale MyWindowScale
+#define MaxScale WindowScale
 #else
 #define MaxScale 1
 #endif
@@ -1464,14 +1464,14 @@ LOCALPROC ForceShowCursor(void)
 {
 	if (HaveCursorHidden) {
 		HaveCursorHidden = falseblnr;
-		MyShowCursor();
+		ShowCursor();
 	}
 }
 
 /* cursor moving */
 
 #if EnableMoveMouse
-LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
+LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
 {
 	NSPoint p;
 	CGPoint cgp;
@@ -1488,8 +1488,8 @@ LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		h *= MyWindowScale;
-		v *= MyWindowScale;
+		h *= WindowScale;
+		v *= WindowScale;
 	}
 #endif
 
@@ -1516,10 +1516,10 @@ LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 
 #if 0
 	if (noErr != CGSetLocalEventsSuppressionInterval(0.0)) {
-		/* don't use MacMsg which can call MyMoveMouse */
+		/* don't use MacMsg which can call MoveMouse */
 	}
 	if (noErr != CGWarpMouseCursorPosition(cgp)) {
-		/* don't use MacMsg which can call MyMoveMouse */
+		/* don't use MacMsg which can call MoveMouse */
 	}
 #endif
 
@@ -1536,7 +1536,7 @@ LOCALPROC AdjustMouseMotionGrab(void)
 			if magnification changes, need to reset,
 			even if HaveMouseMotion already true
 		*/
-		if (MyMoveMouse(ViewHStart + (ViewHSize / 2),
+		if (MoveMouse(ViewHStart + (ViewHSize / 2),
 			ViewVStart + (ViewVSize / 2)))
 		{
 			SavedMouseH = ViewHStart + (ViewHSize / 2);
@@ -1547,7 +1547,7 @@ LOCALPROC AdjustMouseMotionGrab(void)
 #endif
 	{
 		if (HaveMouseMotion) {
-			(void) MyMoveMouse(CurMouseH, CurMouseV);
+			(void) MoveMouse(CurMouseH, CurMouseV);
 			HaveMouseMotion = falseblnr;
 		}
 	}
@@ -1555,7 +1555,7 @@ LOCALPROC AdjustMouseMotionGrab(void)
 #endif
 
 #if EnableFSMouseMotion
-LOCALPROC MyMouseConstrain(void)
+LOCALPROC MouseConstrain(void)
 {
 	int16_t shiftdh;
 	int16_t shiftdv;
@@ -1577,7 +1577,7 @@ LOCALPROC MyMouseConstrain(void)
 	if ((shiftdh != 0) || (shiftdv != 0)) {
 		SavedMouseH += shiftdh;
 		SavedMouseV += shiftdv;
-		if (! MyMoveMouse(SavedMouseH, SavedMouseV)) {
+		if (! MoveMouse(SavedMouseH, SavedMouseV)) {
 			HaveMouseMotion = falseblnr;
 		}
 	}
@@ -1602,8 +1602,8 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		NewMousePosh /= MyWindowScale;
-		NewMousePosv /= MyWindowScale;
+		NewMousePosh /= WindowScale;
+		NewMousePosv /= WindowScale;
 	}
 #endif
 
@@ -1619,7 +1619,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMousePositionSetDelta(NewMousePosh - SavedMouseH,
+		MousePositionSetDelta(NewMousePosh - SavedMouseH,
 			NewMousePosv - SavedMouseV);
 		SavedMouseH = NewMousePosh;
 		SavedMouseV = NewMousePosv;
@@ -1655,7 +1655,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 			for a game like arkanoid, would like mouse to still
 			move even when outside window in one direction
 		*/
-		MyMousePositionSet(NewMousePosh, NewMousePosv);
+		MousePositionSet(NewMousePosh, NewMousePosv);
 	}
 
 	WantCursorHidden = ShouldHaveCursorHidden;
@@ -1782,9 +1782,9 @@ LOCALPROC UpdateLuminanceCopy(int16_t top, int16_t left,
 	}
 }
 
-LOCALPROC MyDrawWithOpenGL(uint16_t top, uint16_t left, uint16_t bottom, uint16_t right)
+LOCALPROC DrawWithOpenGL(uint16_t top, uint16_t left, uint16_t bottom, uint16_t right)
 {
-	if (nil == MyNSOpnGLCntxt) {
+	if (nil == NSOpnGLCntxt) {
 		/* oops */
 	} else {
 		int16_t top2;
@@ -1829,12 +1829,12 @@ LOCALPROC MyDrawWithOpenGL(uint16_t top, uint16_t left, uint16_t bottom, uint16_
 
 #if EnableMagnify
 		if (UseMagnify) {
-			top2 *= MyWindowScale;
-			left2 *= MyWindowScale;
+			top2 *= WindowScale;
+			left2 *= WindowScale;
 		}
 #endif
 
-		[MyNSOpnGLCntxt makeCurrentContext];
+		[NSOpnGLCntxt makeCurrentContext];
 
 		UpdateLuminanceCopy(top, left, bottom, right);
 		glRasterPos2i(GLhOffset + left2, GLvOffset - top2);
@@ -1885,25 +1885,25 @@ label_exit:
 #if UseCGContextDrawImage
 LOCALPROC SDL_UpdateRect(int32_t x, int32_t y, uint32_t w, uint32_t h)
 {
-	if ([MyWindow isMiniaturized]) {
+	if ([Window isMiniaturized]) {
 
 		/* Do nothing if miniaturized */
 
 	} else {
 		NSGraphicsContext *ctx = [NSGraphicsContext currentContext];
-		if (ctx != MyNSgfxContext) {
+		if (ctx != NSgfxContext) {
 			/* uhoh, you might be rendering from another thread... */
 			[NSGraphicsContext
-				setCurrentContext: MyNSgfxContext];
-			ctx = MyNSgfxContext;
+				setCurrentContext: NSgfxContext];
+			ctx = NSgfxContext;
 		}
 		CGContextRef cgc = (CGContextRef) [ctx graphicsPort];
-		CGContextFlush(MyCGcontext);
+		CGContextFlush(CGcontext);
 		CGImageRef image = CGBitmapContextCreateImage(
-			MyCGcontext);
+			CGcontext);
 		CGRect rectangle = CGRectMake(0, 0,
-			[MyNSview frame].size.width,
-			[MyNSview frame].size.height);
+			[NSview frame].size.width,
+			[NSview frame].size.height);
 
 		CGContextDrawImage(cgc, rectangle, image);
 		CGImageRelease(image);
@@ -1921,7 +1921,7 @@ LOCALVAR uint32_t TrueEmulatedTime = 0;
 LOCALVAR NSTimeInterval LatestTime;
 LOCALVAR NSTimeInterval NextTickChangeTime;
 
-#define MyTickDuration (1.0 / 60.14742)
+#define TickDuration (1.0 / 60.14742)
 
 LOCALVAR uint32_t NewMacDateInSeconds;
 
@@ -1935,10 +1935,10 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 	TimeDiff = LatestTime - NextTickChangeTime;
 
 	if (TimeDiff >= 0.0) {
-		if (TimeDiff > 16 * MyTickDuration) {
+		if (TimeDiff > 16 * TickDuration) {
 			/* emulation interrupted, forget it */
 			++TrueEmulatedTime;
-			NextTickChangeTime = LatestTime + MyTickDuration;
+			NextTickChangeTime = LatestTime + TickDuration;
 
 			EmulationWasInterrupted = trueblnr;
 #if dbglog_TimeStuff
@@ -1951,26 +1951,26 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 				dbglog_writeln("got next tick");
 #endif
 				++TrueEmulatedTime;
-				TimeDiff -= MyTickDuration;
-				NextTickChangeTime += MyTickDuration;
+				TimeDiff -= TickDuration;
+				NextTickChangeTime += TickDuration;
 			} while (TimeDiff >= 0.0);
 		}
-	} else if (TimeDiff < (-16 * MyTickDuration)) {
+	} else if (TimeDiff < (-16 * TickDuration)) {
 		/* clock set back, reset */
 #if dbglog_TimeStuff
 		dbglog_writeln("clock set back");
 #endif
 
-		NextTickChangeTime = LatestTime + MyTickDuration;
+		NextTickChangeTime = LatestTime + TickDuration;
 	}
 }
 
 
-LOCALVAR uint32_t MyDateDelta;
+LOCALVAR uint32_t DateDelta;
 
 LOCALFUNC blnr CheckDateTime(void)
 {
-	NewMacDateInSeconds = ((uint32_t)LatestTime) + MyDateDelta;
+	NewMacDateInSeconds = ((uint32_t)LatestTime) + DateDelta;
 	if (CurMacDateInSeconds != NewMacDateInSeconds) {
 		CurMacDateInSeconds = NewMacDateInSeconds;
 		return trueblnr;
@@ -1987,15 +1987,15 @@ LOCALPROC StartUpTimeAdjust(void)
 
 LOCALFUNC blnr InitLocationDat(void)
 {
-	NSTimeZone *MyZone = [NSTimeZone localTimeZone];
-	uint32_t TzOffSet = (uint32_t)[MyZone secondsFromGMT];
+	NSTimeZone *Zone = [NSTimeZone localTimeZone];
+	uint32_t TzOffSet = (uint32_t)[Zone secondsFromGMT];
 #if AutoTimeZone
-	BOOL isdst = [MyZone isDaylightSavingTime];
+	BOOL isdst = [Zone isDaylightSavingTime];
 #endif
 
-	MyDateDelta = TzOffSet - 1233815296;
+	DateDelta = TzOffSet - 1233815296;
 	LatestTime = [NSDate timeIntervalSinceReferenceDate];
-	NewMacDateInSeconds = ((uint32_t)LatestTime) + MyDateDelta;
+	NewMacDateInSeconds = ((uint32_t)LatestTime) + DateDelta;
 	CurMacDateInSeconds = NewMacDateInSeconds;
 #if AutoTimeZone
 	CurMacDelta = (TzOffSet & 0x00FFFFFF)
@@ -2007,7 +2007,7 @@ LOCALFUNC blnr InitLocationDat(void)
 
 /* --- sound --- */
 
-#if MySoundEnabled
+#if SoundEnabled
 
 #define kLn2SoundBuffers 4 /* kSoundBuffers must be a power of two */
 #define kSoundBuffers (1 << kLn2SoundBuffers)
@@ -2043,7 +2043,7 @@ LOCALVAR uint16_t MaxFilledSoundBuffs;
 #endif
 LOCALVAR uint16_t TheWriteOffset;
 
-LOCALPROC MySound_Start0(void)
+LOCALPROC Sound_Start0(void)
 {
 	/* Reset variables */
 	ThePlayOffset = 0;
@@ -2055,7 +2055,7 @@ LOCALPROC MySound_Start0(void)
 #endif
 }
 
-GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
+GLOBALOSGLUFUNC tpSoundSamp Sound_BeginWrite(uint16_t n, uint16_t *actL)
 {
 	uint16_t ToFillLen = kAllBuffLen - (TheWriteOffset - ThePlayOffset);
 	uint16_t WriteBuffContig =
@@ -2089,7 +2089,7 @@ LOCALPROC ConvertSoundBlockToNative(tpSoundSamp p)
 #define ConvertSoundBlockToNative(p)
 #endif
 
-LOCALPROC MySound_WroteABlock(void)
+LOCALPROC Sound_WroteABlock(void)
 {
 #if (4 == kLn2SoundSampSz)
 	uint16_t PrevWriteOffset = TheWriteOffset - kOneBuffLen;
@@ -2097,7 +2097,7 @@ LOCALPROC MySound_WroteABlock(void)
 #endif
 
 #if dbglog_SoundStuff
-	dbglog_writeln("enter MySound_WroteABlock");
+	dbglog_writeln("enter Sound_WroteABlock");
 #endif
 
 	ConvertSoundBlockToNative(p);
@@ -2117,7 +2117,7 @@ LOCALPROC MySound_WroteABlock(void)
 #endif
 }
 
-LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
+LOCALFUNC blnr Sound_EndWrite0(uint16_t actL)
 {
 	blnr v;
 
@@ -2128,7 +2128,7 @@ LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
 	} else {
 		/* just finished a block */
 
-		MySound_WroteABlock();
+		Sound_WroteABlock();
 
 		v = trueblnr;
 	}
@@ -2136,14 +2136,14 @@ LOCALFUNC blnr MySound_EndWrite0(uint16_t actL)
 	return v;
 }
 
-LOCALPROC MySound_SecondNotify0(void)
+LOCALPROC Sound_SecondNotify0(void)
 {
 	if (MinFilledSoundBuffs <= kSoundBuffers) {
 		if (MinFilledSoundBuffs > DesiredMinFilledSoundBuffs) {
 #if dbglog_SoundStuff
 			dbglog_writeln("MinFilledSoundBuffs too high");
 #endif
-			NextTickChangeTime += MyTickDuration;
+			NextTickChangeTime += TickDuration;
 		} else if (MinFilledSoundBuffs < DesiredMinFilledSoundBuffs) {
 #if dbglog_SoundStuff
 			dbglog_writeln("MinFilledSoundBuffs too low");
@@ -2217,7 +2217,7 @@ LOCALPROC SoundRampTo(trSoundTemp *last_val, trSoundTemp dst_val,
 	*last_val = v1;
 }
 
-struct MySoundR {
+struct SoundR {
 	tpSoundSamp fTheSoundBuffer;
 	volatile uint16_t (*fPlayOffset);
 	volatile uint16_t (*fFillOffset);
@@ -2231,14 +2231,14 @@ struct MySoundR {
 
 	AudioUnit outputAudioUnit;
 };
-typedef struct MySoundR MySoundR;
+typedef struct SoundR SoundR;
 
 LOCALPROC my_audio_callback(void *udata, void *stream, int len)
 {
 	uint16_t ToPlayLen;
 	uint16_t FilledSoundBuffs;
 	int i;
-	MySoundR *datp = (MySoundR *)udata;
+	SoundR *datp = (SoundR *)udata;
 	tpSoundSamp CurSoundBuffer = datp->fTheSoundBuffer;
 	uint16_t CurPlayOffset = *datp->fPlayOffset;
 	trSoundTemp v0 = datp->lastv;
@@ -2365,17 +2365,17 @@ LOCALFUNC OSStatus audioCallback(
 	return 0;
 }
 
-LOCALVAR MySoundR cur_audio;
+LOCALVAR SoundR cur_audio;
 
 LOCALPROC ZapAudioVars(void)
 {
-	memset(&cur_audio, 0, sizeof(MySoundR));
+	memset(&cur_audio, 0, sizeof(SoundR));
 }
 
-LOCALPROC MySound_Stop(void)
+LOCALPROC Sound_Stop(void)
 {
 #if dbglog_SoundStuff
-	dbglog_writeln("enter MySound_Stop");
+	dbglog_writeln("enter Sound_Stop");
 #endif
 
 	if (cur_audio.wantplaying) {
@@ -2426,20 +2426,20 @@ label_retry:
 	}
 
 #if dbglog_SoundStuff
-	dbglog_writeln("leave MySound_Stop");
+	dbglog_writeln("leave Sound_Stop");
 #endif
 }
 
-LOCALPROC MySound_Start(void)
+LOCALPROC Sound_Start(void)
 {
 	OSStatus result;
 
 	if ((! cur_audio.wantplaying) && cur_audio.enabled) {
 #if dbglog_SoundStuff
-		dbglog_writeln("enter MySound_Start");
+		dbglog_writeln("enter Sound_Start");
 #endif
 
-		MySound_Start0();
+		Sound_Start0();
 		cur_audio.lastv = kCenterTempSound;
 		cur_audio.HaveStartedPlaying = falseblnr;
 		cur_audio.wantplaying = trueblnr;
@@ -2454,12 +2454,12 @@ LOCALPROC MySound_Start(void)
 		}
 
 #if dbglog_SoundStuff
-		dbglog_writeln("leave MySound_Start");
+		dbglog_writeln("leave Sound_Start");
 #endif
 	}
 }
 
-LOCALPROC MySound_UnInit(void)
+LOCALPROC Sound_UnInit(void)
 {
 	if (cur_audio.enabled) {
 		OSStatus result;
@@ -2489,7 +2489,7 @@ LOCALPROC MySound_UnInit(void)
 			cur_audio.outputAudioUnit)))
 		{
 #if dbglog_HAVE
-			dbglog_writeln("CloseComponent fails in MySound_UnInit");
+			dbglog_writeln("CloseComponent fails in Sound_UnInit");
 #endif
 		}
 	}
@@ -2497,7 +2497,7 @@ LOCALPROC MySound_UnInit(void)
 
 #define SOUND_SAMPLERATE 22255 /* = round(7833600 * 2 / 704) */
 
-LOCALFUNC blnr MySound_Init(void)
+LOCALFUNC blnr Sound_Init(void)
 {
 	OSStatus result = noErr;
 	Component comp;
@@ -2602,7 +2602,7 @@ LOCALFUNC blnr MySound_Init(void)
 	{
 		cur_audio.enabled = trueblnr;
 
-		MySound_Start();
+		Sound_Start();
 			/*
 				This should be taken care of by LeaveSpeedStopped,
 				but since takes a while to get going properly,
@@ -2613,16 +2613,16 @@ LOCALFUNC blnr MySound_Init(void)
 	return trueblnr; /* keep going, even if no sound */
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
+GLOBALOSGLUPROC Sound_EndWrite(uint16_t actL)
 {
-	if (MySound_EndWrite0(actL)) {
+	if (Sound_EndWrite0(actL)) {
 	}
 }
 
-LOCALPROC MySound_SecondNotify(void)
+LOCALPROC Sound_SecondNotify(void)
 {
 	if (cur_audio.enabled) {
-		MySound_SecondNotify0();
+		Sound_SecondNotify0();
 	}
 }
 
@@ -2736,7 +2736,7 @@ LOCALPROC setupSpecialMenu(NSMenu *mainMenu)
 	[specialMenu release];
 }
 
-LOCALPROC MyMenuSetup(void)
+LOCALPROC MenuSetup(void)
 {
 	NSMenu *mainMenu = [[NSMenu alloc] init];
 	NSMenu *appleMenu = setApplicationMenu(mainMenu);
@@ -2770,9 +2770,9 @@ LOCALPROC MyMenuSetup(void)
 LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 	uint16_t bottom, uint16_t right)
 {
-	if ([MyNSview lockFocusIfCanDraw]) {
-		MyDrawWithOpenGL(top, left, bottom, right);
-		[MyNSview unlockFocus];
+	if ([NSview lockFocusIfCanDraw]) {
+		DrawWithOpenGL(top, left, bottom, right);
+		[NSview unlockFocus];
 	}
 }
 #else
@@ -2789,7 +2789,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 	uint32_t white_color = 0;
 		/* SDL_MapRGB(cur_video.format, 255, 255, 255) */
 
-	switch (MyBytesPerPixel) {
+	switch (BytesPerPixel) {
 		case 2: /* (1)-5-5-5 RGB */
 #if 0
 			rmask = 0x7C00;
@@ -2820,24 +2820,24 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if EnableMagnify
 	if (UseMagnify) {
-		for (i = top * MyWindowScale; i < bottom * MyWindowScale; ++i) {
-			for (j = left * MyWindowScale;
-				j < right * MyWindowScale; ++j)
+		for (i = top * WindowScale; i < bottom * WindowScale; ++i) {
+			for (j = left * WindowScale;
+				j < right * WindowScale; ++j)
 			{
-				p = the_data + (((i / MyWindowScale) * vMacScreenWidth
-					+ (j / MyWindowScale)) / 8);
-				if (0 != (*p & (1 << ((~ (j / MyWindowScale)) & 0x7))))
+				p = the_data + (((i / WindowScale) * vMacScreenWidth
+					+ (j / WindowScale)) / 8);
+				if (0 != (*p & (1 << ((~ (j / WindowScale)) & 0x7))))
 				{
 					color = black_color;
 				} else {
 					color = white_color;
 				}
-				switch (MyBytesPerPixel) {
+				switch (BytesPerPixel) {
 					case 2: { /* Probably 15-bpp or 16-bpp */
 						uint16_t *bufp;
 
-						bufp = (uint16_t *)MyPixels
-							+ i * MyPitch / 2 + j;
+						bufp = (uint16_t *)Pixels
+							+ i * Pitch / 2 + j;
 						*bufp = color;
 					}
 					break;
@@ -2845,8 +2845,8 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 					case 4: { /* Probably 32-bpp */
 						uint32_t *bufp;
 
-						bufp = (uint32_t *)MyPixels
-							+ i * MyPitch / 4 + j;
+						bufp = (uint32_t *)Pixels
+							+ i * Pitch / 4 + j;
 						*bufp = color;
 					}
 					break;
@@ -2864,20 +2864,20 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 				} else {
 					color = white_color;
 				}
-				switch (MyBytesPerPixel) {
+				switch (BytesPerPixel) {
 					case 2: { /* Probably 15-bpp or 16-bpp */
 						uint16_t *bufp;
 
-						bufp = (uint16_t *)MyPixels
-							+ i * MyPitch / 2 + j;
+						bufp = (uint16_t *)Pixels
+							+ i * Pitch / 2 + j;
 						*bufp = color;
 					}
 					break;
 					case 4: { /* Probably 32-bpp */
 						uint32_t *bufp;
 
-						bufp = (uint32_t *)MyPixels
-							+ i * MyPitch / 4 + j;
+						bufp = (uint32_t *)Pixels
+							+ i * Pitch / 4 + j;
 						*bufp = color;
 					}
 					break;
@@ -2888,10 +2888,10 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if EnableMagnify
 	if (UseMagnify) {
-		SDL_UpdateRect(left * MyWindowScale,
-			top * MyWindowScale,
-			(right - left) * MyWindowScale,
-			(bottom - top) * MyWindowScale);
+		SDL_UpdateRect(left * WindowScale,
+			top * WindowScale,
+			(right - left) * WindowScale,
+			(bottom - top) * WindowScale);
 	} else
 #endif
 	{
@@ -2901,7 +2901,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 }
 #endif
 
-LOCALPROC MyDrawChangesAndClear(void)
+LOCALPROC DrawChangesAndClear(void)
 {
 	if (ScreenChangedBottom > ScreenChangedTop) {
 		HaveChangedScreenBuff(ScreenChangedTop, ScreenChangedLeft,
@@ -2917,7 +2917,7 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 		AutoScrollScreen();
 	}
 #endif
-	MyDrawChangesAndClear();
+	DrawChangesAndClear();
 }
 
 /* --- keyboard input --- */
@@ -2937,7 +2937,7 @@ LOCALPROC ReconnectKeyCodes3(void)
 LOCALPROC DisconnectKeyCodes3(void)
 {
 	DisconnectKeyCodes2();
-	MyMouseButtonSet(falseblnr);
+	MouseButtonSet(falseblnr);
 }
 
 /* --- basic dialogs --- */
@@ -2964,52 +2964,52 @@ LOCALPROC CheckSavedMacMsg(void)
 /* --- hide/show menubar --- */
 
 enum {
-	MyNSApplicationPresentationDefault                    = 0,
-	MyNSApplicationPresentationAutoHideDock               = (1 <<  0),
-	MyNSApplicationPresentationHideDock                   = (1 <<  1),
-	MyNSApplicationPresentationAutoHideMenuBar            = (1 <<  2),
-	MyNSApplicationPresentationHideMenuBar                = (1 <<  3),
-	MyNSApplicationPresentationDisableAppleMenu           = (1 <<  4),
-	MyNSApplicationPresentationDisableProcessSwitching    = (1 <<  5),
-	MyNSApplicationPresentationDisableForceQuit           = (1 <<  6),
-	MyNSApplicationPresentationDisableSessionTermination  = (1 <<  7),
-	MyNSApplicationPresentationDisableHideApplication     = (1 <<  8),
-	MyNSApplicationPresentationDisableMenuBarTransparency = (1 <<  9),
-	MyNSApplicationPresentationFullScreen                 = (1 << 10),
-	MyNSApplicationPresentationAutoHideToolbar            = (1 << 11)
+	NSApplicationPresentationDefault                    = 0,
+	NSApplicationPresentationAutoHideDock               = (1 <<  0),
+	NSApplicationPresentationHideDock                   = (1 <<  1),
+	NSApplicationPresentationAutoHideMenuBar            = (1 <<  2),
+	NSApplicationPresentationHideMenuBar                = (1 <<  3),
+	NSApplicationPresentationDisableAppleMenu           = (1 <<  4),
+	NSApplicationPresentationDisableProcessSwitching    = (1 <<  5),
+	NSApplicationPresentationDisableForceQuit           = (1 <<  6),
+	NSApplicationPresentationDisableSessionTermination  = (1 <<  7),
+	NSApplicationPresentationDisableHideApplication     = (1 <<  8),
+	NSApplicationPresentationDisableMenuBarTransparency = (1 <<  9),
+	NSApplicationPresentationFullScreen                 = (1 << 10),
+	NSApplicationPresentationAutoHideToolbar            = (1 << 11)
 };
-typedef NSUInteger MyNSApplicationPresentationOptions;
+typedef NSUInteger NSApplicationPresentationOptions;
 
-@interface MyNSApplication : NSObject
+@interface NSApplication : NSObject
 - (void)setPresentationOptions:
-	(MyNSApplicationPresentationOptions)newOptions;
+	(NSApplicationPresentationOptions)newOptions;
 @end
 
 
 #if MayFullScreen
-LOCALPROC My_HideMenuBar(void)
+LOCALPROC _HideMenuBar(void)
 {
 	if ([NSApp respondsToSelector:@selector(setPresentationOptions:)]) {
-		[((MyNSApplication *)NSApp) setPresentationOptions:
-			MyNSApplicationPresentationHideDock
-			| MyNSApplicationPresentationHideMenuBar
+		[((NSApplication *)NSApp) setPresentationOptions:
+			NSApplicationPresentationHideDock
+			| NSApplicationPresentationHideMenuBar
 #if GrabKeysFullScreen
-			| MyNSApplicationPresentationDisableProcessSwitching
+			| NSApplicationPresentationDisableProcessSwitching
 #if GrabKeysMaxFullScreen /* dangerous !! */
-			| MyNSApplicationPresentationDisableForceQuit
-			| MyNSApplicationPresentationDisableSessionTermination
+			| NSApplicationPresentationDisableForceQuit
+			| NSApplicationPresentationDisableSessionTermination
 #endif
 #endif
 			];
 	} else
-	if (HaveMySetSystemUIMode()) {
-		(void) MySetSystemUIMode(MykUIModeAllHidden,
-			MykUIOptionDisableAppleMenu
+	if (HaveSetSystemUIMode()) {
+		(void) SetSystemUIMode(kUIModeAllHidden,
+			kUIOptionDisableAppleMenu
 #if GrabKeysFullScreen
-			| MykUIOptionDisableProcessSwitch
+			| kUIOptionDisableProcessSwitch
 #if GrabKeysMaxFullScreen /* dangerous !! */
-			| MykUIOptionDisableForceQuit
-			| MykUIOptionDisableSessionTerminate
+			| kUIOptionDisableForceQuit
+			| kUIOptionDisableSessionTerminate
 #endif
 #endif
 			);
@@ -3020,14 +3020,14 @@ LOCALPROC My_HideMenuBar(void)
 #endif
 
 #if MayFullScreen
-LOCALPROC My_ShowMenuBar(void)
+LOCALPROC _ShowMenuBar(void)
 {
 	if ([NSApp respondsToSelector:@selector(setPresentationOptions:)]) {
-		[((MyNSApplication *)NSApp) setPresentationOptions:
-			MyNSApplicationPresentationDefault];
+		[((NSApplication *)NSApp) setPresentationOptions:
+			NSApplicationPresentationDefault];
 	} else
-	if (HaveMySetSystemUIMode()) {
-		(void) MySetSystemUIMode(MykUIModeNormal,
+	if (HaveSetSystemUIMode()) {
+		(void) SetSystemUIMode(kUIModeNormal,
 			0);
 	} else
 	{
@@ -3037,15 +3037,15 @@ LOCALPROC My_ShowMenuBar(void)
 
 /* --- event handling for main window --- */
 
-LOCALPROC MyBeginDialog(void)
+LOCALPROC BeginDialog(void)
 {
 	DisconnectKeyCodes3();
 	ForceShowCursor();
 }
 
-LOCALPROC MyEndDialog(void)
+LOCALPROC EndDialog(void)
 {
-	[MyWindow makeKeyWindow];
+	[Window makeKeyWindow];
 	EmulationWasInterrupted = trueblnr;
 }
 
@@ -3055,7 +3055,7 @@ LOCALPROC InsertADisk0(void)
 
 	[panel setAllowsMultipleSelection: YES];
 
-	MyBeginDialog();
+	BeginDialog();
 
 	if (NSOKButton == [panel runModal]) {
 		int i;
@@ -3069,7 +3069,7 @@ LOCALPROC InsertADisk0(void)
 		}
 	}
 
-	MyEndDialog();
+	EndDialog();
 }
 
 /* --- main window creation and disposal --- */
@@ -3085,8 +3085,8 @@ LOCALFUNC blnr Screen_Init(void)
 #endif
 
 #if 0
-#define MyCGMainDisplayID CGMainDisplayID
-	CGDirectDisplayID CurMainDisplayID = MyCGMainDisplayID();
+#define CGMainDisplayID CGMainDisplayID
+	CGDirectDisplayID CurMainDisplayID = CGMainDisplayID();
 
 	cur_video.width = (uint32_t) CGDisplayPixelsWide(CurMainDisplayID);
 	cur_video.height = (uint32_t) CGDisplayPixelsHigh(CurMainDisplayID);
@@ -3114,9 +3114,9 @@ LOCALPROC UngrabMachine(void)
 }
 #endif
 
-LOCALPROC MyAdjustGLforSize(int h, int v)
+LOCALPROC AdjustGLforSize(int h, int v)
 {
-	[MyNSOpnGLCntxt makeCurrentContext];
+	[NSOpnGLCntxt makeCurrentContext];
 
 	glClearColor (0.0, 0.0, 0.0, 1.0);
 
@@ -3131,7 +3131,7 @@ LOCALPROC MyAdjustGLforSize(int h, int v)
 	glColor3f(0.0, 0.0, 0.0);
 #if EnableMagnify
 	if (UseMagnify) {
-		glPixelZoom(MyWindowScale, - MyWindowScale);
+		glPixelZoom(WindowScale, - WindowScale);
 	} else
 #endif
 	{
@@ -3148,21 +3148,21 @@ LOCALPROC MyAdjustGLforSize(int h, int v)
 
 LOCALVAR blnr WantScreensChangedCheck = falseblnr;
 
-LOCALPROC MyUpdateOpenGLContext(void)
+LOCALPROC UpdateOpenGLContext(void)
 {
-	if (nil != MyNSOpnGLCntxt) {
-		[MyNSOpnGLCntxt makeCurrentContext];
-		[MyNSOpnGLCntxt update];
+	if (nil != NSOpnGLCntxt) {
+		[NSOpnGLCntxt makeCurrentContext];
+		[NSOpnGLCntxt update];
 	}
 }
 
-LOCALPROC CloseMyOpenGLContext(void)
+LOCALPROC CloseOpenGLContext(void)
 {
-	if (nil != MyNSOpnGLCntxt) {
+	if (nil != NSOpnGLCntxt) {
 
 		[NSOpenGLContext clearCurrentContext];
 		/*
-			Only because MyDrawWithOpenGL doesn't
+			Only because DrawWithOpenGL doesn't
 			bother to do this. No one
 			uses the current context
 			without settting it first.
@@ -3174,8 +3174,8 @@ LOCALFUNC blnr GetOpnGLCntxt(void)
 {
 	blnr v = falseblnr;
 
-	if (nil == MyNSOpnGLCntxt) {
-		NSRect NewWinRect = [MyNSview frame];
+	if (nil == NSOpnGLCntxt) {
+		NSRect NewWinRect = [NSview frame];
 		NSOpenGLPixelFormat *fmt;
 
 #if WantGraphicsSwitching
@@ -3204,24 +3204,24 @@ LOCALFUNC blnr GetOpnGLCntxt(void)
 			}
 		}
 
-		MyNSOpnGLCntxt = [[NSOpenGLContext alloc]
+		NSOpnGLCntxt = [[NSOpenGLContext alloc]
 			initWithFormat:fmt shareContext:nil];
 
 		[fmt release];
 
-		if (nil == MyNSOpnGLCntxt) {
+		if (nil == NSOpnGLCntxt) {
 #if dbglog_HAVE
-			dbglog_writeln("Could not create MyNSOpnGLCntxt");
+			dbglog_writeln("Could not create NSOpnGLCntxt");
 #endif
 			goto label_exit;
 		}
 
 		/* fprintf(stderr, "%s\n", "Got OpenGL context"); */
 
-		[MyNSOpnGLCntxt setView: MyNSview];
-		[MyNSOpnGLCntxt update];
+		[NSOpnGLCntxt setView: NSview];
+		[NSOpnGLCntxt update];
 
-		MyAdjustGLforSize(NewWinRect.size.width,
+		AdjustGLforSize(NewWinRect.size.width,
 			NewWinRect.size.height);
 
 #if 0 != vMacScreenDepth
@@ -3238,10 +3238,10 @@ typedef NSUInteger (*modifierFlagsProcPtr)
 	(id self, SEL cmd);
 
 /* Subclass of NSWindow to fix genie effect and support resize events */
-@interface MyClassWindow : NSWindow
+@interface ClassWindow : NSWindow
 @end
 
-@implementation MyClassWindow
+@implementation ClassWindow
 
 #if MayFullScreen
 - (BOOL)canBecomeKeyWindow
@@ -3339,7 +3339,7 @@ typedef NSUInteger (*modifierFlagsProcPtr)
 				modifierFlagsProcPtr imp = (modifierFlagsProcPtr)
 					[NSEvent methodForSelector:sel];
 
-				MyUpdateKeyboardModifiers(imp([NSEvent class], sel));
+				UpdateKeyboardModifiers(imp([NSEvent class], sel));
 			}
 		}
 
@@ -3355,10 +3355,10 @@ typedef NSUInteger (*modifierFlagsProcPtr)
 
 @end
 
-@interface MyClassWindowDelegate : NSObject <NSWindowDelegate>
+@interface ClassWindowDelegate : NSObject <NSWindowDelegate>
 @end
 
-@implementation MyClassWindowDelegate
+@implementation ClassWindowDelegate
 
 - (BOOL)windowShouldClose:(id)sender
 {
@@ -3378,10 +3378,10 @@ typedef NSUInteger (*modifierFlagsProcPtr)
 
 @end
 
-@interface MyClassView : NSView
+@interface ClassView : NSView
 @end
 
-@implementation MyClassView
+@implementation ClassView
 
 - (void)resetCursorRects
 {
@@ -3404,7 +3404,7 @@ typedef NSUInteger (*modifierFlagsProcPtr)
 		be drawn initially, resulting in flicker.
 	*/
 	if (GetOpnGLCntxt()) {
-		MyDrawWithOpenGL(0, 0, vMacScreenHeight, vMacScreenWidth);
+		DrawWithOpenGL(0, 0, vMacScreenHeight, vMacScreenWidth);
 	}
 }
 
@@ -3416,41 +3416,41 @@ CG_EXTERN CGImageRef CGBitmapContextCreateImage(CGContextRef);
 #endif
 
 
-LOCALVAR MyClassWindowDelegate *MyWinDelegate = nil;
+LOCALVAR ClassWindowDelegate *WinDelegate = nil;
 
 LOCALPROC CloseMainWindow(void)
 {
-	if (nil != MyWinDelegate) {
-		[MyWinDelegate release];
-		MyWinDelegate = nil;
+	if (nil != WinDelegate) {
+		[WinDelegate release];
+		WinDelegate = nil;
 	}
 
-	if (nil != MyWindow) {
-		[MyWindow close];
-		MyWindow = nil;
+	if (nil != Window) {
+		[Window close];
+		Window = nil;
 	}
 
-	if (nil != MyNSview) {
-		[MyNSview release];
-		MyNSview = nil;
+	if (nil != NSview) {
+		[NSview release];
+		NSview = nil;
 	}
 
 #if UseCGContextDrawImage
-	if (nil != MyCGcontext) {
-		CGContextFlush(MyCGcontext);
-		CGContextRelease(MyCGcontext);
-		MyCGcontext = nil;
+	if (nil != CGcontext) {
+		CGContextFlush(CGcontext);
+		CGContextRelease(CGcontext);
+		CGcontext = nil;
 	}
 
-	if (NULL != MyPixels) {
-		free(MyPixels);
-		MyPixels = NULL;
+	if (NULL != Pixels) {
+		free(Pixels);
+		Pixels = NULL;
 	}
 #endif
 
-	if (nil != MyNSOpnGLCntxt) {
-		[MyNSOpnGLCntxt release];
-		MyNSOpnGLCntxt = nil;
+	if (nil != NSOpnGLCntxt) {
+		[NSOpnGLCntxt release];
+		NSOpnGLCntxt = nil;
 	}
 }
 
@@ -3460,7 +3460,7 @@ LOCALPROC QZ_SetCaption(void)
 	NSString *string =
 		[[NSString alloc] initWithUTF8String: kStrAppName];
 #endif
-	[MyWindow setTitle: myAppName /* string */];
+	[Window setTitle: myAppName /* string */];
 #if 0
 	[string release];
 #endif
@@ -3500,13 +3500,13 @@ LOCALFUNC blnr CreateMainWindow(void)
 
 #if VarFullScreen
 	if (UseFullScreen) {
-		My_HideMenuBar();
+		_HideMenuBar();
 	} else {
-		My_ShowMenuBar();
+		_ShowMenuBar();
 	}
 #else
 #if MayFullScreen
-	My_HideMenuBar();
+	_HideMenuBar();
 #endif
 #endif
 
@@ -3526,8 +3526,8 @@ LOCALFUNC blnr CreateMainWindow(void)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		NewWindowHeight *= MyWindowScale;
-		NewWindowWidth *= MyWindowScale;
+		NewWindowHeight *= WindowScale;
+		NewWindowWidth *= WindowScale;
 	}
 #endif
 
@@ -3553,8 +3553,8 @@ LOCALFUNC blnr CreateMainWindow(void)
 		ViewVSize = MainScrnBounds.size.height;
 #if EnableMagnify
 		if (UseMagnify) {
-			ViewHSize /= MyWindowScale;
-			ViewVSize /= MyWindowScale;
+			ViewHSize /= WindowScale;
+			ViewVSize /= WindowScale;
 		}
 #endif
 		if (ViewHSize >= vMacScreenWidth) {
@@ -3630,51 +3630,51 @@ LOCALFUNC blnr CreateMainWindow(void)
 #endif
 
 	/* Manually create a window, avoids having a nib file resource */
-	MyWindow = [[MyClassWindow alloc]
+	Window = [[ClassWindow alloc]
 		initWithContentRect: NewWinRect
 		styleMask: style
 		backing: NSBackingStoreBuffered
 		defer: YES];
 
-	if (nil == MyWindow) {
+	if (nil == Window) {
 #if dbglog_HAVE
 		dbglog_writeln("Could not create the Cocoa window");
 #endif
 		goto label_exit;
 	}
 
-	/* [MyWindow setReleasedWhenClosed: YES]; */
+	/* [Window setReleasedWhenClosed: YES]; */
 		/*
 			no need to set current_video as it's the
 			default for NSWindows
 		*/
 	QZ_SetCaption();
-	[MyWindow setAcceptsMouseMovedEvents: YES];
-	[MyWindow setViewsNeedDisplay: NO];
+	[Window setAcceptsMouseMovedEvents: YES];
+	[Window setViewsNeedDisplay: NO];
 
-	[MyWindow registerForDraggedTypes:
+	[Window registerForDraggedTypes:
 		[NSArray arrayWithObjects:
 			NSURLPboardType, NSFilenamesPboardType, nil]];
 
-	MyWinDelegate = [[MyClassWindowDelegate alloc] init];
-	if (nil == MyWinDelegate) {
+	WinDelegate = [[ClassWindowDelegate alloc] init];
+	if (nil == WinDelegate) {
 #if dbglog_HAVE
-		dbglog_writeln("Could not create MyNSview");
+		dbglog_writeln("Could not create NSview");
 #endif
 		goto label_exit;
 	}
-	[MyWindow setDelegate: MyWinDelegate];
+	[Window setDelegate: WinDelegate];
 
-	MyNSview = [[MyClassView alloc] init];
-	if (nil == MyNSview) {
+	NSview = [[ClassView alloc] init];
+	if (nil == NSview) {
 #if dbglog_HAVE
-		dbglog_writeln("Could not create MyNSview");
+		dbglog_writeln("Could not create NSview");
 #endif
 		goto label_exit;
 	}
-	[MyWindow setContentView: MyNSview];
+	[Window setContentView: NSview];
 
-	[MyWindow makeKeyAndOrderFront: nil];
+	[Window makeKeyAndOrderFront: nil];
 
 	/* just in case drawRect didn't get called */
 	if (! GetOpnGLCntxt()) {
@@ -3685,21 +3685,21 @@ LOCALFUNC blnr CreateMainWindow(void)
 	}
 
 #if UseCGContextDrawImage
-	MyPitch = 4 * NewWindowWidth;
-	MyPixels = malloc(NewWindowHeight * MyPitch);
+	Pitch = 4 * NewWindowWidth;
+	Pixels = malloc(NewWindowHeight * Pitch);
 
 	cgColorspace = CGColorSpaceCreateDeviceRGB();
-	MyCGcontext = CGBitmapContextCreate(MyPixels,
+	CGcontext = CGBitmapContextCreate(Pixels,
 		NewWindowWidth, NewWindowHeight,
-		8, MyPitch, cgColorspace,
+		8, Pitch, cgColorspace,
 		kCGImageAlphaNoneSkipFirst);
 	CGColorSpaceRelease(cgColorspace);
 
-	MyNSgfxContext = [NSGraphicsContext
-		graphicsContextWithWindow: MyWindow];
-	[NSGraphicsContext setCurrentContext: MyNSgfxContext];
+	NSgfxContext = [NSGraphicsContext
+		graphicsContextWithWindow: Window];
+	[NSGraphicsContext setCurrentContext: NSgfxContext];
 
-	MyBytesPerPixel = 4;
+	BytesPerPixel = 4;
 #endif
 
 	v = trueblnr;
@@ -3710,22 +3710,22 @@ label_exit:
 }
 
 #if EnableRecreateW
-LOCALPROC ZapMyWState(void)
+LOCALPROC ZapWState(void)
 {
-	MyWindow = nil;
-	MyNSview = nil;
-	MyWinDelegate = nil;
+	Window = nil;
+	NSview = nil;
+	WinDelegate = nil;
 #if UseCGContextDrawImage
-	MyNSgfxContext = nil;
-	MyCGcontext = nil;
-	MyPixels = NULL;
+	NSgfxContext = nil;
+	CGcontext = nil;
+	Pixels = NULL;
 #endif
-	MyNSOpnGLCntxt = nil;
+	NSOpnGLCntxt = nil;
 }
 #endif
 
 #if EnableRecreateW
-struct MyWState {
+struct WState {
 #if MayFullScreen
 	uint16_t f_ViewHSize;
 	uint16_t f_ViewVSize;
@@ -3743,25 +3743,25 @@ struct MyWState {
 #if MayNotFullScreen
 	int f_CurWinIndx;
 #endif
-	NSWindow *f_MyWindow;
-	NSView *f_MyNSview;
-	MyClassWindowDelegate *f_MyWinDelegate;
+	NSWindow *f_Window;
+	NSView *f_NSview;
+	ClassWindowDelegate *f_WinDelegate;
 #if UseCGContextDrawImage
-	NSGraphicsContext *f_MyNSgfxContext;
-	CGContextRef f_MyCGcontext;
-	void *f_MyPixels;
-	uint16_t f_MyPitch;
-	uint8_t f_MyBytesPerPixel;
+	NSGraphicsContext *f_NSgfxContext;
+	CGContextRef f_CGcontext;
+	void *f_Pixels;
+	uint16_t f_Pitch;
+	uint8_t f_BytesPerPixel;
 #endif
-	NSOpenGLContext *f_MyNSOpnGLCntxt;
+	NSOpenGLContext *f_NSOpnGLCntxt;
 	short f_GLhOffset;
 	short f_GLvOffset;
 };
-typedef struct MyWState MyWState;
+typedef struct WState WState;
 #endif
 
 #if EnableRecreateW
-LOCALPROC GetMyWState(MyWState *r)
+LOCALPROC GetWState(WState *r)
 {
 #if MayFullScreen
 	r->f_ViewHSize = ViewHSize;
@@ -3780,24 +3780,24 @@ LOCALPROC GetMyWState(MyWState *r)
 #if MayNotFullScreen
 	r->f_CurWinIndx = CurWinIndx;
 #endif
-	r->f_MyWindow = MyWindow;
-	r->f_MyNSview = MyNSview;
-	r->f_MyWinDelegate = MyWinDelegate;
+	r->f_Window = Window;
+	r->f_NSview = NSview;
+	r->f_WinDelegate = WinDelegate;
 #if UseCGContextDrawImage
-	r->f_MyNSgfxContext = MyNSgfxContext;
-	r->f_MyCGcontext = MyCGcontext;
-	r->f_MyPixels = MyPixels;
-	r->f_MyPitch = MyPitch;
-	r->f_MyBytesPerPixel = MyBytesPerPixel;
+	r->f_NSgfxContext = NSgfxContext;
+	r->f_CGcontext = CGcontext;
+	r->f_Pixels = Pixels;
+	r->f_Pitch = Pitch;
+	r->f_BytesPerPixel = BytesPerPixel;
 #endif
-	r->f_MyNSOpnGLCntxt = MyNSOpnGLCntxt;
+	r->f_NSOpnGLCntxt = NSOpnGLCntxt;
 	r->f_GLhOffset = GLhOffset;
 	r->f_GLvOffset = GLvOffset;
 }
 #endif
 
 #if EnableRecreateW
-LOCALPROC SetMyWState(MyWState *r)
+LOCALPROC SetWState(WState *r)
 {
 #if MayFullScreen
 	ViewHSize = r->f_ViewHSize;
@@ -3816,17 +3816,17 @@ LOCALPROC SetMyWState(MyWState *r)
 #if MayNotFullScreen
 	CurWinIndx = r->f_CurWinIndx;
 #endif
-	MyWindow = r->f_MyWindow;
-	MyNSview = r->f_MyNSview;
-	MyWinDelegate = r->f_MyWinDelegate;
+	Window = r->f_Window;
+	NSview = r->f_NSview;
+	WinDelegate = r->f_WinDelegate;
 #if UseCGContextDrawImage
-	MyNSgfxContext = r->f_MyNSgfxContext;
-	MyCGcontext = r->f_MyCGcontext;
-	MyPixels = r->f_MyPixels;
-	MyPitch = r->f_MyPitch;
-	MyBytesPerPixel = r->f_MyBytesPerPixel;
+	NSgfxContext = r->f_NSgfxContext;
+	CGcontext = r->f_CGcontext;
+	Pixels = r->f_Pixels;
+	Pitch = r->f_Pitch;
+	BytesPerPixel = r->f_BytesPerPixel;
 #endif
-	MyNSOpnGLCntxt = r->f_MyNSOpnGLCntxt;
+	NSOpnGLCntxt = r->f_NSOpnGLCntxt;
 	GLhOffset = r->f_GLhOffset;
 	GLvOffset = r->f_GLvOffset;
 }
@@ -3835,8 +3835,8 @@ LOCALPROC SetMyWState(MyWState *r)
 #if EnableRecreateW
 LOCALPROC ReCreateMainWindow(void)
 {
-	MyWState old_state;
-	MyWState new_state;
+	WState old_state;
+	WState new_state;
 	blnr HadCursorHidden = HaveCursorHidden;
 
 #if VarFullScreen
@@ -3846,8 +3846,8 @@ LOCALPROC ReCreateMainWindow(void)
 	{
 		/* save old position */
 		NSRect r =
-			[NSWindow contentRectForFrameRect: [MyWindow frame]
-				styleMask: [MyWindow styleMask]];
+			[NSWindow contentRectForFrameRect: [Window frame]
+				styleMask: [Window styleMask]];
 		WinPositionWins[CurWinIndx] = r.origin;
 	}
 #endif
@@ -3859,11 +3859,11 @@ LOCALPROC ReCreateMainWindow(void)
 	}
 #endif
 
-	CloseMyOpenGLContext();
+	CloseOpenGLContext();
 
-	GetMyWState(&old_state);
+	GetWState(&old_state);
 
-	ZapMyWState();
+	ZapWState();
 
 #if EnableMagnify
 	UseMagnify = WantMagnify;
@@ -3874,13 +3874,13 @@ LOCALPROC ReCreateMainWindow(void)
 
 	if (! CreateMainWindow()) {
 		CloseMainWindow();
-		SetMyWState(&old_state);
+		SetWState(&old_state);
 
 #if VarFullScreen
 		if (UseFullScreen) {
-			My_HideMenuBar();
+			_HideMenuBar();
 		} else {
-			My_ShowMenuBar();
+			_ShowMenuBar();
 		}
 #endif
 
@@ -3893,13 +3893,13 @@ LOCALPROC ReCreateMainWindow(void)
 #endif
 
 	} else {
-		GetMyWState(&new_state);
-		SetMyWState(&old_state);
+		GetWState(&new_state);
+		SetWState(&old_state);
 		CloseMainWindow();
-		SetMyWState(&new_state);
+		SetWState(&new_state);
 
 		if (HadCursorHidden) {
-			(void) MyMoveMouse(CurMouseH, CurMouseV);
+			(void) MoveMouse(CurMouseH, CurMouseV);
 		}
 	}
 }
@@ -3965,9 +3965,9 @@ LOCALPROC ToggleWantFullScreen(void)
 				NSRect MainScrnBounds = [[NSScreen mainScreen] frame];
 
 				if ((MainScrnBounds.size.width
-						>= vMacScreenWidth * MyWindowScale)
+						>= vMacScreenWidth * WindowScale)
 					&& (MainScrnBounds.size.height
-						>= vMacScreenHeight * MyWindowScale)
+						>= vMacScreenHeight * WindowScale)
 					)
 				{
 					WantMagnify = trueblnr;
@@ -3998,8 +3998,8 @@ LOCALPROC EnterBackground(void)
 
 LOCALPROC LeaveSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Start();
+#if SoundEnabled
+	Sound_Start();
 #endif
 
 	StartUpTimeAdjust();
@@ -4007,8 +4007,8 @@ LOCALPROC LeaveSpeedStopped(void)
 
 LOCALPROC EnterSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
 }
 
@@ -4029,7 +4029,7 @@ LOCALFUNC blnr FindOrMakeNamedChildDirPath(NSString *parentPath,
 				*childPath = r;
 				v = trueblnr;
 			} else {
-				NSString *RslvPath = MyResolveAlias(r, &isDirectory);
+				NSString *RslvPath = ResolveAlias(r, &isDirectory);
 				if (nil != RslvPath) {
 					if (isDirectory) {
 						*childPath = RslvPath;
@@ -4073,7 +4073,7 @@ createDirectoryAtPath:withIntermediateDirectories:attributes:error:
 }
 #endif
 
-@interface MyNSSavePanel : NSObject
+@interface NSSavePanel : NSObject
 - (NSInteger)runModalForDirectory:(NSString *)path
 	file:(NSString *)filename;
 - (void)setNameFieldStringValue:(NSString *)value;
@@ -4086,7 +4086,7 @@ LOCALPROC MakeNewDisk(uint32_t L, NSString *drivename)
 	NSInteger result = NSCancelButton;
 	NSSavePanel *panel = [NSSavePanel savePanel];
 
-	MyBeginDialog();
+	BeginDialog();
 
 	if ([panel respondsToSelector:@selector(setNameFieldStringValue:)])
 	{
@@ -4098,7 +4098,7 @@ LOCALPROC MakeNewDisk(uint32_t L, NSString *drivename)
 		[panel performSelector:@selector(setNameFieldStringValue:)
 			withObject: drivename];
 #endif
-		[((MyNSSavePanel *)panel)
+		[((NSSavePanel *)panel)
 			setNameFieldStringValue: drivename];
 
 		result = [panel runModal];
@@ -4127,14 +4127,14 @@ LOCALPROC MakeNewDisk(uint32_t L, NSString *drivename)
 		[invoc getReturnValue: &result];
 #endif
 		/* an easier way ? seems to work */
-		result = [((MyNSSavePanel *)panel)
+		result = [((NSSavePanel *)panel)
 			runModalForDirectory: nil file: drivename];
 	} else
 	{
 		/* fail */
 	}
 
-	MyEndDialog();
+	EndDialog();
 
 	if (NSOKButton == result) {
 		NSString* filePath = [[panel URL] path];
@@ -4143,7 +4143,7 @@ LOCALPROC MakeNewDisk(uint32_t L, NSString *drivename)
 #else /* SaveDialogEnable */
 	NSString *sPath;
 
-	if (FindOrMakeNamedChildDirPath(MyDataPath, "out", &sPath)) {
+	if (FindOrMakeNamedChildDirPath(DataPath, "out", &sPath)) {
 		NSString *filePath =
 			[sPath stringByAppendingPathComponent: drivename];
 		MakeNewDisk0(L, filePath);
@@ -4161,11 +4161,11 @@ LOCALPROC MakeNewDiskAtDefault(uint32_t L)
 
 LOCALPROC CheckForSavedTasks(void)
 {
-	if (MyEvtQNeedRecover) {
-		MyEvtQNeedRecover = falseblnr;
+	if (EvtQNeedRecover) {
+		EvtQNeedRecover = falseblnr;
 
-		/* attempt cleanup, MyEvtQNeedRecover may get set again */
-		MyEvtQTryRecoverFromFull();
+		/* attempt cleanup, EvtQNeedRecover may get set again */
+		EvtQTryRecoverFromFull();
 	}
 
 	if (RequestMacOff) {
@@ -4201,7 +4201,7 @@ LOCALPROC CheckForSavedTasks(void)
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMouseConstrain();
+		MouseConstrain();
 	}
 #endif
 
@@ -4214,7 +4214,7 @@ LOCALPROC CheckForSavedTasks(void)
 	if (WantScreensChangedCheck) {
 		WantScreensChangedCheck = falseblnr;
 
-		MyUpdateOpenGLContext();
+		UpdateOpenGLContext();
 
 #if VarFullScreen
 		/*
@@ -4329,9 +4329,9 @@ LOCALPROC CheckForSavedTasks(void)
 	{
 		HaveCursorHidden = ! HaveCursorHidden;
 		if (HaveCursorHidden) {
-			MyHideCursor();
+			HideCursor();
 		} else {
-			MyShowCursor();
+			ShowCursor();
 		}
 	}
 
@@ -4341,23 +4341,23 @@ LOCALPROC CheckForSavedTasks(void)
 		If move mouse to dock then cursor is made visible, but then
 		if move directly to our window, cursor is not hidden again.
 	*/
-	if (HaveMyCGCursorIsVisible()) {
+	if (HaveCGCursorIsVisible()) {
 		/* but only in OS X 10.3 and later */
 		/* deprecated in cocoa, but no alternative (?) */
-		if (MyCGCursorIsVisible()) {
+		if (CGCursorIsVisible()) {
 			if (HaveCursorHidden) {
-				MyHideCursor();
-				if (MyCGCursorIsVisible()) {
+				HideCursor();
+				if (CGCursorIsVisible()) {
 					/*
 						didn't work, attempt undo so that
 						hide cursor count won't get large
 					*/
-					MyShowCursor();
+					ShowCursor();
 				}
 			}
 		} else {
 			if (! HaveCursorHidden) {
-				MyShowCursor();
+				ShowCursor();
 				/*
 					don't check if worked, assume can't decrement
 					hide cursor count below 0
@@ -4380,7 +4380,7 @@ LOCALPROC ProcessEventModifiers(NSEvent *event)
 {
 	NSUInteger newMods = [event modifierFlags];
 
-	MyUpdateKeyboardModifiers(newMods);
+	UpdateKeyboardModifiers(newMods);
 }
 
 LOCALPROC ProcessEventLocation(NSEvent *event)
@@ -4388,14 +4388,14 @@ LOCALPROC ProcessEventLocation(NSEvent *event)
 	NSPoint p = [event locationInWindow];
 	NSWindow *w = [event window];
 
-	if (w != MyWindow) {
+	if (w != Window) {
 		if (nil != w) {
 			p = [w convertBaseToScreen: p];
 		}
-		p = [MyWindow convertScreenToBase: p];
+		p = [Window convertScreenToBase: p];
 	}
-	p = [MyNSview convertPoint: p fromView: nil];
-	p.y = [MyNSview frame].size.height - p.y;
+	p = [NSview convertPoint: p fromView: nil];
+	p.y = [NSview frame].size.height - p.y;
 	MousePositionNotify((int) p.x, (int) p.y);
 }
 
@@ -4419,7 +4419,7 @@ LOCALPROC ProcessOneSystemEvent(NSEvent *event)
 			*/
 			ProcessEventLocation(event);
 			ProcessEventModifiers(event);
-			if (([event window] == MyWindow)
+			if (([event window] == Window)
 				&& (! gTrueBackgroundFlag)
 #if MayNotFullScreen
 				&& (WantCursorHidden
@@ -4430,7 +4430,7 @@ LOCALPROC ProcessOneSystemEvent(NSEvent *event)
 #endif
 				)
 			{
-				MyMouseButtonSet(trueblnr);
+				MouseButtonSet(trueblnr);
 			} else {
 				/* doesn't belong to us */
 				[NSApp sendEvent: event];
@@ -4446,11 +4446,11 @@ LOCALPROC ProcessOneSystemEvent(NSEvent *event)
 			*/
 			ProcessEventLocation(event);
 			ProcessEventModifiers(event);
-			if (! MyMouseButtonState) {
+			if (! MouseButtonState) {
 				/* doesn't belong to us */
 				[NSApp sendEvent: event];
 			} else {
-				MyMouseButtonSet(falseblnr);
+				MouseButtonSet(falseblnr);
 			}
 			break;
 
@@ -4463,7 +4463,7 @@ LOCALPROC ProcessOneSystemEvent(NSEvent *event)
 		case NSLeftMouseDragged:
 		case NSRightMouseDragged:
 		case NSOtherMouseDragged:
-			if (! MyMouseButtonState) {
+			if (! MouseButtonState) {
 				/* doesn't belong to us ? */
 				[NSApp sendEvent: event];
 			} else {
@@ -4575,8 +4575,8 @@ label_retry:
 #endif
 
 	if (CheckDateTime()) {
-#if MySoundEnabled
-		MySound_SecondNotify();
+#if SoundEnabled
+		Sound_SecondNotify();
 #endif
 	}
 
@@ -4682,21 +4682,21 @@ LOCALFUNC blnr setupWorkingDirectory(void)
 	myAppName = [[[myAppPath lastPathComponent]
 		stringByDeletingPathExtension] retain];
 
-	MyDataPath = myAppDir;
+	DataPath = myAppDir;
 	if (FindNamedChildDirPath(myAppPath, "Contents", &contentsPath))
 	if (FindNamedChildDirPath(contentsPath, "mnvm_dat", &dataPath))
 	{
-		MyDataPath = dataPath;
+		DataPath = dataPath;
 	}
-	[MyDataPath retain];
+	[DataPath retain];
 
 	return trueblnr;
 }
 
-@interface MyClassApplicationDelegate : NSObject <NSApplicationDelegate>
+@interface ClassApplicationDelegate : NSObject <NSApplicationDelegate>
 @end
 
-@implementation MyClassApplicationDelegate
+@implementation ClassApplicationDelegate
 
 - (BOOL)application:(NSApplication *)theApplication
 	openFile:(NSString *)filename
@@ -4753,23 +4753,23 @@ LOCALFUNC blnr setupWorkingDirectory(void)
 
 @end
 
-LOCALVAR MyClassApplicationDelegate *MyApplicationDelegate = nil;
+LOCALVAR ClassApplicationDelegate *ApplicationDelegate = nil;
 
 LOCALFUNC blnr InitCocoaStuff(void)
 {
-	NSApplication *MyNSApp = [NSApplication sharedApplication];
+	NSApplication *NSApp = [NSApplication sharedApplication];
 		/*
-			in Xcode 6.2, MyNSApp isn't the same as NSApp,
+			in Xcode 6.2, NSApp isn't the same as NSApp,
 			breaks NSApp setDelegate
 		*/
 
-	MyMenuSetup();
+	MenuSetup();
 
-	MyApplicationDelegate = [[MyClassApplicationDelegate alloc] init];
-	[MyNSApp setDelegate: MyApplicationDelegate];
+	ApplicationDelegate = [[ClassApplicationDelegate alloc] init];
+	[NSApp setDelegate: ApplicationDelegate];
 
 #if 0
-	[MyNSApp finishLaunching];
+	[NSApp finishLaunching];
 #endif
 		/*
 			If use finishLaunching, after
@@ -4782,7 +4782,7 @@ LOCALFUNC blnr InitCocoaStuff(void)
 			technique. Was another solution found?
 		*/
 
-	[MyNSApp run];
+	[NSApp run];
 		/*
 			our applicationDidFinishLaunching forces
 			immediate halt.
@@ -4793,14 +4793,14 @@ LOCALFUNC blnr InitCocoaStuff(void)
 
 LOCALPROC UnInitCocoaStuff(void)
 {
-	if (nil != MyApplicationDelegate) {
-		[MyApplicationDelegate release];
+	if (nil != ApplicationDelegate) {
+		[ApplicationDelegate release];
 	}
 	if (nil != myAppName) {
 		[myAppName release];
 	}
-	if (nil != MyDataPath) {
-		[MyDataPath release];
+	if (nil != DataPath) {
+		[DataPath release];
 	}
 }
 
@@ -4812,7 +4812,7 @@ LOCALPROC ZapOSGLUVars(void)
 {
 	InitDrives();
 	ZapWinStateVars();
-#if MySoundEnabled
+#if SoundEnabled
 	ZapAudioVars();
 #endif
 }
@@ -4838,7 +4838,7 @@ LOCALPROC ReserveAllocAll(void)
 		, 5, falseblnr);
 	ReserveAllocOneBlock(&CLUT_final, CLUT_finalsz, 5, falseblnr);
 
-#if MySoundEnabled
+#if SoundEnabled
 	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
 		dbhBufferSize, 5, falseblnr);
 #endif
@@ -4846,7 +4846,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMyMemory(void)
+LOCALFUNC blnr AllocMemory(void)
 {
 #if 0 /* for testing start up error reporting */
 	MacMsg(kStrOutOfMemTitle, kStrOutOfMemMessage, trueblnr);
@@ -4876,7 +4876,7 @@ LOCALFUNC blnr AllocMyMemory(void)
 #endif
 }
 
-LOCALPROC UnallocMyMemory(void)
+LOCALPROC UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		free((char *) ReserveAllocBigBlock);
@@ -4888,13 +4888,13 @@ LOCALFUNC blnr InitOSGLU(void)
 	blnr IsOk = falseblnr;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-	if (AllocMyMemory())
+	if (AllocMemory())
 	if (setupWorkingDirectory())
 #if dbglog_HAVE
 	if (dbglog_open())
 #endif
-#if MySoundEnabled
-	if (MySound_Init())
+#if SoundEnabled
+	if (Sound_Init())
 		/* takes a while to stabilize, do as soon as possible */
 #endif
 	if (LoadMacRom())
@@ -4941,11 +4941,11 @@ LOCALPROC UnInitOSGLU(void)
 #if MayFullScreen
 	UngrabMachine();
 #endif
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
-#if MySoundEnabled
-	MySound_UnInit();
+#if SoundEnabled
+	Sound_UnInit();
 #endif
 #if IncludePbufs
 	UnInitPbufs();
@@ -4960,16 +4960,16 @@ LOCALPROC UnInitOSGLU(void)
 
 	CheckSavedMacMsg();
 
-	CloseMyOpenGLContext();
+	CloseOpenGLContext();
 	CloseMainWindow();
 
 #if MayFullScreen
-	My_ShowMenuBar();
+	_ShowMenuBar();
 #endif
 
 	UnInitCocoaStuff();
 
-	UnallocMyMemory();
+	UnallocMemory();
 
 	[pool release];
 }

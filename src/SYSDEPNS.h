@@ -147,6 +147,6 @@ typedef int32_t simr;
 #define Have_ASR 0
 #endif
 
-#ifndef HaveMySwapUi5r
-#define HaveMySwapUi5r 0
+#ifndef HaveSwapUi5r
+#define HaveSwapUi5r 0
 #endif

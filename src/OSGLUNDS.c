@@ -33,7 +33,7 @@
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
+GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -480,7 +480,7 @@ LOCALVAR blnr UseMagnify = (WantInitMagnify != 0);
 LOCALVAR blnr CurSpeedStopped = trueblnr;
 
 #if EnableMagnify
-#define MaxScale MyWindowScale
+#define MaxScale WindowScale
 #else
 #define MaxScale 1
 #endif
@@ -504,7 +504,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 		((bottom - top) * vMacScreenWidth) >> 3);
 }
 
-LOCALPROC MyDrawChangesAndClear(void)
+LOCALPROC DrawChangesAndClear(void)
 {
 	if (ScreenChangedBottom > ScreenChangedTop) {
 		HaveChangedScreenBuff(ScreenChangedTop, ScreenChangedLeft,
@@ -520,7 +520,7 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 		AutoScrollScreen();
 	}
 #endif
-	MyDrawChangesAndClear();
+	DrawChangesAndClear();
 }
 
 /* --- mouse --- */
@@ -556,8 +556,8 @@ LOCALPROC CheckMouseState(void)
 
 	HaveMouseMotion = trueblnr;
 
-	MyMousePositionSetDelta(MotionX, MotionY);
-	MyMouseButtonSet(0 != (KeysHeld & KEY_A));
+	MousePositionSetDelta(MotionX, MotionY);
+	MouseButtonSet(0 != (KeysHeld & KEY_A));
 }
 
 /* --- keyboard input --- */
@@ -775,15 +775,15 @@ LOCALPROC GetCurrentTicks(void)
 	LastTimeUsec = (uint32_t)t.tv_usec;
 }
 
-/* #define MyInvTimeStep 16626 */ /* TicksPerSecond / 60.14742 */
-#define MyInvTimeStep 17
+/* #define InvTimeStep 16626 */ /* TicksPerSecond / 60.14742 */
+#define InvTimeStep 17
 
 LOCALVAR uint32_t NextTimeSec;
 LOCALVAR uint32_t NextTimeUsec;
 
 LOCALPROC IncrNextTime(void)
 {
-	NextTimeUsec += MyInvTimeStep;
+	NextTimeUsec += InvTimeStep;
 	if (NextTimeUsec >= TicksPerSecond) {
 		NextTimeUsec -= TicksPerSecond;
 		NextTimeSec += 1;
@@ -817,7 +817,7 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 
 	TimeDiff = GetTimeDiff();
 	if (TimeDiff >= 0) {
-		if (TimeDiff > 4 * MyInvTimeStep) {
+		if (TimeDiff > 4 * InvTimeStep) {
 			/* emulation interrupted, forget it */
 			++TrueEmulatedTime;
 			InitNextTime();
@@ -828,7 +828,7 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 				TimeDiff -= TicksPerSecond;
 			} while (TimeDiff >= 0);
 		}
-	} else if (TimeDiff < - 2 * MyInvTimeStep) {
+	} else if (TimeDiff < - 2 * InvTimeStep) {
 		/* clock goofed if ever get here, reset */
 		InitNextTime();
 	}
@@ -908,8 +908,8 @@ LOCALPROC ToggleWantFullScreen(void)
 
 LOCALPROC LeaveSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Start();
+#if SoundEnabled
+	Sound_Start();
 #endif
 
 	StartUpTimeAdjust();
@@ -917,18 +917,18 @@ LOCALPROC LeaveSpeedStopped(void)
 
 LOCALPROC EnterSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
 }
 
 LOCALPROC CheckForSavedTasks(void)
 {
-	if (MyEvtQNeedRecover) {
-		MyEvtQNeedRecover = falseblnr;
+	if (EvtQNeedRecover) {
+		EvtQNeedRecover = falseblnr;
 
-		/* attempt cleanup, MyEvtQNeedRecover may get set again */
-		MyEvtQTryRecoverFromFull();
+		/* attempt cleanup, EvtQNeedRecover may get set again */
+		EvtQTryRecoverFromFull();
 	}
 
 	if (RequestMacOff) {
@@ -1021,7 +1021,7 @@ label_retry:
 	}
 
 	if (CurSpeedStopped) {
-		MyDrawChangesAndClear();
+		DrawChangesAndClear();
 		WaitForTheNextEvent();
 		goto label_retry;
 	}
@@ -1047,8 +1047,8 @@ label_retry:
 	}
 
 	if (CheckDateTime()) {
-#if MySoundEnabled
-		MySound_SecondNotify();
+#if SoundEnabled
+		Sound_SecondNotify();
 #endif
 	}
 
@@ -1263,7 +1263,7 @@ LOCALPROC ReserveAllocAll(void)
 		vMacScreenNumBytes, 5, falseblnr);
 #endif
 
-#if MySoundEnabled
+#if SoundEnabled
 	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
 		dbhBufferSize, 5, falseblnr);
 #endif
@@ -1271,7 +1271,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMyMemory(void)
+LOCALFUNC blnr AllocMemory(void)
 {
 	uimr n;
 	blnr IsOk = falseblnr;
@@ -1296,7 +1296,7 @@ LOCALFUNC blnr AllocMyMemory(void)
 	return IsOk;
 }
 
-LOCALPROC UnallocMyMemory(void)
+LOCALPROC UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		free((char *)ReserveAllocBigBlock);
@@ -1313,15 +1313,15 @@ LOCALFUNC blnr InitOSGLU(void)
 {
 	DS_SysInit();
 
-	if (AllocMyMemory())
+	if (AllocMemory())
 #if dbglog_HAVE
 	if (dbglog_open())
 #endif
 	if (LoadMacRom())
 	if (LoadInitialImages())
 	if (InitLocationDat())
-#if MySoundEnabled
-	if (MySound_Init())
+#if SoundEnabled
+	if (Sound_Init())
 #endif
 	if (Screen_Init())
 	if (KC2MKCInit())
@@ -1339,11 +1339,11 @@ LOCALPROC UnInitOSGLU(void)
 		MacMsgDisplayOff();
 	}
 
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
-#if MySoundEnabled
-	MySound_UnInit();
+#if SoundEnabled
+	Sound_UnInit();
 #endif
 
 	UnInitDrives();
@@ -1352,7 +1352,7 @@ LOCALPROC UnInitOSGLU(void)
 	dbglog_close();
 #endif
 
-	UnallocMyMemory();
+	UnallocMemory();
 	CheckSavedMacMsg();
 }
 

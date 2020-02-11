@@ -640,12 +640,12 @@ LOCALPROC SCC_TxBuffPut(uint8_t Data)
 	}
 }
 
-LOCALVAR uint8_t MyCTSBuffer[4];
+LOCALVAR uint8_t CTSBuffer[4];
 
 LOCALPROC GetCTSpacket(void)
 {
 	/* Get a single buffer worth of packets at a time */
-	ui3p device_buffer = MyCTSBuffer;
+	ui3p device_buffer = CTSBuffer;
 
 #if SCC_dolog
 	dbglog_WriteNote("SCC receiving CTS packet");

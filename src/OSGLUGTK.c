@@ -33,7 +33,7 @@
 
 /* --- some simple utilities --- */
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
+GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 	(void) memcpy((char *)destPtr, (char *)srcPtr, byteCount);
 }
@@ -91,7 +91,7 @@ LOCALPROC dbglog_close0(void)
 
 /* --- debug settings and utilities --- */
 
-#define MyDbgEvents (dbglog_HAVE && 1)
+#define DbgEvents (dbglog_HAVE && 1)
 
 #if ! dbglog_HAVE
 #define WriteExtraErr(s)
@@ -375,7 +375,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 		vMacScreenWidth);
 }
 
-LOCALPROC MyDrawChangesAndClear(void)
+LOCALPROC DrawChangesAndClear(void)
 {
 	if (ScreenChangedBottom > ScreenChangedTop) {
 		HaveChangedScreenBuff(ScreenChangedTop, ScreenChangedLeft,
@@ -386,7 +386,7 @@ LOCALPROC MyDrawChangesAndClear(void)
 
 GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 {
-	MyDrawChangesAndClear();
+	DrawChangesAndClear();
 }
 
 /* --- mouse --- */
@@ -436,7 +436,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 			for a game like arkanoid, would like mouse to still
 			move even when outside window in one direction
 		*/
-		MyMousePositionSet(NewMousePosh, NewMousePosv);
+		MousePositionSet(NewMousePosh, NewMousePosv);
 	}
 
 	WantCursorHidden = ShouldHaveCursorHidden;
@@ -821,14 +821,14 @@ LOCALPROC GetCurrentTicks(void)
 	LastTimeUsec = (uint32_t)t.tv_usec;
 }
 
-#define MyInvTimeStep 16626 /* TicksPerSecond / 60.14742 */
+#define InvTimeStep 16626 /* TicksPerSecond / 60.14742 */
 
 LOCALVAR uint32_t NextTimeSec;
 LOCALVAR uint32_t NextTimeUsec;
 
 LOCALPROC IncrNextTime(void)
 {
-	NextTimeUsec += MyInvTimeStep;
+	NextTimeUsec += InvTimeStep;
 	if (NextTimeUsec >= TicksPerSecond) {
 		NextTimeUsec -= TicksPerSecond;
 		NextTimeSec += 1;
@@ -862,7 +862,7 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 
 	TimeDiff = GetTimeDiff();
 	if (TimeDiff >= 0) {
-		if (TimeDiff > 4 * MyInvTimeStep) {
+		if (TimeDiff > 4 * InvTimeStep) {
 			/* emulation interrupted, forget it */
 			++TrueEmulatedTime;
 			InitNextTime();
@@ -873,7 +873,7 @@ LOCALPROC UpdateTrueEmulatedTime(void)
 				TimeDiff -= TicksPerSecond;
 			} while (TimeDiff >= 0);
 		}
-	} else if (TimeDiff < - 2 * MyInvTimeStep) {
+	} else if (TimeDiff < - 2 * InvTimeStep) {
 		/* clock goofed if ever get here, reset */
 		InitNextTime();
 	}
@@ -939,7 +939,7 @@ static gboolean expose_event(GtkWidget *widget,
 	int x1 = x0 + event->area.width;
 	int y1 = y0 + event->area.height;
 
-#if 0 && MyDbgEvents
+#if 0 && DbgEvents
 	fprintf(stderr, "- event - Expose\n");
 #endif
 
@@ -967,7 +967,7 @@ static gboolean button_press_event(GtkWidget *widget,
 	gpointer user_data)
 {
 	MousePositionNotify(event->x, event->y);
-	MyMouseButtonSet(trueblnr);
+	MouseButtonSet(trueblnr);
 
 	return TRUE;
 }
@@ -977,7 +977,7 @@ static gboolean button_release_event(GtkWidget *widget,
 	gpointer user_data)
 {
 	MousePositionNotify(event->x, event->y);
-	MyMouseButtonSet(falseblnr);
+	MouseButtonSet(falseblnr);
 
 	return TRUE;
 }
@@ -999,7 +999,7 @@ static gboolean motion_notify_event(GtkWidget *widget,
 	}
 
 	MousePositionNotify(x, y);
-	MyMouseButtonSet((state & GDK_BUTTON1_MASK) != 0);
+	MouseButtonSet((state & GDK_BUTTON1_MASK) != 0);
 
 	return TRUE;
 }
@@ -1011,7 +1011,7 @@ static gboolean enter_notify_event(GtkWidget *widget,
 	CaughtMouse = trueblnr;
 
 	MousePositionNotify(event->x, event->y);
-	MyMouseButtonSet((event->state & GDK_BUTTON1_MASK) != 0);
+	MouseButtonSet((event->state & GDK_BUTTON1_MASK) != 0);
 
 	return TRUE;
 }
@@ -1021,7 +1021,7 @@ static gboolean leave_notify_event(GtkWidget *widget,
 	gpointer user_data)
 {
 	MousePositionNotify(event->x, event->y);
-	MyMouseButtonSet((event->state & GDK_BUTTON1_MASK) != 0);
+	MouseButtonSet((event->state & GDK_BUTTON1_MASK) != 0);
 
 	CaughtMouse = falseblnr;
 
@@ -1052,19 +1052,19 @@ LOCALPROC ReconnectKeyCodes3(void)
 LOCALPROC DisconnectKeyCodes3(void)
 {
 	DisconnectKeyCodes2();
-	MyMouseButtonSet(falseblnr);
+	MouseButtonSet(falseblnr);
 }
 
 LOCALVAR blnr ADialogIsUp = falseblnr;
 
-LOCALPROC MyBeginDialog(void)
+LOCALPROC BeginDialog(void)
 {
 	DisconnectKeyCodes3();
 	ADialogIsUp = trueblnr;
 	ForceShowCursor();
 }
 
-LOCALPROC MyEndDialog(void)
+LOCALPROC EndDialog(void)
 {
 	ADialogIsUp = falseblnr;
 	ReconnectKeyCodes3();
@@ -1106,14 +1106,14 @@ static void InsertADisk0(void)
 
 	NativeStrFromCStr(ts, kStrMenuItemOpen, falseblnr);
 
-	MyBeginDialog();
+	BeginDialog();
 	dialog = gtk_file_chooser_dialog_new(ts,
 		GTK_WINDOW(window),
 		GTK_FILE_CHOOSER_ACTION_OPEN,
 		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
 		GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
 		NULL);
-	MyEndDialog();
+	EndDialog();
 
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *filename;
@@ -1129,11 +1129,11 @@ static void InsertADisk0(void)
 
 LOCALPROC CheckForSavedTasks(void)
 {
-	if (MyEvtQNeedRecover) {
-		MyEvtQNeedRecover = falseblnr;
+	if (EvtQNeedRecover) {
+		EvtQNeedRecover = falseblnr;
 
-		/* attempt cleanup, MyEvtQNeedRecover may get set again */
-		MyEvtQTryRecoverFromFull();
+		/* attempt cleanup, EvtQNeedRecover may get set again */
+		EvtQTryRecoverFromFull();
 	}
 
 	if (RequestMacOff) {
@@ -1456,7 +1456,7 @@ static void do_open_item(GtkAction *action, gpointer user_data)
 	RequestInsertDisk = trueblnr;
 }
 
-LOCALPROC MyAppendConvertMenuItem(GtkWidget *the_menu,
+LOCALPROC AppendConvertMenuItem(GtkWidget *the_menu,
 	GCallback c_handler, gpointer gobject, char *s, blnr AddEllipsis)
 {
 	char ts[ClStrMaxLength + 1];
@@ -1469,7 +1469,7 @@ LOCALPROC MyAppendConvertMenuItem(GtkWidget *the_menu,
 	gtk_menu_shell_append(GTK_MENU_SHELL(the_menu), the_item);
 }
 
-LOCALPROC MyAppendSubmenuConvertName(GtkWidget *menubar,
+LOCALPROC AppendSubmenuConvertName(GtkWidget *menubar,
 	GtkWidget *the_menu, char *s)
 {
 	char ts[ClStrMaxLength + 1];
@@ -1528,7 +1528,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMyMemory(void)
+LOCALFUNC blnr AllocMemory(void)
 {
 	uimr n;
 	blnr IsOk = falseblnr;
@@ -1553,7 +1553,7 @@ LOCALFUNC blnr AllocMyMemory(void)
 	return IsOk;
 }
 
-LOCALPROC UnallocMyMemory(void)
+LOCALPROC UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		free((char *)ReserveAllocBigBlock);
@@ -1562,7 +1562,7 @@ LOCALPROC UnallocMyMemory(void)
 
 LOCALFUNC blnr InitOSGLU(void)
 {
-	if (AllocMyMemory())
+	if (AllocMemory())
 #if dbglog_HAVE
 	if (dbglog_open())
 #endif
@@ -1593,7 +1593,7 @@ LOCALPROC UnInitOSGLU(void)
 	dbglog_close();
 #endif
 
-	UnallocMyMemory();
+	UnallocMemory();
 
 	CheckSavedMacMsg();
 }
@@ -1637,30 +1637,30 @@ int main(int argc, char *argv[])
 
 	the_menu = gtk_menu_new();
 
-	MyAppendConvertMenuItem(the_menu,
+	AppendConvertMenuItem(the_menu,
 		G_CALLBACK(do_open_item), NULL, kStrMenuItemOpen, trueblnr);
 
 	the_item = gtk_separator_menu_item_new();
 	gtk_menu_shell_append(GTK_MENU_SHELL(the_menu), the_item);
 
-	MyAppendConvertMenuItem(the_menu,
+	AppendConvertMenuItem(the_menu,
 		G_CALLBACK(do_quit_item), NULL, kStrMenuItemQuit, falseblnr);
 
-	MyAppendSubmenuConvertName(menubar, the_menu, kStrMenuFile);
+	AppendSubmenuConvertName(menubar, the_menu, kStrMenuFile);
 
 	the_menu = gtk_menu_new();
 
-	MyAppendConvertMenuItem(the_menu, G_CALLBACK(do_more_commands_item),
+	AppendConvertMenuItem(the_menu, G_CALLBACK(do_more_commands_item),
 		NULL, kStrMenuItemMore, trueblnr);
 
-	MyAppendSubmenuConvertName(menubar, the_menu, kStrMenuSpecial);
+	AppendSubmenuConvertName(menubar, the_menu, kStrMenuSpecial);
 
 	the_menu = gtk_menu_new();
 
-	MyAppendConvertMenuItem(the_menu,
+	AppendConvertMenuItem(the_menu,
 		G_CALLBACK(do_about_item), NULL, kStrMenuItemAbout, trueblnr);
 
-	MyAppendSubmenuConvertName(menubar, the_menu, kStrMenuHelp);
+	AppendSubmenuConvertName(menubar, the_menu, kStrMenuHelp);
 
 	gtk_box_pack_start(GTK_BOX(vbox), menubar, FALSE, FALSE, 0);
 

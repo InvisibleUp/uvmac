@@ -178,7 +178,7 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 				fprintf(stderr, "posting kICT_Kybd_ReceiveCommand\n");
 #endif
 				ICT_add(kICT_Kybd_ReceiveCommand,
-					6800UL * kCycleScale / 64 * kMyClockMult);
+					6800UL * kCycleScale / 64 * ClockMult);
 
 				if (InquiryCommandTimer != 0) {
 					InquiryCommandTimer = 0; /* abort Inquiry */
@@ -193,7 +193,7 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 					"posting kICT_Kybd_ReceiveEndCommand\n");
 #endif
 				ICT_add(kICT_Kybd_ReceiveEndCommand,
-					6800UL * kCycleScale / 64 * kMyClockMult);
+					6800UL * kCycleScale / 64 * ClockMult);
 			}
 			break;
 	}

@@ -52,7 +52,7 @@
 #if EmASC
 #include "ASCEMDEV.h"
 #else
-#if MySoundEnabled && (CurEmMd != kEmMd_PB100)
+#if SoundEnabled && (CurEmMd != kEmMd_PB100)
 #include "SNDEMDEV.h"
 #endif
 #endif
@@ -116,7 +116,7 @@ LOCALPROC SubTickNotify(int SubTick)
 #if EmASC
 	ASC_SubTick(SubTick);
 #else
-#if MySoundEnabled && (CurEmMd != kEmMd_PB100)
+#if SoundEnabled && (CurEmMd != kEmMd_PB100)
 	MacSound_SubTick(SubTick);
 #else
 	UnusedParam(SubTick);
@@ -124,7 +124,7 @@ LOCALPROC SubTickNotify(int SubTick)
 #endif
 }
 
-#define CyclesScaledPerTick (130240UL * kMyClockMult * kCycleScale)
+#define CyclesScaledPerTick (130240UL * ClockMult * kCycleScale)
 #define CyclesScaledPerSubTick (CyclesScaledPerTick / kNumSubTicks)
 
 LOCALVAR uint16_t SubTickCounter;

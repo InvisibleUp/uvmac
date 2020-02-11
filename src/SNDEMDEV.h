@@ -20,6 +20,6 @@
 #define SNDEMDEV_H
 #endif
 
-#if MySoundEnabled
+#if SoundEnabled
 EXPORTPROC MacSound_SubTick(int SubTick);
 #endif

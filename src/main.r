@@ -19,9 +19,9 @@
 
 /* Alerts Constants */
 
-#define kMyStandardAlert 128
+#define kStandardAlert 128
 
-resource 'DITL' (kMyStandardAlert, purgeable) {
+resource 'DITL' (kStandardAlert, purgeable) {
 	{ /* array DITLarray: 2 elements */
 		/* [1] */
 		{177, 293, 197, 351},
@@ -38,9 +38,9 @@ resource 'DITL' (kMyStandardAlert, purgeable) {
 	}
 };
 
-resource 'ALRT' (kMyStandardAlert, "Non Fatal Error", purgeable) {
+resource 'ALRT' (kStandardAlert, "Non Fatal Error", purgeable) {
 	{40, 43, 249, 405},
-	kMyStandardAlert,
+	kStandardAlert,
 	{ /* array: 4 elements */
 		/* [1] */
 		OK, visible, sound1,

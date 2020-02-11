@@ -254,7 +254,7 @@ LOCALPROC PatchHappyMac(void)
 	}
 
 #else
-	MyMoveBytes((anyp)my_HappyMac_icon,
+	MoveBytes((anyp)my_HappyMac_icon,
 		(anyp)(HappyMacBase + ROM),
 		sizeof(my_HappyMac_icon));
 #endif

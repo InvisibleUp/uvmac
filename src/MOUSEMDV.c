@@ -37,9 +37,9 @@
 
 GLOBALPROC Mouse_Update(void)
 {
-#if HaveMasterMyEvtQLock
-	if (0 != MasterMyEvtQLock) {
-		--MasterMyEvtQLock;
+#if HaveMasterEvtQLock
+	if (0 != MasterEvtQLock) {
+		--MasterEvtQLock;
 	}
 #endif
 
@@ -54,17 +54,17 @@ GLOBALPROC Mouse_Update(void)
 		will mess up memory check
 	*/
 	if (Mouse_Enabled()) {
-		MyEvtQEl *p;
+		EvtQEl *p;
 
 		if (
-#if HaveMasterMyEvtQLock
-			(0 == MasterMyEvtQLock) &&
+#if HaveMasterEvtQLock
+			(0 == MasterEvtQLock) &&
 #endif
-			(nullpr != (p = MyEvtQOutP())))
+			(nullpr != (p = EvtQOutP())))
 		{
 #if EmClassicKbrd
 #if EnableMouseMotion
-			if (MyEvtQElKindMouseDelta == p->kind) {
+			if (EvtQElKindMouseDelta == p->kind) {
 
 				if ((p->u.pos.h != 0) || (p->u.pos.v != 0)) {
 					put_ram_word(0x0828,
@@ -74,11 +74,11 @@ GLOBALPROC Mouse_Update(void)
 					put_ram_byte(0x08CE, get_ram_byte(0x08CF));
 						/* Tell MacOS to redraw the Mouse */
 				}
-				MyEvtQOutDone();
+				EvtQOutDone();
 			} else
 #endif
 #endif
-			if (MyEvtQElKindMousePos == p->kind) {
+			if (EvtQElKindMousePos == p->kind) {
 				uint32_t NewMouse = (p->u.pos.v << 16) | p->u.pos.h;
 
 				if (get_ram_long(0x0828) != NewMouse) {
@@ -94,25 +94,25 @@ GLOBALPROC Mouse_Update(void)
 						/* Tell MacOS to redraw the Mouse */
 #endif
 				}
-				MyEvtQOutDone();
+				EvtQOutDone();
 			}
 		}
 	}
 
 #if EmClassicKbrd
 	{
-		MyEvtQEl *p;
+		EvtQEl *p;
 
 		if (
-#if HaveMasterMyEvtQLock
-			(0 == MasterMyEvtQLock) &&
+#if HaveMasterEvtQLock
+			(0 == MasterEvtQLock) &&
 #endif
-			(nullpr != (p = MyEvtQOutP())))
+			(nullpr != (p = EvtQOutP())))
 		{
-			if (MyEvtQElKindMouseButton == p->kind) {
+			if (EvtQElKindMouseButton == p->kind) {
 				MouseBtnUp = p->u.press.down ? 0 : 1;
-				MyEvtQOutDone();
-				MasterMyEvtQLock = 4;
+				EvtQOutDone();
+				MasterEvtQLock = 4;
 			}
 		}
 	}

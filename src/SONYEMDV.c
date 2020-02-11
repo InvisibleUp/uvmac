@@ -124,7 +124,7 @@ label_1:
 	return result;
 }
 
-LOCALPROC MyMoveBytesVM(CPTR srcPtr, CPTR dstPtr, int32_t byteCount)
+LOCALPROC MoveBytesVM(CPTR srcPtr, CPTR dstPtr, int32_t byteCount)
 {
 	ui3p src;
 	ui3p dst;
@@ -139,10 +139,10 @@ label_1:
 		dst = get_real_address0(byteCount, trueblnr,  dstPtr,
 			&contigDst);
 		if ((0 == contigSrc) || (0 == contigDst)) {
-			ReportAbnormalID(0x0901, "MyMoveBytesVM fails");
+			ReportAbnormalID(0x0901, "MoveBytesVM fails");
 		} else {
 			contig = (contigSrc < contigDst) ? contigSrc : contigDst;
-			MyMoveBytes(src, dst, contig);
+			MoveBytes(src, dst, contig);
 			srcPtr += contig;
 			dstPtr += contig;
 			byteCount -= contig;
@@ -882,7 +882,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 #define kdCtlPosition 16
 
 #if 0
-struct MyDriverDat_R {
+struct DriverDat_R {
 	uint32_t zeroes[4];  /*  0 */
 	uint32_t checkval;   /* 16 */
 	uint32_t pokeaddr;   /* 20 */
@@ -892,7 +892,7 @@ struct MyDriverDat_R {
 	/* total size must be <= FirstDriveVarsOffset */
 };
 
-typedef struct MyDriverDat_R MyDriverDat_R;
+typedef struct DriverDat_R DriverDat_R;
 #endif
 
 
@@ -1052,7 +1052,7 @@ LOCALFUNC tMacErr Sony_PrimeTags(tDrive Drive_No,
 			result = vSonyTransferVM(IsWrite, TheTagBuffer, Drive_No,
 				TagOffset, count, nullpr);
 			if (mnvm_noErr == result) {
-				MyMoveBytesVM(TheTagBuffer + count - 12, 0x02FC, 12);
+				MoveBytesVM(TheTagBuffer + count - 12, 0x02FC, 12);
 			}
 		} else {
 			if (! IsWrite) {
@@ -1452,7 +1452,7 @@ LOCALFUNC tMacErr Sony_Status(CPTR p)
 			if (DelayUntilNextInsert > 4) {
 				DelayUntilNextInsert = 4;
 			}
-			MyMoveBytesVM(Src, ParamBlk + kcsParam, 22);
+			MoveBytesVM(Src, ParamBlk + kcsParam, 22);
 			result = mnvm_noErr;
 		}
 	} else {

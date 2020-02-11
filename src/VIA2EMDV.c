@@ -667,7 +667,7 @@ GLOBALFUNC uint8_t VIA2_ShiftOutData(void)
 	}
 }
 
-#define CyclesPerViaTime (10 * kMyClockMult)
+#define CyclesPerViaTime (10 * ClockMult)
 #define CyclesScaledPerViaTime (kCycleScale * CyclesPerViaTime)
 
 LOCALVAR blnr VIA2_T1Running = trueblnr;

@@ -38,9 +38,9 @@
 /* --- adapting to API/ABI version differences --- */
 
 #ifdef UNICODE
-#define MyUseUni 1
+#define UseUni 1
 #else
-#define MyUseUni 0
+#define UseUni 0
 #endif
 
 #ifdef _WIN32_WCE
@@ -50,7 +50,7 @@
 #endif
 
 
-#define My_CSIDL_APPDATA 0x001a
+#define _CSIDL_APPDATA 0x001a
 
 typedef BOOL (WINAPI *SHGetSpecialFolderPathProcPtr) (
 	HWND hwndOwner,
@@ -69,7 +69,7 @@ LOCALFUNC blnr HaveMySHGetSpecialFolderPath(void)
 			MySHGetSpecialFolderPath =
 				(SHGetSpecialFolderPathProcPtr)
 				GetProcAddress(hLibModule,
-#if MyUseUni
+#if UseUni
 					TEXT("SHGetSpecialFolderPathW")
 #else
 					TEXT("SHGetSpecialFolderPathA")
@@ -87,7 +87,7 @@ LOCALFUNC blnr HaveMySHGetSpecialFolderPath(void)
 
 #include "STRCONST.h"
 
-#if MyUseUni
+#if UseUni
 #define NeedCell2UnicodeMap 1
 #else
 #define NeedCell2WinAsciiMap 1
@@ -106,7 +106,7 @@ LOCALPROC NativeStrFromCStr(LPTSTR r, char *s, blnr AddEllipsis)
 
 	for (i = 0; i < L; ++i) {
 		r[i] = (TCHAR)
-#if MyUseUni
+#if UseUni
 			Cell2UnicodeMap[ps[i]];
 #else
 			Cell2WinAsciiMap[ps[i]];
@@ -114,7 +114,7 @@ LOCALPROC NativeStrFromCStr(LPTSTR r, char *s, blnr AddEllipsis)
 	}
 
 	if (AddEllipsis) {
-#if MyUseUni
+#if UseUni
 		r[L] = 0x2026;
 		++L;
 #else
@@ -258,7 +258,7 @@ LOCALPROC dbglog_close0(void)
 
 #define TestBit(i, p) (((unsigned long)(i) & PowOf2(p)) != 0)
 
-GLOBALOSGLUPROC MyMoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
+GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 {
 /*
 	must work even if blocks overlap in memory
@@ -411,7 +411,7 @@ LOCALPROC ForceShowCursor(void)
 
 /* cursor moving */
 
-LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
+LOCALFUNC blnr MoveMouse(int16_t h, int16_t v)
 {
 	POINT NewMousePos;
 	uint32_t difftime;
@@ -432,8 +432,8 @@ LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		x *= MyWindowScale;
-		y *= MyWindowScale;
+		x *= WindowScale;
+		y *= WindowScale;
 	}
 #endif
 
@@ -466,7 +466,7 @@ LOCALFUNC blnr MyMoveMouse(int16_t h, int16_t v)
 LOCALPROC StartSaveMouseMotion(void)
 {
 	if (! HaveMouseMotion) {
-		if (MyMoveMouse(ViewHStart + (ViewHSize / 2),
+		if (MoveMouse(ViewHStart + (ViewHSize / 2),
 				ViewVStart + (ViewVSize / 2)))
 		{
 			SavedMouseH = ViewHStart + (ViewHSize / 2);
@@ -481,30 +481,30 @@ LOCALPROC StartSaveMouseMotion(void)
 LOCALPROC StopSaveMouseMotion(void)
 {
 	if (HaveMouseMotion) {
-		(void) MyMoveMouse(CurMouseH, CurMouseV);
+		(void) MoveMouse(CurMouseH, CurMouseV);
 		HaveMouseMotion = falseblnr;
 	}
 }
 #endif
 
-LOCALVAR blnr MyMouseCaptured = falseblnr;
+LOCALVAR blnr MouseCaptured = falseblnr;
 
-LOCALPROC MyMouseCaptureSet(blnr v)
+LOCALPROC MouseCaptureSet(blnr v)
 {
-	if (v != MyMouseCaptured) {
+	if (v != MouseCaptured) {
 		if (v) {
 			(void) SetCapture(MainWnd);
 		} else {
 			(void) ReleaseCapture();
 		}
-		MyMouseCaptured = v;
+		MouseCaptured = v;
 	}
 }
 
 LOCALPROC SetCurMouseButton(blnr v)
 {
-	MyMouseButtonSet(v);
-	MyMouseCaptureSet(v);
+	MouseButtonSet(v);
+	MouseCaptureSet(v);
 }
 
 /* keyboard */
@@ -543,186 +543,186 @@ LOCALPROC SetCurMouseButton(blnr v)
 #endif
 
 #if ItnlKyBdFix
-LOCALVAR uint8_t MyVkMapA[256];
+LOCALVAR uint8_t VkMapA[256];
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkSwapZY(void)
+LOCALPROC VkSwapZY(void)
 {
-	MyVkMapA['Z'] = 'Y';
-	MyVkMapA['Y'] = 'Z';
+	VkMapA['Z'] = 'Y';
+	VkMapA['Y'] = 'Z';
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkSwapGraveQuote(void)
+LOCALPROC VkSwapGraveQuote(void)
 {
-	MyVkMapA[myVK_Grave] = myVK_SingleQuote;
-	MyVkMapA[myVK_SingleQuote] = myVK_Grave;
+	VkMapA[myVK_Grave] = myVK_SingleQuote;
+	VkMapA[myVK_SingleQuote] = myVK_Grave;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkSwapSlashSubtract(void)
+LOCALPROC VkSwapSlashSubtract(void)
 {
-	MyVkMapA[myVK_Slash] = myVK_Subtract;
-	MyVkMapA[myVK_Subtract] = myVK_Slash;
+	VkMapA[myVK_Slash] = myVK_Subtract;
+	VkMapA[myVK_Subtract] = myVK_Slash;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkSwapAQZWGraveQuote(void)
+LOCALPROC VkSwapAQZWGraveQuote(void)
 {
-	MyVkSwapGraveQuote();
-	MyVkMapA['A'] = 'Q';
-	MyVkMapA['Q'] = 'A';
-	MyVkMapA['Z'] = 'W';
-	MyVkMapA['W'] = 'Z';
+	VkSwapGraveQuote();
+	VkMapA['A'] = 'Q';
+	VkMapA['Q'] = 'A';
+	VkMapA['Z'] = 'W';
+	VkMapA['W'] = 'Z';
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapBelgian(void)
+LOCALPROC VkMapBelgian(void)
 {
-	MyVkSwapAQZWGraveQuote();
-	MyVkMapA['M'] = myVK_SemiColon;
-	MyVkMapA[myVK_SemiColon] = myVK_RightBracket;
-	MyVkMapA[myVK_RightBracket] = myVK_LeftBracket;
-	MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-	MyVkMapA[myVK_Subtract] = myVK_Equal;
-	MyVkMapA[myVK_Equal] = myVK_Slash;
-	MyVkMapA[myVK_Slash] = myVK_Period;
-	MyVkMapA[myVK_Period] = myVK_Comma;
-	MyVkMapA[myVK_Comma] = 'M';
+	VkSwapAQZWGraveQuote();
+	VkMapA['M'] = myVK_SemiColon;
+	VkMapA[myVK_SemiColon] = myVK_RightBracket;
+	VkMapA[myVK_RightBracket] = myVK_LeftBracket;
+	VkMapA[myVK_LeftBracket] = myVK_Subtract;
+	VkMapA[myVK_Subtract] = myVK_Equal;
+	VkMapA[myVK_Equal] = myVK_Slash;
+	VkMapA[myVK_Slash] = myVK_Period;
+	VkMapA[myVK_Period] = myVK_Comma;
+	VkMapA[myVK_Comma] = 'M';
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapSwiss(void)
+LOCALPROC VkMapSwiss(void)
 {
-	MyVkSwapZY();
-	MyVkMapA[myVK_OEM_8] = myVK_BackSlash;
-	MyVkMapA[myVK_BackSlash] = myVK_SingleQuote;
-	MyVkMapA[myVK_SingleQuote] = myVK_SemiColon;
-	MyVkMapA[myVK_SemiColon] = myVK_LeftBracket;
-	MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-	MyVkMapA[myVK_Subtract] = myVK_Slash;
-	MyVkMapA[myVK_Slash] = myVK_Grave;
-	MyVkMapA[myVK_Grave] = myVK_RightBracket;
-	MyVkMapA[myVK_RightBracket] = myVK_Equal;
+	VkSwapZY();
+	VkMapA[myVK_OEM_8] = myVK_BackSlash;
+	VkMapA[myVK_BackSlash] = myVK_SingleQuote;
+	VkMapA[myVK_SingleQuote] = myVK_SemiColon;
+	VkMapA[myVK_SemiColon] = myVK_LeftBracket;
+	VkMapA[myVK_LeftBracket] = myVK_Subtract;
+	VkMapA[myVK_Subtract] = myVK_Slash;
+	VkMapA[myVK_Slash] = myVK_Grave;
+	VkMapA[myVK_Grave] = myVK_RightBracket;
+	VkMapA[myVK_RightBracket] = myVK_Equal;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapDanish(void)
+LOCALPROC VkMapDanish(void)
 {
-	MyVkMapA[myVK_Equal] = myVK_Subtract;
-	MyVkMapA[myVK_Subtract] = myVK_Slash;
-	MyVkMapA[myVK_Slash] = myVK_BackSlash;
-	MyVkMapA[myVK_BackSlash] = myVK_Grave;
-	MyVkMapA[myVK_Grave] = myVK_SemiColon;
-	MyVkMapA[myVK_SemiColon] = myVK_RightBracket;
-	MyVkMapA[myVK_RightBracket] = myVK_LeftBracket;
-	MyVkMapA[myVK_LeftBracket] = myVK_Equal;
+	VkMapA[myVK_Equal] = myVK_Subtract;
+	VkMapA[myVK_Subtract] = myVK_Slash;
+	VkMapA[myVK_Slash] = myVK_BackSlash;
+	VkMapA[myVK_BackSlash] = myVK_Grave;
+	VkMapA[myVK_Grave] = myVK_SemiColon;
+	VkMapA[myVK_SemiColon] = myVK_RightBracket;
+	VkMapA[myVK_RightBracket] = myVK_LeftBracket;
+	VkMapA[myVK_LeftBracket] = myVK_Equal;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapBritish(void)
+LOCALPROC VkMapBritish(void)
 {
-	MyVkMapA[myVK_OEM_8] = myVK_Grave;
-	MyVkMapA[myVK_Grave] = myVK_SingleQuote;
-	MyVkMapA[myVK_SingleQuote] = myVK_BackSlash;
-	MyVkMapA[myVK_BackSlash] = myVK_OEM_102;
+	VkMapA[myVK_OEM_8] = myVK_Grave;
+	VkMapA[myVK_Grave] = myVK_SingleQuote;
+	VkMapA[myVK_SingleQuote] = myVK_BackSlash;
+	VkMapA[myVK_BackSlash] = myVK_OEM_102;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapSpanish(void)
+LOCALPROC VkMapSpanish(void)
 {
-	MyVkMapA[myVK_SemiColon] = myVK_LeftBracket;
-	MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-	MyVkMapA[myVK_Subtract] = myVK_Slash;
-	MyVkMapA[myVK_Slash] = myVK_BackSlash;
-	MyVkMapA[myVK_BackSlash] = myVK_Grave;
-	MyVkMapA[myVK_Grave] = myVK_SemiColon;
+	VkMapA[myVK_SemiColon] = myVK_LeftBracket;
+	VkMapA[myVK_LeftBracket] = myVK_Subtract;
+	VkMapA[myVK_Subtract] = myVK_Slash;
+	VkMapA[myVK_Slash] = myVK_BackSlash;
+	VkMapA[myVK_BackSlash] = myVK_Grave;
+	VkMapA[myVK_Grave] = myVK_SemiColon;
 
-	MyVkMapA[myVK_RightBracket] = myVK_Equal;
-	MyVkMapA[myVK_Equal] = myVK_RightBracket;
+	VkMapA[myVK_RightBracket] = myVK_Equal;
+	VkMapA[myVK_Equal] = myVK_RightBracket;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapDutch(void)
+LOCALPROC VkMapDutch(void)
 {
-	MyVkSwapGraveQuote();
-	MyVkMapA[myVK_SemiColon] = myVK_RightBracket;
-	MyVkMapA[myVK_RightBracket] = myVK_LeftBracket;
-	MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-	MyVkMapA[myVK_Subtract] = myVK_Slash;
-	MyVkMapA[myVK_Slash] = myVK_Equal;
-	MyVkMapA[myVK_Equal] = myVK_SemiColon;
+	VkSwapGraveQuote();
+	VkMapA[myVK_SemiColon] = myVK_RightBracket;
+	VkMapA[myVK_RightBracket] = myVK_LeftBracket;
+	VkMapA[myVK_LeftBracket] = myVK_Subtract;
+	VkMapA[myVK_Subtract] = myVK_Slash;
+	VkMapA[myVK_Slash] = myVK_Equal;
+	VkMapA[myVK_Equal] = myVK_SemiColon;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapGreekIBM(void)
+LOCALPROC VkMapGreekIBM(void)
 {
-	MyVkSwapSlashSubtract();
-	MyVkMapA[myVK_LeftBracket] = myVK_Equal;
-	MyVkMapA[myVK_Equal] = myVK_LeftBracket;
+	VkSwapSlashSubtract();
+	VkMapA[myVK_LeftBracket] = myVK_Equal;
+	VkMapA[myVK_Equal] = myVK_LeftBracket;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapFrench(void)
+LOCALPROC VkMapFrench(void)
 {
-	MyVkSwapAQZWGraveQuote();
-	MyVkMapA['M'] = myVK_SemiColon;
-	MyVkMapA[myVK_SemiColon] = myVK_RightBracket;
-	MyVkMapA[myVK_RightBracket] = myVK_LeftBracket;
-	MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-	MyVkMapA[myVK_Comma] = 'M';
-	MyVkMapA[myVK_Period] = myVK_Comma;
-	MyVkMapA[myVK_Slash] = myVK_Period;
-	MyVkMapA[myVK_OEM_8] = myVK_Slash;
+	VkSwapAQZWGraveQuote();
+	VkMapA['M'] = myVK_SemiColon;
+	VkMapA[myVK_SemiColon] = myVK_RightBracket;
+	VkMapA[myVK_RightBracket] = myVK_LeftBracket;
+	VkMapA[myVK_LeftBracket] = myVK_Subtract;
+	VkMapA[myVK_Comma] = 'M';
+	VkMapA[myVK_Period] = myVK_Comma;
+	VkMapA[myVK_Slash] = myVK_Period;
+	VkMapA[myVK_OEM_8] = myVK_Slash;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapGerman(void)
+LOCALPROC VkMapGerman(void)
 {
-	MyVkSwapZY();
-	MyVkMapSpanish();
+	VkSwapZY();
+	VkMapSpanish();
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapBosnian(void)
+LOCALPROC VkMapBosnian(void)
 {
-	MyVkSwapZY();
+	VkSwapZY();
 	/* not in Windows 95 */
-	MyVkSwapSlashSubtract();
+	VkSwapSlashSubtract();
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapBulgarian(void)
+LOCALPROC VkMapBulgarian(void)
 {
-	MyVkMapA[myVK_OEM_8] = myVK_Comma;
-	MyVkMapA[myVK_Comma] = 'Q';
-	MyVkMapA['Q'] = myVK_Period;
-	MyVkMapA[myVK_Period] = myVK_Equal;
+	VkMapA[myVK_OEM_8] = myVK_Comma;
+	VkMapA[myVK_Comma] = 'Q';
+	VkMapA['Q'] = myVK_Period;
+	VkMapA[myVK_Period] = myVK_Equal;
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyVkMapFromLayout(uimr sv)
+LOCALPROC VkMapFromLayout(uimr sv)
 {
 	int i;
 
 	for (i = 0; i < 256; ++i) {
-		MyVkMapA[i] = i;
+		VkMapA[i] = i;
 	}
 
 	switch (sv) {
@@ -731,549 +731,549 @@ LOCALPROC MyVkMapFromLayout(uimr sv)
 			break;
 		case 0x0000041c:
 			/* Albanian; */
-			MyVkSwapZY();
+			VkSwapZY();
 			break;
 		case 0x0000042B:
 			/* Armenian Eastern; */
-			MyVkMapDutch();
+			VkMapDutch();
 			break;
 		case 0x0001042B:
 			/* Armenian Western; */
-			MyVkMapDutch();
+			VkMapDutch();
 			break;
 		case 0x0000042C:
 			/* not in Windows 95 */
 			/* Azeri Latin */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x0001080C:
 			/* Belgian (comma) */
-			MyVkMapBelgian();
+			VkMapBelgian();
 			break;
 		case 0x0000080c:
 			/* Belgian French */
-			MyVkMapBelgian();
+			VkMapBelgian();
 			break;
 		case 0x00000813:
 			/* not in Windows 95 */
 			/* Belgian (period); */
-			MyVkMapBelgian();
+			VkMapBelgian();
 			break;
 		case 0x0000141A:
 			/* not in Windows 95 */
 			/* Bosnian */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			break;
 		case 0x00000809:
 			/* British / United Kingdom */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x00000452:
 			/* not in Windows 95 */
 			/* United Kingdom Extended */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x00000402:
 			/* Bulgarian */
 			/* not same in Windows 95 */
-			MyVkMapBulgarian();
+			VkMapBulgarian();
 			break;
 		case 0x00030402:
 			/* Bulgarian */
-			MyVkMapBulgarian();
+			VkMapBulgarian();
 			break;
 		case 0x00020402:
 			/* Bulgarian (Phonetic) */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			break;
 		case 0x00001009:
 			/* Canadian Multilingual */
 			/* not in Windows 95 */
-			MyVkSwapGraveQuote();
+			VkSwapGraveQuote();
 			break;
 		case 0x00011009:
 			/* Canadian Standard */
-			MyVkSwapGraveQuote();
+			VkSwapGraveQuote();
 			break;
 		case 0x0000041a:
 			/* Croatian */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			break;
 		case 0x00000405:
 			/* Czech */
-			MyVkMapBosnian();
+			VkMapBosnian();
 #if 0
 			/* but Windows 7 gives */
-			MyVkSwapZY();
-			MyVkMapA[myVK_Equal] = myVK_Subtract;
-			MyVkMapA[myVK_Subtract] = myVK_Slash;
-			MyVkMapA[myVK_Slash] = myVK_Equal;
+			VkSwapZY();
+			VkMapA[myVK_Equal] = myVK_Subtract;
+			VkMapA[myVK_Subtract] = myVK_Slash;
+			VkMapA[myVK_Slash] = myVK_Equal;
 #endif
 			break;
 		case 0x00020405:
 			/* Czech (Programmers) */
 			/* only in Windows 95 */
-			/* MyVkSwapZY(); */
+			/* VkSwapZY(); */
 			break;
 		case 0x00010405:
 			/* Czech (Qwerty) */
 			/* only in Windows 95 */
-			/* MyVkSwapZY(); */
+			/* VkSwapZY(); */
 			break;
 		case 0x00000406:
 			/* Danish */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x00000413:
 			/* Dutch */
-			MyVkMapDutch();
+			VkMapDutch();
 			break;
 		case 0x00000425:
 			/* Estonian */
-			MyVkMapA[myVK_Grave] = myVK_LeftBracket;
-			MyVkMapA[myVK_LeftBracket] = myVK_RightBracket;
-			MyVkMapA[myVK_RightBracket] = myVK_Slash;
-			MyVkMapA[myVK_Slash] = myVK_SingleQuote;
-			MyVkMapA[myVK_SingleQuote] = myVK_Grave;
+			VkMapA[myVK_Grave] = myVK_LeftBracket;
+			VkMapA[myVK_LeftBracket] = myVK_RightBracket;
+			VkMapA[myVK_RightBracket] = myVK_Slash;
+			VkMapA[myVK_Slash] = myVK_SingleQuote;
+			VkMapA[myVK_SingleQuote] = myVK_Grave;
 			/* only in Windows 95 ? */
-			/* MyVkMapA[VK_DECIMAL] = VK_DELETE; */
+			/* VkMapA[VK_DECIMAL] = VK_DELETE; */
 			break;
 		case 0x00000438:
 			/* Faeroe Islands */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0000040b:
 			/* Finnish */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0001083B:
 			/* not in Windows 95 */
 			/* Finnish with Sami */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0000040c:
-			/* v = kMyKbdFrench; */
+			/* v = kKbdFrench; */
 			/* French */
-			MyVkMapFrench();
+			VkMapFrench();
 			break;
 		case 0x00000c0c:
 			/* French Canadian */
-			MyVkSwapGraveQuote();
+			VkSwapGraveQuote();
 			break;
 		case 0x00011809:
 			/* not in Windows 95 */
 			/* Gaelic */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x00010407:
 			/* German (IBM) */
-			MyVkMapGerman();
+			VkMapGerman();
 			break;
 		case 0x00000407:
 			/* German (Standard) */
-			MyVkMapGerman();
+			VkMapGerman();
 			break;
 		case 0x00010408:
 			/* Greek IBM 220 */
 			/* not in Windows 95 */
-			MyVkMapGreekIBM();
+			VkMapGreekIBM();
 			break;
 		case 0x00030408:
 			/* Greek IBM 319 */
 			/* not in Windows 95 */
-			MyVkMapGreekIBM();
+			VkMapGreekIBM();
 			break;
 		case 0x00020408:
 			/* Greek Latin IBM 220 */
 			/* not in Windows 95 */
-			MyVkSwapSlashSubtract();
+			VkSwapSlashSubtract();
 			break;
 		case 0x00040408:
 			/* Greek Latin IBM 319 */
 			/* not in Windows 95 */
-			MyVkSwapSlashSubtract();
+			VkSwapSlashSubtract();
 			break;
 		case 0x0000040e:
 			/* Hungarian */
-			MyVkMapBosnian();
-			MyVkMapA[myVK_Grave] = '0';
-			MyVkMapA['0'] = myVK_Grave;
+			VkMapBosnian();
+			VkMapA[myVK_Grave] = '0';
+			VkMapA['0'] = myVK_Grave;
 			break;
 		case 0x0001040E:
 			/* Hungarian (101 Keys) */
-			MyVkMapA[myVK_Grave] = '0';
-			MyVkMapA['0'] = myVK_Grave;
+			VkMapA[myVK_Grave] = '0';
+			VkMapA['0'] = myVK_Grave;
 			break;
 		case 0x0000040f:
 			/* Icelandic */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x00001809:
 			/* Irish */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x00000410:
 			/* Italian */
-			MyVkMapSpanish();
+			VkMapSpanish();
 			break;
 		case 0x00010410:
 			/* Italian 142 */
-			MyVkMapSpanish();
+			VkMapSpanish();
 			break;
 		case 0x0000080a:
 			/* Latin American */
-			MyVkMapSpanish();
+			VkMapSpanish();
 			break;
 		case 0x0000046E:
 			/* Luxembourgish */
-			MyVkMapSwiss();
+			VkMapSwiss();
 			break;
 		case 0x00000414:
 			/* Norwegian */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0000043B:
 			/* Norwegian with Sami */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x00010415:
 			/* Polish (214) */
-			MyVkSwapZY();
+			VkSwapZY();
 			/* not in windows 95 */
-			MyVkMapA[myVK_Equal] = myVK_Subtract;
-			MyVkMapA[myVK_Subtract] = myVK_Slash;
-			MyVkMapA[myVK_Slash] = myVK_Equal;
+			VkMapA[myVK_Equal] = myVK_Subtract;
+			VkMapA[myVK_Subtract] = myVK_Slash;
+			VkMapA[myVK_Slash] = myVK_Equal;
 			break;
 		case 0x00010416:
 			/* Porguguese (Brazilian ABNT2) */
-			/* MyVkMapA[myVK_OEM_8] = ??; */
-			/* MyVkMapA[VK_SEPARATOR] = ??; */
+			/* VkMapA[myVK_OEM_8] = ??; */
+			/* VkMapA[VK_SEPARATOR] = ??; */
 			break;
 		case 0x00000816:
 			/* Porguguese (Standard) */
-			MyVkMapA[myVK_SemiColon] = myVK_RightBracket;
-			MyVkMapA[myVK_RightBracket] = myVK_Equal;
-			MyVkMapA[myVK_Equal] = myVK_LeftBracket;
-			MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-			MyVkMapA[myVK_Subtract] = myVK_Slash;
-			MyVkMapA[myVK_Slash] = myVK_BackSlash;
-			MyVkMapA[myVK_BackSlash] = myVK_Grave;
-			MyVkMapA[myVK_Grave] = myVK_SemiColon;
+			VkMapA[myVK_SemiColon] = myVK_RightBracket;
+			VkMapA[myVK_RightBracket] = myVK_Equal;
+			VkMapA[myVK_Equal] = myVK_LeftBracket;
+			VkMapA[myVK_LeftBracket] = myVK_Subtract;
+			VkMapA[myVK_Subtract] = myVK_Slash;
+			VkMapA[myVK_Slash] = myVK_BackSlash;
+			VkMapA[myVK_BackSlash] = myVK_Grave;
+			VkMapA[myVK_Grave] = myVK_SemiColon;
 			break;
 		case 0x00000418:
 			/* Romanian (Legacy) */
-			MyVkSwapZY();
+			VkSwapZY();
 			/* only in Windows 95 */
-			/* MyVkSwapSlashSubtract(); */
+			/* VkSwapSlashSubtract(); */
 			break;
 		case 0x0002083B:
 			/* Sami Extended Finland-Sweden */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0001043B:
 			/* Sami Extended Norway */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x00010C1A:
 			/* in Windows 95 */
 			/* Serbian (Latin) */
-			MyVkSwapZY();
+			VkSwapZY();
 			break;
 		case 0x0000081A:
 			/* not in Windows 95 */
 			/* Serbian (Latin) */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			break;
 		case 0x0000041b:
 			/* Slovak */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			/* not in Windows 95 */
-			MyVkMapA[myVK_OEM_8] = myVK_Equal;
+			VkMapA[myVK_OEM_8] = myVK_Equal;
 			break;
 		case 0x00000424:
 			/* Slovenian */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			break;
 		case 0x0000040A:
 			/* Spanish, not windows 95 */
-			MyVkMapSpanish();
+			VkMapSpanish();
 			break;
 		case 0x0001040A:
 			/* Spanish Variation, not windows 95 */
-			MyVkMapA[myVK_OEM_8] = myVK_Slash;
-			MyVkMapA[myVK_Slash] = myVK_BackSlash;
-			MyVkMapA[myVK_BackSlash] = myVK_Grave;
-			MyVkMapA[myVK_Grave] = myVK_SemiColon;
-			MyVkMapA[myVK_SemiColon] = myVK_RightBracket;
-			MyVkMapA[myVK_RightBracket] = myVK_LeftBracket;
-			MyVkMapA[myVK_LeftBracket] = myVK_Equal;
+			VkMapA[myVK_OEM_8] = myVK_Slash;
+			VkMapA[myVK_Slash] = myVK_BackSlash;
+			VkMapA[myVK_BackSlash] = myVK_Grave;
+			VkMapA[myVK_Grave] = myVK_SemiColon;
+			VkMapA[myVK_SemiColon] = myVK_RightBracket;
+			VkMapA[myVK_RightBracket] = myVK_LeftBracket;
+			VkMapA[myVK_LeftBracket] = myVK_Equal;
 			break;
 		case 0x00000c0a:
-			/* kMyKbdSpanish; */
+			/* kKbdSpanish; */
 			/* Spanish Modern, windows 95 */
-			MyVkMapSpanish();
+			VkMapSpanish();
 			break;
 		case 0x00000403:
 			/* Spanish Traditional */
-			MyVkMapSpanish();
+			VkMapSpanish();
 			break;
 		case 0x0000041d:
 			/* Swedish */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0000083B:
 			/* not in windows 95 */
 			/* Swedish with Sami */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0000100c:
 			/* Swiss French */
-			MyVkMapSwiss();
+			VkMapSwiss();
 			break;
 		case 0x00000807:
 			/* Swiss German */
-			MyVkMapSwiss();
+			VkMapSwiss();
 			break;
 		case 0x0000085D:
 			/* Inuktitut Latin */
 			/* in windows 7, not XP */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x0001045D:
 			/* Inuktitut - Naqittaut */
-			MyVkMapBritish();
+			VkMapBritish();
 			break;
 		case 0x0000046F:
 			/* Greenlandic */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x00020427:
 			/* Lithuanian Standard */
-			MyVkMapDanish();
+			VkMapDanish();
 			break;
 		case 0x0000042f:
 			/* Macedonian (FYROM) - Standard */
-			MyVkMapBosnian();
+			VkMapBosnian();
 			break;
 		case 0x0000042E:
 			/* Sorbian Standard (Legacy) */
-			MyVkMapGerman();
+			VkMapGerman();
 			break;
 		case 0x0001042E:
 			/* Sorbian Extended */
-			MyVkMapGerman();
+			VkMapGerman();
 			break;
 		case 0x0002042E:
 			/* Sorbian Standard */
-			MyVkMapGerman();
+			VkMapGerman();
 			break;
 		case 0x00000488:
 			/* Wolof */
-			MyVkMapFrench();
+			VkMapFrench();
 			break;
 		case 0x0000041f:
 			/* Turkish (Q type) */
 			/* windows 95 */
-			/* MyVkMapA[myVK_Equal] = myVK_Subtract; */
-			/* MyVkMapA[myVK_Subtract] = myVK_Equal; */
+			/* VkMapA[myVK_Equal] = myVK_Subtract; */
+			/* VkMapA[myVK_Subtract] = myVK_Equal; */
 			/* not windows 95 */
-			MyVkMapA[myVK_OEM_8] = myVK_Subtract;
-			MyVkMapA[myVK_Subtract] = myVK_Equal;
+			VkMapA[myVK_OEM_8] = myVK_Subtract;
+			VkMapA[myVK_Subtract] = myVK_Equal;
 
-			MyVkMapA[myVK_Comma] = myVK_BackSlash;
-			MyVkMapA[myVK_BackSlash] = myVK_Period;
-			MyVkMapA[myVK_Period] = myVK_Slash;
-			MyVkMapA[myVK_Slash] = myVK_Comma;
+			VkMapA[myVK_Comma] = myVK_BackSlash;
+			VkMapA[myVK_BackSlash] = myVK_Period;
+			VkMapA[myVK_Period] = myVK_Slash;
+			VkMapA[myVK_Slash] = myVK_Comma;
 			break;
 		case 0x00010409:
 			/* United States Dvorak */
-			MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-			MyVkMapA[myVK_RightBracket] = myVK_Equal;
-			MyVkMapA[myVK_SingleQuote] = 'Q';
-			MyVkMapA[myVK_Comma] = 'W';
-			MyVkMapA[myVK_Period] = 'E';
-			MyVkMapA['P'] = 'R';
-			MyVkMapA['Y'] = 'T';
-			MyVkMapA['F'] = 'Y';
-			MyVkMapA['G'] = 'U';
-			MyVkMapA['C'] = 'I';
-			MyVkMapA['R'] = 'O';
-			MyVkMapA['L'] = 'P';
-			MyVkMapA[myVK_Slash] = myVK_LeftBracket;
-			MyVkMapA[myVK_Equal] = myVK_RightBracket;
-			MyVkMapA['O'] = 'S';
-			MyVkMapA['E'] = 'D';
-			MyVkMapA['U'] = 'F';
-			MyVkMapA['I'] = 'G';
-			MyVkMapA['D'] = 'H';
-			MyVkMapA['H'] = 'J';
-			MyVkMapA['T'] = 'K';
-			MyVkMapA['N'] = 'L';
-			MyVkMapA['S'] = myVK_SemiColon;
-			MyVkMapA[myVK_Subtract] = myVK_SingleQuote;
-			MyVkMapA[myVK_SemiColon] = 'Z';
-			MyVkMapA['Q'] = 'X';
-			MyVkMapA['J'] = 'C';
-			MyVkMapA['K'] = 'V';
-			MyVkMapA['X'] = 'B';
-			MyVkMapA['B'] = 'N';
-			MyVkMapA['W'] = myVK_Comma;
-			MyVkMapA['V'] = myVK_Period;
-			MyVkMapA['Z'] = myVK_Slash;
+			VkMapA[myVK_LeftBracket] = myVK_Subtract;
+			VkMapA[myVK_RightBracket] = myVK_Equal;
+			VkMapA[myVK_SingleQuote] = 'Q';
+			VkMapA[myVK_Comma] = 'W';
+			VkMapA[myVK_Period] = 'E';
+			VkMapA['P'] = 'R';
+			VkMapA['Y'] = 'T';
+			VkMapA['F'] = 'Y';
+			VkMapA['G'] = 'U';
+			VkMapA['C'] = 'I';
+			VkMapA['R'] = 'O';
+			VkMapA['L'] = 'P';
+			VkMapA[myVK_Slash] = myVK_LeftBracket;
+			VkMapA[myVK_Equal] = myVK_RightBracket;
+			VkMapA['O'] = 'S';
+			VkMapA['E'] = 'D';
+			VkMapA['U'] = 'F';
+			VkMapA['I'] = 'G';
+			VkMapA['D'] = 'H';
+			VkMapA['H'] = 'J';
+			VkMapA['T'] = 'K';
+			VkMapA['N'] = 'L';
+			VkMapA['S'] = myVK_SemiColon;
+			VkMapA[myVK_Subtract] = myVK_SingleQuote;
+			VkMapA[myVK_SemiColon] = 'Z';
+			VkMapA['Q'] = 'X';
+			VkMapA['J'] = 'C';
+			VkMapA['K'] = 'V';
+			VkMapA['X'] = 'B';
+			VkMapA['B'] = 'N';
+			VkMapA['W'] = myVK_Comma;
+			VkMapA['V'] = myVK_Period;
+			VkMapA['Z'] = myVK_Slash;
 			break;
 #if 0
 		/* too complicated, don't bother with */
 		case 0x0x00000426:
 			/* Latvian */
-			MyVkMapA['F'] = myVK_Equal;
-			MyVkMapA['G'] = 'W';
-			MyVkMapA['J'] = 'E';
-			MyVkMapA['M'] = 'T';
-			MyVkMapA['V'] = 'Y';
-			MyVkMapA['N'] = 'U';
-			MyVkMapA['Z'] = 'I';
-			MyVkMapA['W'] = 'O';
-			MyVkMapA['X'] = 'P';
-			MyVkMapA['Y'] = myVK_LeftBracket;
-			MyVkMapA['H'] = myVK_RightBracket;
-			MyVkMapA[myVK_SemiColon] = 'A';
-			MyVkMapA['U'] = 'S';
-			MyVkMapA['S'] = 'D';
-			MyVkMapA['I'] = 'F';
-			MyVkMapA['L'] = 'G';
-			MyVkMapA['D'] = 'H';
-			MyVkMapA['A'] = 'J';
-			MyVkMapA['T'] = 'K';
-			MyVkMapA['E'] = 'L';
-			MyVkMapA['C'] = myVK_SemiColon;
-			MyVkMapA[myVK_LeftBracket] = 'Z';
-			MyVkMapA['B'] = 'X';
-			MyVkMapA[myVK_RightBracket] = 'C';
-			MyVkMapA['K'] = 'V';
-			MyVkMapA['P'] = 'B';
-			MyVkMapA['O'] = 'N';
-			MyVkMapA[myVK_OEM_8] = 'M';
+			VkMapA['F'] = myVK_Equal;
+			VkMapA['G'] = 'W';
+			VkMapA['J'] = 'E';
+			VkMapA['M'] = 'T';
+			VkMapA['V'] = 'Y';
+			VkMapA['N'] = 'U';
+			VkMapA['Z'] = 'I';
+			VkMapA['W'] = 'O';
+			VkMapA['X'] = 'P';
+			VkMapA['Y'] = myVK_LeftBracket;
+			VkMapA['H'] = myVK_RightBracket;
+			VkMapA[myVK_SemiColon] = 'A';
+			VkMapA['U'] = 'S';
+			VkMapA['S'] = 'D';
+			VkMapA['I'] = 'F';
+			VkMapA['L'] = 'G';
+			VkMapA['D'] = 'H';
+			VkMapA['A'] = 'J';
+			VkMapA['T'] = 'K';
+			VkMapA['E'] = 'L';
+			VkMapA['C'] = myVK_SemiColon;
+			VkMapA[myVK_LeftBracket] = 'Z';
+			VkMapA['B'] = 'X';
+			VkMapA[myVK_RightBracket] = 'C';
+			VkMapA['K'] = 'V';
+			VkMapA['P'] = 'B';
+			VkMapA['O'] = 'N';
+			VkMapA[myVK_OEM_8] = 'M';
 			break;
 		case 0x0001041F:
 			/* Turkish (F type) */
 
-			MyVkMapA[myVK_Equal] = myVK_Subtract;
-			MyVkMapA[myVK_Subtract] = myVK_Equal;
-			MyVkMapA['F'] = 'Q';
-			MyVkMapA['G'] = 'W';
-			MyVkMapA[myVK_SemiColon] = 'E';
-			MyVkMapA['I'] = 'R';
-			MyVkMapA['O'] = 'T';
-			MyVkMapA['D'] = 'Y';
-			MyVkMapA['R'] = 'U';
-			MyVkMapA['N'] = 'I';
-			MyVkMapA['H'] = 'O';
-			MyVkMapA['Q'] = myVK_LeftBracket;
-			MyVkMapA['W'] = myVK_RightBracket;
-			MyVkMapA['U'] = 'A';
-			MyVkMapA[myVK_LeftBracket] = 'S';
-			MyVkMapA['E'] = 'D';
-			MyVkMapA['A'] = 'F';
-			MyVkMapA[myVK_RightBracket] = 'G';
-			MyVkMapA['T'] = 'H';
-			MyVkMapA['K'] = 'J';
-			MyVkMapA['M'] = 'K';
-			MyVkMapA['Y'] = myVK_SemiColon;
-			MyVkMapA['X'] = myVK_BackSlash;
-			MyVkMapA['J'] = 'Z';
-			MyVkMapA[myVK_BackSlash] = 'X';
-			MyVkMapA['V'] = 'C';
-			MyVkMapA['C'] = 'V';
-			MyVkMapA[myVK_Slash] = 'B';
-			MyVkMapA['Z'] = 'N';
-			MyVkMapA['S'] = 'M';
-			MyVkMapA['B'] = myVK_Comma;
-			MyVkMapA[myVK_Comma] = myVK_Slash;
+			VkMapA[myVK_Equal] = myVK_Subtract;
+			VkMapA[myVK_Subtract] = myVK_Equal;
+			VkMapA['F'] = 'Q';
+			VkMapA['G'] = 'W';
+			VkMapA[myVK_SemiColon] = 'E';
+			VkMapA['I'] = 'R';
+			VkMapA['O'] = 'T';
+			VkMapA['D'] = 'Y';
+			VkMapA['R'] = 'U';
+			VkMapA['N'] = 'I';
+			VkMapA['H'] = 'O';
+			VkMapA['Q'] = myVK_LeftBracket;
+			VkMapA['W'] = myVK_RightBracket;
+			VkMapA['U'] = 'A';
+			VkMapA[myVK_LeftBracket] = 'S';
+			VkMapA['E'] = 'D';
+			VkMapA['A'] = 'F';
+			VkMapA[myVK_RightBracket] = 'G';
+			VkMapA['T'] = 'H';
+			VkMapA['K'] = 'J';
+			VkMapA['M'] = 'K';
+			VkMapA['Y'] = myVK_SemiColon;
+			VkMapA['X'] = myVK_BackSlash;
+			VkMapA['J'] = 'Z';
+			VkMapA[myVK_BackSlash] = 'X';
+			VkMapA['V'] = 'C';
+			VkMapA['C'] = 'V';
+			VkMapA[myVK_Slash] = 'B';
+			VkMapA['Z'] = 'N';
+			VkMapA['S'] = 'M';
+			VkMapA['B'] = myVK_Comma;
+			VkMapA[myVK_Comma] = myVK_Slash;
 			break;
 		case 0x00030409:
 			/* United States LH Dvorak */
-			MyVkMapA[myVK_LeftBracket] = '1';
-			MyVkMapA[myVK_RightBracket] = '2';
-			MyVkMapA[myVK_Slash] = '3';
-			MyVkMapA['P'] = '4';
-			MyVkMapA['F'] = '5';
-			MyVkMapA['M'] = '6';
-			MyVkMapA['L'] = '7';
-			MyVkMapA['J'] = '8';
-			MyVkMapA['4'] = '9';
-			MyVkMapA['3'] = '0';
-			MyVkMapA['2'] = myVK_Subtract;
-			MyVkMapA['1'] = myVK_Equal;
-			MyVkMapA[myVK_SemiColon] = 'Q';
-			MyVkMapA['Q'] = 'W';
-			MyVkMapA['B'] = 'E';
-			MyVkMapA['Y'] = 'R';
-			MyVkMapA['U'] = 'T';
-			MyVkMapA['R'] = 'Y';
-			MyVkMapA['S'] = 'U';
-			MyVkMapA['O'] = 'I';
-			MyVkMapA[myVK_Period] = 'O';
-			MyVkMapA['6'] = 'P';
-			MyVkMapA['5'] = myVK_LeftBracket;
-			MyVkMapA[myVK_Equal] = myVK_RightBracket;
-			MyVkMapA[myVK_Subtract] = 'A';
-			MyVkMapA['K'] = 'S';
-			MyVkMapA['C'] = 'D';
-			MyVkMapA['D'] = 'F';
-			MyVkMapA['T'] = 'G';
-			MyVkMapA['E'] = 'J';
-			MyVkMapA['A'] = 'K';
-			MyVkMapA['Z'] = 'L';
-			MyVkMapA['8'] = myVK_SemiColon;
-			MyVkMapA['7'] = myVK_SingleQuote;
-			MyVkMapA[myVK_SingleQuote] = 'Z';
-			MyVkMapA['G'] = 'C';
-			MyVkMapA['W'] = 'B';
-			MyVkMapA['I'] = 'M';
-			MyVkMapA['0'] = myVK_Period;
-			MyVkMapA['9'] = myVK_Slash;
+			VkMapA[myVK_LeftBracket] = '1';
+			VkMapA[myVK_RightBracket] = '2';
+			VkMapA[myVK_Slash] = '3';
+			VkMapA['P'] = '4';
+			VkMapA['F'] = '5';
+			VkMapA['M'] = '6';
+			VkMapA['L'] = '7';
+			VkMapA['J'] = '8';
+			VkMapA['4'] = '9';
+			VkMapA['3'] = '0';
+			VkMapA['2'] = myVK_Subtract;
+			VkMapA['1'] = myVK_Equal;
+			VkMapA[myVK_SemiColon] = 'Q';
+			VkMapA['Q'] = 'W';
+			VkMapA['B'] = 'E';
+			VkMapA['Y'] = 'R';
+			VkMapA['U'] = 'T';
+			VkMapA['R'] = 'Y';
+			VkMapA['S'] = 'U';
+			VkMapA['O'] = 'I';
+			VkMapA[myVK_Period] = 'O';
+			VkMapA['6'] = 'P';
+			VkMapA['5'] = myVK_LeftBracket;
+			VkMapA[myVK_Equal] = myVK_RightBracket;
+			VkMapA[myVK_Subtract] = 'A';
+			VkMapA['K'] = 'S';
+			VkMapA['C'] = 'D';
+			VkMapA['D'] = 'F';
+			VkMapA['T'] = 'G';
+			VkMapA['E'] = 'J';
+			VkMapA['A'] = 'K';
+			VkMapA['Z'] = 'L';
+			VkMapA['8'] = myVK_SemiColon;
+			VkMapA['7'] = myVK_SingleQuote;
+			VkMapA[myVK_SingleQuote] = 'Z';
+			VkMapA['G'] = 'C';
+			VkMapA['W'] = 'B';
+			VkMapA['I'] = 'M';
+			VkMapA['0'] = myVK_Period;
+			VkMapA['9'] = myVK_Slash;
 			break;
 		case 0x00040409:
 			/* United States RH Dvorak */
-			MyVkMapA['J'] = '5';
-			MyVkMapA['L'] = '6';
-			MyVkMapA['M'] = '7';
-			MyVkMapA['F'] = '8';
-			MyVkMapA['P'] = '9';
-			MyVkMapA[myVK_Slash] = '0';
-			MyVkMapA[myVK_LeftBracket] = myVK_Subtract;
-			MyVkMapA[myVK_RightBracket] = myVK_Equal;
-			MyVkMapA['5'] = 'Q';
-			MyVkMapA['6'] = 'W';
-			MyVkMapA['Q'] = 'E';
-			MyVkMapA[myVK_Period] = 'R';
-			MyVkMapA['O'] = 'T';
-			MyVkMapA['R'] = 'Y';
-			MyVkMapA['S'] = 'U';
-			MyVkMapA['U'] = 'I';
-			MyVkMapA['Y'] = 'O';
-			MyVkMapA['B'] = 'P';
-			MyVkMapA[myVK_SemiColon] = myVK_LeftBracket;
-			MyVkMapA[myVK_Equal] = myVK_RightBracket;
-			MyVkMapA['7'] = 'A';
-			MyVkMapA['8'] = 'S';
-			MyVkMapA['Z'] = 'D';
-			MyVkMapA['A'] = 'F';
-			MyVkMapA['E'] = 'G';
-			MyVkMapA['T'] = 'J';
-			MyVkMapA['D'] = 'K';
-			MyVkMapA['C'] = 'L';
-			MyVkMapA['K'] = myVK_SemiColon;
-			MyVkMapA[myVK_Subtract] = myVK_SingleQuote;
-			MyVkMapA['9'] = 'Z';
-			MyVkMapA['0'] = 'X';
-			MyVkMapA['X'] = 'C';
-			MyVkMapA[myVK_Comma] = 'V';
-			MyVkMapA['I'] = 'B';
-			MyVkMapA['W'] = 'M';
-			MyVkMapA['V'] = myVK_Comma;
-			MyVkMapA['G'] = myVK_Period;
-			MyVkMapA[myVK_SingleQuote] = myVK_Slash;
+			VkMapA['J'] = '5';
+			VkMapA['L'] = '6';
+			VkMapA['M'] = '7';
+			VkMapA['F'] = '8';
+			VkMapA['P'] = '9';
+			VkMapA[myVK_Slash] = '0';
+			VkMapA[myVK_LeftBracket] = myVK_Subtract;
+			VkMapA[myVK_RightBracket] = myVK_Equal;
+			VkMapA['5'] = 'Q';
+			VkMapA['6'] = 'W';
+			VkMapA['Q'] = 'E';
+			VkMapA[myVK_Period] = 'R';
+			VkMapA['O'] = 'T';
+			VkMapA['R'] = 'Y';
+			VkMapA['S'] = 'U';
+			VkMapA['U'] = 'I';
+			VkMapA['Y'] = 'O';
+			VkMapA['B'] = 'P';
+			VkMapA[myVK_SemiColon] = myVK_LeftBracket;
+			VkMapA[myVK_Equal] = myVK_RightBracket;
+			VkMapA['7'] = 'A';
+			VkMapA['8'] = 'S';
+			VkMapA['Z'] = 'D';
+			VkMapA['A'] = 'F';
+			VkMapA['E'] = 'G';
+			VkMapA['T'] = 'J';
+			VkMapA['D'] = 'K';
+			VkMapA['C'] = 'L';
+			VkMapA['K'] = myVK_SemiColon;
+			VkMapA[myVK_Subtract] = myVK_SingleQuote;
+			VkMapA['9'] = 'Z';
+			VkMapA['0'] = 'X';
+			VkMapA['X'] = 'C';
+			VkMapA[myVK_Comma] = 'V';
+			VkMapA['I'] = 'B';
+			VkMapA['W'] = 'M';
+			VkMapA['V'] = myVK_Comma;
+			VkMapA['G'] = myVK_Period;
+			VkMapA[myVK_SingleQuote] = myVK_Slash;
 			break;
 #endif
 #if 0
@@ -1299,35 +1299,35 @@ LOCALPROC MyVkMapFromLayout(uimr sv)
 		case 0x00010402:
 			/* Bulgarian Latin */
 #if 0 /* Only in Windows 95 */
-			MyVkMapA['J'] = 'Q';
-			MyVkMapA['C'] = 'W';
-			MyVkMapA['U'] = 'E';
-			MyVkMapA['K'] = 'R';
-			MyVkMapA['E'] = 'T';
-			MyVkMapA['N'] = 'Y';
-			MyVkMapA['G'] = 'U';
-			MyVkMapA[myVK_SemiColon] = 'I';
-			MyVkMapA[myVK_OEM_102] = 'O';
-			MyVkMapA['Z'] = 'P';
-			MyVkMapA['H'] = myVK_LeftBracket;
-			MyVkMapA['F'] = 'A';
-			MyVkMapA['Y'] = 'S';
-			MyVkMapA['W'] = 'D';
-			MyVkMapA['A'] = 'F';
-			MyVkMapA['P'] = 'G';
-			MyVkMapA['R'] = 'H';
-			MyVkMapA['O'] = 'J';
-			MyVkMapA['L'] = 'K';
-			MyVkMapA['D'] = 'L';
-			MyVkMapA['V'] = myVK_SemiColon;
-			MyVkMapA[myVK_LeftBracket] = 'Z';
-			MyVkMapA['S'] = 'X';
-			MyVkMapA['M'] = 'C';
-			MyVkMapA['I'] = 'V';
-			MyVkMapA['T'] = 'B';
-			MyVkMapA['X'] = 'N';
-			MyVkMapA['B'] = 'M';
-			MyVkMapA['Q'] = myVK_OEM_102;
+			VkMapA['J'] = 'Q';
+			VkMapA['C'] = 'W';
+			VkMapA['U'] = 'E';
+			VkMapA['K'] = 'R';
+			VkMapA['E'] = 'T';
+			VkMapA['N'] = 'Y';
+			VkMapA['G'] = 'U';
+			VkMapA[myVK_SemiColon] = 'I';
+			VkMapA[myVK_OEM_102] = 'O';
+			VkMapA['Z'] = 'P';
+			VkMapA['H'] = myVK_LeftBracket;
+			VkMapA['F'] = 'A';
+			VkMapA['Y'] = 'S';
+			VkMapA['W'] = 'D';
+			VkMapA['A'] = 'F';
+			VkMapA['P'] = 'G';
+			VkMapA['R'] = 'H';
+			VkMapA['O'] = 'J';
+			VkMapA['L'] = 'K';
+			VkMapA['D'] = 'L';
+			VkMapA['V'] = myVK_SemiColon;
+			VkMapA[myVK_LeftBracket] = 'Z';
+			VkMapA['S'] = 'X';
+			VkMapA['M'] = 'C';
+			VkMapA['I'] = 'V';
+			VkMapA['T'] = 'B';
+			VkMapA['X'] = 'N';
+			VkMapA['B'] = 'M';
+			VkMapA['Q'] = myVK_OEM_102;
 #endif
 			break;
 		case 0x00000408:
@@ -1479,14 +1479,14 @@ LOCALPROC MyVkMapFromLayout(uimr sv)
 			break;
 		case 0x00000411:
 			/* Japanese */
-			/* MyVkMapA[??] = ??; */
+			/* VkMapA[??] = ??; */
 			break;
 		case 0x00000412:
 			/* Korean */
-			/* MyVkMapA[VK_ZOOM] = ??; */
-			/* MyVkMapA[VK_HELP] = VK_ZOOM; */
-			/* MyVkMapA[??] = VK_HELP; */
-			/* MyVkMapA[??] = ??; */
+			/* VkMapA[VK_ZOOM] = ??; */
+			/* VkMapA[VK_HELP] = VK_ZOOM; */
+			/* VkMapA[??] = VK_HELP; */
+			/* VkMapA[??] = ??; */
 			break;
 		case 0x0000044B:
 			/* Kannada */
@@ -1618,7 +1618,7 @@ LOCALFUNC blnr tStrIsHex(TCHAR *s, int n, uimr *r)
 #endif
 
 #if ItnlKyBdFix
-LOCALFUNC blnr MyGetKeyboardLayoutHex(uimr *r)
+LOCALFUNC blnr GetKeyboardLayoutHex(uimr *r)
 {
 	TCHAR s[KL_NAMELENGTH];
 	blnr IsOk = falseblnr;
@@ -1640,33 +1640,33 @@ LOCALFUNC blnr MyGetKeyboardLayoutHex(uimr *r)
 #endif
 
 #if ItnlKyBdFix && ! UseWinCE
-LOCALPROC MyCheckKeyboardLayout(void)
+LOCALPROC CheckKeyboardLayout(void)
 {
 	uimr sv;
 
-	if (! MyGetKeyboardLayoutHex(&sv)) {
+	if (! GetKeyboardLayoutHex(&sv)) {
 	} else if (sv == CurKyBdLytNm) {
 		/* no change */
 	} else {
 		CurKyBdLytNm = sv;
 
-		MyVkMapFromLayout(sv);
+		VkMapFromLayout(sv);
 	}
 }
 #endif
 
 #if ItnlKyBdFix
-LOCALPROC MyInitCheckKeyboardLayout(void)
+LOCALPROC InitCheckKeyboardLayout(void)
 {
 	uimr sv;
 
-	if (! MyGetKeyboardLayoutHex(&sv)) {
+	if (! GetKeyboardLayoutHex(&sv)) {
 		sv = 0x00000409;
 	}
 
 	CurKyBdLytNm = sv;
 
-	MyVkMapFromLayout(sv);
+	VkMapFromLayout(sv);
 }
 #endif
 
@@ -1825,7 +1825,7 @@ LOCALFUNC blnr InitWinKey2Mac(void)
 	InitKeyCodes();
 
 #if ItnlKyBdFix
-	MyInitCheckKeyboardLayout();
+	InitCheckKeyboardLayout();
 #endif
 
 	return trueblnr;
@@ -1835,7 +1835,7 @@ LOCALPROC DoKeyCode(int i, blnr down)
 {
 	uint8_t key = WinKey2Mac[
 #if ItnlKyBdFix
-		MyVkMapA[i]
+		VkMapA[i]
 #else
 		i
 #endif
@@ -2031,7 +2031,7 @@ typedef struct {
 	DWORD   flags;
 	DWORD   time;
 	DWORD   dwExtraInfo;
-} My_KBDLLHOOKSTRUCT;
+} _KBDLLHOOKSTRUCT;
 #endif
 
 #if EnableGrabSpecialKeys
@@ -2050,7 +2050,7 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 )
 {
 	if (nCode == HC_ACTION) {
-		My_KBDLLHOOKSTRUCT *p = (My_KBDLLHOOKSTRUCT *)lParam;
+		_KBDLLHOOKSTRUCT *p = (_KBDLLHOOKSTRUCT *)lParam;
 		if (p->vkCode != VK_CAPITAL) {
 			switch (wParam) {
 				case WM_KEYDOWN:
@@ -2076,8 +2076,8 @@ LRESULT CALLBACK LowLevelKeyboardProc(
 #endif
 
 #if EnableGrabSpecialKeys
-#define My_WH_KEYBOARD_LL 13
-#define My_SPI_SETSCREENSAVERRUNNING 0x0061
+#define _WH_KEYBOARD_LL 13
+#define _SPI_SETSCREENSAVERRUNNING 0x0061
 #endif
 
 #if EnableGrabSpecialKeys
@@ -2090,7 +2090,7 @@ LOCALPROC GrabSpecialKeys(void)
 	if ((hKeyHook == NULL) && ! HaveSetSysParam) {
 		/* this works on Windows XP */
 		hKeyHook = SetWindowsHookEx(
-			My_WH_KEYBOARD_LL, /* type of hook to install */
+			_WH_KEYBOARD_LL, /* type of hook to install */
 			(HOOKPROC)LowLevelKeyboardProc,
 				/* address of hook procedure */
 			AppInstance,    /* handle to application instance */
@@ -2098,7 +2098,7 @@ LOCALPROC GrabSpecialKeys(void)
 		);
 		if (hKeyHook == NULL) {
 			/* this works on Windows 95/98 */
-			SystemParametersInfo(My_SPI_SETSCREENSAVERRUNNING, TRUE,
+			SystemParametersInfo(_SPI_SETSCREENSAVERRUNNING, TRUE,
 				&nPreviousState, 0);
 			HaveSetSysParam = trueblnr;
 		}
@@ -2114,7 +2114,7 @@ LOCALPROC UnGrabSpecialKeys(void)
 		hKeyHook = NULL;
 	}
 	if (HaveSetSysParam) {
-		SystemParametersInfo(My_SPI_SETSCREENSAVERRUNNING, FALSE,
+		SystemParametersInfo(_SPI_SETSCREENSAVERRUNNING, FALSE,
 			&nPreviousState, 0);
 		HaveSetSysParam = falseblnr;
 	}
@@ -2132,13 +2132,13 @@ LOCALPROC UnGrabSpecialKeys(void)
 #endif /* EnableChangePriority */
 
 #if EnableChangePriority
-LOCALVAR blnr MyPriorityRaised = falseblnr;
+LOCALVAR blnr PriorityRaised = falseblnr;
 #endif
 
 #if EnableChangePriority
-LOCALPROC RaiseMyPriority(void)
+LOCALPROC RaisePriority(void)
 {
-	if (! MyPriorityRaised) {
+	if (! PriorityRaised) {
 		if (! SetPriorityClass(
 			GetCurrentProcess(), /* handle to the process */
 			HIGH_PRIORITY_CLASS
@@ -2153,15 +2153,15 @@ LOCALPROC RaiseMyPriority(void)
 					" and cannot continue.", trueblnr);
 			*/
 		}
-		MyPriorityRaised = trueblnr;
+		PriorityRaised = trueblnr;
 	}
 }
 #endif
 
 #if EnableChangePriority
-LOCALPROC LowerMyPriority(void)
+LOCALPROC LowerPriority(void)
 {
-	if (MyPriorityRaised) {
+	if (PriorityRaised) {
 		if (! SetPriorityClass(
 			GetCurrentProcess(),        /* handle to the process */
 			NORMAL_PRIORITY_CLASS /* priority class value */
@@ -2174,7 +2174,7 @@ LOCALPROC LowerMyPriority(void)
 					" and cannot continue.", trueblnr);
 			*/
 		}
-		MyPriorityRaised = falseblnr;
+		PriorityRaised = falseblnr;
 	}
 }
 #endif
@@ -2186,10 +2186,10 @@ LOCALPROC LowerMyPriority(void)
 
 LOCALVAR uint32_t TrueEmulatedTime = 0;
 
-#define MyInvTimeDivPow 16
-#define MyInvTimeDiv (1 << MyInvTimeDivPow)
-#define MyInvTimeDivMask (MyInvTimeDiv - 1)
-#define MyInvTimeStep 1089590 /* 1000 / 60.14742 * MyInvTimeDiv */
+#define InvTimeDivPow 16
+#define InvTimeDiv (1 << InvTimeDivPow)
+#define InvTimeDivMask (InvTimeDiv - 1)
+#define InvTimeStep 1089590 /* 1000 / 60.14742 * InvTimeDiv */
 
 LOCALVAR DWORD LastTime;
 
@@ -2198,9 +2198,9 @@ LOCALVAR uint32_t NextFracTime;
 
 LOCALPROC IncrNextTime(void)
 {
-	NextFracTime += MyInvTimeStep;
-	NextIntTime += (NextFracTime >> MyInvTimeDivPow);
-	NextFracTime &= MyInvTimeDivMask;
+	NextFracTime += InvTimeStep;
+	NextIntTime += (NextFracTime >> InvTimeDivPow);
+	NextFracTime &= InvTimeDivMask;
 }
 
 LOCALPROC InitNextTime(void)
@@ -2307,41 +2307,41 @@ LOCALFUNC blnr Init60thCheck(void)
 	return trueblnr;
 }
 
-#ifndef MyTimeResolution
-#define MyTimeResolution 3
+#ifndef TimeResolution
+#define TimeResolution 3
 #endif
 	/*
-		Setting MyTimeResolution to 1 seems to drastically slow down
+		Setting TimeResolution to 1 seems to drastically slow down
 		the clock in Virtual PC 7.0.2 for Mac. Using 3 is more polite
 		anyway, and should not cause much observable difference.
 	*/
 
-#if (MyTimeResolution != 0)
+#if (TimeResolution != 0)
 LOCALVAR blnr HaveSetTimeResolution = falseblnr;
 #endif
 
-#if (MyTimeResolution != 0)
-LOCALPROC MyTimer_Suspend(void)
+#if (TimeResolution != 0)
+LOCALPROC Timer_Suspend(void)
 {
 	if (HaveSetTimeResolution) {
-		(void) timeEndPeriod(MyTimeResolution);
+		(void) timeEndPeriod(TimeResolution);
 		HaveSetTimeResolution = falseblnr;
 	}
 }
 #endif
 
-#if (MyTimeResolution != 0)
-LOCALPROC MyTimer_Resume(void)
+#if (TimeResolution != 0)
+LOCALPROC Timer_Resume(void)
 {
 	TIMECAPS tc;
 
 	if (timeGetDevCaps(&tc, sizeof(TIMECAPS))
 		== TIMERR_NOERROR)
 	{
-		if ((MyTimeResolution >= tc.wPeriodMin)
-			&& (MyTimeResolution <= tc.wPeriodMax))
+		if ((TimeResolution >= tc.wPeriodMin)
+			&& (TimeResolution <= tc.wPeriodMax))
 		{
-			if (timeBeginPeriod(MyTimeResolution)
+			if (timeBeginPeriod(TimeResolution)
 				== TIMERR_NOERROR)
 			{
 				HaveSetTimeResolution = trueblnr;
@@ -2353,7 +2353,7 @@ LOCALPROC MyTimer_Resume(void)
 
 /* --- sound --- */
 
-#if MySoundEnabled
+#if SoundEnabled
 
 
 #define kLn2SoundBuffers 4 /* kSoundBuffers must be a power of two */
@@ -2406,14 +2406,14 @@ LOCALVAR HWAVEOUT hWaveOut = NULL;
 LOCALVAR WAVEHDR whdr[kSoundBuffers];
 
 
-LOCALPROC MySound_BeginPlaying(void)
+LOCALPROC Sound_BeginPlaying(void)
 {
 #if dbglog_SoundStuff
-	fprintf(stderr, "MySound_BeginPlaying\n");
+	fprintf(stderr, "Sound_BeginPlaying\n");
 #endif
 }
 
-LOCALPROC MySound_Start(void)
+LOCALPROC Sound_Start(void)
 {
 	if (hWaveOut == NULL) {
 		WAVEFORMATEX wfex;
@@ -2480,7 +2480,7 @@ LOCALPROC MySound_Start(void)
 	}
 }
 
-LOCALPROC MySound_Stop(void)
+LOCALPROC Sound_Stop(void)
 {
 	MMRESULT mmr;
 	int i;
@@ -2586,7 +2586,7 @@ LOCALPROC ConvertSoundBlockToNative(tpSoundSamp p)
 #define ConvertSoundBlockToNative(p)
 #endif
 
-LOCALPROC MySound_FilledBlocks(void)
+LOCALPROC Sound_FilledBlocks(void)
 {
 	while (0 != ((TheWriteOffset - TheFillOffset) >> kLnOneBuffLen)) {
 		uint16_t CurFillBuffer =
@@ -2618,32 +2618,32 @@ LOCALPROC MySound_FilledBlocks(void)
 	}
 }
 
-LOCALPROC MySound_WroteABlock(void)
+LOCALPROC Sound_WroteABlock(void)
 {
 	if (wantplaying) {
-		MySound_FilledBlocks();
+		Sound_FilledBlocks();
 	} else if (((TheWriteOffset - ThePlayOffset) >> kLnOneBuffLen) < 12)
 	{
 		/* just wait */
 	} else {
-		MySound_FilledBlocks();
+		Sound_FilledBlocks();
 		wantplaying = trueblnr;
-		MySound_BeginPlaying();
+		Sound_BeginPlaying();
 	}
 }
 
-GLOBALOSGLUPROC MySound_EndWrite(uint16_t actL)
+GLOBALOSGLUPROC Sound_EndWrite(uint16_t actL)
 {
 	TheWriteOffset += actL;
 
 	if (0 == (TheWriteOffset & kOneBuffMask)) {
 		/* just finished a block */
 
-		MySound_WroteABlock();
+		Sound_WroteABlock();
 	}
 }
 
-GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
+GLOBALOSGLUFUNC tpSoundSamp Sound_BeginWrite(uint16_t n, uint16_t *actL)
 {
 	uint16_t ToFillLen = kAllBuffLen - (TheWriteOffset - ThePlayOffset);
 	uint16_t WriteBuffContig =
@@ -2661,7 +2661,7 @@ GLOBALOSGLUFUNC tpSoundSamp MySound_BeginWrite(uint16_t n, uint16_t *actL)
 	return TheSoundBuffer + (TheWriteOffset & kAllBuffMask);
 }
 
-LOCALPROC MySound_SecondNotify(void)
+LOCALPROC Sound_SecondNotify(void)
 {
 	if (hWaveOut != NULL) {
 		if (MinFilledSoundBuffs > DesiredMinFilledSoundBuffs) {
@@ -2691,7 +2691,7 @@ LOCALPROC GrabTheMachine(void)
 #endif
 #if EnableChangePriority
 	if ((uint8_t) -1 == SpeedValue) {
-		RaiseMyPriority();
+		RaisePriority();
 	}
 #endif
 #if EnableGrabSpecialKeys
@@ -2710,7 +2710,7 @@ LOCALPROC UnGrabTheMachine(void)
 	StopSaveMouseMotion();
 #endif
 #if EnableChangePriority
-	LowerMyPriority();
+	LowerPriority();
 #endif
 }
 #endif
@@ -2781,7 +2781,7 @@ enum {
 #if (1 == vMacScreenDepth) || (vMacScreenDepth >= 4)
 #define EnableScalingBuff 1
 #else
-#define EnableScalingBuff (1 && EnableMagnify && (MyWindowScale == 2))
+#define EnableScalingBuff (1 && EnableMagnify && (WindowScale == 2))
 #endif
 
 #if EnableScalingBuff
@@ -2859,7 +2859,7 @@ LOCALVAR POINT WinPositionWins[kNumMagStates];
 #endif
 
 #if MayNotFullScreen
-LOCALPROC MyAppendConvertMenuItem(HMENU hMenu,
+LOCALPROC AppendConvertMenuItem(HMENU hMenu,
 	UINT uIDNewItem, char *s, blnr AddEllipsis)
 {
 	TCHAR ts[ClStrMaxLength + 1];
@@ -2872,7 +2872,7 @@ LOCALPROC MyAppendConvertMenuItem(HMENU hMenu,
 #endif
 
 #if MayNotFullScreen
-LOCALPROC MyAppendSubmenuConvertName(HMENU hMenu,
+LOCALPROC AppendSubmenuConvertName(HMENU hMenu,
 	HMENU hSubMenu, char *s)
 {
 	TCHAR ts[ClStrMaxLength + 1];
@@ -2920,8 +2920,8 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 	HWND OldMainWindow = MainWnd;
 	HDC OldMainWndDC = MainWndDC;
 	RECT NewWinR;
-	DWORD MyWStyle;
-	DWORD MyWExStyle;
+	DWORD WStyle;
+	DWORD WExStyle;
 
 #if VarFullScreen
 	if (! UseFullScreen)
@@ -2949,8 +2949,8 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 
 #if EnableMagnify
 	if (WantMagnify) {
-		NewWindowHeight *= MyWindowScale;
-		NewWindowWidth *= MyWindowScale;
+		NewWindowHeight *= WindowScale;
+		NewWindowWidth *= WindowScale;
 	}
 #endif
 
@@ -2959,8 +2959,8 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 #endif
 #if MayFullScreen
 	{
-		MyWStyle = WS_VISIBLE | WS_POPUP;
-		MyWExStyle = WS_EX_TOPMOST;
+		WStyle = WS_VISIBLE | WS_POPUP;
+		WExStyle = WS_EX_TOPMOST;
 
 		hOffset = (ScreenX - NewWindowWidth) / 2;
 		vOffset = (ScreenY - NewWindowHeight) / 2;
@@ -2982,9 +2982,9 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 #endif
 #if MayNotFullScreen
 	{
-		MyWStyle = WS_VISIBLE | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
+		WStyle = WS_VISIBLE | WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU
 			| WS_MINIMIZEBOX;
-		MyWExStyle = WS_EX_ACCEPTFILES;
+		WExStyle = WS_EX_ACCEPTFILES;
 
 		DfltWndX = (ScreenX - NewWindowWidth) / 2;
 		DfltWndY = (ScreenY - NewWindowHeight) / 2;
@@ -3007,7 +3007,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 		NewWinR.right = NewWinR.left + NewWindowWidth;
 		NewWinR.bottom = NewWinR.top + NewWindowHeight;
 
-		(void) AdjustWindowRectEx(&NewWinR, MyWStyle, TRUE, MyWExStyle);
+		(void) AdjustWindowRectEx(&NewWinR, WStyle, TRUE, WExStyle);
 
 		if ((NewWinR.right <= 0)
 			|| (NewWinR.left >= ScreenX)
@@ -3020,7 +3020,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 			NewWinR.bottom = DfltWndY + NewWindowHeight;
 
 			(void) AdjustWindowRectEx(&NewWinR,
-				MyWStyle, TRUE, MyWExStyle);
+				WStyle, TRUE, WExStyle);
 		}
 	}
 #endif
@@ -3049,34 +3049,34 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 			if (mb != NULL) {
 				m = CreateMenu();
 				if (m != NULL) {
-					MyAppendConvertMenuItem(m, ID_FILE_INSERTDISK1,
+					AppendConvertMenuItem(m, ID_FILE_INSERTDISK1,
 						kStrMenuItemOpen, trueblnr);
 					(void) AppendMenu(m, MF_SEPARATOR, 0, NULL);
-					MyAppendConvertMenuItem(m, ID_FILE_QUIT,
+					AppendConvertMenuItem(m, ID_FILE_QUIT,
 						kStrMenuItemQuit, falseblnr);
-					MyAppendSubmenuConvertName(mb, m, kStrMenuFile_win);
+					AppendSubmenuConvertName(mb, m, kStrMenuFile_win);
 				}
 				m = CreateMenu();
 				if (m != NULL) {
-					MyAppendConvertMenuItem(m, ID_SPECIAL_MORECOMMANDS,
+					AppendConvertMenuItem(m, ID_SPECIAL_MORECOMMANDS,
 						kStrMenuItemMore, trueblnr);
-					MyAppendSubmenuConvertName(mb, m, kStrMenuSpecial);
+					AppendSubmenuConvertName(mb, m, kStrMenuSpecial);
 				}
 				m = CreateMenu();
 				if (m != NULL) {
-					MyAppendConvertMenuItem(m, ID_HELP_ABOUT,
+					AppendConvertMenuItem(m, ID_HELP_ABOUT,
 						kStrMenuItemAbout, trueblnr);
-					MyAppendSubmenuConvertName(mb, m, kStrMenuHelp);
+					AppendSubmenuConvertName(mb, m, kStrMenuHelp);
 				}
 			}
 		}
 #endif
 
 		NewMainWindow = CreateWindowEx(
-			MyWExStyle,
+			WExStyle,
 			WndClassName,
 			WndTitle,
-			MyWStyle,
+			WStyle,
 			NewWinR.left, NewWinR.top,
 			NewWinR.right - NewWinR.left, NewWinR.bottom - NewWinR.top,
 			NULL,
@@ -3158,8 +3158,8 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 		ViewVSize = ScreenY;
 #if EnableMagnify
 		if (UseMagnify) {
-			ViewHSize /= MyWindowScale;
-			ViewVSize /= MyWindowScale;
+			ViewHSize /= WindowScale;
+			ViewVSize /= WindowScale;
 		}
 #endif
 		if (ViewHSize >= vMacScreenWidth) {
@@ -3257,7 +3257,7 @@ LOCALFUNC blnr ReCreateMainWindow(void)
 #endif
 
 	if (HaveCursorHidden) {
-		(void) MyMoveMouse(CurMouseH, CurMouseV);
+		(void) MoveMouse(CurMouseH, CurMouseV);
 		WantCursorHidden = trueblnr;
 	}
 
@@ -3297,8 +3297,8 @@ typedef struct BITMAPINFOHEADER256 {
 } BITMAPINFOHEADER256;
 
 #if EnableMagnify
-#define MyScaledHeight (MyWindowScale * vMacScreenHeight)
-#define MyScaledWidth (MyWindowScale * vMacScreenWidth)
+#define ScaledHeight (WindowScale * vMacScreenHeight)
+#define ScaledWidth (WindowScale * vMacScreenWidth)
 #endif
 
 LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
@@ -3348,8 +3348,8 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 
 #if EnableMagnify
 	if (UseMagnify) {
-		XDest *= MyWindowScale;
-		YDest *= MyWindowScale;
+		XDest *= WindowScale;
+		YDest *= WindowScale;
 	}
 #endif
 #if VarFullScreen
@@ -3465,8 +3465,8 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 
 #if EnableMagnify
 		if (UseMagnify) {
-			nDestWidth *= MyWindowScale;
-			nDestHeight *= MyWindowScale;
+			nDestWidth *= WindowScale;
+			nDestHeight *= WindowScale;
 		}
 #endif
 
@@ -3533,9 +3533,9 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 					cdb + ((left1 + vMacScreenWidth * (uint32_t)top) / 8);
 				uint8_t *p2 = ScalingBuff
 					/*
-						+ ((left1 + vMacScreenWidth * MyWindowScale
+						+ ((left1 + vMacScreenWidth * WindowScale
 								* (uint32_t)top)
-							* MyWindowScale / 8)
+							* WindowScale / 8)
 					*/
 					;
 				uint8_t *p3;
@@ -3569,15 +3569,15 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 						*p2++ = t2 | (t2 >> 1);
 					}
 					p1 += vMacScreenWidth / 8 - jn;
-					p2 += MyScaledWidth / 8 - (MyWindowScale * jn);
-					for (j = MyWindowScale * jn; --j >= 0; ) {
+					p2 += ScaledWidth / 8 - (WindowScale * jn);
+					for (j = WindowScale * jn; --j >= 0; ) {
 						*p2++ = *p3++;
 					}
-					p2 += MyScaledWidth / 8 - (MyWindowScale * jn);
+					p2 += ScaledWidth / 8 - (WindowScale * jn);
 				}
 
-				bmh.bmi.biWidth = vMacScreenWidth * MyWindowScale;
-				bmh.bmi.biHeight = - ((bottom - top) * MyWindowScale);
+				bmh.bmi.biWidth = vMacScreenWidth * WindowScale;
+				bmh.bmi.biHeight = - ((bottom - top) * WindowScale);
 				if (SetDIBitsToDevice(
 					MainWndDC, /* handle of device context */
 					XDest,
@@ -3590,11 +3590,11 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 							y-coordinate of upper-left corner
 							of dest. rect.
 						*/
-					(right - left) * MyWindowScale,
+					(right - left) * WindowScale,
 						/* source rectangle width */
-					(bottom - top) * MyWindowScale,
+					(bottom - top) * WindowScale,
 						/* source rectangle height */
-					(left & 7) * MyWindowScale,
+					(left & 7) * WindowScale,
 						/*
 							x-coordinate of lower-left corner
 							of source rect.
@@ -3605,7 +3605,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 							of source rect.
 						*/
 					0, /* first scan line in array */
-					(bottom - top) * MyWindowScale,
+					(bottom - top) * WindowScale,
 						/* number of scan lines */
 					(CONST VOID *)ScalingBuff,
 						/* address of array with DIB bits */
@@ -3631,9 +3631,9 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 					/*
 						y-coordinate of upper-left corner of dest. rect.
 					*/
-				(right - left) * MyWindowScale,
+				(right - left) * WindowScale,
 					/* dest. rectangle width */
-				(bottom - top) * MyWindowScale,
+				(bottom - top) * WindowScale,
 					/* dest. rectangle height */
 				left,
 					/*
@@ -3713,7 +3713,7 @@ LOCALPROC Screen_DrawAll(void)
 	HaveChangedScreenBuff(0, 0, vMacScreenHeight, vMacScreenWidth);
 }
 
-LOCALPROC MyDrawChangesAndClear(void)
+LOCALPROC DrawChangesAndClear(void)
 {
 	if (ScreenChangedBottom > ScreenChangedTop) {
 		HaveChangedScreenBuff(ScreenChangedTop, ScreenChangedLeft,
@@ -3729,7 +3729,7 @@ GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 		AutoScrollScreen();
 	}
 #endif
-	MyDrawChangesAndClear();
+	DrawChangesAndClear();
 }
 
 LOCALFUNC blnr InitTheCursor(void)
@@ -3739,7 +3739,7 @@ LOCALFUNC blnr InitTheCursor(void)
 }
 
 #if EnableFSMouseMotion
-LOCALPROC MyMouseConstrain(void)
+LOCALPROC MouseConstrain(void)
 {
 	int16_t shiftdh;
 	int16_t shiftdv;
@@ -3763,7 +3763,7 @@ LOCALPROC MyMouseConstrain(void)
 	if ((shiftdh != 0) || (shiftdv != 0)) {
 		SavedMouseH += shiftdh;
 		SavedMouseV += shiftdv;
-		if (! MyMoveMouse(SavedMouseH, SavedMouseV)) {
+		if (! MoveMouse(SavedMouseH, SavedMouseV)) {
 			HaveMouseMotion = falseblnr;
 		}
 	}
@@ -3786,8 +3786,8 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 
 #if EnableMagnify
 	if (UseMagnify) {
-		NewMousePosx /= MyWindowScale;
-		NewMousePosy /= MyWindowScale;
+		NewMousePosx /= WindowScale;
+		NewMousePosy /= WindowScale;
 	}
 #endif
 
@@ -3803,7 +3803,7 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMousePositionSetDelta(NewMousePosx - SavedMouseH,
+		MousePositionSetDelta(NewMousePosx - SavedMouseH,
 			NewMousePosy - SavedMouseV);
 		SavedMouseH = NewMousePosx;
 		SavedMouseV = NewMousePosy;
@@ -3841,7 +3841,7 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 			move even when outside window in one direction
 		*/
 #endif
-		MyMousePositionSet(NewMousePosx, NewMousePosy);
+		MousePositionSet(NewMousePosx, NewMousePosy);
 	}
 
 	WantCursorHidden = ShouldHaveCursorHidden;
@@ -3881,15 +3881,15 @@ LOCALVAR const uint8_t Native2MacRomanTab[] = {
 #if IncludePbufs
 LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 {
-#if MyUseUni
-#define MyUnsignedChar uint16_t
+#if UseUni
+#define UnsignedChar uint16_t
 #else
-#define MyUnsignedChar uint8_t
+#define UnsignedChar uint8_t
 #endif
 	HGLOBAL h;
 	LPTSTR p1;
 	uint32_t n;
-	MyUnsignedChar v;
+	UnsignedChar v;
 	tMacErr err = mnvm_miscErr;
 
 	p1 = GlobalLock(x);
@@ -3908,11 +3908,11 @@ LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 			if (p1 != NULL) {
 				uint8_t *p2 = GlobalLock(h);
 				if (p2 != NULL) {
-					while ((v = (MyUnsignedChar)*p1++) != 0) {
+					while ((v = (UnsignedChar)*p1++) != 0) {
 						if (v >= 128) {
 							*p2++ = Native2MacRomanTab[v & 0x7F];
 								/*
-									if MyUseUni, then for gives
+									if UseUni, then for gives
 									garbage for v > 256.
 								*/
 						} else if (v != 10) {
@@ -4446,7 +4446,7 @@ LOCALVAR blnr COMinitedOK;
 #endif
 
 #if EnableShellLinks
-LOCALPROC MyUninitCOM(void)
+LOCALPROC UninitCOM(void)
 {
 	if (COMinited) {
 		CoUninitialize();
@@ -4455,7 +4455,7 @@ LOCALPROC MyUninitCOM(void)
 #endif
 
 #if EnableShellLinks
-LOCALFUNC blnr MyNeedCOM(void)
+LOCALFUNC blnr NeedCOM(void)
 {
 	HRESULT hres;
 
@@ -4473,7 +4473,7 @@ LOCALFUNC blnr MyNeedCOM(void)
 #endif
 
 #if EnableShellLinks
-LOCALFUNC blnr MyResolveShortcut(LPTSTR FilePath, blnr *directory)
+LOCALFUNC blnr ResolveShortcut(LPTSTR FilePath, blnr *directory)
 /* adapted from Microsoft example code */
 {
 	HRESULT hres;
@@ -4483,7 +4483,7 @@ LOCALFUNC blnr MyResolveShortcut(LPTSTR FilePath, blnr *directory)
 	WIN32_FIND_DATA wfd;
 	blnr IsOk = falseblnr;
 
-	if (MyNeedCOM()) {
+	if (NeedCOM()) {
 		hres = CoCreateInstance(&CLSID_ShellLink, NULL,
 			CLSCTX_INPROC_SERVER, &IID_IShellLink,
 			(LPVOID *)(void *)&psl);
@@ -4497,7 +4497,7 @@ LOCALFUNC blnr MyResolveShortcut(LPTSTR FilePath, blnr *directory)
 				(void **)(void *)&ppf);
 			if (SUCCEEDED(hres)) {
 				/* Ensure that the string is Unicode. */
-#if MyUseUni
+#if UseUni
 #define wsz FilePath
 #else
 				WORD wsz[MAX_PATH];
@@ -4565,7 +4565,7 @@ LOCALFUNC blnr InsertDiskOrAlias(LPTSTR drivepath,
 {
 #if EnableShellLinks
 	if (MaybeAlias && FileIsLink(drivepath)) {
-		if (! MyResolveShortcut(drivepath, NULL)) {
+		if (! ResolveShortcut(drivepath, NULL)) {
 			return falseblnr;
 		}
 	}
@@ -4578,7 +4578,7 @@ LOCALFUNC blnr InsertDiskOrAlias(LPTSTR drivepath,
 	}
 }
 
-LOCALFUNC blnr MyFileExists(LPTSTR pathName, blnr *directory)
+LOCALFUNC blnr FileExists(LPTSTR pathName, blnr *directory)
 {
 	WIN32_FIND_DATA fd;
 	HANDLE hf = FindFirstFile(pathName, &fd);
@@ -4608,15 +4608,15 @@ LOCALFUNC tMacErr ResolveNamedChild0(LPTSTR pathName,
 		_tcscat(pathName, TEXT("\\"));
 		_tcscat(pathName, Child);
 
-		if (MyFileExists(pathName, directory)) {
+		if (FileExists(pathName, directory)) {
 			err = mnvm_noErr;
 		} else {
 			err = mnvm_fnfErr;
 #if EnableShellLinks
 			if (newlen + 5 < _MAX_PATH) {
 				_tcscat(pathName, TEXT(".lnk"));
-				if (MyFileExists(pathName, NULL))
-				if (MyResolveShortcut(pathName, directory))
+				if (FileExists(pathName, NULL))
+				if (ResolveShortcut(pathName, directory))
 				{
 					err = mnvm_noErr;
 				}
@@ -4678,7 +4678,7 @@ LOCALFUNC blnr MakeNamedChildDir(LPTSTR pathName, char *Child)
 }
 #endif
 
-LOCALFUNC blnr MyGetAppDataPath(LPTSTR lpszPath,
+LOCALFUNC blnr GetAppDataPath(LPTSTR lpszPath,
 	BOOL fCreate)
 {
 	blnr IsOk = falseblnr;
@@ -4686,7 +4686,7 @@ LOCALFUNC blnr MyGetAppDataPath(LPTSTR lpszPath,
 	if (HaveMySHGetSpecialFolderPath())
 	if (MySHGetSpecialFolderPath(
 		NULL /* HWND hwndOwner */,
-		lpszPath, My_CSIDL_APPDATA, fCreate))
+		lpszPath, _CSIDL_APPDATA, fCreate))
 	{
 		IsOk = trueblnr;
 	}
@@ -5004,7 +5004,7 @@ LOCALFUNC blnr LoadMacRom(void)
 	}
 
 	if (! IsOk) {
-		if (MyGetAppDataPath(ROMFile, FALSE))
+		if (GetAppDataPath(ROMFile, FALSE))
 		if (ResolveNamedChildDir(ROMFile, "Gryphel"))
 		if (ResolveNamedChildDir(ROMFile, "mnvm_rom"))
 		if (ResolveNamedChildFile(ROMFile, RomFileName))
@@ -5022,7 +5022,7 @@ LOCALFUNC blnr LoadMacRom(void)
 }
 
 #if InstallFileIcons
-LOCALPROC MySetRegKey(HKEY hKeyRoot,
+LOCALPROC SetRegKey(HKEY hKeyRoot,
 	LPTSTR strRegKey, LPTSTR strRegValue)
 {
 	HKEY RegKey;
@@ -5047,8 +5047,8 @@ LOCALPROC RegisterShellFileType(LPTSTR AppPath, LPTSTR strFilterExt,
 	TCHAR strRegValue[_MAX_PATH + 2];
 		/* extra room for ","{strIconId} */
 
-	MySetRegKey(HKEY_CLASSES_ROOT, strFileTypeId, strFileTypeName);
-	MySetRegKey(HKEY_CLASSES_ROOT, strFilterExt, strFileTypeId);
+	SetRegKey(HKEY_CLASSES_ROOT, strFileTypeId, strFileTypeName);
+	SetRegKey(HKEY_CLASSES_ROOT, strFilterExt, strFileTypeId);
 
 	_tcscpy(strRegKey, strFileTypeId);
 	_tcscat(strRegKey, TEXT("\\DefaultIcon"));
@@ -5056,7 +5056,7 @@ LOCALPROC RegisterShellFileType(LPTSTR AppPath, LPTSTR strFilterExt,
 	_tcscat(strRegValue, AppPath);
 	_tcscat(strRegValue, TEXT("\","));
 	_tcscat(strRegValue, strIconId);
-	MySetRegKey(HKEY_CLASSES_ROOT, strRegKey, strRegValue);
+	SetRegKey(HKEY_CLASSES_ROOT, strRegKey, strRegValue);
 
 	if (CanOpen) {
 		_tcscpy(strRegKey, strFileTypeId);
@@ -5064,7 +5064,7 @@ LOCALPROC RegisterShellFileType(LPTSTR AppPath, LPTSTR strFilterExt,
 		_tcscpy(strRegValue, TEXT("\""));
 		_tcscat(strRegValue, AppPath);
 		_tcscat(strRegValue, TEXT("\" \"%1\""));
-		MySetRegKey(HKEY_CLASSES_ROOT, strRegKey, strRegValue);
+		SetRegKey(HKEY_CLASSES_ROOT, strRegKey, strRegValue);
 	}
 }
 
@@ -5232,9 +5232,9 @@ LOCALPROC ToggleWantFullScreen(void)
 			WantMagnify = falseblnr;
 			if (WantFullScreen) {
 				if ((GetSystemMetrics(SM_CXSCREEN)
-						>= vMacScreenWidth * MyWindowScale)
+						>= vMacScreenWidth * WindowScale)
 					&& (GetSystemMetrics(SM_CYSCREEN)
-						>= vMacScreenHeight * MyWindowScale)
+						>= vMacScreenHeight * WindowScale)
 					)
 				{
 					WantMagnify = trueblnr;
@@ -5275,7 +5275,7 @@ LOCALPROC DragFunc(HDROP hDrop)
 
 GLOBALOSGLUFUNC blnr ExtraTimeNotOver(void)
 {
-#if MySoundEnabled
+#if SoundEnabled
 	SoundCheckVeryOften();
 #endif
 	(void) UpdateTrueEmulatedTime();
@@ -5302,21 +5302,21 @@ LOCALPROC EnterBackground(void)
 
 LOCALPROC LeaveSpeedStopped(void)
 {
-#if MySoundEnabled
-	MySound_Start();
+#if SoundEnabled
+	Sound_Start();
 #endif
-#if (MyTimeResolution != 0)
-	MyTimer_Resume();
+#if (TimeResolution != 0)
+	Timer_Resume();
 #endif
 }
 
 LOCALPROC EnterSpeedStopped(void)
 {
-#if (MyTimeResolution != 0)
-	MyTimer_Suspend();
+#if (TimeResolution != 0)
+	Timer_Suspend();
 #endif
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
 }
 
@@ -5327,16 +5327,16 @@ LOCALPROC CheckForSavedTasks(void)
 		have done at an awkward time.
 	*/
 
-	if (MyEvtQNeedRecover) {
-		MyEvtQNeedRecover = falseblnr;
+	if (EvtQNeedRecover) {
+		EvtQNeedRecover = falseblnr;
 
-		/* attempt cleanup, MyEvtQNeedRecover may get set again */
-		MyEvtQTryRecoverFromFull();
+		/* attempt cleanup, EvtQNeedRecover may get set again */
+		EvtQTryRecoverFromFull();
 	}
 
 #if EnableFSMouseMotion
 	if (HaveMouseMotion) {
-		MyMouseConstrain();
+		MouseConstrain();
 	}
 #endif
 
@@ -5618,7 +5618,7 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 			break;
 #if ItnlKyBdFix && ! UseWinCE
 		case WM_INPUTLANGCHANGE:
-			MyCheckKeyboardLayout();
+			CheckKeyboardLayout();
 			return TRUE;
 			break;
 #endif
@@ -5778,8 +5778,8 @@ label_retry:
 	}
 
 	if (CheckDateTime()) {
-#if MySoundEnabled
-		MySound_SecondNotify();
+#if SoundEnabled
+		Sound_SecondNotify();
 #endif
 	}
 
@@ -5926,7 +5926,7 @@ LOCALPROC ReserveAllocAll(void)
 	{
 		uint32_t n = vMacScreenMonoNumBytes
 #if EnableMagnify
-			* MyWindowScale * MyWindowScale
+			* WindowScale * WindowScale
 #endif
 			;
 #if 1 == vMacScreenDepth
@@ -5941,7 +5941,7 @@ LOCALPROC ReserveAllocAll(void)
 		ReserveAllocOneBlock(&ScalingBuff, n, 5, falseblnr);
 	}
 #endif
-#if MySoundEnabled
+#if SoundEnabled
 	ReserveAllocOneBlock((ui3p *)&TheSoundBuffer,
 		dbhBufferSize, 5, falseblnr);
 #endif
@@ -5949,7 +5949,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC blnr AllocMyMemory(void)
+LOCALFUNC blnr AllocMemory(void)
 {
 	uimr n;
 	blnr IsOk = falseblnr;
@@ -5975,7 +5975,7 @@ LOCALFUNC blnr AllocMyMemory(void)
 	return IsOk;
 }
 
-LOCALPROC UnallocMyMemory(void)
+LOCALPROC UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		if (GlobalFree(ReserveAllocBigBlock) != NULL) {
@@ -5986,7 +5986,7 @@ LOCALPROC UnallocMyMemory(void)
 
 LOCALFUNC blnr InitOSGLU(void)
 {
-	if (AllocMyMemory())
+	if (AllocMemory())
 #if dbglog_HAVE
 	if (dbglog_open())
 #endif
@@ -6016,10 +6016,10 @@ LOCALFUNC blnr InitOSGLU(void)
 
 LOCALPROC UnInitOSGLU(void)
 {
-#if (MyTimeResolution != 0)
-	MyTimer_Suspend();
+#if (TimeResolution != 0)
+	Timer_Suspend();
 #endif
-	MyMouseCaptureSet(falseblnr);
+	MouseCaptureSet(falseblnr);
 
 	if (MacMsgDisplayed) {
 		MacMsgDisplayOff();
@@ -6028,8 +6028,8 @@ LOCALPROC UnInitOSGLU(void)
 #if MayFullScreen
 	UnGrabTheMachine();
 #endif
-#if MySoundEnabled
-	MySound_Stop();
+#if SoundEnabled
+	Sound_Stop();
 #endif
 #if IncludePbufs
 	UnInitPbufs();
@@ -6043,7 +6043,7 @@ LOCALPROC UnInitOSGLU(void)
 #endif
 
 #if EnableShellLinks
-	MyUninitCOM();
+	UninitCOM();
 #endif
 
 	if (! gTrueBackgroundFlag) {
@@ -6056,7 +6056,7 @@ LOCALPROC UnInitOSGLU(void)
 	dbglog_close();
 #endif
 
-	UnallocMyMemory();
+	UnallocMemory();
 }
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,

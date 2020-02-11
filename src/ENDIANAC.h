@@ -51,8 +51,8 @@ LOCALINLINEFUNC uint16_t do_get_mem_word(ui3p a)
 
 #if BigEndianUnaligned
 #define do_get_mem_long(a) ((uint32_t)*((uint32_t *)(a)))
-#elif HaveMySwapUi5r && LittleEndianUnaligned
-#define do_get_mem_long(a) (MySwapUi5r((uint32_t)*((uint32_t *)(a))))
+#elif HaveSwapUi5r && LittleEndianUnaligned
+#define do_get_mem_long(a) (SwapUi5r((uint32_t)*((uint32_t *)(a))))
 #else
 LOCALINLINEFUNC uint32_t do_get_mem_long(ui3p a)
 {
@@ -113,8 +113,8 @@ LOCALINLINEFUNC void do_put_mem_word(ui3p a, uint16_t v)
 
 #if BigEndianUnaligned
 #define do_put_mem_long(a, v) ((*((uint32_t *)(a))) = (v))
-#elif HaveMySwapUi5r && LittleEndianUnaligned
-#define do_put_mem_long(a, v) ((*((uint32_t *)(a))) = MySwapUi5r(v))
+#elif HaveSwapUi5r && LittleEndianUnaligned
+#define do_put_mem_long(a, v) ((*((uint32_t *)(a))) = SwapUi5r(v))
 #else
 LOCALINLINEFUNC void do_put_mem_long(ui3p a, uint32_t v)
 {

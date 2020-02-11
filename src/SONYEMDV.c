@@ -795,7 +795,7 @@ GLOBALPROC ExtnDisk_Access(CPTR p)
 /*
 	Mini vMac extension that implements most of the logic
 	of the replacement disk driver patched into the emulated ROM.
-	(sony_driver in ROMEMDEV.c)
+	(gSonyDriverData in ROMEMDEV.c)
 
 	This logic used to be completely contained in the 68k code
 	of the replacement driver, using only the low level

@@ -12,10 +12,10 @@ bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/LANG/STRCNENG.h cfg/STRCONST.h src/
 	gcc "src/UI/WIN32/OSGLUWIN.c" -o "bld/OSGLUWIN.o" $(mk_COptions)
 bld/GLOBGLUE.o : src/GLOBGLUE.c cfg/CNFGGLOB.h
 	gcc "src/GLOBGLUE.c" -o "bld/GLOBGLUE.o" $(mk_COptions)
-bld/M68KITAB.o : src/M68KITAB.c cfg/CNFGGLOB.h
-	gcc "src/M68KITAB.c" -o "bld/M68KITAB.o" $(mk_COptions)
-bld/MINEM68K.o : src/MINEM68K.c cfg/CNFGGLOB.h
-	gcc "src/MINEM68K.c" -o "bld/MINEM68K.o" $(mk_COptions)
+bld/M68KITAB.o : src/M68K/M68KITAB.c cfg/CNFGGLOB.h
+	gcc "src/M68K/M68KITAB.c" -o "bld/M68KITAB.o" $(mk_COptions)
+bld/MINEM68K.o : src/M68K/MINEM68K.c cfg/CNFGGLOB.h
+	gcc "src/M68K/MINEM68K.c" -o "bld/MINEM68K.o" $(mk_COptions)
 bld/VIAEMDEV.o : src/VIAEMDEV.c cfg/CNFGGLOB.h
 	gcc "src/VIAEMDEV.c" -o "bld/VIAEMDEV.o" $(mk_COptions)
 bld/IWMEMDEV.o : src/IWMEMDEV.c cfg/CNFGGLOB.h

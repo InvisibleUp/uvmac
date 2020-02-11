@@ -34,7 +34,7 @@
 #include "ENDIANAC.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "MINEM68K.h"
+#include "M68K/MINEM68K.h"
 #endif
 
 #include "SONYEMDV.h"

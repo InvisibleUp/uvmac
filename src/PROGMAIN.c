@@ -24,8 +24,8 @@
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "M68KITAB.h"
-#include "MINEM68K.h"
+#include "M68K/M68KITAB.h"
+#include "M68K/MINEM68K.h"
 #include "VIAEMDEV.h"
 #if EmVIA2
 #include "VIA2EMDV.h"

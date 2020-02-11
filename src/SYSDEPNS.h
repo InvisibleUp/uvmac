@@ -55,10 +55,6 @@ typedef int32_t simr;
 #define MayInline
 #endif
 
-#ifndef MayNotInline
-#define MayNotInline
-#endif
-
 #ifndef my_reg_call
 #define my_reg_call
 #endif
@@ -76,13 +72,13 @@ typedef int32_t simr;
 #define EXPORTVAR(t, v) extern t v;
 #endif
 
-#define LOCALFUNC static MayNotInline
+#define LOCALFUNC static
 #define FORWARDFUNC LOCALFUNC
 #ifdef AllFiles
 #define GLOBALFUNC LOCALFUNC
 #define EXPORTFUNC LOCALFUNC
 #else
-#define GLOBALFUNC MayNotInline
+#define GLOBALFUNC
 #define EXPORTFUNC extern
 #endif
 #define IMPORTFUNC EXPORTFUNC

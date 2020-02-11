@@ -26,7 +26,7 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 
-#include "M68KITAB.h"
+#include "M68K/M68KITAB.h"
 
 struct WorkR {
 	/* expected size : 8 bytes */

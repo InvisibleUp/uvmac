@@ -23,7 +23,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -42,9 +42,9 @@ GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 
 #define NeedCell2PlainAsciiMap 1
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 /* --- sending debugging info to file --- */
 

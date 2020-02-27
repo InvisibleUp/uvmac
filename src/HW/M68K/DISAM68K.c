@@ -21,7 +21,7 @@
 #ifndef AllFiles
 #include "SYSDEPNS.h"
 
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"

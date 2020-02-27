@@ -35,7 +35,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -98,7 +98,7 @@ LOCALFUNC bool HaveMySHGetSpecialFolderPath(void)
 #define NeedCell2WinAsciiMap 1
 #endif
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
 
 LOCALPROC NativeStrFromCStr(LPTSTR r, char *s, bool AddEllipsis)
@@ -373,7 +373,7 @@ GLOBALOSGLUPROC PbufTransfer(uint8_t * Buffer,
 
 /* --- control mode and internationalization --- */
 
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 /* --- main window info --- */
 

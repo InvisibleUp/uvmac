@@ -23,7 +23,7 @@
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "VIAEMDEV.h"
+#include "HW/VIA/VIAEMDEV.h"
 #endif
 
 #include "HW/POWERMAN/PMUEMDEV.h"

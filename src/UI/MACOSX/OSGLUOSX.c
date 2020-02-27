@@ -29,7 +29,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -655,7 +655,7 @@ LOCALPROC PStrFromChar(ps3p r, char x)
 
 #define NeedCell2UnicodeMap 1
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
 LOCALPROC UniCharStrFromSubstCStr(int *L, UniChar *x, char *s)
 {
@@ -970,7 +970,7 @@ LOCALFUNC bool CheckDateTime(void)
 
 /* --- parameter buffers --- */
 
-#include "PBUFSTDC.h"
+#include "UTILS/PBUFSTDC.h"
 
 /* --- drives --- */
 
@@ -1169,7 +1169,7 @@ GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
 
 #if EmLocalTalk
 
-#include "BPFILTER.h"
+#include "UTIL/BPFILTER.h"
 
 #endif
 
@@ -1178,7 +1178,7 @@ GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
 
 #define WantKeyboard_RemapMac 1
 
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 
 /* --- video out --- */
@@ -1271,7 +1271,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 3
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 
 #if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
@@ -1283,7 +1283,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 
@@ -1296,7 +1296,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnTrns_DstDepth 5
 #define ScrnTrns_DstZLo 1
 
-#include "SCRNTRNS.h"
+#include "HW/SCREEN/SCRNTRNS.h"
 
 #endif
 

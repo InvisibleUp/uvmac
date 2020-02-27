@@ -8,7 +8,9 @@ mk_COptions = $(mk_COptionsCommon) -Os
 
 TheDefaultOutput : minivmac.exe
 
-bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/LANG/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/UI/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
+bld/PROGMAIN.o : src/PROGMAIN.c
+	gcc "src/PROGMAIN.c" -o "bld/PROGMAIN.o" $(mk_COptions)
+bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/LANG/STRCNENG.h cfg/STRCONST.h src/LANG/INTLCHAR.h src/UI/COMOSGLU.h src/UI/CONTROLM.h cfg/CNFGGLOB.h
 	gcc "src/UI/WIN32/OSGLUWIN.c" -o "bld/OSGLUWIN.o" $(mk_COptions)
 bld/GLOBGLUE.o : src/GLOBGLUE.c
 	gcc "src/GLOBGLUE.c" -o "bld/GLOBGLUE.o" $(mk_COptions)
@@ -16,30 +18,28 @@ bld/M68KITAB.o : src/HW/M68K/M68KITAB.c cfg/CNFGGLOB.h
 	gcc "src/HW/M68K/M68KITAB.c" -o "bld/M68KITAB.o" $(mk_COptions)
 bld/MINEM68K.o : src/HW/M68K/MINEM68K.c
 	gcc "src/HW/M68K/MINEM68K.c" -o "bld/MINEM68K.o" $(mk_COptions)
-bld/VIAEMDEV.o : src/VIAEMDEV.c
-	gcc "src/VIAEMDEV.c" -o "bld/VIAEMDEV.o" $(mk_COptions)
-bld/IWMEMDEV.o : src/IWMEMDEV.c
-	gcc "src/IWMEMDEV.c" -o "bld/IWMEMDEV.o" $(mk_COptions)
-bld/SCCEMDEV.o : src/SCCEMDEV.c
-	gcc "src/SCCEMDEV.c" -o "bld/SCCEMDEV.o" $(mk_COptions)
-bld/RTCEMDEV.o : src/RTCEMDEV.c
-	gcc "src/RTCEMDEV.c" -o "bld/RTCEMDEV.o" $(mk_COptions)
-bld/ROMEMDEV.o : src/ROMEMDEV.c
-	gcc "src/ROMEMDEV.c" -o "bld/ROMEMDEV.o" $(mk_COptions)
-bld/SCSIEMDV.o : src/SCSIEMDV.c
-	gcc "src/SCSIEMDV.c" -o "bld/SCSIEMDV.o" $(mk_COptions)
-bld/SONYEMDV.o : src/SONYEMDV.c
-	gcc "src/SONYEMDV.c" -o "bld/SONYEMDV.o" $(mk_COptions)
-bld/SCRNEMDV.o : src/SCRNEMDV.c
-	gcc "src/SCRNEMDV.c" -o "bld/SCRNEMDV.o" $(mk_COptions)
+bld/VIAEMDEV.o : src/HW/VIA/VIAEMDEV.c
+	gcc "src/HW/VIA/VIAEMDEV.c" -o "bld/VIAEMDEV.o" $(mk_COptions)
+bld/IWMEMDEV.o : src/HW/DISK/IWMEMDEV.c
+	gcc "src/HW/DISK/IWMEMDEV.c" -o "bld/IWMEMDEV.o" $(mk_COptions)
+bld/SCCEMDEV.o : src/HW/SCC/SCCEMDEV.c
+	gcc "src/HW/SCC/SCCEMDEV.c" -o "bld/SCCEMDEV.o" $(mk_COptions)
+bld/RTCEMDEV.o : src/HW/RTC/RTCEMDEV.c
+	gcc "src/HW/RTC/RTCEMDEV.c" -o "bld/RTCEMDEV.o" $(mk_COptions)
+bld/ROMEMDEV.o : src/PATCHES/ROMEMDEV.c
+	gcc "src/PATCHES/ROMEMDEV.c" -o "bld/ROMEMDEV.o" $(mk_COptions)
+bld/SCSIEMDV.o : src/HW/SCSI/SCSIEMDV.c
+	gcc "src/HW/SCSI/SCSIEMDV.c" -o "bld/SCSIEMDV.o" $(mk_COptions)
+bld/SONYEMDV.o : src/HW/DISK/SONYEMDV.c
+	gcc "src/HW/DISK/SONYEMDV.c" -o "bld/SONYEMDV.o" $(mk_COptions)
+bld/SCRNEMDV.o : src/HW/SCREEN/SCRNEMDV.c
+	gcc "src/HW/SCREEN/SCRNEMDV.c" -o "bld/SCRNEMDV.o" $(mk_COptions)
 bld/MOUSEMDV.o : src/HW/MOUSE/MOUSEMDV.c
 	gcc "src/HW/MOUSE/MOUSEMDV.c" -o "bld/MOUSEMDV.o" $(mk_COptions)
 bld/KBRDEMDV.o : src/HW/KBRD/KBRDEMDV.c
 	gcc "src/HW/KBRD/KBRDEMDV.c" -o "bld/KBRDEMDV.o" $(mk_COptions)
-bld/SNDEMDEV.o : src/SNDEMDEV.c
-	gcc "src/SNDEMDEV.c" -o "bld/SNDEMDEV.o" $(mk_COptions)
-bld/PROGMAIN.o : src/PROGMAIN.c
-	gcc "src/PROGMAIN.c" -o "bld/PROGMAIN.o" $(mk_COptions)
+bld/SNDEMDEV.o : src/HW/SOUND/SNDEMDEV.c
+	gcc "src/HW/SOUND/SNDEMDEV.c" -o "bld/SNDEMDEV.o" $(mk_COptions)
 bld/DATE2SEC.o : src/UTIL/DATE2SEC.c
 	gcc "src/UTIL/DATE2SEC.c" -o "bld/DATE2SEC.o" $(mk_COptions)
 

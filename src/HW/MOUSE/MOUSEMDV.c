@@ -26,10 +26,10 @@
 #ifndef AllFiles
 #include "SYSDEPNS.h"
 #include "UI/MYOSGLUE.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "SCCEMDEV.h"
+#include "HW/SCC/SCCEMDEV.h"
 #include "HW/M68K/MINEM68K.h"
 #endif
 

@@ -23,7 +23,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -40,7 +40,7 @@ GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 
 #define NeedCell2PlainAsciiMap 1
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
 /* --- sending debugging info to file --- */
 
@@ -91,9 +91,9 @@ LOCALPROC dbglog_close0(void)
 
 #include "UI/COMOSGLU.h"
 
-#include "PBUFSTDC.h"
+#include "UTILS/PBUFSTDC.h"
 
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 /* --- text translation --- */
 
@@ -388,7 +388,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 3
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateBWDepth4Copy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -397,7 +397,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 4
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateBWDepth5Copy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -406,7 +406,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateBWDepth3ScaledCopy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -416,7 +416,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateBWDepth4ScaledCopy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -426,7 +426,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateBWDepth5ScaledCopy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -436,7 +436,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 
 #if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
@@ -448,7 +448,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 3
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateColorDepth4Copy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -457,7 +457,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 4
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateColorDepth5Copy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -466,7 +466,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map CLUT_final
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateColorDepth3ScaledCopy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -476,7 +476,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateColorDepth4ScaledCopy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -486,7 +486,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #define ScrnMapr_DoMap UpdateColorDepth5ScaledCopy
 #define ScrnMapr_Src GetCurDrawBuff()
@@ -496,7 +496,7 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 

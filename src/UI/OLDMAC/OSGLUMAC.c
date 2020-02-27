@@ -34,7 +34,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -740,13 +740,13 @@ LOCALPROC dbglog_close0(void)
 
 #define WantColorTransValid 1
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
 #include "UI/COMOSGLU.h"
 
 #define WantKeyboard_RemapMac 1
 
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 /* --- some simple utilities --- */
 
@@ -1037,7 +1037,7 @@ LOCALVAR uint8_t * ScalingTabl = nullpr;
 #define ScrnMapr_Map ScalingTabl
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 

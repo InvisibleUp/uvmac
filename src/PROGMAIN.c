@@ -26,21 +26,21 @@
 	#include "GLOBGLUE.h"
 	#include "HW/M68K/M68KITAB.h"
 	#include "HW/M68K/MINEM68K.h"
-	#include "VIAEMDEV.h"
+	#include "HW/VIA/VIAEMDEV.h"
 	#if EmVIA2
-		#include "VIA2EMDV.h"
+		#include "HW/VIA/VIA2EMDV.h"
 	#endif
-	#include "IWMEMDEV.h"
-	#include "SCCEMDEV.h"
+	#include "HW/DISK/IWMEMDEV.h"
+	#include "HW/SCC/SCCEMDEV.h"
 	#if EmRTC
-		#include "RTCEMDEV.h"
+		#include "HW/RTC/RTCEMDEV.h"
 	#endif
-	#include "ROMEMDEV.h"
-	#include "SCSIEMDV.h"
-	#include "SONYEMDV.h"
-	#include "SCRNEMDV.h"
+	#include "PATCHES/ROMEMDEV.h"
+	#include "HW/SCSI/SCSIEMDV.h"
+	#include "HW/DISK/SONYEMDV.h"
+	#include "HW/SCREEN/SCRNEMDV.h"
 	#if EmVidCard
-		#include "VIDEMDEV.h"
+		#include "HW/VIDCARD/VIDEMDEV.h"
 	#endif
 	#if EmClassicKbrd
 		#include "HW/KBRD/KBRDEMDV.h"
@@ -50,10 +50,10 @@
 		#include "HW/ADB/ADBEMDEV.h"
 	#endif
 	#if EmASC
-		#include "ASCEMDEV.h"
+		#include "HW/SOUND/ASCEMDEV.h"
 	#else
 		#if SoundEnabled && (CurEmMd != kEmMd_PB100)
-			#include "SNDEMDEV.h"
+			#include "HW/SOUND/SNDEMDEV.h"
 		#endif
 	#endif
 	#include "HW/MOUSE/MOUSEMDV.h"

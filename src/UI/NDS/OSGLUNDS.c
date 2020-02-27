@@ -20,7 +20,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -59,7 +59,7 @@ LOCALVAR int Display_bg2_Main = 0;
 
 #define NeedCell2PlainAsciiMap 1
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
 /* --- sending debugging info to file --- */
 
@@ -122,7 +122,7 @@ LOCALPROC WriteExtraErr(char *s)
 #define WantColorTransValid 0
 
 #include "UI/COMOSGLU.h"
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 LOCALPROC NativeStrFromCStr(char *r, char *s)
 {

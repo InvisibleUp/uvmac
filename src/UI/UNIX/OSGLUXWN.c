@@ -37,7 +37,7 @@
 
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
-#include "ENDIANAC.h"
+#include "UTIL/ENDIANAC.h"
 
 #include "UI/MYOSGLUE.h"
 
@@ -54,7 +54,7 @@ GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 
 #define NeedCell2PlainAsciiMap 1
 
-#include "INTLCHAR.h"
+#include "LANG/INTLCHAR.h"
 
 
 LOCALVAR char *d_arg = NULL;
@@ -310,9 +310,9 @@ LOCALFUNC bool NetSupportedContains(Atom x)
 
 #include "UI/COMOSGLU.h"
 
-#include "PBUFSTDC.h"
+#include "UTILS/PBUFSTDC.h"
 
-#include "CONTROLM.h"
+#include "UI/CONTROLM.h"
 
 /* --- text translation --- */
 
@@ -1319,7 +1319,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_Map ScalingTabl
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 
@@ -1333,7 +1333,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map ScalingTabl
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 
@@ -1348,7 +1348,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_Map ScalingTabl
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 
@@ -1361,7 +1361,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnTrns_SrcDepth vMacScreenDepth
 #define ScrnTrns_DstDepth 5
 
-#include "SCRNTRNS.h"
+#include "HW/SCREEN/SCRNTRNS.h"
 
 #endif
 
@@ -1374,7 +1374,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnTrns_DstDepth 5
 #define ScrnTrns_Scale WindowScale
 
-#include "SCRNTRNS.h"
+#include "HW/SCREEN/SCRNTRNS.h"
 
 #endif
 
@@ -1389,7 +1389,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_Map ScalingTabl
 #define ScrnMapr_Scale WindowScale
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 
@@ -1403,7 +1403,7 @@ LOCALPROC SetUpBW2ColorTabl(void)
 #define ScrnMapr_DstDepth 5
 #define ScrnMapr_Map ScalingTabl
 
-#include "SCRNMAPR.h"
+#include "HW/SCREEN/SCRNMAPR.h"
 
 #endif
 

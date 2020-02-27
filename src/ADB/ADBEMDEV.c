@@ -25,7 +25,7 @@
 #include "GLOBGLUE.h"
 #endif
 
-#include "ADBEMDEV.h"
+#include "ADB/ADBEMDEV.h"
 
 #ifdef _VIA_Debug
 #include <stdio.h>
@@ -38,7 +38,7 @@
 IMPORTPROC ADB_ShiftOutData(uint8_t v);
 IMPORTFUNC uint8_t ADB_ShiftInData(void);
 
-#include "ADBSHARE.h"
+#include "ADB/ADBSHARE.h"
 
 LOCALVAR bool ADB_ListenDatBuf;
 LOCALVAR uint8_t ADB_IndexDatBuf;

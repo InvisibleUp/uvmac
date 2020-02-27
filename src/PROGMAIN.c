@@ -19,44 +19,44 @@
 */
 
 #ifndef AllFiles
-#include "SYSDEPNS.h"
+	#include "SYSDEPNS.h"
 
-#include "UI/MYOSGLUE.h"
-#include "EMCONFIG.h"
-#include "GLOBGLUE.h"
-#include "M68K/M68KITAB.h"
-#include "M68K/MINEM68K.h"
-#include "VIAEMDEV.h"
-#if EmVIA2
-#include "VIA2EMDV.h"
-#endif
-#include "IWMEMDEV.h"
-#include "SCCEMDEV.h"
-#if EmRTC
-#include "RTCEMDEV.h"
-#endif
-#include "ROMEMDEV.h"
-#include "SCSIEMDV.h"
-#include "SONYEMDV.h"
-#include "SCRNEMDV.h"
-#if EmVidCard
-#include "VIDEMDEV.h"
-#endif
-#if EmClassicKbrd
-#include "KBRDEMDV.h"
-#elif EmPMU
-#include "PMUEMDEV.h"
-#else
-#include "ADBEMDEV.h"
-#endif
-#if EmASC
-#include "ASCEMDEV.h"
-#else
-#if SoundEnabled && (CurEmMd != kEmMd_PB100)
-#include "SNDEMDEV.h"
-#endif
-#endif
-#include "MOUSEMDV.h"
+	#include "UI/MYOSGLUE.h"
+	#include "EMCONFIG.h"
+	#include "GLOBGLUE.h"
+	#include "M68K/M68KITAB.h"
+	#include "M68K/MINEM68K.h"
+	#include "VIAEMDEV.h"
+	#if EmVIA2
+		#include "VIA2EMDV.h"
+	#endif
+	#include "IWMEMDEV.h"
+	#include "SCCEMDEV.h"
+	#if EmRTC
+		#include "RTCEMDEV.h"
+	#endif
+	#include "ROMEMDEV.h"
+	#include "SCSIEMDV.h"
+	#include "SONYEMDV.h"
+	#include "SCRNEMDV.h"
+	#if EmVidCard
+		#include "VIDEMDEV.h"
+	#endif
+	#if EmClassicKbrd
+		#include "KBRDEMDV.h"
+	#elif EmPMU
+		#include "POWERMAN/PMUEMDEV.h"
+	#else
+		#include "ADB/ADBEMDEV.h"
+	#endif
+	#if EmASC
+		#include "ASCEMDEV.h"
+	#else
+		#if SoundEnabled && (CurEmMd != kEmMd_PB100)
+			#include "SNDEMDEV.h"
+		#endif
+	#endif
+	#include "MOUSEMDV.h"
 #endif
 
 

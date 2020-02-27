@@ -344,7 +344,7 @@ LOCALPROC dbglog_close0(void)
 
 #define WantColorTransValid 1
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 
 #define WantKeyboard_RemapMac 1
 

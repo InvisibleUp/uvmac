@@ -14,12 +14,11 @@
 	license for more details.
 */
 
-#ifdef SCSIEMDV_H
-#error "header already included"
-#else
+#ifndef SCSIEMDV_H
 #define SCSIEMDV_H
-#endif
 
 EXPORTPROC SCSI_Reset(void);
 
 EXPORTFUNC uint32_t SCSI_Access(uint32_t Data, bool WriteMem, CPTR addr);
+
+#endif

@@ -18,12 +18,10 @@
 	DISAssemble Motorola 68K instructions.
 */
 
-#ifdef DIS1M68K_H
-#error "header already included"
-#else
+#ifndef DIS1M68K_H
 #define DIS1M68K_H
-#endif
 
 EXPORTPROC DisasmOneOrSave(uint32_t pc);
-
 EXPORTPROC m68k_WantDisasmContext(void);
+
+#endif

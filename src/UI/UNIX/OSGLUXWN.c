@@ -308,7 +308,7 @@ LOCALFUNC bool NetSupportedContains(Atom x)
 
 #define WantColorTransValid 1
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 
 #include "PBUFSTDC.h"
 
@@ -2288,7 +2288,7 @@ LOCALPROC DisconnectKeyCodes3(void)
 
 LOCALVAR uint32_t TrueEmulatedTime = 0;
 
-#include "DATE2SEC.h"
+#include "UTIL/DATE2SEC.h"
 
 #define TicksPerSecond 1000000
 

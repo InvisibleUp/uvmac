@@ -29,7 +29,7 @@
 #include "GLOBGLUE.h"
 #endif
 
-#include "KBRDEMDV.h"
+#include "HW/KBRD/KBRDEMDV.h"
 
 #ifdef _VIA_Debug
 #include <stdio.h>

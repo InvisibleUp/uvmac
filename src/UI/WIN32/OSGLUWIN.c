@@ -28,6 +28,11 @@
 	The main entry point '_tWinMain' is at the end of this file.
 */
 
+#include <windows.h>
+#include <time.h>
+#include <shlobj.h>
+#include <tchar.h>
+
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
 #include "ENDIANAC.h"
@@ -240,7 +245,7 @@ LOCALPROC dbglog_close0(void)
 
 #endif
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 
 #ifndef InstallFileIcons
 #define InstallFileIcons 0
@@ -2253,7 +2258,7 @@ LOCALFUNC bool UpdateTrueEmulatedTime(void)
 LOCALVAR uint32_t TimeSecBase;
 LOCALVAR DWORD TimeMilliBase;
 
-#include "DATE2SEC.h"
+#include "UTIL/DATE2SEC.h"
 
 LOCALFUNC bool CheckDateTime(void)
 {

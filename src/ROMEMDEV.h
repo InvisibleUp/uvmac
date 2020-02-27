@@ -14,10 +14,9 @@
 	license for more details.
 */
 
-#ifdef ROMEMDEV_H
-#error "header already included"
-#else
+#ifndef ROMEMDEV_H
 #define ROMEMDEV_H
-#endif
 
 EXPORTFUNC bool ROM_Init(void);
+
+#endif

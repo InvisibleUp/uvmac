@@ -26,10 +26,10 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 
-#include "M68K/M68KITAB.h"
+#include "HW/M68K/M68KITAB.h"
 #endif
 
-#include "M68K/DISAM68K.h"
+#include "HW/M68K/DISAM68K.h"
 
 LOCALVAR uint32_t Disasm_pc;
 

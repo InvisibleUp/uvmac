@@ -14,11 +14,8 @@
 	license for more details.
 */
 
-#ifdef RTCEMDEV_H
-#error "header already included"
-#else
+#ifndef RTCEMDEV_H
 #define RTCEMDEV_H
-#endif
 
 EXPORTFUNC bool RTC_Init(void);
 EXPORTPROC RTC_Interrupt(void);
@@ -26,3 +23,5 @@ EXPORTPROC RTC_Interrupt(void);
 EXPORTPROC RTCunEnabled_ChangeNtfy(void);
 EXPORTPROC RTCclock_ChangeNtfy(void);
 EXPORTPROC RTCdataLine_ChangeNtfy(void);
+
+#endif

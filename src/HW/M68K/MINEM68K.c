@@ -38,14 +38,14 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 
-#include "M68K/M68KITAB.h"
+#include "HW/M68K/M68KITAB.h"
 
 #if WantDisasm
-#include "M68K/DISAM68K.h"
+#include "HW/M68K/DISAM68K.h"
 #endif
 #endif
 
-#include "M68K/MINEM68K.h"
+#include "HW/M68K/MINEM68K.h"
 
 /*
 	ReportAbnormalID unused 0x0123 - 0x01FF

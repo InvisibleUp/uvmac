@@ -14,11 +14,8 @@
 	license for more details.
 */
 
-#ifdef GLOBGLUE_H
-#error "header already included"
-#else
+#ifndef GLOBGLUE_H
 #define GLOBGLUE_H
-#endif
 
 
 #define kEmMd_Twig43      0
@@ -274,3 +271,5 @@ typedef ATTer *ATTep;
 EXPORTFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 	bool WriteMem, bool ByteSize, CPTR addr);
 EXPORTFUNC bool MemAccessNtfy(ATTep pT);
+
+#endif

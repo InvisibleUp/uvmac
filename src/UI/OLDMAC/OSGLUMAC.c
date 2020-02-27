@@ -742,7 +742,7 @@ LOCALPROC dbglog_close0(void)
 
 #include "INTLCHAR.h"
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 
 #define WantKeyboard_RemapMac 1
 

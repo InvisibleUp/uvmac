@@ -1,7 +1,7 @@
 #include "ALTKEYSM.h"
 #include "SYSDEPNS.h"
 #include "MYOSGLUE.h"
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 #include "CONTROLM.h"
 #include "INTLCHAR.h"
 

@@ -14,14 +14,13 @@
 	license for more details.
 */
 
-#ifdef VIDEMDEV_H
-#error "header already included"
-#else
+#ifndef VIDEMDEV_H
 #define VIDEMDEV_H
-#endif
 
 EXPORTFUNC bool Vid_Init(void);
 EXPORTFUNC uint16_t Vid_Reset(void);
 EXPORTPROC Vid_Update(void);
 
 EXPORTPROC ExtnVideo_Access(CPTR p);
+
+#endif

@@ -15,10 +15,9 @@
 	license for more details.
 */
 
-#ifdef SCRNEMDV_H
-#error "header already included"
-#else
+#ifndef SCRNEMDV_H
 #define SCRNEMDV_H
-#endif
 
 EXPORTPROC Screen_EndTickNotify(void);
+
+#endif

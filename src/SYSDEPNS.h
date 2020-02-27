@@ -18,11 +18,8 @@
 	SYStem DEPeNdencies.
 */
 
-#ifdef SYSDEPNS_H
-#error "header already included"
-#else
+#ifndef SYSDEPNS_H
 #define SYSDEPNS_H
-#endif
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -126,4 +123,6 @@ typedef int32_t simr;
 
 #ifndef HaveSwapUi5r
 #define HaveSwapUi5r 0
+#endif
+
 #endif

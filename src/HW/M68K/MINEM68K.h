@@ -14,11 +14,8 @@
 	license for more details.
 */
 
-#ifdef MINEM68K_H
-#error "header already included"
-#else
+#ifndef MINEM68K_H
 #define MINEM68K_H
-#endif
 
 EXPORTPROC MINEM68K_Init(
 	uint8_t *fIPL);
@@ -51,3 +48,5 @@ EXPORTPROC put_vm_long(CPTR addr, uint32_t l);
 
 EXPORTPROC SetHeadATTel(ATTep p);
 EXPORTFUNC ATTep FindATTel(CPTR addr);
+
+#endif

@@ -1,5 +1,5 @@
 /*
-	KBRDEMDV.h
+	HW/MOUSE/MOUSEMDV.h
 
 	Copyright (C) 2003 Philip Cummins, Paul C. Pratt
 
@@ -14,14 +14,11 @@
 	license for more details.
 */
 
-#ifdef KBRDEMDV_H
+#ifdef MOUSEMDV_H
 #error "header already included"
 #else
-#define KBRDEMDV_H
+#define MOUSEMDV_H
 #endif
 
-
-EXPORTPROC Kybd_DataLineChngNtfy(void);
-EXPORTPROC DoKybd_ReceiveEndCommand(void);
-EXPORTPROC DoKybd_ReceiveCommand(void);
-EXPORTPROC KeyBoard_Update(void);
+EXPORTPROC Mouse_Update(void);
+EXPORTPROC Mouse_EndTickNotify(void);

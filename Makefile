@@ -8,14 +8,14 @@ mk_COptions = $(mk_COptionsCommon) -Os
 
 TheDefaultOutput : minivmac.exe
 
-bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/LANG/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
+bld/OSGLUWIN.o : src/UI/WIN32/OSGLUWIN.c src/LANG/STRCNENG.h cfg/STRCONST.h src/INTLCHAR.h src/UI/COMOSGLU.h src/CONTROLM.h cfg/CNFGGLOB.h
 	gcc "src/UI/WIN32/OSGLUWIN.c" -o "bld/OSGLUWIN.o" $(mk_COptions)
 bld/GLOBGLUE.o : src/GLOBGLUE.c
 	gcc "src/GLOBGLUE.c" -o "bld/GLOBGLUE.o" $(mk_COptions)
-bld/M68KITAB.o : src/M68K/M68KITAB.c cfg/CNFGGLOB.h
-	gcc "src/M68K/M68KITAB.c" -o "bld/M68KITAB.o" $(mk_COptions)
-bld/MINEM68K.o : src/M68K/MINEM68K.c
-	gcc "src/M68K/MINEM68K.c" -o "bld/MINEM68K.o" $(mk_COptions)
+bld/M68KITAB.o : src/HW/M68K/M68KITAB.c cfg/CNFGGLOB.h
+	gcc "src/HW/M68K/M68KITAB.c" -o "bld/M68KITAB.o" $(mk_COptions)
+bld/MINEM68K.o : src/HW/M68K/MINEM68K.c
+	gcc "src/HW/M68K/MINEM68K.c" -o "bld/MINEM68K.o" $(mk_COptions)
 bld/VIAEMDEV.o : src/VIAEMDEV.c
 	gcc "src/VIAEMDEV.c" -o "bld/VIAEMDEV.o" $(mk_COptions)
 bld/IWMEMDEV.o : src/IWMEMDEV.c
@@ -32,18 +32,22 @@ bld/SONYEMDV.o : src/SONYEMDV.c
 	gcc "src/SONYEMDV.c" -o "bld/SONYEMDV.o" $(mk_COptions)
 bld/SCRNEMDV.o : src/SCRNEMDV.c
 	gcc "src/SCRNEMDV.c" -o "bld/SCRNEMDV.o" $(mk_COptions)
-bld/MOUSEMDV.o : src/MOUSEMDV.c
-	gcc "src/MOUSEMDV.c" -o "bld/MOUSEMDV.o" $(mk_COptions)
-bld/KBRDEMDV.o : src/KBRDEMDV.c
-	gcc "src/KBRDEMDV.c" -o "bld/KBRDEMDV.o" $(mk_COptions)
+bld/MOUSEMDV.o : src/HW/MOUSE/MOUSEMDV.c
+	gcc "src/HW/MOUSE/MOUSEMDV.c" -o "bld/MOUSEMDV.o" $(mk_COptions)
+bld/KBRDEMDV.o : src/HW/KBRD/KBRDEMDV.c
+	gcc "src/HW/KBRD/KBRDEMDV.c" -o "bld/KBRDEMDV.o" $(mk_COptions)
 bld/SNDEMDEV.o : src/SNDEMDEV.c
 	gcc "src/SNDEMDEV.c" -o "bld/SNDEMDEV.o" $(mk_COptions)
 bld/PROGMAIN.o : src/PROGMAIN.c
 	gcc "src/PROGMAIN.c" -o "bld/PROGMAIN.o" $(mk_COptions)
-bld/ADBEMDEV.o : src/ADB/ADBEMDEV.c
-	gcc "src/ADB/ADBEMDEV.c" -o "bld/ADBEMDEV.o" $(mk_COptions)
-bld/PMUEMDEV.o : src/POWERMAN/PMUEMDEV.c
-	gcc "src/POWERMAN/PMUEMDEV.c" -o "bld/PMUEMDEV.o" $(mk_COptions)
+bld/DATE2SEC.o : src/UTIL/DATE2SEC.c
+	gcc "src/UTIL/DATE2SEC.c" -o "bld/DATE2SEC.o" $(mk_COptions)
+
+# todo: add files things that aren't the mac plus
+bld/ADBEMDEV.o : src/HW/ADB/ADBEMDEV.c
+	gcc "src/HW/ADB/ADBEMDEV.c" -o "bld/ADBEMDEV.o" $(mk_COptions)
+bld/PMUEMDEV.o : src/HW/POWERMAN/PMUEMDEV.c
+	gcc "src/HW/POWERMAN/PMUEMDEV.c" -o "bld/PMUEMDEV.o" $(mk_COptions)
 
 ObjFiles = \
 	bld/MINEM68K.o \
@@ -62,6 +66,7 @@ ObjFiles = \
 	bld/KBRDEMDV.o \
 	bld/SNDEMDEV.o \
 	bld/PROGMAIN.o \
+	bld/DATE2SEC.o
 #	bld/ADBEMDEV.o \
 #	bld/PMUEMDEV.o \
 

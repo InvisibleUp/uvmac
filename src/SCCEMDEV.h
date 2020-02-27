@@ -14,11 +14,8 @@
 	license for more details.
 */
 
-#ifdef SCCEMDEV_H
-#error "header already included"
-#else
+#ifndef SCCEMDEV_H
 #define SCCEMDEV_H
-#endif
 
 EXPORTPROC SCC_Reset(void);
 
@@ -29,4 +26,6 @@ EXPORTFUNC bool SCC_InterruptsEnabled(void);
 #if EmLocalTalk
 EXPORTPROC LocalTalkTick(void);
 EXPORTFUNC int InitLocalTalk(void);
+#endif
+
 #endif

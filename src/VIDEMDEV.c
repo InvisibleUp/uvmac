@@ -33,7 +33,7 @@
 #include "ENDIANAC.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "M68K/MINEM68K.h"
+#include "HW/M68K/MINEM68K.h"
 #include "SONYEMDV.h"
 #endif
 

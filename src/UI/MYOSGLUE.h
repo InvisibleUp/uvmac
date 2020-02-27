@@ -25,13 +25,10 @@
 	port of vMac, by Philip Cummins.
 */
 
-#ifdef MYOSGLUE_H
-#ifndef AllFiles
-#error "header already included"
-#endif
-#else
+#ifndef MYOSGLUE_H
 #define MYOSGLUE_H
-#endif
+
+#include "UTIL/DATE2SEC.h"
 
 
 #if WantAbnormalReports
@@ -439,3 +436,5 @@ EXPORTOSGLUPROC EvtQOutDone(void);
 
 #define MKC_CM 0x80
 #define MKC_None 0xFF
+
+#endif

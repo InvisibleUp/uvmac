@@ -895,7 +895,7 @@ LOCALPROC dbglog_close0(void)
 #define WantColorTransValid 1
 #endif
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 
 /* --- time, date --- */
 
@@ -1947,7 +1947,7 @@ LOCALFUNC bool InitMousePosition(void)
 
 /* --- time, date, location, part 2 --- */
 
-#include "DATE2SEC.h"
+#include "UTIL/DATE2SEC.h"
 
 LOCALFUNC bool InitLocationDat(void)
 {

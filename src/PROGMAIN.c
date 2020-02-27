@@ -24,8 +24,8 @@
 	#include "UI/MYOSGLUE.h"
 	#include "EMCONFIG.h"
 	#include "GLOBGLUE.h"
-	#include "M68K/M68KITAB.h"
-	#include "M68K/MINEM68K.h"
+	#include "HW/M68K/M68KITAB.h"
+	#include "HW/M68K/MINEM68K.h"
 	#include "VIAEMDEV.h"
 	#if EmVIA2
 		#include "VIA2EMDV.h"
@@ -43,11 +43,11 @@
 		#include "VIDEMDEV.h"
 	#endif
 	#if EmClassicKbrd
-		#include "KBRDEMDV.h"
+		#include "HW/KBRD/KBRDEMDV.h"
 	#elif EmPMU
-		#include "POWERMAN/PMUEMDEV.h"
+		#include "HW/POWERMAN/PMUEMDEV.h"
 	#else
-		#include "ADB/ADBEMDEV.h"
+		#include "HW/ADB/ADBEMDEV.h"
 	#endif
 	#if EmASC
 		#include "ASCEMDEV.h"
@@ -56,7 +56,7 @@
 			#include "SNDEMDEV.h"
 		#endif
 	#endif
-	#include "MOUSEMDV.h"
+	#include "HW/MOUSE/MOUSEMDV.h"
 #endif
 
 

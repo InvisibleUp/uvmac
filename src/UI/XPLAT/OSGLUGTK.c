@@ -29,7 +29,7 @@
 
 #include "STRCONST.h"
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 
 /* --- some simple utilities --- */
 
@@ -778,7 +778,7 @@ LOCALPROC DoKeyCode(guint keycode, bool down)
 
 LOCALVAR uint32_t TrueEmulatedTime = 0;
 
-#include "DATE2SEC.h"
+#include "UTIL/DATE2SEC.h"
 
 #define TicksPerSecond 1000000
 

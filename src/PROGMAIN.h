@@ -15,11 +15,10 @@
 	license for more details.
 */
 
-#ifdef PROGMAIN_H
-#error "header already included"
-#else
+#ifndef PROGMAIN_H
 #define PROGMAIN_H
-#endif
 
 EXPORTPROC EmulationReserveAlloc(void);
 EXPORTPROC ProgramMain(void);
+
+#endif

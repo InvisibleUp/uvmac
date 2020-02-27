@@ -26,7 +26,7 @@
 #include "VIAEMDEV.h"
 #endif
 
-#include "POWERMAN/PMUEMDEV.h"
+#include "HW/POWERMAN/PMUEMDEV.h"
 
 /*
 	ReportAbnormalID unused 0x0E0E - 0x0EFF

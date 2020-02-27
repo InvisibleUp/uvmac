@@ -30,10 +30,10 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 #include "SCCEMDEV.h"
-#include "M68K/MINEM68K.h"
+#include "HW/M68K/MINEM68K.h"
 #endif
 
-#include "MOUSEMDV.h"
+#include "HW/MOUSE/MOUSEMDV.h"
 
 GLOBALPROC Mouse_Update(void)
 {

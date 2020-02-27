@@ -14,11 +14,8 @@
 	license for more details.
 */
 
-#ifdef VIAEMDEV_H
-#error "header already included"
-#else
+#ifndef VIAEMDEV_H
 #define VIAEMDEV_H
-#endif
 
 EXPORTPROC VIA1_Zap(void);
 EXPORTPROC VIA1_Reset(void);
@@ -46,3 +43,5 @@ EXPORTFUNC uint16_t VIA1_GetT1InvertTime(void);
 
 EXPORTPROC VIA1_ShiftInData(uint8_t v);
 EXPORTFUNC uint8_t VIA1_ShiftOutData(void);
+
+#endif

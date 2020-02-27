@@ -121,7 +121,7 @@ LOCALPROC WriteExtraErr(char *s)
 
 #define WantColorTransValid 0
 
-#include "COMOSGLU.h"
+#include "UI/COMOSGLU.h"
 #include "CONTROLM.h"
 
 LOCALPROC NativeStrFromCStr(char *r, char *s)
@@ -730,7 +730,7 @@ LOCALPROC DS_HandleKeyboard(void)
 
 LOCALVAR uint32_t TrueEmulatedTime = 0;
 
-#include "DATE2SEC.h"
+#include "UTIL/DATE2SEC.h"
 
 #define TicksPerSecond 1000000
 /* #define TicksPerSecond  1000 */

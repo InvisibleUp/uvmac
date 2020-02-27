@@ -14,13 +14,11 @@
 	license for more details.
 */
 
-#ifdef M68KITAB_H
-#error "header already included"
-#else
+#ifndef M68KITAB_H
 #define M68KITAB_H
-#endif
 
 enum {
+	// 68000
 	kIKindTst,
 	kIKindCmpB,
 	kIKindCmpW,
@@ -160,8 +158,7 @@ enum {
 	kIKindFdflt,
 	kIKindStop,
 	kIKindReset,
-
-#if Use68020
+	// 68020
 	kIKindCallMorRtm,
 	kIKindBraL,
 	kIKindBccL,
@@ -184,11 +181,9 @@ enum {
 	kIKindCAS,
 	kIKindMoveS,
 	kIKindBitField,
-#endif
-#if EmMMU
+	// MMU
 	kIKindMMU,
-#endif
-#if EmFPU
+	// FPU
 	kIKindFPUmd60,
 	kIKindFPUDBcc,
 	kIKindFPUTrapcc,
@@ -198,7 +193,6 @@ enum {
 	kIKindFPUSave,
 	kIKindFPURestore,
 	kIKindFPUdflt,
-#endif
 
 	kNumIKinds
 };
@@ -277,3 +271,5 @@ typedef struct DecOpR DecOpR;
 #define SetDcoCycles(p, xx) ((p)->x.Cycles = (xx))
 
 EXPORTPROC M68KITAB_setup(DecOpR *p);
+
+#endif

@@ -49,7 +49,7 @@
 	Replacement for .Sony driver
 	68k machine code, compiled from mydriver.a
 */
-INCBIN(SonyDriver, "PATCHES/SONY.bin");
+INCBIN(SonyDriver, "src/PATCHES/SONY.bin");
 #endif
 
 #if UseSonyPatch

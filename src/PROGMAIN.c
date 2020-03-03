@@ -18,6 +18,7 @@
 	PROGram MAIN.
 */
 
+#include <string.h>
 #include "SYSDEPNS.h"
 
 #include "UI/MYOSGLUE.h"
@@ -57,18 +58,190 @@ const bool _EmMMU         = false;
 const bool _EmASC         = false;
 const bool _EmADB         = false;
 
+// Let's define a bunch of function structure thingies
+
+#define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
+
+typedef struct DevMethods {
+	bool (*init)(void);
+	void (*reset)(void);
+	void (*starttick)(void);
+	void (*endtick)(void);
+	void (*timebegin)(void);
+	void (*timeend)(void);
+} DevMethods_t;
+
+const DevMethods_t DEVICES[] = {
+	// RTC
+	{
+	.init = EmRTC ? RTC_Init : NULL,
+	.reset = NULL,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// ROM
+	{
+	.init = ROM_Init,
+	.reset = NULL,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// Memory
+	{
+	.init = AddrSpac_Init,
+	.reset = Memory_Reset,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// ICT
+	{
+	.init = NULL,
+	.reset = ICT_Zap,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// IWM
+	{
+	.init = NULL,
+	.reset = IWM_Reset,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// SCC
+	{
+	.init = NULL,
+	.reset = SCC_Reset,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// SCSI
+	{
+	.init = NULL,
+	.reset = SCSI_Reset,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// VIA1
+	{
+	.init = NULL,
+	.reset = VIA1_Zap,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = VIA1_ExtraTimeBegin,
+	.timeend = VIA1_ExtraTimeEnd,
+	},
+	// VIA2
+	{
+	.init = NULL,
+	.reset = EmVIA2 ? VIA2_Zap : NULL,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = EmVIA2 ? VIA2_ExtraTimeBegin : NULL,
+	.timeend = EmVIA2 ? VIA2_ExtraTimeEnd : NULL,
+	},
+	// Sony disk drive
+	{
+	.init = NULL,
+	.reset = Sony_Reset,
+	.starttick = Sony_Update,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// Extn
+	{
+	.init = NULL,
+	.reset = Extn_Reset,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// m68k
+	{
+	.init = NULL,
+	.reset = m68k_reset,
+	.starttick = NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// Mouse
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = Mouse_Update,
+	.endtick = Mouse_EndTickNotify,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// Classic Keyboard
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = EmClassicKbrd ? KeyBoard_Update : NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// ADB
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = EmADB ? ADB_Update : NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// LocalTalk
+	/*{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = EmLocalTalk ? LocalTalkTick : NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},*/
+	// Video card
+	{
+	.init = EmVidCard ? Vid_Init : NULL,
+	.reset = NULL,
+	.starttick = EmVidCard ? Vid_Update : NULL,
+	.endtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+	// Screen
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
+	.endtick = Screen_EndTickNotify,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
+};
+
 LOCALPROC EmulatedHardwareZap(void)
 {
-	Memory_Reset();
-	ICT_Zap();
-	IWM_Reset();
-	SCC_Reset();
-	SCSI_Reset();
-	VIA1_Zap();
-	if (_EmVIA2) { VIA2_Zap(); }
-	Sony_Reset();
-	Extn_Reset();
-	m68k_reset();
+	int i;
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].reset != NULL) { DEVICES[i].reset(); }
+	}
 }
 
 LOCALPROC DoMacReset(void)
@@ -146,31 +319,25 @@ LOCALPROC SubTickTaskEnd(void)
 
 LOCALPROC SixtiethSecondNotify(void)
 {
+	int i;
 #if dbglog_HAVE && 0
 	dbglog_WriteNote("begin new Sixtieth");
 #endif
-	Mouse_Update();
 	InterruptReset_Update();
-	if (_EmClassicKbrd) { KeyBoard_Update(); }
-	if (_EmADB) { ADB_Update(); }
-
-	Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
-	Sony_Update();
-
-#if EmLocalTalk
-	LocalTalkTick();
-#endif
-	if (_EmRTC) { RTC_Interrupt(); }
-	if (_EmVidCard) { Vid_Update(); }
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].starttick != NULL) { DEVICES[i].starttick(); }
+	}
 
 	SubTickTaskStart();
 }
 
 LOCALPROC SixtiethEndNotify(void)
 {
+	int i;
 	SubTickTaskEnd();
-	Mouse_EndTickNotify();
-	Screen_EndTickNotify();
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].endtick != NULL) { DEVICES[i].endtick(); }
+	}
 #if dbglog_HAVE && 0
 	dbglog_WriteNote("end Sixtieth");
 #endif
@@ -214,15 +381,16 @@ GLOBALPROC EmulationReserveAlloc(void)
 
 LOCALFUNC bool InitEmulation(void)
 {
-	bool retval = true;
+	int i;
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].init != NULL) {
+			bool retval = DEVICES[i].init();
+			if (retval == false) { return false; }
+		}
+	}
 
-	retval &= ROM_Init();
-	retval &= AddrSpac_Init();
-	if (_EmRTC) { retval &= RTC_Init(); }
-	if (_EmVidCard) { retval &= Vid_Init(); }
-
-	if (retval == true) { EmulatedHardwareZap(); }
-	return retval;
+	EmulatedHardwareZap();
+	return true;
 }
 
 LOCALPROC ICT_DoTask(int taskid)

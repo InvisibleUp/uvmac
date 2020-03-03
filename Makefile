@@ -1,7 +1,7 @@
 # Makefile
 # Currently only builds Mac Plus emulator for Windows x64
 
-CC := gcc
+CC := clang
 CCFLAGS := -O2 -Wall -Wmissing-prototypes -Wno-uninitialized -Wundef -Wstrict-prototypes -Icfg/ -Isrc/
 
 .PHONY: linux windows clean

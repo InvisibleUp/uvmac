@@ -18,53 +18,44 @@
 	PROGram MAIN.
 */
 
-#ifndef AllFiles
-	#include "SYSDEPNS.h"
+#include "SYSDEPNS.h"
 
-	#include "UI/MYOSGLUE.h"
-	#include "EMCONFIG.h"
-	#include "GLOBGLUE.h"
-	#include "HW/M68K/M68KITAB.h"
-	#include "HW/M68K/MINEM68K.h"
-	#include "HW/VIA/VIAEMDEV.h"
-	#if EmVIA2
-		#include "HW/VIA/VIA2EMDV.h"
-	#endif
-	#include "HW/DISK/IWMEMDEV.h"
-	#include "HW/SCC/SCCEMDEV.h"
-	#if EmRTC
-		#include "HW/RTC/RTCEMDEV.h"
-	#endif
-	#include "PATCHES/ROMEMDEV.h"
-	#include "HW/SCSI/SCSIEMDV.h"
-	#include "HW/DISK/SONYEMDV.h"
-	#include "HW/SCREEN/SCRNEMDV.h"
-	#if EmVidCard
-		#include "HW/VIDCARD/VIDEMDEV.h"
-	#endif
-	#if EmClassicKbrd
-		#include "HW/KBRD/KBRDEMDV.h"
-	#elif EmPMU
-		#include "HW/POWERMAN/PMUEMDEV.h"
-	#else
-		#include "HW/ADB/ADBEMDEV.h"
-	#endif
-	#if EmASC
-		#include "HW/SOUND/ASCEMDEV.h"
-	#else
-		#if SoundEnabled && (CurEmMd != kEmMd_PB100)
-			#include "HW/SOUND/SNDEMDEV.h"
-		#endif
-	#endif
-	#include "HW/MOUSE/MOUSEMDV.h"
-#endif
-
+#include "UI/MYOSGLUE.h"
+#include "EMCONFIG.h"
+#include "GLOBGLUE.h"
+#include "HW/M68K/M68KITAB.h"
+#include "HW/M68K/MINEM68K.h"
+#include "HW/VIA/VIAEMDEV.h"
+#include "HW/VIA/VIA2EMDV.h"
+#include "HW/DISK/IWMEMDEV.h"
+#include "HW/SCC/SCCEMDEV.h"
+#include "HW/RTC/RTCEMDEV.h"
+#include "PATCHES/ROMEMDEV.h"
+#include "HW/SCSI/SCSIEMDV.h"
+#include "HW/DISK/SONYEMDV.h"
+#include "HW/SCREEN/SCRNEMDV.h"
+#include "HW/VIDCARD/VIDEMDEV.h"
+#include "HW/KBRD/KBRDEMDV.h"
+#include "HW/POWERMAN/PMUEMDEV.h"
+#include "HW/ADB/ADBEMDEV.h"
+#include "HW/SOUND/ASCEMDEV.h"
+#include "HW/SOUND/SNDEMDEV.h"
+#include "HW/MOUSE/MOUSEMDV.h"
 
 #include "PROGMAIN.h"
 
 /*
 	ReportAbnormalID unused 0x1002 - 0x10FF
 */
+
+const bool _EmVIA2        = false;
+const bool _EmRTC         = true;
+const bool _EmVidCard     = false;
+const bool _EmClassicKbrd = true;
+const bool _EmPMU         = false;
+const bool _EmMMU         = false;
+const bool _EmASC         = false;
+const bool _EmADB         = false;
 
 LOCALPROC EmulatedHardwareZap(void)
 {
@@ -74,9 +65,7 @@ LOCALPROC EmulatedHardwareZap(void)
 	SCC_Reset();
 	SCSI_Reset();
 	VIA1_Zap();
-#if EmVIA2
-	VIA2_Zap();
-#endif
+	if (_EmVIA2) { VIA2_Zap(); }
 	Sony_Reset();
 	Extn_Reset();
 	m68k_reset();
@@ -114,7 +103,7 @@ LOCALPROC SubTickNotify(int SubTick)
 	dbglog_writeReturn();
 #endif
 #if EmASC
-	ASC_SubTick(SubTick);
+		ASC_SubTick(SubTick);
 #else
 #if SoundEnabled && (CurEmMd != kEmMd_PB100)
 	MacSound_SubTick(SubTick);
@@ -162,12 +151,8 @@ LOCALPROC SixtiethSecondNotify(void)
 #endif
 	Mouse_Update();
 	InterruptReset_Update();
-#if EmClassicKbrd
-	KeyBoard_Update();
-#endif
-#if EmADB
-	ADB_Update();
-#endif
+	if (_EmClassicKbrd) { KeyBoard_Update(); }
+	if (_EmADB) { ADB_Update(); }
 
 	Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
 	Sony_Update();
@@ -175,12 +160,8 @@ LOCALPROC SixtiethSecondNotify(void)
 #if EmLocalTalk
 	LocalTalkTick();
 #endif
-#if EmRTC
-	RTC_Interrupt();
-#endif
-#if EmVidCard
-	Vid_Update();
-#endif
+	if (_EmRTC) { RTC_Interrupt(); }
+	if (_EmVidCard) { Vid_Update(); }
 
 	SubTickTaskStart();
 }
@@ -202,17 +183,13 @@ LOCALPROC ExtraTimeBeginNotify(void)
 	dbglog_writeReturn();
 #endif
 	VIA1_ExtraTimeBegin();
-#if EmVIA2
-	VIA2_ExtraTimeBegin();
-#endif
+	if (_EmVIA2) { VIA2_ExtraTimeBegin(); }
 }
 
 LOCALPROC ExtraTimeEndNotify(void)
 {
 	VIA1_ExtraTimeEnd();
-#if EmVIA2
-	VIA2_ExtraTimeEnd();
-#endif
+	if (_EmVIA2) { VIA2_ExtraTimeEnd(); }
 #if 0
 	dbglog_writeCStr("end extra time");
 	dbglog_writeReturn();
@@ -224,7 +201,7 @@ GLOBALPROC EmulationReserveAlloc(void)
 	ReserveAllocOneBlock(&RAM,
 		kRAM_Size + RAMSafetyMarginFudge, 5, false);
 #if EmVidCard
-	ReserveAllocOneBlock(&VidROM, kVidROM_Size, 5, false);
+		ReserveAllocOneBlock(&VidROM, kVidROM_Size, 5, false);
 #endif
 #if IncludeVidMem
 	ReserveAllocOneBlock(&VidMem,
@@ -237,19 +214,15 @@ GLOBALPROC EmulationReserveAlloc(void)
 
 LOCALFUNC bool InitEmulation(void)
 {
-#if EmRTC
-	if (RTC_Init())
-#endif
-	if (ROM_Init())
-#if EmVidCard
-	if (Vid_Init())
-#endif
-	if (AddrSpac_Init())
-	{
-		EmulatedHardwareZap();
-		return true;
-	}
-	return false;
+	bool retval = true;
+
+	retval &= ROM_Init();
+	retval &= AddrSpac_Init();
+	if (_EmRTC) { retval &= RTC_Init(); }
+	if (_EmVidCard) { retval &= Vid_Init(); }
+
+	if (retval == true) { EmulatedHardwareZap(); }
+	return retval;
 }
 
 LOCALPROC ICT_DoTask(int taskid)

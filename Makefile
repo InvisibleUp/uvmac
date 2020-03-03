@@ -1,17 +1,13 @@
 # Makefile
 # Currently only builds Mac Plus emulator for Windows x64
 
-mk_COptionsCommon = -Wall -Wmissing-prototypes -Wno-uninitialized -Wundef -Wstrict-prototypes -Icfg/ -Isrc/
-mk_COptionsOSGLU = $(mk_COptionsCommon) -O2
-mk_COptions = $(mk_COptionsCommon) -O2
+CC := gcc
+CCFLAGS := -O2 -Wall -Wmissing-prototypes -Wno-uninitialized -Wundef -Wstrict-prototypes -Icfg/ -Isrc/
 
-.PHONY: build clean
+.PHONY: linux windows clean
 
-build : minivmac.exe
-
-SrcFiles = \
+SrcFiles := \
 	src/PROGMAIN.c \
-	src/UI/WIN32/OSGLUWIN.c \
 	src/GLOBGLUE.c \
 	src/HW/M68K/M68KITAB.c \
 	src/HW/M68K/MINEM68K.c \
@@ -28,11 +24,15 @@ SrcFiles = \
 	src/HW/SOUND/SNDEMDEV.c \
 	src/UTIL/DATE2SEC.c \
 
-minivmac.exe :
+windows :
 	mkdir -p "bld/"
 	windres -i "src/UI/WIN32/main.rc" --input-format=rc -o "bld/main.res" -O coff  --include-dir "src/"
-	gcc -o "minivmac.exe" $(SrcFiles) "bld/main.res" $(mk_COptions) \
-		-mwindows -lwinmm -lole32 -luuid 
+	$(CC) -o "minivmac.exe" $(SrcFiles) "src/UI/WIN32/OSGLUWIN.c" \
+	"bld/main.res" $(CCFLAGS) -mwindows -lwinmm -lole32 -luuid 
+
+linux : 
+	mkdir -p "bld/"
+	$(CC) -o "minivmac.exe" $(SrcFiles) "src/UI/UNIX/OSGLUXWN.c" $(CCFLAGS) -lX11 -ldl
 
 clean :
 	rm -r "bld/"

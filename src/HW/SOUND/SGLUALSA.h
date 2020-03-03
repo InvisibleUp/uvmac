@@ -20,6 +20,9 @@
 	ALSA sound support by Stephan Kochen.
 */
 
+#include <errno.h>
+#include <dlfcn.h>
+
 #ifndef RaspbianWorkAround
 #define RaspbianWorkAround 0
 #endif

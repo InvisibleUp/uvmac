@@ -35,12 +35,25 @@
 	looking at included examples, one by Paul Sheer.
 */
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xresource.h>
+#include <X11/Xatom.h>
+#include <X11/keysym.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#include "CNFGGLOB.h"
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
 #include "UTIL/ENDIANAC.h"
-
 #include "UI/MYOSGLUE.h"
-
 #include "STRCONST.h"
 
 /* --- some simple utilities --- */
@@ -60,7 +73,7 @@ GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 LOCALVAR char *d_arg = NULL;
 LOCALVAR char *n_arg = NULL;
 
-#if CanGetAppPath
+#ifdef CanGetAppPath
 LOCALVAR char *app_parent = NULL;
 LOCALVAR char *app_name = NULL;
 #endif
@@ -94,7 +107,7 @@ LOCALFUNC tMacErr ChildPath(char *x, char *y, char **r)
 	return err;
 }
 
-#if UseActvFile || IncludeSonyNew
+#if IncludeSonyNew
 LOCALFUNC tMacErr FindOrMakeChild(char *x, char *y, char **r)
 {
 	tMacErr err;
@@ -309,9 +322,7 @@ LOCALFUNC bool NetSupportedContains(Atom x)
 #define WantColorTransValid 1
 
 #include "UI/COMOSGLU.h"
-
-#include "UTILS/PBUFSTDC.h"
-
+#include "UTIL/PBUFSTDC.h"
 #include "UI/CONTROLM.h"
 
 /* --- text translation --- */
@@ -779,7 +790,7 @@ LOCALFUNC bool Sony_Insert1a(char *drivepath, bool silentfail)
 LOCALFUNC bool Sony_Insert2(char *s)
 {
 	char *d =
-#if CanGetAppPath
+#ifdef CanGetAppPath
 		(NULL == d_arg) ? app_parent :
 #endif
 		d_arg;
@@ -875,7 +886,7 @@ LOCALPROC MakeNewDisk0(uint32_t L, char *drivepath)
 LOCALPROC MakeNewDisk(uint32_t L, char *drivename)
 {
 	char *d =
-#if CanGetAppPath
+#ifdef CanGetAppPath
 		(NULL == d_arg) ? app_parent :
 #endif
 		d_arg;
@@ -979,12 +990,12 @@ LOCALFUNC tMacErr LoadMacRomFromHome(void)
 	return err;
 }
 
-#if CanGetAppPath
+#ifdef CanGetAppPath
 LOCALFUNC tMacErr LoadMacRomFromAppPar(void)
 {
 	tMacErr err;
 	char *d =
-#if CanGetAppPath
+#ifdef CanGetAppPath
 		(NULL == d_arg) ? app_parent :
 #endif
 		d_arg;
@@ -1012,7 +1023,7 @@ LOCALFUNC bool LoadMacRom(void)
 
 	if ((NULL == rom_path)
 		|| (mnvm_fnfErr == (err = LoadMacRomFrom(rom_path))))
-#if CanGetAppPath
+#ifdef CanGetAppPath
 	if (mnvm_fnfErr == (err = LoadMacRomFromAppPar()))
 #endif
 	if (mnvm_fnfErr == (err = LoadMacRomFromHome()))
@@ -1022,90 +1033,6 @@ LOCALFUNC bool LoadMacRom(void)
 
 	return true; /* keep launching Mini vMac, regardless */
 }
-
-#if UseActvFile
-
-#define ActvCodeFileName "act_1"
-
-LOCALFUNC tMacErr ActvCodeFileLoad(uint8_t * p)
-{
-	tMacErr err;
-	char *s;
-	char *t = NULL;
-	char *t2 = NULL;
-	char *t3 = NULL;
-
-	if (mnvm_noErr == (err = FindUserHomeFolder(&s)))
-	if (mnvm_noErr == (err = ChildPath(s, ".gryphel", &t)))
-	if (mnvm_noErr == (err = ChildPath(t, "mnvm_act", &t2)))
-	if (mnvm_noErr == (err = ChildPath(t2, ActvCodeFileName, &t3)))
-	{
-		FILE *Actv_File;
-		int File_Size;
-
-		Actv_File = fopen(t3, "rb");
-		if (NULL == Actv_File) {
-			err = mnvm_fnfErr;
-		} else {
-			File_Size = fread(p, 1, ActvCodeFileLen, Actv_File);
-			if (File_Size != ActvCodeFileLen) {
-				if (feof(Actv_File)) {
-					err = mnvm_eofErr;
-				} else {
-					err = mnvm_miscErr;
-				}
-			} else {
-				err = mnvm_noErr;
-			}
-			fclose(Actv_File);
-		}
-	}
-
-	MayFree(t3);
-	MayFree(t2);
-	MayFree(t);
-
-	return err;
-}
-
-LOCALFUNC tMacErr ActvCodeFileSave(uint8_t * p)
-{
-	tMacErr err;
-	char *s;
-	char *t = NULL;
-	char *t2 = NULL;
-	char *t3 = NULL;
-
-	if (mnvm_noErr == (err = FindUserHomeFolder(&s)))
-	if (mnvm_noErr == (err = FindOrMakeChild(s, ".gryphel", &t)))
-	if (mnvm_noErr == (err = FindOrMakeChild(t, "mnvm_act", &t2)))
-	if (mnvm_noErr == (err = ChildPath(t2, ActvCodeFileName, &t3)))
-	{
-		FILE *Actv_File;
-		int File_Size;
-
-		Actv_File = fopen(t3, "wb+");
-		if (NULL == Actv_File) {
-			err = mnvm_fnfErr;
-		} else {
-			File_Size = fwrite(p, 1, ActvCodeFileLen, Actv_File);
-			if (File_Size != ActvCodeFileLen) {
-				err = mnvm_miscErr;
-			} else {
-				err = mnvm_noErr;
-			}
-			fclose(Actv_File);
-		}
-	}
-
-	MayFree(t3);
-	MayFree(t2);
-	MayFree(t);
-
-	return err;
-}
-
-#endif /* UseActvFile */
 
 /* --- video out --- */
 
@@ -2512,7 +2439,8 @@ LOCALPROC Sound_SecondNotify0(void)
 
 #define SOUND_SAMPLERATE 22255 /* = round(7833600 * 2 / 704) */
 
-#include "SOUNDGLU.h"
+//#include "SOUNDGLU.h"
+#include "HW/SOUND/SGLUALSA.h"
 
 #endif
 
@@ -3627,7 +3555,7 @@ LOCALFUNC bool CreateMainWindow(void)
 	} else {
 		char *win_name =
 			(NULL != n_arg) ? n_arg : (
-#if CanGetAppPath
+#ifdef CanGetAppPath
 			(NULL != app_name) ? app_name :
 #endif
 			kStrAppName);
@@ -4557,7 +4485,7 @@ LOCALPROC UnallocMemory(void)
 	}
 }
 
-#if HaveAppPathLink
+#ifdef HaveAppPathLink
 LOCALFUNC bool ReadLink_Alloc(char *path, char **r)
 {
 	/*
@@ -4612,7 +4540,7 @@ label_retry:
 }
 #endif
 
-#if HaveSysctlPath
+#ifdef HaveSysctlPath
 LOCALFUNC bool ReadKernProcPathname(char **r)
 {
 	size_t s_alloc;
@@ -4652,7 +4580,7 @@ LOCALFUNC bool ReadKernProcPathname(char **r)
 }
 #endif
 
-#if CanGetAppPath
+#ifdef CanGetAppPath
 LOCALFUNC bool Path2ParentAndName(char *path,
 	char **parent, char **name)
 {
@@ -4696,16 +4624,16 @@ LOCALFUNC bool Path2ParentAndName(char *path,
 }
 #endif
 
-#if CanGetAppPath
+#ifdef CanGetAppPath
 LOCALFUNC bool InitWhereAmI(void)
 {
 	char *s;
 
 	if (!
-#if HaveAppPathLink
+#ifdef HaveAppPathLink
 		ReadLink_Alloc(TheAppPathLink, &s)
 #endif
-#if HaveSysctlPath
+#ifdef HaveSysctlPath
 		ReadKernProcPathname(&s)
 #endif
 		)
@@ -4729,7 +4657,7 @@ LOCALFUNC bool InitWhereAmI(void)
 }
 #endif
 
-#if CanGetAppPath
+#ifdef CanGetAppPath
 LOCALPROC UninitWhereAmI(void)
 {
 	MayFree(app_parent);
@@ -4740,7 +4668,7 @@ LOCALPROC UninitWhereAmI(void)
 LOCALFUNC bool InitOSGLU(void)
 {
 	if (AllocMemory())
-#if CanGetAppPath
+#ifdef CanGetAppPath
 	if (InitWhereAmI())
 #endif
 #if dbglog_HAVE
@@ -4810,7 +4738,7 @@ LOCALPROC UnInitOSGLU(void)
 	dbglog_close();
 #endif
 
-#if CanGetAppPath
+#ifdef CanGetAppPath
 	UninitWhereAmI();
 #endif
 	UnallocMemory();

@@ -46,9 +46,9 @@
 #define WantInitMagnify 0
 #define EnableMagnify 1
 #define WindowScale 2
-#define WantInitRunInBackground 0
+#define WantInitRunInBackground 1
 #define WantInitNotAutoSlow 0
-#define WantInitSpeedValue 3
+#define WantInitSpeedValue 0
 #define WantEnblCtrlInt 1
 #define WantEnblCtrlRst 1
 #define WantEnblCtrlKtg 1

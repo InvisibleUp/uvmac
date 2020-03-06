@@ -67,6 +67,7 @@ typedef struct DevMethods {
 	void (*reset)(void);
 	void (*starttick)(void);
 	void (*endtick)(void);
+	void (*subtick)(int);
 	void (*timebegin)(void);
 	void (*timeend)(void);
 } DevMethods_t;
@@ -78,6 +79,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -87,6 +89,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -96,6 +99,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = Memory_Reset,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -105,6 +109,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = ICT_Zap,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -114,6 +119,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = IWM_Reset,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -123,6 +129,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = SCC_Reset,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -132,6 +139,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = SCSI_Reset,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -141,6 +149,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = VIA1_Zap,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = VIA1_ExtraTimeBegin,
 	.timeend = VIA1_ExtraTimeEnd,
 	},
@@ -150,6 +159,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = EmVIA2 ? VIA2_Zap : NULL,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = EmVIA2 ? VIA2_ExtraTimeBegin : NULL,
 	.timeend = EmVIA2 ? VIA2_ExtraTimeEnd : NULL,
 	},
@@ -159,6 +169,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = Sony_Reset,
 	.starttick = Sony_Update,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -168,6 +179,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = Extn_Reset,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -177,6 +189,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = m68k_reset,
 	.starttick = NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -186,6 +199,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = Mouse_Update,
 	.endtick = Mouse_EndTickNotify,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -195,6 +209,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = EmClassicKbrd ? KeyBoard_Update : NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -204,6 +219,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = EmADB ? ADB_Update : NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -222,6 +238,7 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = EmVidCard ? Vid_Update : NULL,
 	.endtick = NULL,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
@@ -231,9 +248,30 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
 	.endtick = Screen_EndTickNotify,
+	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
+	// ASC
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = NULL,
+	.endtick = NULL,
+	.subtick = EmASC ? ASC_SubTick : NULL,
+	.timebegin = NULL,
+	.timeend = NULL
+	},
+	// Sound (non-ASC)
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = NULL,
+	.endtick = NULL,
+	.subtick = (SoundEnabled && (CurEmMd != kEmMd_PB100)) ? MacSound_SubTick : NULL,
+	.timebegin = NULL,
+	.timeend = NULL
+	}
 };
 
 LOCALPROC EmulatedHardwareZap(void)
@@ -252,11 +290,7 @@ LOCALPROC DoMacReset(void)
 
 LOCALPROC InterruptReset_Update(void)
 {
-	SetInterruptButton(false);
-		/*
-			in case has been set. so only stays set
-			for 60th of a second.
-		*/
+	SetInterruptButton(false); // don't keep held over 1/60 sec
 
 	if (WantMacInterrupt) {
 		SetInterruptButton(true);
@@ -270,20 +304,10 @@ LOCALPROC InterruptReset_Update(void)
 
 LOCALPROC SubTickNotify(int SubTick)
 {
-#if 0
-	dbglog_writeCStr("ending sub tick ");
-	dbglog_writeNum(SubTick);
-	dbglog_writeReturn();
-#endif
-#if EmASC
-		ASC_SubTick(SubTick);
-#else
-#if SoundEnabled && (CurEmMd != kEmMd_PB100)
-	MacSound_SubTick(SubTick);
-#else
-	UnusedParam(SubTick);
-#endif
-#endif
+	int i;
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].subtick != NULL) { DEVICES[i].subtick(SubTick); }
+	}
 }
 
 #define CyclesScaledPerTick (130240UL * ClockMult * kCycleScale)
@@ -320,9 +344,7 @@ LOCALPROC SubTickTaskEnd(void)
 LOCALPROC SixtiethSecondNotify(void)
 {
 	int i;
-#if dbglog_HAVE && 0
-	dbglog_WriteNote("begin new Sixtieth");
-#endif
+	// Begin new frame
 	InterruptReset_Update();
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
 		if (DEVICES[i].starttick != NULL) { DEVICES[i].starttick(); }
@@ -338,29 +360,23 @@ LOCALPROC SixtiethEndNotify(void)
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
 		if (DEVICES[i].endtick != NULL) { DEVICES[i].endtick(); }
 	}
-#if dbglog_HAVE && 0
-	dbglog_WriteNote("end Sixtieth");
-#endif
+	// End frame
 }
 
 LOCALPROC ExtraTimeBeginNotify(void)
 {
-#if 0
-	dbglog_writeCStr("begin extra time");
-	dbglog_writeReturn();
-#endif
-	VIA1_ExtraTimeBegin();
-	if (_EmVIA2) { VIA2_ExtraTimeBegin(); }
+	int i;
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].timebegin != NULL) { DEVICES[i].timebegin(); }
+	}
 }
 
 LOCALPROC ExtraTimeEndNotify(void)
 {
-	VIA1_ExtraTimeEnd();
-	if (_EmVIA2) { VIA2_ExtraTimeEnd(); }
-#if 0
-	dbglog_writeCStr("end extra time");
-	dbglog_writeReturn();
-#endif
+	int i;
+	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
+		if (DEVICES[i].timeend != NULL) { DEVICES[i].timeend(); }
+	}
 }
 
 GLOBALPROC EmulationReserveAlloc(void)
@@ -439,61 +455,35 @@ LOCALPROC ICT_DoTask(int taskid)
 
 LOCALPROC ICT_DoCurrentTasks(void)
 {
-	int i = 0;
-	uimr m = ICTactive;
+	int i;
+	uimr m;
 
-	while (0 != m) {
-		if (0 != (m & 1)) {
-			if (i >= kNumICTs) {
-				/* shouldn't happen */
-				ICTactive &= ((1 << kNumICTs) - 1);
-				m = 0;
-			} else if (ICTwhen[i] == NextiCount) {
-				ICTactive &= ~ (1 << i);
-#ifdef _VIA_Debug
-				fprintf(stderr, "doing task %d, %d\n", NextiCount, i);
-#endif
-				ICT_DoTask(i);
+	// For each ICT...
+	for (m = ICTactive, i = 0; m != 0; m >>=1, i += 1) {
+		// If no ICT here, continue
+		if (0 == (m & 1)) { continue; }
+		if (ICTwhen[i] != NextiCount) { continue; }
 
-				/*
-					A Task may set the time of
-					any task, including itself.
-					But it cannot set any task
-					to execute immediately, so
-					one pass is sufficient.
-				*/
-			}
-		}
-		++i;
-		m >>= 1;
+		/*
+			A Task may set the time of any task, including
+			itself. But it cannot set any task to execute
+			immediately, so one pass is sufficient.
+		*/
+		ICTactive &= ~(1 << i); // Clear active bit
+		ICT_DoTask(i);
 	}
 }
 
 LOCALFUNC uint32_t ICT_DoGetNext(uint32_t maxn)
 {
-	int i = 0;
-	uimr m = ICTactive;
+	int i;
+	uimr m;
 	uint32_t v = maxn;
 
-	while (0 != m) {
-		if (0 != (m & 1)) {
-			if (i >= kNumICTs) {
-				/* shouldn't happen */
-				m = 0;
-			} else {
-				uint32_t d = ICTwhen[i] - NextiCount;
-				/* at this point d must be > 0 */
-				if (d < v) {
-#ifdef _VIA_Debug
-					fprintf(stderr, "coming task %d, %d, %d\n",
-						NextiCount, i, d);
-#endif
-					v = d;
-				}
-			}
-		}
-		++i;
-		m >>= 1;
+	for (m = ICTactive, i = 0; m != 0; m >>=1, i += 1) {
+		uint32_t d = ICTwhen[i] - NextiCount;
+		if (0 == (m & 1)) { continue; }
+		if (d < v) { v = d; }
 	}
 
 	return v;
@@ -506,16 +496,6 @@ LOCALPROC m68k_go_nCycles_1(uint32_t n)
 	do {
 		ICT_DoCurrentTasks();
 		n2 = ICT_DoGetNext(n);
-#if dbglog_HAVE && 0
-		dbglog_StartLine();
-		dbglog_writeCStr("before m68k_go_nCycles, NextiCount:");
-		dbglog_writeHex(NextiCount);
-		dbglog_writeCStr(", n2:");
-		dbglog_writeHex(n2);
-		dbglog_writeCStr(", n:");
-		dbglog_writeHex(n);
-		dbglog_writeReturn();
-#endif
 		NextiCount += n2;
 		m68k_go_nCycles(n2);
 		n = StopiCount - NextiCount;
@@ -527,30 +507,21 @@ LOCALVAR uint32_t ExtraSubTicksToDo = 0;
 LOCALPROC DoEmulateOneTick(void)
 {
 #if EnableAutoSlow
-	{
-		uint32_t NewQuietTime = QuietTime + 1;
+	uint32_t NewQuietTime = QuietTime + 1;
+	uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
 
-		if (NewQuietTime > QuietTime) {
-			/* if not overflow */
-			QuietTime = NewQuietTime;
-		}
+	if (NewQuietTime > QuietTime) {
+		/* if not overflow */
+		QuietTime = NewQuietTime;
 	}
-#endif
-#if EnableAutoSlow
-	{
-		uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
-
-		if (NewQuietSubTicks > QuietSubTicks) {
-			/* if not overflow */
-			QuietSubTicks = NewQuietSubTicks;
-		}
+	if (NewQuietSubTicks > QuietSubTicks) {
+		/* if not overflow */
+		QuietSubTicks = NewQuietSubTicks;
 	}
 #endif
 
 	SixtiethSecondNotify();
-
 	m68k_go_nCycles_1(CyclesScaledPerTick);
-
 	SixtiethEndNotify();
 
 	if ((uint8_t) -1 == SpeedValue) {
@@ -587,29 +558,22 @@ LOCALFUNC bool MoreSubTicksToDo(void)
 	return v;
 }
 
+/*
+	DoEmulateExtraTime is used for anything over emulation speed of 1x. It
+	periodically calls ExtraTimeNotOver and stops when this returns false
+	(or it is finished with emulating the extra time).
+*/
 LOCALPROC DoEmulateExtraTime(void)
 {
-	/*
-		DoEmulateExtraTime is used for
-		anything over emulation speed
-		of 1x. It periodically calls
-		ExtraTimeNotOver and stops
-		when this returns false (or it
-		is finished with emulating the
-		extra time).
-	*/
-
 	if (MoreSubTicksToDo()) {
 		ExtraTimeBeginNotify();
 		do {
 #if EnableAutoSlow
-			{
-				uint32_t NewQuietSubTicks = QuietSubTicks + 1;
+			uint32_t NewQuietSubTicks = QuietSubTicks + 1;
 
-				if (NewQuietSubTicks > QuietSubTicks) {
-					/* if not overflow */
-					QuietSubTicks = NewQuietSubTicks;
-				}
+			if (NewQuietSubTicks > QuietSubTicks) {
+				/* if not overflow */
+				QuietSubTicks = NewQuietSubTicks;
 			}
 #endif
 			m68k_go_nCycles_1(CyclesScaledPerSubTick);
@@ -619,85 +583,66 @@ LOCALPROC DoEmulateExtraTime(void)
 	}
 }
 
+/*
+	The number of ticks that have been emulated so far.
+	That is, the number of times "DoEmulateOneTick" has been called.
+*/
 LOCALVAR uint32_t CurEmulatedTime = 0;
-	/*
-		The number of ticks that have been
-		emulated so far.
 
-		That is, the number of times
-		"DoEmulateOneTick" has been called.
-	*/
+/*
+	The general idea is to call DoEmulateOneTick once per tick.
 
+	But if emulation is lagging, we'll try to catch up by calling
+	DoEmulateOneTick multiple times, unless we're too far behind, in
+	which case we forget it.
+
+	If emulating one tick takes longer than a tick we don't want to sit
+	here forever. So the maximum number of calls to DoEmulateOneTick is
+	determined at the beginning, rather than just calling DoEmulateOneTick
+	until CurEmulatedTime >= TrueEmulatedTime.
+*/
 LOCALPROC RunEmulatedTicksToTrueTime(void)
 {
-	/*
-		The general idea is to call DoEmulateOneTick
-		once per tick.
+	int8_t lag = OnTrueTime - CurEmulatedTime;
 
-		But if emulation is lagging, we'll try to
-		catch up by calling DoEmulateOneTick multiple
-		times, unless we're too far behind, in
-		which case we forget it.
-
-		If emulating one tick takes longer than
-		a tick we don't want to sit here
-		forever. So the maximum number of calls
-		to DoEmulateOneTick is determined at
-		the beginning, rather than just
-		calling DoEmulateOneTick until
-		CurEmulatedTime >= TrueEmulatedTime.
-	*/
-
-	int8_t n = OnTrueTime - CurEmulatedTime;
-
-	if (n > 0) {
+	if (lag > 0) {
 		DoEmulateOneTick();
-		++CurEmulatedTime;
-
+		CurEmulatedTime += 1;
 		DoneWithDrawingForTick();
 
-		if (n > 8) {
+		if (lag > 8) {
 			/* emulation not fast enough */
-			n = 8;
-			CurEmulatedTime = OnTrueTime - n;
+			lag = 8;
+			CurEmulatedTime = OnTrueTime - lag;
+		} else {
+			lag -= 1;
 		}
 
-		if (ExtraTimeNotOver() && (--n > 0)) {
-			/* lagging, catch up */
-
+		while (ExtraTimeNotOver() && (lag > 0)) {
+			/* Missed vblank due to lag; catch up */
 			EmVideoDisable = true;
-
-			do {
-				DoEmulateOneTick();
-				++CurEmulatedTime;
-			} while (ExtraTimeNotOver()
-				&& (--n > 0));
-
+			DoEmulateOneTick();
+			CurEmulatedTime += 1;
+			lag -= 1;
 			EmVideoDisable = false;
 		}
 
-		EmLagTime = n;
+		EmLagTime = lag;
 	}
 }
 
 LOCALPROC MainEventLoop(void)
 {
-	for (; ; ) {
+	while (true) {
 		WaitForNextTick();
-		if (ForceMacOff) {
-			return;
-		}
-
+		if (ForceMacOff) { return; }
 		RunEmulatedTicksToTrueTime();
-
 		DoEmulateExtraTime();
 	}
 }
 
 GLOBALPROC ProgramMain(void)
 {
-	if (InitEmulation())
-	{
-		MainEventLoop();
-	}
+	if (InitEmulation() == false) {return;}
+	MainEventLoop();
 }

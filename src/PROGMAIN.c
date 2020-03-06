@@ -45,18 +45,11 @@
 
 #include "PROGMAIN.h"
 
-/*
-	ReportAbnormalID unused 0x1002 - 0x10FF
-*/
-
-const bool _EmVIA2        = false;
-const bool _EmRTC         = true;
-const bool _EmVidCard     = false;
-const bool _EmClassicKbrd = true;
-const bool _EmPMU         = false;
-const bool _EmMMU         = false;
-const bool _EmASC         = false;
-const bool _EmADB         = false;
+// Temporary location for config variables
+bool EnableAutoSlow = true;
+uint16_t vMacScreenHeight = 342;
+uint16_t vMacScreenWidth = 512;
+uint16_t vMacScreenDepth = 0;
 
 // Let's define a bunch of function structure thingies
 
@@ -506,19 +499,19 @@ LOCALVAR uint32_t ExtraSubTicksToDo = 0;
 
 LOCALPROC DoEmulateOneTick(void)
 {
-#if EnableAutoSlow
-	uint32_t NewQuietTime = QuietTime + 1;
-	uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
+	if (EnableAutoSlow) {
+		uint32_t NewQuietTime = QuietTime + 1;
+		uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
 
-	if (NewQuietTime > QuietTime) {
-		/* if not overflow */
-		QuietTime = NewQuietTime;
+		if (NewQuietTime > QuietTime) {
+			/* if not overflow */
+			QuietTime = NewQuietTime;
+		}
+		if (NewQuietSubTicks > QuietSubTicks) {
+			/* if not overflow */
+			QuietSubTicks = NewQuietSubTicks;
+		}
 	}
-	if (NewQuietSubTicks > QuietSubTicks) {
-		/* if not overflow */
-		QuietSubTicks = NewQuietSubTicks;
-	}
-#endif
 
 	SixtiethSecondNotify();
 	m68k_go_nCycles_1(CyclesScaledPerTick);
@@ -542,15 +535,14 @@ LOCALFUNC bool MoreSubTicksToDo(void)
 	bool v = false;
 
 	if (ExtraTimeNotOver() && (ExtraSubTicksToDo > 0)) {
-#if EnableAutoSlow
-		if ((QuietSubTicks >= 16384)
+		if (
+			EnableAutoSlow
+			&& (QuietSubTicks >= 16384)
 			&& (QuietTime >= 34)
-			&& ! WantNotAutoSlow)
-		{
+			&& ! WantNotAutoSlow
+		) {
 			ExtraSubTicksToDo = 0;
-		} else
-#endif
-		{
+		} else {
 			v = true;
 		}
 	}
@@ -568,14 +560,14 @@ LOCALPROC DoEmulateExtraTime(void)
 	if (MoreSubTicksToDo()) {
 		ExtraTimeBeginNotify();
 		do {
-#if EnableAutoSlow
-			uint32_t NewQuietSubTicks = QuietSubTicks + 1;
+			if (EnableAutoSlow) {
+				uint32_t NewQuietSubTicks = QuietSubTicks + 1;
 
-			if (NewQuietSubTicks > QuietSubTicks) {
-				/* if not overflow */
-				QuietSubTicks = NewQuietSubTicks;
+				if (NewQuietSubTicks > QuietSubTicks) {
+					/* if not overflow */
+					QuietSubTicks = NewQuietSubTicks;
+				}
 			}
-#endif
 			m68k_go_nCycles_1(CyclesScaledPerSubTick);
 			--ExtraSubTicksToDo;
 		} while (MoreSubTicksToDo());

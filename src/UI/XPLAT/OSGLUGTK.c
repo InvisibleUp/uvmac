@@ -1160,11 +1160,7 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 
 	if (CurSpeedStopped != (SpeedStopped ||
-		(gBackgroundFlag && ! RunInBackground
-#if EnableAutoSlow && 0
-			&& (QuietSubTicks >= 4092)
-#endif
-		)))
+		(gBackgroundFlag && ! RunInBackground)))
 	{
 		CurSpeedStopped = ! CurSpeedStopped;
 		if (CurSpeedStopped) {

@@ -1682,16 +1682,10 @@ LOCALVAR uint8_t * CLUT_final;
 
 #define CLUT_finalsz1 (256 * 8)
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
-
 #define CLUT_finalClrSz (256 << (5 - vMacScreenDepth))
 
 #define CLUT_finalsz ((CLUT_finalClrSz > CLUT_finalsz1) \
 	? CLUT_finalClrSz : CLUT_finalsz1)
-
-#else
-#define CLUT_finalsz CLUT_finalsz1
-#endif
 
 
 #define ScrnMapr_DoMap UpdateBWLuminanceCopy
@@ -1704,8 +1698,6 @@ LOCALVAR uint8_t * CLUT_final;
 #include "HW/SCREEN/SCRNMAPR.h"
 
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
-
 #define ScrnMapr_DoMap UpdateMappedColorCopy
 #define ScrnMapr_Src GetCurDrawBuff()
 #define ScrnMapr_Dst ScalingBuff
@@ -1714,10 +1706,6 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 
 #include "HW/SCREEN/SCRNMAPR.h"
-
-#endif
-
-#if vMacScreenDepth >= 4
 
 #define ScrnTrns_DoTrans UpdateTransColorCopy
 #define ScrnTrns_Src GetCurDrawBuff()
@@ -1728,44 +1716,35 @@ LOCALVAR uint8_t * CLUT_final;
 
 #include "HW/SCREEN/SCRNTRNS.h"
 
-#endif
-
 LOCALPROC UpdateLuminanceCopy(int16_t top, int16_t left,
 	int16_t bottom, int16_t right)
 {
 	int i;
 
-#if 0 != vMacScreenDepth
-	if (UseColorMode) {
+	if (vMacScreenDepth > 0 && UseColorMode) {
+		if (vMacScreenDepth < 4) {
+			if (! ColorTransValid) {
+				int j;
+				int k;
+				uint32_t * p4;
 
-#if vMacScreenDepth < 4
-
-		if (! ColorTransValid) {
-			int j;
-			int k;
-			uint32_t * p4;
-
-			p4 = (uint32_t *)CLUT_final;
-			for (i = 0; i < 256; ++i) {
-				for (k = 1 << (3 - vMacScreenDepth); --k >= 0; ) {
-					j = (i >> (k << vMacScreenDepth)) & (CLUT_size - 1);
-					*p4++ = (((long)CLUT_reds[j] & 0xFF00) << 16)
-						| (((long)CLUT_greens[j] & 0xFF00) << 8)
-						| ((long)CLUT_blues[j] & 0xFF00);
+				p4 = (uint32_t *)CLUT_final;
+				for (i = 0; i < 256; ++i) {
+					for (k = 1 << (3 - vMacScreenDepth); --k >= 0; ) {
+						j = (i >> (k << vMacScreenDepth)) & (CLUT_size - 1);
+						*p4++ = (((long)CLUT_reds[j] & 0xFF00) << 16)
+							| (((long)CLUT_greens[j] & 0xFF00) << 8)
+							| ((long)CLUT_blues[j] & 0xFF00);
+					}
 				}
+				ColorTransValid = true;
 			}
-			ColorTransValid = true;
+			UpdateMappedColorCopy(top, left, bottom, right);
+		} else {
+			UpdateTransColorCopy(top, left, bottom, right);
 		}
 
-		UpdateMappedColorCopy(top, left, bottom, right);
-
-#else
-		UpdateTransColorCopy(top, left, bottom, right);
-#endif
-
-	} else
-#endif
-	{
+	} else {
 		if (! ColorTransValid) {
 			int k;
 			uint8_t * p4 = (uint8_t *)CLUT_final;
@@ -1838,17 +1817,14 @@ LOCALPROC DrawWithOpenGL(uint16_t top, uint16_t left, uint16_t bottom, uint16_t 
 
 		UpdateLuminanceCopy(top, left, bottom, right);
 		glRasterPos2i(GLhOffset + left2, GLvOffset - top2);
-#if 0 != vMacScreenDepth
-		if (UseColorMode) {
+		if (vMacScreenDepth > 0 && UseColorMode) {
 			glDrawPixels(right - left,
 				bottom - top,
 				GL_RGBA,
 				GL_UNSIGNED_INT_8_8_8_8,
 				ScalingBuff + (left + top * vMacScreenWidth) * 4
 				);
-		} else
-#endif
-		{
+		} else {
 			glDrawPixels(right - left,
 				bottom - top,
 				GL_LUMINANCE,
@@ -3224,9 +3200,7 @@ LOCALFUNC bool GetOpnGLCntxt(void)
 		AdjustGLforSize(NewWinRect.size.width,
 			NewWinRect.size.height);
 
-#if 0 != vMacScreenDepth
-		ColorModeWorks = true;
-#endif
+		if (0 != vMacScreenDepth) { ColorModeWorks = true; }
 	}
 	v = true;
 
@@ -4231,13 +4205,9 @@ LOCALPROC CheckForSavedTasks(void)
 #endif
 	}
 
-	if (CurSpeedStopped != (SpeedStopped ||
-		(gBackgroundFlag && ! RunInBackground
-#if EnableAutoSlow && 0
-			&& (QuietSubTicks >= 4092)
-#endif
-		)))
-	{
+	if (CurSpeedStopped != (
+		SpeedStopped || (gBackgroundFlag && ! RunInBackground)
+	)) {
 		CurSpeedStopped = ! CurSpeedStopped;
 		if (CurSpeedStopped) {
 			EnterSpeedStopped();
@@ -4535,44 +4505,19 @@ label_retry:
 	}
 
 	if (ExtraTimeNotOver()) {
-#if 1
-#if 0 && EnableAutoSlow
-		if ((QuietSubTicks >= 16384)
-			&& (QuietTime >= 34)
-			&& ! WantNotAutoSlow)
-		{
-			TheUntil = [NSDate
-				dateWithTimeIntervalSinceReferenceDate:
-					(NextTickChangeTime + 0.50)];
-		} else
-#endif
-		{
-			NSTimeInterval inTimeout =
-				NextTickChangeTime - LatestTime;
-			if (inTimeout > 0.0) {
-				struct timespec rqt;
-				struct timespec rmt;
+		NSTimeInterval inTimeout = NextTickChangeTime - LatestTime;
+		if (inTimeout > 0.0) {
+			struct timespec rqt;
+			struct timespec rmt;
 
-				rqt.tv_sec = 0;
-				rqt.tv_nsec = inTimeout * 1000000000.0;
-				(void) nanosleep(&rqt, &rmt);
-			}
-			TheUntil = TheDistantPast;
+			rqt.tv_sec = 0;
+			rqt.tv_nsec = inTimeout * 1000000000.0;
+			(void) nanosleep(&rqt, &rmt);
 		}
-#else
-		/*
-			This has higher overhead.
-		*/
-		TheUntil = TheNextTick;
-#endif
+		TheUntil = TheDistantPast;
+
 		goto label_retry;
 	}
-
-#if 0
-	if (! gTrueBackgroundFlag) {
-		CheckMouseState();
-	}
-#endif
 
 	if (CheckDateTime()) {
 #if SoundEnabled
@@ -4831,11 +4776,11 @@ LOCALPROC ReserveAllocAll(void)
 		vMacScreenNumBytes, 5, false);
 #endif
 
-	ReserveAllocOneBlock(&ScalingBuff, vMacScreenNumPixels
-#if 0 != vMacScreenDepth
-		* 4
-#endif
-		, 5, false);
+	ReserveAllocOneBlock(
+		&ScalingBuff,
+		vMacScreenNumPixels * (vMacScreenDepth > 0) ? 4 : 1,
+		5, false
+	;
 	ReserveAllocOneBlock(&CLUT_final, CLUT_finalsz, 5, false);
 
 #if SoundEnabled

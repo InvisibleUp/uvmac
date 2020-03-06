@@ -178,22 +178,17 @@ EXPORTVAR(uint32_t, CurMacDelta)
 #define vMacScreenMonoNumBytes (vMacScreenNumPixels / 8)
 #define vMacScreenMonoByteWidth ((long)vMacScreenWidth / 8)
 
-#if 0 != vMacScreenDepth
 EXPORTVAR(bool, UseColorMode)
 EXPORTVAR(bool, ColorModeWorks)
-#endif
 
-#if 0 != vMacScreenDepth
 EXPORTVAR(bool, ColorMappingChanged)
-#endif
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
-#define CLUT_size (1 << (1 << vMacScreenDepth))
+//#define CLUT_size (1 << (1 << vMacScreenDepth))
+#define CLUT_size 256 // total guesstimate
 
 EXPORTVAR(uint16_t, CLUT_reds[CLUT_size])
 EXPORTVAR(uint16_t, CLUT_greens[CLUT_size])
 EXPORTVAR(uint16_t, CLUT_blues[CLUT_size])
-#endif
 
 EXPORTVAR(bool, EmVideoDisable)
 EXPORTVAR(int8_t, EmLagTime)
@@ -211,15 +206,12 @@ EXPORTOSGLUFUNC bool ExtraTimeNotOver(void);
 
 EXPORTVAR(uint8_t, SpeedValue)
 
-#if EnableAutoSlow
 EXPORTVAR(bool, WantNotAutoSlow)
-#endif
 
 /* where emulated machine thinks mouse is */
 EXPORTVAR(uint16_t, CurMouseV)
 EXPORTVAR(uint16_t, CurMouseH)
 
-#if EnableAutoSlow
 EXPORTVAR(uint32_t, QuietTime)
 EXPORTVAR(uint32_t, QuietSubTicks)
 
@@ -228,9 +220,6 @@ EXPORTVAR(uint32_t, QuietSubTicks)
 	QuietTime = 0; \
 	QuietSubTicks = 0; \
 }
-#else
-#define QuietEnds()
-#endif
 
 #if 3 == kLn2SoundSampSz
 #define trSoundSamp uint8_t

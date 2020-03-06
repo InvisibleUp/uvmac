@@ -26,10 +26,6 @@
 #define IncludeSonyNew 1
 #define IncludeSonyNameNew 1
 
-#define vMacScreenHeight 342
-#define vMacScreenWidth 512
-#define vMacScreenDepth 0
-
 #define kROM_Size 0x00020000
 
 #define IncludePbufs 1
@@ -38,7 +34,12 @@
 #define EnableMouseMotion 1
 
 #define IncludeHostTextClipExchange 1
-#define EnableAutoSlow 1
 #define EmLocalTalk 0
 #define AutoLocation 1
 #define AutoTimeZone 1
+
+// Variable versions of configuration flags
+extern bool EnableAutoSlow;
+extern uint16_t vMacScreenHeight;
+extern uint16_t vMacScreenWidth;
+extern uint16_t vMacScreenDepth;

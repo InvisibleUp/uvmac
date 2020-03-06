@@ -1750,7 +1750,6 @@ LOCALFUNC char * GetSubstitutionStr(char x)
 				s = kStrStoppedOff;
 			}
 			break;
-#if EnableAutoSlow
 		case 'l':
 			if (WantNotAutoSlow) {
 				s = kStrStoppedOff;
@@ -1758,7 +1757,6 @@ LOCALFUNC char * GetSubstitutionStr(char x)
 				s = kStrStoppedOn;
 			}
 			break;
-#endif
 		case 's':
 			switch (SpeedValue) {
 				case 0:

@@ -64,20 +64,14 @@ GLOBALVAR uint32_t CurMacLongitude = 0;
 GLOBALVAR uint32_t CurMacDelta = 0;
 #endif
 
-#if 0 != vMacScreenDepth
 GLOBALVAR bool UseColorMode = false;
 GLOBALVAR bool ColorModeWorks = false;
-#endif
 
-#if 0 != vMacScreenDepth
 GLOBALVAR bool ColorMappingChanged = false;
-#endif
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
 GLOBALVAR uint16_t CLUT_reds[CLUT_size];
 GLOBALVAR uint16_t CLUT_greens[CLUT_size];
 GLOBALVAR uint16_t CLUT_blues[CLUT_size];
-#endif
 
 LOCALVAR bool RequestMacOff = false;
 
@@ -89,9 +83,7 @@ GLOBALVAR bool WantMacReset = false;
 
 GLOBALVAR uint8_t SpeedValue = WantInitSpeedValue;
 
-#if EnableAutoSlow
 GLOBALVAR bool WantNotAutoSlow = (WantInitNotAutoSlow != 0);
-#endif
 
 GLOBALVAR uint16_t CurMouseV = 0;
 GLOBALVAR uint16_t CurMouseH = 0;
@@ -100,10 +92,8 @@ GLOBALVAR uint16_t CurMouseH = 0;
 LOCALVAR bool HaveMouseMotion = false;
 #endif
 
-#if EnableAutoSlow
 GLOBALVAR uint32_t QuietTime = 0;
 GLOBALVAR uint32_t QuietSubTicks = 0;
-#endif
 
 #ifndef GrabKeysFullScreen
 #define GrabKeysFullScreen 1
@@ -399,8 +389,7 @@ LOCALFUNC bool ScreenFindChanges(uint8_t * screencurrentbuff,
 		MaxRowsDrawnPerTick = vMacScreenHeight / 4;
 	}
 
-#if 0 != vMacScreenDepth
-	if (UseColorMode) {
+	if (UseColorMode && vMacScreenDepth > 0) {
 		if (ColorMappingChanged) {
 			ColorMappingChanged = false;
 			j0h = 0;
@@ -455,52 +444,48 @@ LOCALFUNC bool ScreenFindChanges(uint8_t * screencurrentbuff,
 				(vMacScreenBitWidth / uiblockbitsn),
 				j0v, j1v, &LeftMin, &LeftMask, &RightMax, &RightMask);
 
-#if vMacScreenDepth > ln2uiblockbitsn
-			j0h =  (LeftMin >> (vMacScreenDepth - ln2uiblockbitsn));
-#elif ln2uiblockbitsn > vMacScreenDepth
-			for (j = 0; j < (1 << (ln2uiblockbitsn - vMacScreenDepth));
-				++j)
-			{
-				if (0 != (LeftMask
-					& (((((uibr)1) << (1 << vMacScreenDepth)) - 1)
-						<< ((j ^ FlipCheckBits) << vMacScreenDepth))))
+			if (vMacScreenDepth > ln2uiblockbitsn) {
+				j0h =  (LeftMin >> (vMacScreenDepth - ln2uiblockbitsn));
+			} else if (ln2uiblockbitsn > vMacScreenDepth) {
+				for (j = 0; j < (1 << (ln2uiblockbitsn - vMacScreenDepth));
+					++j)
 				{
-					goto Label_1c;
+					if (0 != (LeftMask
+						& (((((uibr)1) << (1 << vMacScreenDepth)) - 1)
+							<< ((j ^ FlipCheckBits) << vMacScreenDepth))))
+					{
+						goto Label_1c;
+					}
 				}
+	Label_1c:
+				j0h =  (LeftMin << (ln2uiblockbitsn - vMacScreenDepth)) + j;
+			} else {
+				j0h =  LeftMin;
 			}
-Label_1c:
-			j0h =  (LeftMin << (ln2uiblockbitsn - vMacScreenDepth)) + j;
-#else
-			j0h =  LeftMin;
-#endif
 
-#if vMacScreenDepth > ln2uiblockbitsn
-			j1h = (RightMax >> (vMacScreenDepth - ln2uiblockbitsn)) + 1;
-#elif ln2uiblockbitsn > vMacScreenDepth
-			for (j = (uiblockbitsn >> vMacScreenDepth); --j >= 0; ) {
-				if (0 != (RightMask
-					& (((((uibr)1) << (1 << vMacScreenDepth)) - 1)
-						<< ((j ^ FlipCheckBits) << vMacScreenDepth))))
-				{
-					goto Label_2c;
+			if (vMacScreenDepth > ln2uiblockbitsn) {
+				j1h = (RightMax >> (vMacScreenDepth - ln2uiblockbitsn)) + 1;
+			} else if (ln2uiblockbitsn > vMacScreenDepth) {
+				for (j = (uiblockbitsn >> vMacScreenDepth); --j >= 0; ) {
+					if (0 != (RightMask
+						& (((((uibr)1) << (1 << vMacScreenDepth)) - 1)
+							<< ((j ^ FlipCheckBits) << vMacScreenDepth))))
+					{
+						goto Label_2c;
+					}
 				}
+	Label_2c:
+				j1h = (RightMax << (ln2uiblockbitsn - vMacScreenDepth)) + j + 1;
+			} else {
+				j1h = RightMax + 1;
 			}
-Label_2c:
-			j1h = (RightMax << (ln2uiblockbitsn - vMacScreenDepth))
-				+ j + 1;
-#else
-			j1h = RightMax + 1;
-#endif
 		}
 
 		copyrows = j1v - j0v;
 		copyoffset = j0v * vMacScreenByteWidth;
 		copysize = copyrows * vMacScreenByteWidth;
-	} else
-#endif
-	{
-#if 0 != vMacScreenDepth
-		if (ColorMappingChanged) {
+	} else {
+		if (vMacScreenDepth > 0 && ColorMappingChanged) {
 			ColorMappingChanged = false;
 			j0h = 0;
 			j1h = vMacScreenWidth;
@@ -509,9 +494,7 @@ Label_2c:
 #if WantColorTransValid
 			ColorTransValid = false;
 #endif
-		} else
-#endif
-		{
+		} else {
 			if (! FindFirstChangeInLVecs(
 				(uibb *)screencurrentbuff
 					+ NextDrawRow * (vMacScreenWidth / uiblockbitsn),
@@ -624,12 +607,12 @@ LOCALPROC ScreenChangedAll(void)
 	ScreenChangedRight = vMacScreenWidth;
 }
 
-#if EnableAutoSlow
+/*
 LOCALVAR int16_t ScreenChangedQuietTop = vMacScreenHeight;
 LOCALVAR int16_t ScreenChangedQuietLeft = vMacScreenWidth;
 LOCALVAR int16_t ScreenChangedQuietBottom = 0;
 LOCALVAR int16_t ScreenChangedQuietRight = 0;
-#endif
+*/
 
 GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * screencurrentbuff)
 {
@@ -655,7 +638,8 @@ GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * screencurrentbuff)
 				ScreenChangedRight = right;
 			}
 
-#if EnableAutoSlow
+			// Autoslow conditionals
+			/*
 			if (top < ScreenChangedQuietTop) {
 				ScreenChangedQuietTop = top;
 			}
@@ -680,7 +664,7 @@ GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * screencurrentbuff)
 
 				QuietEnds();
 			}
-#endif
+			*/
 		}
 	}
 }

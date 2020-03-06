@@ -2783,15 +2783,8 @@ enum {
 };
 
 
-#if (1 == vMacScreenDepth) || (vMacScreenDepth >= 4)
 #define EnableScalingBuff 1
-#else
-#define EnableScalingBuff (1 && EnableMagnify && (WindowScale == 2))
-#endif
-
-#if EnableScalingBuff
 LOCALVAR uint8_t * ScalingBuff = NULL;
-#endif
 
 LOCALVAR HDC MainWndDC = NULL;
 
@@ -3110,9 +3103,9 @@ LOCALFUNC bool ReCreateMainWindow(void)
 			TRUE);
 	}
 
-#if 0 != vMacScreenDepth
-	ColorModeWorks = true;
-#endif
+	if (0 != vMacScreenDepth) {
+		ColorModeWorks = true;
+	}
 
 	{
 		POINT p;
@@ -3294,11 +3287,8 @@ LOCALFUNC bool AlreadyRunningCheck(void)
 
 typedef struct BITMAPINFOHEADER256 {
 	BITMAPINFOHEADER bmi;
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
 	RGBQUAD colors[CLUT_size];
-#else
-	RGBQUAD colors[2];
-#endif
+	//RGBQUAD colors[2];
 } BITMAPINFOHEADER256;
 
 #if EnableMagnify
@@ -3377,52 +3367,50 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 		}
 	}
 #endif
-#if 0 != vMacScreenDepth
-	if (UseColorMode) {
+	if (vMacScreenDepth > 0 && UseColorMode) {
 		int i;
 		int nDestWidth = (right - left);
 		int nDestHeight = (bottom - top);
-#if 1 == vMacScreenDepth
-		uint8_t *p
-			= ScalingBuff + ((uint32_t)vMacScreenWidth / 4) * top;
-#elif vMacScreenDepth >= 4
-		uint8_t *p = ScalingBuff + (uint32_t)vMacScreenByteWidth * top;
-#else
-		uint8_t *p = cdb + (uint32_t)vMacScreenByteWidth * top;
-#endif
+		uint8_t *p;
+		if (vMacScreenDepth == 1) {
+			p = ScalingBuff + ((uint32_t)vMacScreenWidth / 4) * top;
+		} else if (vMacScreenDepth >= 4) {
+			p = ScalingBuff + (uint32_t)vMacScreenByteWidth * top;
+		} else {
+			p = cdb + (uint32_t)vMacScreenByteWidth * top;
+		}
 
 		memset(&bmh, 0, sizeof (bmh));
 		bmh.bmi.biSize = sizeof(BITMAPINFOHEADER);
 		bmh.bmi.biWidth = vMacScreenWidth;
 		bmh.bmi.biHeight = - (bottom - top);
 		bmh.bmi.biPlanes = 1;
-#if 1 == vMacScreenDepth
-		bmh.bmi.biBitCount = 4;
-#else
-		bmh.bmi.biBitCount = (1 << vMacScreenDepth);
-#endif
+		if (1 == vMacScreenDepth) {
+			bmh.bmi.biBitCount = 4;
+		} else {
+			bmh.bmi.biBitCount = (1 << vMacScreenDepth);
+		}
 		bmh.bmi.biCompression= BI_RGB;
 		bmh.bmi.biSizeImage = 0;
 		bmh.bmi.biXPelsPerMeter = 0;
 		bmh.bmi.biYPelsPerMeter = 0;
-#if 1 == vMacScreenDepth
-		bmh.bmi.biClrUsed = 4;
-#else
-		bmh.bmi.biClrUsed = 0;
-#endif
+		if (vMacScreenDepth == 1) {
+			bmh.bmi.biClrUsed = 4;
+		} else {
+			bmh.bmi.biClrUsed = 0;
+		}
 		bmh.bmi.biClrImportant = 0;
 
-#if vMacScreenDepth < 4
-		for (i = 0; i < CLUT_size; ++i) {
-			bmh.colors[i].rgbRed = CLUT_reds[i] >> 8;
-			bmh.colors[i].rgbGreen = CLUT_greens[i] >> 8;
-			bmh.colors[i].rgbBlue = CLUT_blues[i] >> 8;
-			bmh.colors[i].rgbReserved = 0;
+		if (vMacScreenDepth < 4) {
+			for (i = 0; i < CLUT_size; ++i) {
+				bmh.colors[i].rgbRed = CLUT_reds[i] >> 8;
+				bmh.colors[i].rgbGreen = CLUT_greens[i] >> 8;
+				bmh.colors[i].rgbBlue = CLUT_blues[i] >> 8;
+				bmh.colors[i].rgbReserved = 0;
+			}
 		}
-#endif
 
-#if 1 == vMacScreenDepth
-		{
+		if (1 == vMacScreenDepth) {
 			int j;
 			uint8_t *p1 = (uint8_t *)(cdb + (uint32_t)vMacScreenByteWidth * top);
 			uint16_t *p2 = (uint16_t *)p;
@@ -3436,9 +3424,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 						| ((t0 & 0x03) << 8);
 				}
 			}
-		}
-#elif 4 == vMacScreenDepth
-		{
+		} else if (4 == vMacScreenDepth) {
 			int j;
 			uint16_t *p1 = (uint16_t *)(cdb + (uint32_t)vMacScreenByteWidth * top);
 			uint16_t *p2 = (uint16_t *)p;
@@ -3449,9 +3435,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 						((t0 & 0xFF00) >> 8) | ((t0 & 0x00FF) << 8);
 				}
 			}
-		}
-#elif 5 == vMacScreenDepth
-		{
+		} else if (5 == vMacScreenDepth) {
 			int j;
 			uint32_t *p1 = (uint32_t *)(cdb + (uint32_t)vMacScreenByteWidth * top);
 			uint32_t *p2 = (uint32_t *)p;
@@ -3466,7 +3450,6 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 				}
 			}
 		}
-#endif
 
 #if EnableMagnify
 		if (UseMagnify) {
@@ -3496,9 +3479,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 		) == 0) {
 			/* ReportWinLastError(); */
 		}
-	} else
-#endif
-	{
+	} else {
 		uint8_t *p = cdb + (uint32_t)vMacScreenMonoByteWidth * top;
 
 		memset(&bmh, 0, sizeof (bmh));
@@ -5369,11 +5350,7 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 
 	if (CurSpeedStopped != (SpeedStopped ||
-		(gBackgroundFlag && ! RunInBackground
-#if EnableAutoSlow && 0
-			&& (QuietSubTicks >= 4092)
-#endif
-		)))
+		(gBackgroundFlag && ! RunInBackground)))
 	{
 		CurSpeedStopped = ! CurSpeedStopped;
 		if (CurSpeedStopped) {
@@ -5934,15 +5911,12 @@ LOCALPROC ReserveAllocAll(void)
 			* WindowScale * WindowScale
 #endif
 			;
-#if 1 == vMacScreenDepth
-		if (vMacScreenNumBytes * 2 > n) {
+		if ((vMacScreenDepth == 1) && (vMacScreenNumBytes * 2 > n)) {
 			n = vMacScreenNumBytes * 2;
 		}
-#elif vMacScreenDepth >= 4
-		if (vMacScreenNumBytes > n) {
+		else if ((vMacScreenDepth >= 4) && (vMacScreenNumBytes > n)) {
 			n = vMacScreenNumBytes;
 		}
-#endif
 		ReserveAllocOneBlock(&ScalingBuff, n, 5, false);
 	}
 #endif

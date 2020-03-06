@@ -891,9 +891,7 @@ LOCALPROC dbglog_close0(void)
 
 #endif
 
-#if 1 /* (0 != vMacScreenDepth) && (vMacScreenDepth < 4) */
 #define WantColorTransValid 1
-#endif
 
 #include "UI/COMOSGLU.h"
 
@@ -1252,16 +1250,12 @@ LOCALVAR uint8_t * CLUT_final;
 
 #define CLUT_finalsz1 (256 * 8)
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
-
 #define CLUT_finalClrSz (256 << (5 - vMacScreenDepth))
 
 #define CLUT_finalsz ((CLUT_finalClrSz > CLUT_finalsz1) \
 	? CLUT_finalClrSz : CLUT_finalsz1)
 
-#else
 #define CLUT_finalsz CLUT_finalsz1
-#endif
 
 
 #define ScrnMapr_DoMap UpdateBWLuminanceCopy
@@ -1274,8 +1268,6 @@ LOCALVAR uint8_t * CLUT_final;
 #include "HW/SCREEN/SCRNMAPR.h"
 
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
-
 #define ScrnMapr_DoMap UpdateMappedColorCopy
 #define ScrnMapr_Src GetCurDrawBuff()
 #define ScrnMapr_Dst ScalingBuff
@@ -1284,10 +1276,6 @@ LOCALVAR uint8_t * CLUT_final;
 #define ScrnMapr_Map CLUT_final
 
 #include "HW/SCREEN/SCRNMAPR.h"
-
-#endif
-
-#if vMacScreenDepth >= 4
 
 #define ScrnTrns_DoTrans UpdateTransColorCopy
 #define ScrnTrns_Src GetCurDrawBuff()
@@ -1298,44 +1286,35 @@ LOCALVAR uint8_t * CLUT_final;
 
 #include "HW/SCREEN/SCRNTRNS.h"
 
-#endif
-
 LOCALPROC UpdateLuminanceCopy(int16_t top, int16_t left,
 	int16_t bottom, int16_t right)
 {
 	int i;
 
-#if 0 != vMacScreenDepth
-	if (UseColorMode) {
+	if (vMacScreenDepth > 0 && UseColorMode) {
 
-#if vMacScreenDepth < 4
+		if (vMacScreenDepth < 4) {
+			if (! ColorTransValid) {
+				int j;
+				int k;
+				uint32_t * p4;
 
-		if (! ColorTransValid) {
-			int j;
-			int k;
-			uint32_t * p4;
-
-			p4 = (uint32_t *)CLUT_final;
-			for (i = 0; i < 256; ++i) {
-				for (k = 1 << (3 - vMacScreenDepth); --k >= 0; ) {
-					j = (i >> (k << vMacScreenDepth)) & (CLUT_size - 1);
-					*p4++ = (((long)CLUT_reds[j] & 0xFF00) << 16)
-						| (((long)CLUT_greens[j] & 0xFF00) << 8)
-						| ((long)CLUT_blues[j] & 0xFF00);
+				p4 = (uint32_t *)CLUT_final;
+				for (i = 0; i < 256; ++i) {
+					for (k = 1 << (3 - vMacScreenDepth); --k >= 0; ) {
+						j = (i >> (k << vMacScreenDepth)) & (CLUT_size - 1);
+						*p4++ = (((long)CLUT_reds[j] & 0xFF00) << 16)
+							| (((long)CLUT_greens[j] & 0xFF00) << 8)
+							| ((long)CLUT_blues[j] & 0xFF00);
+					}
 				}
+				ColorTransValid = true;
 			}
-			ColorTransValid = true;
+			UpdateMappedColorCopy(top, left, bottom, right);
+		} else {
+			UpdateTransColorCopy(top, left, bottom, right);
 		}
-
-		UpdateMappedColorCopy(top, left, bottom, right);
-
-#else
-		UpdateTransColorCopy(top, left, bottom, right);
-#endif
-
-	} else
-#endif
-	{
+	} else {
 		if (! ColorTransValid) {
 			int k;
 			uint8_t * p4 = (uint8_t *)CLUT_final;
@@ -4737,11 +4716,7 @@ LOCALPROC CheckForSavedTasks(void)
 #endif
 
 	if (CurSpeedStopped != (SpeedStopped ||
-		(gTrueBackgroundFlag && ! RunInBackground
-#if EnableAutoSlow && 0
-			&& (QuietSubTicks >= 4092)
-#endif
-		)))
+		(gTrueBackgroundFlag && ! RunInBackground)))
 	{
 		CurSpeedStopped = ! CurSpeedStopped;
 		if (CurSpeedStopped) {

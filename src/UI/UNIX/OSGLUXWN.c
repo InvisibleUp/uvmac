@@ -1142,7 +1142,7 @@ LOCALPROC SetUpScalingTabl(void)
 }
 #endif
 
-#if EnableMagnify && (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
+//#if EnableMagnify && (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
 LOCALPROC SetUpColorScalingTabl(void)
 {
 	int i;
@@ -1165,9 +1165,8 @@ LOCALPROC SetUpColorScalingTabl(void)
 		}
 	}
 }
-#endif
 
-#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
+//#if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
 LOCALPROC SetUpColorTabl(void)
 {
 	int i;
@@ -1185,9 +1184,8 @@ LOCALPROC SetUpColorTabl(void)
 		}
 	}
 }
-#endif
 
-#if EnableMagnify && UseColorImage
+//#if EnableMagnify && UseColorImage
 LOCALPROC SetUpBW2ColorScalingTabl(void)
 {
 	int i;
@@ -1211,9 +1209,8 @@ LOCALPROC SetUpBW2ColorScalingTabl(void)
 		}
 	}
 }
-#endif
 
-#if UseColorImage
+//#if UseColorImage
 LOCALPROC SetUpBW2ColorTabl(void)
 {
 	int i;
@@ -1233,7 +1230,6 @@ LOCALPROC SetUpBW2ColorTabl(void)
 		}
 	}
 }
-#endif
 
 
 #if EnableMagnify && ! UseColorImage
@@ -4133,11 +4129,7 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 
 	if (CurSpeedStopped != (SpeedStopped ||
-		(gBackgroundFlag && ! RunInBackground
-#if EnableAutoSlow && 0
-			&& (QuietSubTicks >= 4092)
-#endif
-		)))
+		(gBackgroundFlag && ! RunInBackground)))
 	{
 		CurSpeedStopped = ! CurSpeedStopped;
 		if (CurSpeedStopped) {

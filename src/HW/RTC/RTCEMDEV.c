@@ -198,11 +198,8 @@ GLOBALFUNC bool RTC_Init(void)
 #endif
 	RTC.PARAMRAM[1 + Group2Base] = prb_volClickLo;
 	RTC.PARAMRAM[2 + Group2Base] = prb_miscHi;
-	RTC.PARAMRAM[3 + Group2Base] = prb_miscLo
-#if 0 != vMacScreenDepth
-		| 0x80
-#endif
-		;
+	RTC.PARAMRAM[3 + Group2Base] = prb_miscLo \
+		| (vMacScreenDepth != 0) ? 0x80 : 0;
 
 #if HaveXPRAM /* extended parameter ram initialized */
 #if (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)
@@ -231,14 +228,14 @@ GLOBALFUNC bool RTC_Init(void)
 	RTC.PARAMRAM[0x46] = /* 0x42 */ 0x76; /* 'v' */
 	RTC.PARAMRAM[0x47] = /* 0x32 */ 0x4D; /* 'M' */
 	/* mode */
-#if (0 == vMacScreenDepth) || (vMacScreenDepth >= 4)
+if ((0 == vMacScreenDepth) || (vMacScreenDepth >= 4)) {
 	RTC.PARAMRAM[0x48] = 0x80;
-#else
+} else {
 	RTC.PARAMRAM[0x48] = 0x81;
 		/* 0x81 doesn't quite work right at boot */
 			/* no, it seems to work now (?) */
 			/* but only if depth <= 3 */
-#endif
+}
 #endif
 
 #if (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)

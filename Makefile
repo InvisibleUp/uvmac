@@ -27,13 +27,13 @@ SrcFiles := \
 windows :
 	mkdir -p "bld/"
 	windres -i "src/UI/WIN32/main.rc" --input-format=rc -o "bld/main.res" -O coff  --include-dir "src/"
-	$(CC) -o "minivmac.exe" $(SrcFiles) "src/UI/WIN32/OSGLUWIN.c" \
+	$(CC) -o "microvmac.exe" $(SrcFiles) "src/UI/WIN32/OSGLUWIN.c" \
 	"bld/main.res" $(CCFLAGS) -mwindows -lwinmm -lole32 -luuid 
 
 linux : 
 	mkdir -p "bld/"
-	$(CC) -o "minivmac.exe" $(SrcFiles) "src/UI/UNIX/OSGLUXWN.c" $(CCFLAGS) -lX11 -ldl
+	$(CC) -o "microvmac.exe" $(SrcFiles) "src/UI/UNIX/OSGLUXWN.c" $(CCFLAGS) -lX11 -ldl
 
 clean :
 	rm -r "bld/"
-	rm "minivmac.exe"
+	rm "microvmac.exe"

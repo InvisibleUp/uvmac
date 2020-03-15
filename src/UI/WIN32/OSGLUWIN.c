@@ -2791,7 +2791,7 @@ LOCALVAR HDC MainWndDC = NULL;
 LOCALVAR int32_t CmdShow;
 
 LOCALVAR TCHAR WndTitle[_MAX_PATH];
-LOCALVAR const TCHAR WndClassName[] = TEXT("minivmac");
+LOCALVAR const TCHAR WndClassName[] = TEXT(kStrAppName);
 
 LOCALVAR bool gBackgroundFlag = false;
 LOCALVAR bool gTrueBackgroundFlag = false;

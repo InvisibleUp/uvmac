@@ -3569,8 +3569,8 @@ LOCALFUNC bool CreateMainWindow(void)
 		{
 			XClassHint *hints = XAllocClassHint();
 			if (hints) {
-				hints->res_name = "minivmac";
-				hints->res_class = "minivmac";
+				hints->res_name = kStrAppName;
+				hints->res_class = kStrAppName;
 				XSetClassHint(x_display, main_wind, hints);
 				XFree(hints);
 			}

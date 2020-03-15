@@ -61,10 +61,10 @@
 
 #define NeedIntlChars 0
 #define ItnlKyBdFix 1
-#define kStrAppName "Mini vMac (Viz)"
-#define kAppVariationStr "minivmac-viz-36.04-wx64"
+#define kStrAppName "micro vMac"
+#define kAppVariationStr "uvmac-0.37.0-wx64"
 #define kStrCopyrightYear "2020"
 #define kMaintainerName "InvisibleUp"
 #define kStrHomePage "https://github.com/invisibleup/minivmac"
 
-#define kBldOpts "-br 36 -t wx64"
+#define kBldOpts "obsolete"

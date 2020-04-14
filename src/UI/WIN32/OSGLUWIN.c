@@ -23,7 +23,6 @@
 
 	This code is descended from Weston Pawlowski's Windows
 	port of vMac, by Philip Cummins.
-	Adapted by Fabio Concas to run on Pocket PC 2003 devices.
 
 	The main entry point '_tWinMain' is at the end of this file.
 */
@@ -47,13 +46,6 @@
 #else
 #define UseUni 0
 #endif
-
-#ifdef _WIN32_WCE
-#define UseWinCE 1
-#else
-#define UseWinCE 0
-#endif
-
 
 #define _CSIDL_APPDATA 0x001a
 
@@ -382,18 +374,8 @@ LOCALVAR HWND MainWnd = NULL;
 LOCALVAR int WndX;
 LOCALVAR int WndY;
 
-#if UseWinCE
-LOCALVAR short oldOrientation;
-LOCALVAR unsigned long oldDisplayOrientation;
-#endif
-
-#if 1
 LOCALVAR bool UseFullScreen = (WantInitFullScreen != 0);
-#endif
-
-#if 1
 LOCALVAR bool UseMagnify = (WantInitMagnify != 0);
-#endif
 
 #if MayFullScreen
 LOCALVAR short hOffset;
@@ -1644,7 +1626,7 @@ LOCALFUNC bool GetKeyboardLayoutHex(uimr *r)
 }
 #endif
 
-#if ItnlKyBdFix && ! UseWinCE
+#if ItnlKyBdFix
 LOCALPROC CheckKeyboardLayout(void)
 {
 	uimr sv;
@@ -1658,9 +1640,7 @@ LOCALPROC CheckKeyboardLayout(void)
 		VkMapFromLayout(sv);
 	}
 }
-#endif
 
-#if ItnlKyBdFix
 LOCALPROC InitCheckKeyboardLayout(void)
 {
 	uimr sv;
@@ -1851,11 +1831,7 @@ LOCALPROC DoKeyCode(int i, bool down)
 }
 
 #ifndef EnableGrabSpecialKeys
-#if UseWinCE
-#define EnableGrabSpecialKeys 0
-#else
 #define EnableGrabSpecialKeys (MayFullScreen && GrabKeysFullScreen)
-#endif
 #endif /* EnableGrabSpecialKeys */
 
 #if EnableGrabSpecialKeys
@@ -2129,11 +2105,7 @@ LOCALPROC UnGrabSpecialKeys(void)
 /* --- priority --- */
 
 #ifndef EnableChangePriority
-#if UseWinCE
-#define EnableChangePriority 0
-#else
 #define EnableChangePriority MayFullScreen
-#endif
 #endif /* EnableChangePriority */
 
 #if EnableChangePriority
@@ -2826,11 +2798,6 @@ LOCALPROC GetWndTitle(void)
 
 LOCALPROC DisposeMainWindow(void)
 {
-#if UseWinCE
-	/* Show the taskbar */
-	SHFullScreen(MainWnd, SHFS_SHOWTASKBAR);
-#endif
-
 	if (MainWndDC != NULL) {
 		ReleaseDC(MainWnd, MainWndDC);
 	}
@@ -3128,11 +3095,6 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	UnGrabTheMachine();
 #endif
 
-#if UseWinCE && 0
-	/* Show the taskbar */
-	SHFullScreen(MainWnd, SHFS_SHOWTASKBAR);
-#endif
-
 #if MayNotFullScreen
 	CurWinIndx = WinIndx;
 #endif
@@ -3140,26 +3102,18 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	MainWnd = NewMainWindow;
 	MainWndDC = NewMainWndDC;
 	gTrueBackgroundFlag = false;
-#if 1
 	UseFullScreen = WantFullScreen;
-#endif
-#if 1
 	UseMagnify = WantMagnify;
-#endif
 
-#if 1
 	if (UseFullScreen)
-#endif
 #if MayFullScreen
 	{
 		ViewHSize = ScreenX;
 		ViewVSize = ScreenY;
-#if 1
 		if (UseMagnify) {
 			ViewHSize /= WindowScale;
 			ViewVSize /= WindowScale;
 		}
-#endif
 		if (ViewHSize >= vMacScreenWidth) {
 			ViewHStart = 0;
 			ViewHSize = vMacScreenWidth;
@@ -3190,70 +3144,6 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	} else {
 		(void) InvalidateRgn(MainWnd, NULL, FALSE);
 	}
-
-#if UseWinCE
-	/* Create and set logical palette for this window */
-	{
-		HPALETTE hpal;
-		LOGPALETTE *lppal = (LOGPALETTE*)malloc(sizeof(LOGPALETTE) +
-			sizeof(PALETTEENTRY) * 2);
-
-		if (! lppal)
-		{
-			MacMsg("CreateWindow failed",
-				"Sorry, Mini vMac encountered errors"
-				" and cannot continue.", true);
-			return false;
-		}
-
-		lppal->palNumEntries = 2;
-		lppal->palVersion = 0x0300;
-		lppal->palPalEntry[0].peRed   = 255;
-		lppal->palPalEntry[0].peGreen = 255;
-		lppal->palPalEntry[0].peBlue  = 255;
-		lppal->palPalEntry[0].peFlags = 0;
-		lppal->palPalEntry[1].peRed   = 0;
-		lppal->palPalEntry[1].peGreen = 0;
-		lppal->palPalEntry[1].peBlue  = 0;
-		lppal->palPalEntry[1].peFlags = 0;
-
-		hpal = CreatePalette(lppal);
-
-		if (hpal == NULL) {
-			free(lppal);
-			MacMsg("CreateWindow failed",
-				"Sorry, Mini vMac encountered errors"
-				" and cannot continue.", true);
-			return false;
-		}
-
-		if (SelectPalette(MainWndDC, hpal, FALSE) == NULL) {
-			free(lppal);
-			MacMsg("CreateWindow failed",
-				"Sorry, Mini vMac encountered errors"
-				" and cannot continue.", true);
-			return false;
-		}
-
-		if (RealizePalette(MainWndDC) == GDI_ERROR) {
-			free(lppal);
-			MacMsg("CreateWindow failed",
-				"Sorry, Mini vMac encountered errors"
-				" and cannot continue.", true);
-			return false;
-		}
-
-		free(lppal);
-	}
-#endif
-
-#if UseWinCE
-	/* Hide the taskbar */
-	SHFullScreen(MainWnd, SHFS_HIDETASKBAR);
-	(void) MoveWindow(MainWnd, 0, 0,
-			ScreenX, ScreenY, TRUE);
-#endif
-
 	if (HaveCursorHidden) {
 		(void) MoveMouse(CurMouseH, CurMouseV);
 		WantCursorHidden = true;
@@ -3262,39 +3152,14 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	return true;
 }
 
-#if UseWinCE
-LOCALFUNC bool AlreadyRunningCheck(void)
-{
-	/*
-		Adapted from example program from Microsoft eMbedded Visual C++
-	*/
-
-	/* If it is already running, then focus on the window */
-	HWND hWnd = FindWindow(WndClassName, WndTitle);
-	if (hWnd == NULL) {
-		return false;
-	} else {
-		/*
-			Set focus to foremost child window.
-			The "| 0x01" is used to bring any owned
-			windows to the foreground and activate them.
-		*/
-		SetForegroundWindow((HWND)((ULONG) hWnd | 0x00000001));
-		return true;
-	}
-}
-#endif
-
 typedef struct BITMAPINFOHEADER256 {
 	BITMAPINFOHEADER bmi;
 	RGBQUAD colors[CLUT_size];
 	//RGBQUAD colors[2];
 } BITMAPINFOHEADER256;
 
-#if 1
 #define ScaledHeight (WindowScale * vMacScreenHeight)
 #define ScaledWidth (WindowScale * vMacScreenWidth)
-#endif
 
 LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	int16_t bottom, int16_t right)
@@ -3304,9 +3169,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	int XDest;
 	int YDest;
 
-#if 1
 	if (UseFullScreen)
-#endif
 #if MayFullScreen
 	{
 		if (top < ViewVStart) {
@@ -3331,9 +3194,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	XDest = left;
 	YDest = top;
 
-#if 1
 	if (UseFullScreen)
-#endif
 #if MayFullScreen
 	{
 		XDest -= ViewHStart;
@@ -3341,15 +3202,11 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	}
 #endif
 
-#if 1
 	if (UseMagnify) {
 		XDest *= WindowScale;
 		YDest *= WindowScale;
 	}
-#endif
-#if 1
 	if (UseFullScreen)
-#endif
 #if MayFullScreen
 	{
 		XDest += hOffset;
@@ -3357,16 +3214,6 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	}
 #endif
 
-#if 0
-	{ /* testing code */
-		if (PatBlt(MainWndDC,
-			(int)left - 1,
-			(int)top - 1,
-			(int)right - left + 2,
-			(int)bottom - top + 2, PATCOPY)) {
-		}
-	}
-#endif
 	if (vMacScreenDepth > 0 && UseColorMode) {
 		int i;
 		int nDestWidth = (right - left);
@@ -3451,12 +3298,10 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 			}
 		}
 
-#if 1
 		if (UseMagnify) {
 			nDestWidth *= WindowScale;
 			nDestHeight *= WindowScale;
 		}
-#endif
 
 		if (StretchDIBits(
 			MainWndDC, /* handle of device context */
@@ -3494,7 +3339,6 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 		bmh.bmi.biYPelsPerMeter = 0;
 		bmh.bmi.biClrUsed = 0;
 		bmh.bmi.biClrImportant = 0;
-#if ! UseWinCE
 		bmh.colors[0].rgbRed = 255;
 		bmh.colors[0].rgbGreen = 255;
 		bmh.colors[0].rgbBlue = 255;
@@ -3503,9 +3347,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 		bmh.colors[1].rgbGreen = 0;
 		bmh.colors[1].rgbBlue = 0;
 		bmh.colors[1].rgbReserved = 0;
-#endif
 
-#if 1
 		if (UseMagnify) {
 #if EnableScalingBuff
 			if (ScalingBuff != NULL) {
@@ -3597,55 +3439,11 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 						/* address of array with DIB bits */
 					(const struct tagBITMAPINFO *)&bmh,
 						/* address of structure with bitmap info. */
-#if ! UseWinCE
 					DIB_RGB_COLORS /* RGB or palette indices */
-#else
-					DIB_PAL_COLORS /* palette indices */
-#endif
 				) == 0) {
 					/* ReportWinLastError(); */
 				}
 			}
-#else
-			if (StretchDIBits(
-				MainWndDC, /* handle of device context */
-				XDest,
-					/*
-						x-coordinate of upper-left corner of dest. rect.
-					*/
-				YDest,
-					/*
-						y-coordinate of upper-left corner of dest. rect.
-					*/
-				(right - left) * WindowScale,
-					/* dest. rectangle width */
-				(bottom - top) * WindowScale,
-					/* dest. rectangle height */
-				left,
-					/*
-						x-coordinate of lower-left corner
-						of source rect.
-					*/
-				0,
-					/*
-						y-coordinate of lower-left corner
-						of source rect.
-					*/
-				(right - left), /* source rectangle width */
-				(bottom - top), /* source rectangle height */
-				(CONST VOID *)p, /* address of array with DIB bits */
-				(const struct tagBITMAPINFO *)&bmh,
-					/* address of structure with bitmap info. */
-#if ! UseWinCE
-				DIB_RGB_COLORS, /* RGB or palette indices */
-#else
-				DIB_PAL_COLORS, /* palette indices */
-#endif
-				SRCCOPY
-			) == 0) {
-				/* ReportWinLastError(); */
-			}
-#endif
 		} else
 #endif
 
@@ -3677,11 +3475,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 				(CONST VOID *)p, /* address of array with DIB bits */
 				(const struct tagBITMAPINFO *)&bmh,
 					/* address of structure with bitmap info. */
-#if ! UseWinCE
 				DIB_RGB_COLORS /* RGB or palette indices */
-#else
-				DIB_PAL_COLORS /* palette indices */
-#endif
 			) == 0) {
 				/* ReportWinLastError(); */
 			}
@@ -3820,20 +3614,17 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 		}
 #endif
 
-#if ! UseWinCE
 		/* if (ShouldHaveCursorHidden || CurMouseButton) */
 		/*
 			for a game like arkanoid, would like mouse to still
 			move even when outside window in one direction
 		*/
-#endif
 		MousePositionSet(NewMousePosx, NewMousePosy);
 	}
 
 	WantCursorHidden = ShouldHaveCursorHidden;
 }
 
-#if ! UseWinCE
 LOCALPROC CheckMouseState(void)
 {
 	POINT NewMousePos;
@@ -3843,7 +3634,6 @@ LOCALPROC CheckMouseState(void)
 	NewMousePos.y -= WndY;
 	MousePositionNotify(NewMousePos.x, NewMousePos.y);
 }
-#endif
 
 LOCALVAR const uint8_t Native2MacRomanTab[] = {
 	0xAD, 0xB0, 0xE2, 0xC4, 0xE3, 0xC9, 0xA0, 0xE0,
@@ -4692,20 +4482,12 @@ LOCALFUNC bool GetAppDataPath(LPTSTR lpszPath,
 	return IsOk;
 }
 
-#if UseWinCE
-/* Are we in control mode? */
-/* Needed because you can't hold down a key with the virtual keyboard */
-LOCALVAR bool CtrlMode = false;
-#endif
-
 LOCALPROC InsertADisk0(void)
 {
 	OPENFILENAME ofn;
 	TCHAR szDirName[256];
 	TCHAR szFile[256];
-#if ! UseWinCE
 	TCHAR szFileTitle[256];
-#endif
 	UINT i;
 	size_t cbString;
 	TCHAR chReplace;
@@ -4737,10 +4519,8 @@ LOCALPROC InsertADisk0(void)
 	ofn.nFilterIndex = 2;
 	ofn.lpstrFile= szFile;
 	ofn.nMaxFile = sizeof(szFile);
-#if ! UseWinCE
 	ofn.lpstrFileTitle = szFileTitle;
 	ofn.nMaxFileTitle = sizeof(szFileTitle);
-#endif
 	ofn.lpstrInitialDir = szDirName;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST
 		| OFN_HIDEREADONLY;
@@ -4751,21 +4531,10 @@ LOCALPROC InsertADisk0(void)
 
 	if(! IsOk) {
 		/* report error */
-#if UseWinCE
-		if (szFile[0]) {
-			char wMsg[1024];
-			sprintf(wMsg, "Couldn't open %ls", szFile);
-			MacMsg("error", wMsg, false);
-		}
-#endif
 	} else {
 		(void) InsertDiskOrAlias(ofn.lpstrFile,
 			true, false);
 	}
-
-#if UseWinCE
-	CtrlMode = false;
-#endif
 }
 
 LOCALFUNC bool LoadInitialImageFromName(char *ImageName)
@@ -5440,11 +5209,6 @@ LOCALPROC CheckForSavedTasks(void)
 	}
 }
 
-#if UseWinCE
-/* Sip Status ON/OFF */
-LOCALVAR bool SipOn = false;
-#endif
-
 LRESULT CALLBACK Win32WMProc(HWND hwnd,
 	UINT uMessage, WPARAM wparam, LPARAM lparam);
 
@@ -5480,125 +5244,15 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
-#if UseWinCE
-			SipOn = false;
-
-			{
-				SIPINFO r;
-
-				memset(&r, 0 , sizeof(SIPINFO));
-				r.cbSize = sizeof(SIPINFO);
-				if (SipGetInfo(&r)) {
-					SipOn = 0 != (r.fdwFlags & SIPF_ON);
-				}
-			}
-
-			if (wparam == 0xAE) {
-				break;
-			} else if ((! SipOn) && (wparam == VK_RETURN)) {
-				break;
-			} else if ((! SipOn)
-				&& (wparam >= VK_LEFT) && (wparam <= VK_DOWN))
-			{
-				break;
-			} else if (wparam == VK_CONTROL && CtrlMode) {
-				DoVKcode0(wparam, false);
-				CtrlMode = false;
-				break;
-			} else if (wparam == VK_CONTROL) {
-				DoVKcode0(wparam, true);
-				CtrlMode = true;
-				break;
-			}
-#endif
 			if (! TestBit(lparam, 30)) { /* ignore repeats */
 				DoVKcode(wparam, lparam >> 24, true);
 			}
-
-#if UseWinCE
-			return TRUE;
-				/*
-					So that hardware keys won't be
-					processed by the default handler
-				*/
-#endif
-
 			break;
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
-#if UseWinCE
-			SipOn = false;
-
-			{
-				SIPINFO r;
-
-				memset(&r, 0 , sizeof(SIPINFO));
-				r.cbSize = sizeof(SIPINFO);
-				if (SipGetInfo(&r)) {
-					SipOn = 0 != (r.fdwFlags & SIPF_ON);
-				}
-			}
-
-			if (wparam == 0xAE) { /* to hide SoftInput panel */
-				SipShowIM(SIPF_OFF);
-				break;
-			} else if ((! SipOn) && (wparam == VK_RETURN)) {
-				/* DPad Action to show SIP */
-				/* Show SoftInput Panel */
-				SipShowIM(SIPF_ON);
-				break;
-			} else if ((! SipOn)
-				&& (wparam >= VK_LEFT) && (wparam <= VK_DOWN))
-			{
-				switch (wparam) {
-					case VK_LEFT:
-						if (ViewHStart < (ViewHSize / 2)) {
-							ViewHStart = 0;
-						} else {
-							ViewHStart -= (ViewHSize / 2);
-						}
-						break;
-					case VK_UP:
-						if (ViewVStart < (ViewVSize / 2)) {
-							ViewVStart = 0;
-						} else {
-							ViewVStart -= (ViewVSize / 2);
-						}
-						break;
-					case VK_RIGHT:
-						ViewHStart += (ViewHSize / 2);
-						if (ViewHStart >= (vMacScreenWidth - ViewHSize))
-						{
-							ViewHStart = vMacScreenWidth - ViewHSize;
-						}
-						break;
-					case VK_DOWN:
-						ViewVStart += (ViewVSize / 2);
-						if (ViewVStart
-							>= (vMacScreenHeight - ViewVSize))
-						{
-							ViewVStart = vMacScreenHeight - ViewVSize;
-						}
-						break;
-				}
-				Screen_DrawAll();
-			} else
-			if (wparam == VK_CONTROL && CtrlMode) {
-				break;
-			}
-#endif
 			DoVKcode(wparam, lparam >> 24, false);
-
-#if UseWinCE
-			return TRUE;
-				/*
-					So that hardware keys won't be
-					processed by the default handler
-				*/
-#endif
-
 			break;
-#if ItnlKyBdFix && ! UseWinCE
+#if ItnlKyBdFix
 		case WM_INPUTLANGCHANGE:
 			CheckKeyboardLayout();
 			return TRUE;
@@ -5608,7 +5262,6 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 		case WM_CLOSE:
 			RequestMacOff = true;
 			break;
-#if ! UseWinCE
 		case WM_QUERYENDSESSION:
 			if (AnyDiskInserted()) {
 				RequestMacOff = true;
@@ -5617,7 +5270,6 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 				return TRUE;
 			}
 			break;
-#endif
 		case WM_ACTIVATE:
 			if (MainWnd == hwnd) {
 				gTrueBackgroundFlag = (LOWORD(wparam) == WA_INACTIVE);
@@ -5659,9 +5311,6 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 			SetCurMouseButton(false);
 			break;
 		case WM_MOUSEMOVE:
-#if UseWinCE
-			MousePositionNotify(LOWORD (lparam), HIWORD (lparam));
-#endif
 			/* windows may have messed up cursor */
 			/*
 				there is no notification when the mouse moves
@@ -5693,11 +5342,7 @@ LOCALFUNC bool RegisterOurClass(void)
 {
 	WNDCLASS wc;
 
-	wc.style         = CS_HREDRAW | CS_VREDRAW
-#if ! UseWinCE
-		| CS_OWNDC
-#endif
-		;
+	wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
 	wc.lpfnWndProc   = (WNDPROC)Win32WMProc;
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
@@ -5766,9 +5411,7 @@ label_retry:
 	}
 
 	if (! (gBackgroundFlag)) {
-#if ! UseWinCE
 		CheckMouseState();
-#endif
 
 #if EnableGrabSpecialKeys
 		CheckForLostKeyUps();
@@ -5781,106 +5424,6 @@ label_retry:
 	dbglog_writelnNum("WaitForNextTick, OnTrueTime", OnTrueTime);
 #endif
 }
-
-#if UseWinCE
-LOCALFUNC bool Init_ChangeOrientation(void)
-{
-	DEVMODE dm;
-
-	/* initialize the DEVMODE structure */
-	ZeroMemory(&dm, sizeof (dm));
-	dm.dmSize = sizeof (dm);
-
-	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
-
-	/* Backup old values */
-	oldOrientation = dm.dmOrientation;
-	oldDisplayOrientation = dm.dmDisplayOrientation;
-
-
-	/* Hide SIP (you can never tell...) */
-	SipShowIM(SIPF_OFF);
-
-	/* Switch to Landscape mode if possible */
-	dm.dmOrientation = DMORIENT_LANDSCAPE;
-	dm.dmDisplayOrientation = DMDO_90;
-	dm.dmFields = DM_ORIENTATION | DM_DISPLAYORIENTATION;
-	(void) ChangeDisplaySettingsEx(NULL, &dm, NULL, 0, 0);
-	/*
-		if (ChangeDisplaySettingsEx(NULL, &dm, NULL, 0, 0) !=
-			DISP_CHANGE_SUCCESSFUL)
-		{
-			MacMsg ("warning",
-				"Couldn't switch to Landscape mode.", false);
-		}
-	*/
-
-	return true;
-}
-#endif
-
-#if UseWinCE
-LOCALPROC Uninit_ChangeOrientation(void)
-{
-	DEVMODE dm;
-
-	/* Restore old display orientation */
-	ZeroMemory(&dm, sizeof (dm));
-	dm.dmSize = sizeof(dm);
-
-	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
-
-	dm.dmOrientation = oldOrientation;
-	dm.dmDisplayOrientation = oldDisplayOrientation;
-	dm.dmFields = DM_ORIENTATION | DM_DISPLAYORIENTATION;
-
-	ChangeDisplaySettingsEx(NULL, &dm, 0, 0, 0);
-}
-#endif
-
-
-/* ** code for handling hardware keys in Pocket PC devices ** */
-
-#if UseWinCE
-typedef BOOL (__stdcall *UnregisterFunc1Proc)(UINT, UINT);
-LOCALVAR HINSTANCE hCoreDLL = NULL;
-#endif
-
-#if UseWinCE
-LOCALFUNC bool InitHotKeys(void)
-{
-	UnregisterFunc1Proc procUndergisterFunc;
-	int i;
-
-	hCoreDLL = LoadLibrary(TEXT("coredll.dll"));
-	if (! hCoreDLL) {
-		MacMsg ("Fatal", "Could not load coredll.dll", true);
-	} else {
-		procUndergisterFunc =
-			(UnregisterFunc1Proc) GetProcAddress(hCoreDLL,
-			TEXT("UnregisterFunc1"));
-		if (! procUndergisterFunc) {
-			MacMsg ("Fatal",
-				"Could not get UnregisterFunc1 procedure", true);
-		} else {
-			for (i = 0xc1; i <= 0xcf; ++i) {
-				procUndergisterFunc(MOD_WIN, i);
-				RegisterHotKey(MainWnd, i, MOD_WIN, i);
-			}
-		}
-	}
-	return true;
-}
-#endif
-
-#if UseWinCE
-LOCALPROC UninitHotKeys(void)
-{
-	if (! hCoreDLL) {
-		FreeLibrary(hCoreDLL);
-	}
-}
-#endif
 
 #include "PROGMAIN.h"
 
@@ -5976,15 +5519,9 @@ LOCALFUNC bool InitOSGLU(void)
 	if (RegisterInRegistry())
 #endif
 	if (LoadMacRom())
-#if UseWinCE
-	if (Init_ChangeOrientation())
-#endif
 	if (ReCreateMainWindow())
 	if (InitWinKey2Mac())
 	if (InitTheCursor())
-#if UseWinCE
-	if (InitHotKeys())
-#endif
 	if (Init60thCheck())
 	if (WaitForRom())
 	{
@@ -6016,10 +5553,6 @@ LOCALPROC UnInitOSGLU(void)
 	UnInitDrives();
 
 	ForceShowCursor();
-#if UseWinCE
-	Uninit_ChangeOrientation();
-	UninitHotKeys();
-#endif
 
 #if EnableShellLinks
 	UninitCOM();
@@ -6047,12 +5580,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	CommandLine = lpCmdLine;
 
 	GetWndTitle();
-#if UseWinCE
-	if (AlreadyRunningCheck()) {
-		return 0;
-	}
-#endif
-
 	ZapOSGLUVars();
 	if (InitOSGLU()) {
 		ProgramMain();

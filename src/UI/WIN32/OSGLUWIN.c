@@ -387,11 +387,11 @@ LOCALVAR short oldOrientation;
 LOCALVAR unsigned long oldDisplayOrientation;
 #endif
 
-#if VarFullScreen
+#if 1
 LOCALVAR bool UseFullScreen = (WantInitFullScreen != 0);
 #endif
 
-#if EnableMagnify
+#if 1
 LOCALVAR bool UseMagnify = (WantInitMagnify != 0);
 #endif
 
@@ -425,7 +425,7 @@ LOCALFUNC bool MoveMouse(int16_t h, int16_t v)
 	LONG x = h;
 	LONG y = v;
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -435,14 +435,14 @@ LOCALFUNC bool MoveMouse(int16_t h, int16_t v)
 	}
 #endif
 
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		x *= WindowScale;
 		y *= WindowScale;
 	}
 #endif
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -2842,7 +2842,7 @@ LOCALPROC DisposeMainWindow(void)
 
 enum {
 	kMagStateNormal,
-#if EnableMagnify
+#if 1
 	kMagStateMagnifgy,
 #endif
 	kNumMagStates
@@ -2921,7 +2921,7 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	DWORD WStyle;
 	DWORD WExStyle;
 
-#if VarFullScreen
+#if 1
 	if (! UseFullScreen)
 #endif
 #if MayNotFullScreen
@@ -2935,7 +2935,7 @@ LOCALFUNC bool ReCreateMainWindow(void)
 #endif
 
 #if MayNotFullScreen
-#if EnableMagnify
+#if 1
 	if (WantMagnify) {
 		WinIndx = kMagStateMagnifgy;
 	} else
@@ -2945,14 +2945,14 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	}
 #endif
 
-#if EnableMagnify
+#if 1
 	if (WantMagnify) {
 		NewWindowHeight *= WindowScale;
 		NewWindowWidth *= WindowScale;
 	}
 #endif
 
-#if VarFullScreen
+#if 1
 	if (WantFullScreen)
 #endif
 #if MayFullScreen
@@ -2975,7 +2975,7 @@ LOCALFUNC bool ReCreateMainWindow(void)
 		NewWinR.bottom = ScreenY;
 	}
 #endif
-#if VarFullScreen
+#if 1
 	else
 #endif
 #if MayNotFullScreen
@@ -3024,13 +3024,13 @@ LOCALFUNC bool ReCreateMainWindow(void)
 #endif
 
 	if ((OldMainWindow == NULL)
-#if VarFullScreen
+#if 1
 		|| (WantFullScreen != UseFullScreen)
 #endif
 		)
 	{
 
-#if VarFullScreen
+#if 1
 		if (WantFullScreen)
 #endif
 #if MayFullScreen
@@ -3038,7 +3038,7 @@ LOCALFUNC bool ReCreateMainWindow(void)
 			mb = NULL;
 		}
 #endif
-#if VarFullScreen
+#if 1
 		else
 #endif
 #if MayNotFullScreen
@@ -3140,21 +3140,21 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	MainWnd = NewMainWindow;
 	MainWndDC = NewMainWndDC;
 	gTrueBackgroundFlag = false;
-#if VarFullScreen
+#if 1
 	UseFullScreen = WantFullScreen;
 #endif
-#if EnableMagnify
+#if 1
 	UseMagnify = WantMagnify;
 #endif
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
 	{
 		ViewHSize = ScreenX;
 		ViewVSize = ScreenY;
-#if EnableMagnify
+#if 1
 		if (UseMagnify) {
 			ViewHSize /= WindowScale;
 			ViewVSize /= WindowScale;
@@ -3291,7 +3291,7 @@ typedef struct BITMAPINFOHEADER256 {
 	//RGBQUAD colors[2];
 } BITMAPINFOHEADER256;
 
-#if EnableMagnify
+#if 1
 #define ScaledHeight (WindowScale * vMacScreenHeight)
 #define ScaledWidth (WindowScale * vMacScreenWidth)
 #endif
@@ -3304,7 +3304,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	int XDest;
 	int YDest;
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -3331,7 +3331,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	XDest = left;
 	YDest = top;
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -3341,13 +3341,13 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 	}
 #endif
 
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		XDest *= WindowScale;
 		YDest *= WindowScale;
 	}
 #endif
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -3451,7 +3451,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 			}
 		}
 
-#if EnableMagnify
+#if 1
 		if (UseMagnify) {
 			nDestWidth *= WindowScale;
 			nDestHeight *= WindowScale;
@@ -3505,7 +3505,7 @@ LOCALPROC HaveChangedScreenBuff(int16_t top, int16_t left,
 		bmh.colors[1].rgbReserved = 0;
 #endif
 
-#if EnableMagnify
+#if 1
 		if (UseMagnify) {
 #if EnableScalingBuff
 			if (ScalingBuff != NULL) {
@@ -3760,7 +3760,7 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 {
 	bool ShouldHaveCursorHidden = true;
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -3770,14 +3770,14 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 	}
 #endif
 
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		NewMousePosx /= WindowScale;
 		NewMousePosy /= WindowScale;
 	}
 #endif
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -3811,7 +3811,7 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 			ShouldHaveCursorHidden = false;
 		}
 
-#if VarFullScreen
+#if 1
 		if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -5144,13 +5144,13 @@ LOCALFUNC bool ScanCommandLine(void)
 LOCALPROC CheckMagnifyAndFullScreen(void)
 {
 	if (
-#if EnableMagnify
+#if 1
 		(UseMagnify != WantMagnify)
 #endif
-#if EnableMagnify && VarFullScreen
+#if 1 && 1
 		||
 #endif
-#if VarFullScreen
+#if 1
 		(UseFullScreen != WantFullScreen)
 #endif
 		)
@@ -5160,17 +5160,17 @@ LOCALPROC CheckMagnifyAndFullScreen(void)
 }
 #endif
 
-#if VarFullScreen && EnableMagnify
+#if 1 && 1
 enum {
 	kWinStateWindowed,
-#if EnableMagnify
+#if 1
 	kWinStateFullScreen,
 #endif
 	kNumWinStates
 };
 #endif
 
-#if VarFullScreen && EnableMagnify
+#if 1 && 1
 LOCALVAR int WinMagStates[kNumWinStates];
 #endif
 
@@ -5185,7 +5185,7 @@ LOCALPROC ZapWinStateVars(void)
 		}
 	}
 #endif
-#if VarFullScreen && EnableMagnify
+#if 1 && 1
 	{
 		int i;
 
@@ -5196,12 +5196,12 @@ LOCALPROC ZapWinStateVars(void)
 #endif
 }
 
-#if VarFullScreen
+#if 1
 LOCALPROC ToggleWantFullScreen(void)
 {
 	WantFullScreen = ! WantFullScreen;
 
-#if EnableMagnify
+#if 1
 	{
 		int OldWinState =
 			UseFullScreen ? kWinStateFullScreen : kWinStateWindowed;
@@ -5279,7 +5279,7 @@ LOCALPROC EnterBackground(void)
 {
 	DisconnectKeyCodes3();
 
-#if VarFullScreen
+#if 1
 	if (WantFullScreen) {
 		ToggleWantFullScreen();
 	}
@@ -5368,7 +5368,7 @@ LOCALPROC CheckForSavedTasks(void)
 
 #if MayFullScreen
 	if (GrabMachine != (
-#if VarFullScreen
+#if 1
 		UseFullScreen &&
 #endif
 		! (gTrueBackgroundFlag || CurSpeedStopped)))
@@ -5458,7 +5458,7 @@ LRESULT CALLBACK Win32WMProc(HWND hwnd,
 				PAINTSTRUCT ps;
 
 				BeginPaint(hwnd, (LPPAINTSTRUCT)&ps);
-#if VarFullScreen
+#if 1
 				if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -5907,7 +5907,7 @@ LOCALPROC ReserveAllocAll(void)
 #if EnableScalingBuff
 	{
 		uint32_t n = vMacScreenMonoNumBytes
-#if EnableMagnify
+#if 1
 			* WindowScale * WindowScale
 #endif
 			;

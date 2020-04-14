@@ -469,17 +469,17 @@ LOCALVAR short hOffset;
 LOCALVAR short vOffset;
 #endif
 
-#if VarFullScreen
+#if 1
 LOCALVAR bool UseFullScreen = (WantInitFullScreen != 0);
 #endif
 
-#if EnableMagnify
+#if 1
 LOCALVAR bool UseMagnify = (WantInitMagnify != 0);
 #endif
 
 LOCALVAR bool CurSpeedStopped = true;
 
-#if EnableMagnify
+#if 1
 #define MaxScale WindowScale
 #else
 #define MaxScale 1
@@ -897,7 +897,7 @@ LOCALFUNC bool Screen_Init(void)
 	return true;
 }
 
-#if VarFullScreen
+#if 1
 LOCALPROC ToggleWantFullScreen(void)
 {
 	WantFullScreen = ! WantFullScreen;
@@ -1072,7 +1072,7 @@ LOCALPROC DS_ScrollBackground(void)
 		TODO:
 		Lots of magic numbers here.
 	*/
-#if EnableMagnify
+#if 1
 	if (WantMagnify) {
 		ScrollX = ((int) CurMouseH) - (DS_ScreenWidth / 4);
 		ScrollY = ((int) CurMouseV) - (DS_ScreenHeight / 4);

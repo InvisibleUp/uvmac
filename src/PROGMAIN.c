@@ -374,14 +374,12 @@ LOCALPROC ExtraTimeEndNotify(void)
 
 GLOBALPROC EmulationReserveAlloc(void)
 {
-	ReserveAllocOneBlock(&RAM,
-		kRAM_Size + RAMSafetyMarginFudge, 5, false);
+	ReserveAllocOneBlock(&RAM, kRAM_Size + RAMSafetyMarginFudge, 5, false);
 #if EmVidCard
 		ReserveAllocOneBlock(&VidROM, kVidROM_Size, 5, false);
 #endif
 #if IncludeVidMem
-	ReserveAllocOneBlock(&VidMem,
-		kVidMemRAM_Size + RAMSafetyMarginFudge, 5, true);
+	ReserveAllocOneBlock(&VidMem, kVidMemRAM_Size + RAMSafetyMarginFudge, 5, true);
 #endif
 #if SmallGlobals
 	MINEM68K_ReserveAlloc();

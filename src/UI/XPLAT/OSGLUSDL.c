@@ -348,11 +348,11 @@ LOCALFUNC bool LoadMacRom(void)
 
 /* --- video out --- */
 
-#if VarFullScreen
+#if 1
 LOCALVAR bool UseFullScreen = (WantInitFullScreen != 0);
 #endif
 
-#if EnableMagnify
+#if 1
 LOCALVAR bool UseMagnify = (WantInitMagnify != 0);
 #endif
 
@@ -360,7 +360,7 @@ LOCALVAR bool gBackgroundFlag = false;
 LOCALVAR bool gTrueBackgroundFlag = false;
 LOCALVAR bool CurSpeedStopped = true;
 
-#if EnableMagnify
+#if 1
 #define MaxScale WindowScale
 #else
 #define MaxScale 1
@@ -378,7 +378,7 @@ LOCALVAR uint8_t * CLUT_final;
 		256 possible values of one byte
 		8 pixels per byte maximum (when black and white)
 		4 bytes per destination pixel maximum
-			multiplied by WindowScale if EnableMagnify
+			multiplied by WindowScale if 1
 	*/
 
 #define ScrnMapr_DoMap UpdateBWDepth3Copy
@@ -517,7 +517,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 	uint32_t bottom2 = bottom;
 	uint32_t right2 = right;
 
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		top2 *= WindowScale;
 		left2 *= WindowScale;
@@ -537,7 +537,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 	int bpp = surface->format->BytesPerPixel;
 	uint32_t ExpectedPitch = vMacScreenWidth * bpp;
 
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		ExpectedPitch *= WindowScale;
 	}
@@ -571,7 +571,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 	{
 		int k;
 		Uint32 v;
-#if EnableMagnify
+#if 1
 		int a;
 #endif
 		int PixPerByte =
@@ -600,7 +600,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 					v = BWLUT_pixel[(i >> k) & 1];
 				}
 
-#if EnableMagnify
+#if 1
 				for (a = UseMagnify ? WindowScale : 1; --a >= 0; )
 #endif
 				{
@@ -625,7 +625,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 
 #if (0 != vMacScreenDepth) && (vMacScreenDepth < 4)
 		if (UseColorMode) {
-#if EnableMagnify
+#if 1
 			if (UseMagnify) {
 				switch (bpp) {
 					case 1:
@@ -659,7 +659,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 		} else
 #endif
 		{
-#if EnableMagnify
+#if 1
 			if (UseMagnify) {
 				switch (bpp) {
 					case 1:
@@ -704,7 +704,7 @@ LOCALPROC HaveChangedScreenBuff(uint16_t top, uint16_t left,
 				Uint8 *bufp = (Uint8 *)surface->pixels
 					+ i * surface->pitch + j * bpp;
 
-#if EnableMagnify
+#if 1
 				if (UseMagnify) {
 					i0 /= WindowScale;
 					j0 /= WindowScale;
@@ -824,7 +824,7 @@ LOCALPROC ForceShowCursor(void)
 
 LOCALFUNC bool MoveMouse(int16_t h, int16_t v)
 {
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		h *= WindowScale;
 		v *= WindowScale;
@@ -842,7 +842,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 {
 	bool ShouldHaveCursorHidden = true;
 
-#if EnableMagnify
+#if 1
 	if (UseMagnify) {
 		NewMousePosh /= WindowScale;
 		NewMousePosv /= WindowScale;
@@ -873,7 +873,7 @@ LOCALPROC MousePositionNotify(int NewMousePosh, int NewMousePosv)
 			ShouldHaveCursorHidden = false;
 		}
 
-#if VarFullScreen
+#if 1
 		if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -1863,14 +1863,14 @@ LOCALFUNC bool CreateMainWindow(void)
 	Uint32 flags = SDL_SWSURFACE;
 	bool v = false;
 
-#if EnableMagnify && 1
+#if 1 && 1
 	if (UseMagnify) {
 		NewWindowHeight *= WindowScale;
 		NewWindowWidth *= WindowScale;
 	}
 #endif
 
-#if VarFullScreen
+#if 1
 	if (UseFullScreen)
 #endif
 #if MayFullScreen
@@ -1916,10 +1916,10 @@ LOCALFUNC bool ReCreateMainWindow(void)
 	}
 #endif
 
-#if EnableMagnify
+#if 1
 	UseMagnify = WantMagnify;
 #endif
-#if VarFullScreen
+#if 1
 	UseFullScreen = WantFullScreen;
 #endif
 
@@ -1937,7 +1937,7 @@ LOCALPROC ZapWinStateVars(void)
 {
 }
 
-#if VarFullScreen
+#if 1
 LOCALPROC ToggleWantFullScreen(void)
 {
 	WantFullScreen = ! WantFullScreen;
@@ -2031,10 +2031,10 @@ LOCALPROC CheckForSavedTasks(void)
 
 #if EnableRecreateW
 	if (0
-#if EnableMagnify
+#if 1
 		|| (UseMagnify != WantMagnify)
 #endif
-#if VarFullScreen
+#if 1
 		|| (UseFullScreen != WantFullScreen)
 #endif
 		)
@@ -2045,7 +2045,7 @@ LOCALPROC CheckForSavedTasks(void)
 
 #if MayFullScreen
 	if (GrabMachine != (
-#if VarFullScreen
+#if 1
 		UseFullScreen &&
 #endif
 		! (gTrueBackgroundFlag || CurSpeedStopped)))

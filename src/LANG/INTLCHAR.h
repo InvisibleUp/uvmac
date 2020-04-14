@@ -1647,13 +1647,11 @@ LOCALVAR bool SpeedStopped = false;
 
 LOCALVAR bool RunInBackground = (WantInitRunInBackground != 0);
 
-#if VarFullScreen
+#if 1
 LOCALVAR bool WantFullScreen = (WantInitFullScreen != 0);
 #endif
 
-#if EnableMagnify
 LOCALVAR bool WantMagnify = (WantInitMagnify != 0);
-#endif
 
 #if NeedRequestInsertDisk
 LOCALVAR bool RequestInsertDisk = false;
@@ -1718,7 +1716,6 @@ LOCALFUNC char * GetSubstitutionStr(char x)
 			}
 			break;
 #endif
-#if EnableMagnify
 		case 'g':
 			if (WantMagnify) {
 				s = kStrOn;
@@ -1726,8 +1723,7 @@ LOCALFUNC char * GetSubstitutionStr(char x)
 				s = kStrOff;
 			}
 			break;
-#endif
-#if VarFullScreen
+#if 1
 		case 'f':
 			if (WantFullScreen) {
 				s = kStrOn;

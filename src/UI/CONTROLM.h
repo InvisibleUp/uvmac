@@ -511,7 +511,7 @@ LOCALPROC SetSpeedValue(uint8_t i)
 	ControlMessage = kCntrlMsgNewSpeed;
 }
 
-#if VarFullScreen
+#if 1
 FORWARDPROC ToggleWantFullScreen(void);
 #endif
 
@@ -625,13 +625,11 @@ LOCALPROC DoControlModeKey(uint8_t key)
 					RequestInsertDisk = true;
 					break;
 #endif
-#if EnableMagnify
 				case MKC_M:
 					WantMagnify = ! WantMagnify;
 					ControlMessage = kCntrlMsgMagnify;
 					break;
-#endif
-#if VarFullScreen
+#if 1
 				case MKC_F:
 					ToggleWantFullScreen();
 					ControlMessage = kCntrlMsgFullScreen;
@@ -846,10 +844,8 @@ LOCALPROC DrawCellsControlModeBody(void)
 #endif
 			DrawCellsKeyCommand("Q", kStrCmdQuit);
 			DrawCellsKeyCommand("S", kStrCmdSpeedControl);
-#if EnableMagnify
 			DrawCellsKeyCommand("M", kStrCmdMagnifyToggle);
-#endif
-#if VarFullScreen
+#if 1
 			DrawCellsKeyCommand("F", kStrCmdFullScrnToggle);
 #endif
 #if WantEnblCtrlKtg
@@ -894,12 +890,10 @@ LOCALPROC DrawCellsControlModeBody(void)
 		case kCntrlMsgNewAutoSlow:
 			DrawCellsOneLineStr(kStrNewAutoSlow);
 			break;
-#if EnableMagnify
 		case kCntrlMsgMagnify:
 			DrawCellsOneLineStr(kStrNewMagnify);
 			break;
-#endif
-#if VarFullScreen
+#if 1
 		case kCntrlMsgFullScreen:
 			DrawCellsOneLineStr(kStrNewFullScreen);
 			break;

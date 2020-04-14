@@ -25,9 +25,6 @@
 #endif
 
 enum {
-#if EnableAltKeysMode
-	SpclModeAltKeyText,
-#endif
 	SpclModeNoRom,
 	SpclModeMessage,
 #if UseControlKeys
@@ -295,12 +292,8 @@ LOCALPROC DrawSpclMode0(char *Title, SpclModeBody Body)
 	DrawCellsBottomLine();
 }
 
-#if EnableAltKeysMode
-#include "HW/KBRD/ALTKEYSM.h"
-#else
 #define Keyboard_UpdateKeyMap1 Keyboard_UpdateKeyMap
 #define DisconnectKeyCodes1 DisconnectKeyCodes
-#endif
 
 #if WantAbnormalReports
 LOCALPROC ClStrAppendHexNib(int *L0, uint8_t *r, uint8_t v)
@@ -469,7 +462,6 @@ enum {
 	kCntrlMsgNewSpeed,
 	kCntrlMsgNewStopped,
 	kCntrlMsgNewRunInBack,
-	kCntrlMsgNewAutoSlow,
 	kCntrlMsgAbout,
 	kCntrlMsgHelp,
 	kCntrlMsgOptionsStrCopied,
@@ -577,25 +569,20 @@ LOCALPROC DoControlModeKey(uint8_t key)
 	switch (CurControlMode) {
 		case kCntrlModeBase:
 			switch (key) {
-#if WantEnblCtrlKtg
 				case MKC_K:
 					ControlKeyPressed = ! ControlKeyPressed;
 					ControlMessage = kCntrlMsgEmCntrl;
 					Keyboard_UpdateKeyMap1(MKC_UnMappedKey,
 						ControlKeyPressed);
 					break;
-#endif
 				case MKC_S:
 					CurControlMode = kCntrlModeSpeedControl;
 					ControlMessage = kCntrlMsgSpeedControlStart;
 					break;
-#if WantEnblCtrlInt
 				case MKC_I:
 					CurControlMode = kCntrlModeConfirmInterrupt;
 					ControlMessage = kCntrlMsgConfirmInterruptStart;
 					break;
-#endif
-#if WantEnblCtrlRst
 				case MKC_R:
 					if (! AnyDiskInserted()) {
 						WantMacReset = true;
@@ -605,7 +592,6 @@ LOCALPROC DoControlModeKey(uint8_t key)
 						ControlMessage = kCntrlMsgConfirmResetStart;
 					}
 					break;
-#endif
 				case MKC_Q:
 					if (! AnyDiskInserted()) {
 						ForceMacOff = true;
@@ -672,7 +658,6 @@ LOCALPROC DoControlModeKey(uint8_t key)
 #endif
 			}
 			break;
-#if WantEnblCtrlRst
 		case kCntrlModeConfirmReset:
 			switch (key) {
 				case MKC_Y:
@@ -690,8 +675,6 @@ LOCALPROC DoControlModeKey(uint8_t key)
 					break;
 			}
 			break;
-#endif
-#if WantEnblCtrlInt
 		case kCntrlModeConfirmInterrupt:
 			switch (key) {
 				case MKC_Y:
@@ -709,7 +692,6 @@ LOCALPROC DoControlModeKey(uint8_t key)
 					break;
 			}
 			break;
-#endif
 		case kCntrlModeConfirmQuit:
 			switch (key) {
 				case MKC_Y:
@@ -746,11 +728,6 @@ LOCALPROC DoControlModeKey(uint8_t key)
 						ControlMessage = kCntrlMsgNewStopped;
 					}
 					break;
-				case MKC_W:
-					WantNotAutoSlow = ! WantNotAutoSlow;
-					CurControlMode = kCntrlModeBase;
-					ControlMessage = kCntrlMsgNewAutoSlow;
-					break;
 				case MKC_Z:
 					SetSpeedValue(0);
 					break;
@@ -783,16 +760,12 @@ LOCALFUNC char * ControlMode2TitleStr(void)
 	char *s;
 
 	switch (CurControlMode) {
-#if WantEnblCtrlRst
 		case kCntrlModeConfirmReset:
 			s = kStrModeConfirmReset;
 			break;
-#endif
-#if WantEnblCtrlInt
 		case kCntrlModeConfirmInterrupt:
 			s = kStrModeConfirmInterrupt;
 			break;
-#endif
 		case kCntrlModeConfirmQuit:
 			s = kStrModeConfirmQuit;
 			break;
@@ -848,15 +821,9 @@ LOCALPROC DrawCellsControlModeBody(void)
 #if 1
 			DrawCellsKeyCommand("F", kStrCmdFullScrnToggle);
 #endif
-#if WantEnblCtrlKtg
 			DrawCellsKeyCommand("K", kStrCmdCtrlKeyToggle);
-#endif
-#if WantEnblCtrlRst
 			DrawCellsKeyCommand("R", kStrCmdReset);
-#endif
-#if WantEnblCtrlInt
 			DrawCellsKeyCommand("I", kStrCmdInterrupt);
-#endif
 			DrawCellsKeyCommand("P", kStrCmdCopyOptions);
 			DrawCellsKeyCommand("H", kStrCmdHelp);
 			break;
@@ -872,9 +839,6 @@ LOCALPROC DrawCellsControlModeBody(void)
 			DrawCellsBlankLine();
 			DrawCellsKeyCommand("D", kStrSpeedStopped);
 			DrawCellsKeyCommand("B", kStrSpeedBackToggle);
-			if (EnableAutoSlow) {
-				DrawCellsKeyCommand("W", kStrSpeedAutoSlowToggle);
-			}
 			DrawCellsBlankLine();
 			DrawCellsKeyCommand("E", kStrSpeedExit);
 			break;
@@ -886,9 +850,6 @@ LOCALPROC DrawCellsControlModeBody(void)
 			break;
 		case kCntrlMsgNewStopped:
 			DrawCellsOneLineStr(kStrNewStopped);
-			break;
-		case kCntrlMsgNewAutoSlow:
-			DrawCellsOneLineStr(kStrNewAutoSlow);
 			break;
 		case kCntrlMsgMagnify:
 			DrawCellsOneLineStr(kStrNewMagnify);
@@ -903,7 +864,6 @@ LOCALPROC DrawCellsControlModeBody(void)
 			DrawCellsOneLineStr(kStrHaveCopiedOptions);
 			break;
 #endif
-#if WantEnblCtrlRst
 		case kCntrlMsgConfirmResetStart:
 			DrawCellsOneLineStr(kStrConfirmReset);
 			DrawCellsBlankLine();
@@ -916,8 +876,6 @@ LOCALPROC DrawCellsControlModeBody(void)
 		case kCntrlMsgResetCancelled:
 			DrawCellsOneLineStr(kStrCancelledReset);
 			break;
-#endif
-#if WantEnblCtrlInt
 		case kCntrlMsgConfirmInterruptStart:
 			DrawCellsOneLineStr(kStrConfirmInterrupt);
 			DrawCellsBlankLine();
@@ -930,7 +888,6 @@ LOCALPROC DrawCellsControlModeBody(void)
 		case kCntrlMsgInterruptCancelled:
 			DrawCellsOneLineStr(kStrCancelledInterrupt);
 			break;
-#endif
 		case kCntrlMsgConfirmQuitStart:
 			DrawCellsOneLineStr(kStrConfirmQuit);
 			DrawCellsBlankLine();
@@ -940,11 +897,9 @@ LOCALPROC DrawCellsControlModeBody(void)
 		case kCntrlMsgQuitCancelled:
 			DrawCellsOneLineStr(kStrCancelledQuit);
 			break;
-#if WantEnblCtrlKtg
 		case kCntrlMsgEmCntrl:
 			DrawCellsOneLineStr(kStrNewCntrlKey);
 			break;
-#endif
 		case kCntrlMsgBaseStart:
 		default:
 			DrawCellsOneLineStr(kStrHowToLeaveControl);
@@ -971,13 +926,7 @@ LOCALPROC DrawSpclMode(void)
 	} else
 	if (SpecialModeTst(SpclModeNoRom)) {
 		DrawNoRomMode();
-	} else
-#if EnableAltKeysMode
-	if (SpecialModeTst(SpclModeAltKeyText)) {
-		DrawAltKeyMode();
-	} else
-#endif
-	{
+	} else {
 		/* should not get here */
 	}
 }
@@ -1125,15 +1074,7 @@ LOCALPROC Keyboard_UpdateKeyMap2(uint8_t key, bool down)
 		Keyboard_UpdateControlKey(down);
 	} else
 #endif
-	if ((0 == SpecialModes)
-#if EnableAltKeysMode
-			|| (0 == (SpecialModes & ~ (
-				0 | (1 << SpclModeAltKeyText)
-			)))
-#endif
-			|| (MKC_CapsLock == key)
-		)
-	{
+	if ((0 == SpecialModes) || (MKC_CapsLock == key)) {
 		/* pass through */
 		Keyboard_UpdateKeyMap1(key, down);
 	} else {

@@ -79,8 +79,6 @@ GLOBALVAR bool WantMacReset = false;
 
 GLOBALVAR uint8_t SpeedValue = WantInitSpeedValue;
 
-GLOBALVAR bool WantNotAutoSlow = (WantInitNotAutoSlow != 0);
-
 GLOBALVAR uint16_t CurMouseV = 0;
 GLOBALVAR uint16_t CurMouseH = 0;
 

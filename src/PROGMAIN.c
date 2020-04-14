@@ -46,7 +46,6 @@
 #include "PROGMAIN.h"
 
 // Temporary location for config variables
-bool EnableAutoSlow = true;
 uint16_t vMacScreenHeight = 342;
 uint16_t vMacScreenWidth = 512;
 uint16_t vMacScreenDepth = 0;
@@ -497,18 +496,17 @@ LOCALVAR uint32_t ExtraSubTicksToDo = 0;
 
 LOCALPROC DoEmulateOneTick(void)
 {
-	if (EnableAutoSlow) {
-		uint32_t NewQuietTime = QuietTime + 1;
-		uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
+	// AutoSlow
+	uint32_t NewQuietTime = QuietTime + 1;
+	uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;
 
-		if (NewQuietTime > QuietTime) {
-			/* if not overflow */
-			QuietTime = NewQuietTime;
-		}
-		if (NewQuietSubTicks > QuietSubTicks) {
-			/* if not overflow */
-			QuietSubTicks = NewQuietSubTicks;
-		}
+	if (NewQuietTime > QuietTime) {
+		/* if not overflow */
+		QuietTime = NewQuietTime;
+	}
+	if (NewQuietSubTicks > QuietSubTicks) {
+		/* if not overflow */
+		QuietSubTicks = NewQuietSubTicks;
 	}
 
 	SixtiethSecondNotify();
@@ -533,12 +531,7 @@ LOCALFUNC bool MoreSubTicksToDo(void)
 	bool v = false;
 
 	if (ExtraTimeNotOver() && (ExtraSubTicksToDo > 0)) {
-		if (
-			EnableAutoSlow
-			&& (QuietSubTicks >= 16384)
-			&& (QuietTime >= 34)
-			&& ! WantNotAutoSlow
-		) {
+		if ( (QuietSubTicks >= 16384) && (QuietTime >= 34)) {
 			ExtraSubTicksToDo = 0;
 		} else {
 			v = true;
@@ -558,13 +551,11 @@ LOCALPROC DoEmulateExtraTime(void)
 	if (MoreSubTicksToDo()) {
 		ExtraTimeBeginNotify();
 		do {
-			if (EnableAutoSlow) {
-				uint32_t NewQuietSubTicks = QuietSubTicks + 1;
+			uint32_t NewQuietSubTicks = QuietSubTicks + 1;
 
-				if (NewQuietSubTicks > QuietSubTicks) {
-					/* if not overflow */
-					QuietSubTicks = NewQuietSubTicks;
-				}
+			if (NewQuietSubTicks > QuietSubTicks) {
+				/* if not overflow */
+				QuietSubTicks = NewQuietSubTicks;
 			}
 			m68k_go_nCycles_1(CyclesScaledPerSubTick);
 			--ExtraSubTicksToDo;

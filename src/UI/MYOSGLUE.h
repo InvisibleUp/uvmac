@@ -206,8 +206,6 @@ EXPORTOSGLUFUNC bool ExtraTimeNotOver(void);
 
 EXPORTVAR(uint8_t, SpeedValue)
 
-EXPORTVAR(bool, WantNotAutoSlow)
-
 /* where emulated machine thinks mouse is */
 EXPORTVAR(uint16_t, CurMouseV)
 EXPORTVAR(uint16_t, CurMouseH)

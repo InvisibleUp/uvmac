@@ -39,7 +39,6 @@
 #define AutoTimeZone 1
 
 // Variable versions of configuration flags
-extern bool EnableAutoSlow;
 extern uint16_t vMacScreenHeight;
 extern uint16_t vMacScreenWidth;
 extern uint16_t vMacScreenDepth;

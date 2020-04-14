@@ -44,7 +44,6 @@
 #define RomStartCheckSum        1  // Let emu verify ROM chksum on startup
 #define EnableDragDrop          1  // Enable drag+drop of disk images
 #define SaveDialogEnable        1  // Allow user to choose loc. for new disks
-#define EnableAltKeysMode       0  // Vim-like keybindings. TODO: remove
 
 #define WantInitFullScreen      0  // Start with full-screen mode on
 #define MayFullScreen           1  // Full screen is an option
@@ -54,12 +53,12 @@
 #define WindowScale             2  // Magnification power (TODO: make a var!!!)
 
 #define WantInitRunInBackground 1  // Start running in background (boolean)
-#define WantInitNotAutoSlow     0  // Deprecated/ TODO: remove
 #define WantInitSpeedValue      0  // Initial clock multiplier (0 = 1x)
 #define WantEnblCtrlInt         1  // Enable interrupt key (from prog. switch)
 #define WantEnblCtrlRst         1  // Enable reset key (from prog. switch)
 #define WantEnblCtrlKtg         1  // Emulated control key toggle via Ctrl+K
 
+#define NeedRequestIthDisk      0  // Use Ctrl+num to insert "./disk#.dsk"
 #define NeedRequestInsertDisk   1  // Disk open dialog on Ctrl+O
 #define NeedDoMoreCommandsMsg   1  // Special > More Commands tutorial message
 #define NeedDoAboutMsg          1  // About mini vMac message

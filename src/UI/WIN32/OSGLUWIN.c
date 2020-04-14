@@ -449,31 +449,6 @@ LOCALFUNC bool MoveMouse(int16_t h, int16_t v)
 	return IsOk;
 }
 
-#if EnableFSMouseMotion
-LOCALPROC StartSaveMouseMotion(void)
-{
-	if (! HaveMouseMotion) {
-		if (MoveMouse(ViewHStart + (ViewHSize / 2),
-				ViewVStart + (ViewVSize / 2)))
-		{
-			SavedMouseH = ViewHStart + (ViewHSize / 2);
-			SavedMouseV = ViewVStart + (ViewVSize / 2);
-			HaveMouseMotion = true;
-		}
-	}
-}
-#endif
-
-#if EnableFSMouseMotion
-LOCALPROC StopSaveMouseMotion(void)
-{
-	if (HaveMouseMotion) {
-		(void) MoveMouse(CurMouseH, CurMouseV);
-		HaveMouseMotion = false;
-	}
-}
-#endif
-
 LOCALVAR bool MouseCaptured = false;
 
 LOCALPROC MouseCaptureSet(bool v)
@@ -2663,9 +2638,6 @@ LOCALPROC Sound_SecondNotify(void)
 #if MayFullScreen
 LOCALPROC GrabTheMachine(void)
 {
-#if EnableFSMouseMotion
-	StartSaveMouseMotion();
-#endif
 #if EnableChangePriority
 	if ((uint8_t) -1 == SpeedValue) {
 		RaisePriority();
@@ -2682,9 +2654,6 @@ LOCALPROC UnGrabTheMachine(void)
 {
 #if EnableGrabSpecialKeys
 	UnGrabSpecialKeys();
-#endif
-#if EnableFSMouseMotion
-	StopSaveMouseMotion();
 #endif
 #if EnableChangePriority
 	LowerPriority();
@@ -3504,11 +3473,6 @@ LOCALPROC DrawChangesAndClear(void)
 
 GLOBALOSGLUPROC DoneWithDrawingForTick(void)
 {
-#if EnableFSMouseMotion
-	if (HaveMouseMotion) {
-		AutoScrollScreen();
-	}
-#endif
 	DrawChangesAndClear();
 }
 
@@ -3517,38 +3481,6 @@ LOCALFUNC bool InitTheCursor(void)
 	SetCursor(LoadCursor(NULL, IDC_ARROW));
 	return true;
 }
-
-#if EnableFSMouseMotion
-LOCALPROC MouseConstrain(void)
-{
-	int16_t shiftdh;
-	int16_t shiftdv;
-
-	if (SavedMouseH < ViewHStart + (ViewHSize / 4)) {
-		shiftdh = ViewHSize / 2;
-	} else if (SavedMouseH > ViewHStart + ViewHSize - (ViewHSize / 4))
-	{
-		shiftdh = - ViewHSize / 2;
-	} else {
-		shiftdh = 0;
-	}
-	if (SavedMouseV < ViewVStart + (ViewVSize / 4)) {
-		shiftdv = ViewVSize / 2;
-	} else if (SavedMouseV > ViewVStart + ViewVSize - (ViewVSize / 4))
-	{
-		shiftdv = - ViewVSize / 2;
-	} else {
-		shiftdv = 0;
-	}
-	if ((shiftdh != 0) || (shiftdv != 0)) {
-		SavedMouseH += shiftdh;
-		SavedMouseV += shiftdv;
-		if (! MoveMouse(SavedMouseH, SavedMouseV)) {
-			HaveMouseMotion = false;
-		}
-	}
-}
-#endif
 
 LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 {
@@ -3579,15 +3511,6 @@ LOCALPROC MousePositionNotify(LONG NewMousePosx, LONG NewMousePosy)
 		NewMousePosx += ViewHStart;
 		NewMousePosy += ViewVStart;
 	}
-#endif
-
-#if EnableFSMouseMotion
-	if (HaveMouseMotion) {
-		MousePositionSetDelta(NewMousePosx - SavedMouseH,
-			NewMousePosy - SavedMouseV);
-		SavedMouseH = NewMousePosx;
-		SavedMouseV = NewMousePosy;
-	} else
 #endif
 	{
 		if (NewMousePosx < 0) {
@@ -5088,12 +5011,6 @@ LOCALPROC CheckForSavedTasks(void)
 		/* attempt cleanup, EvtQNeedRecover may get set again */
 		EvtQTryRecoverFromFull();
 	}
-
-#if EnableFSMouseMotion
-	if (HaveMouseMotion) {
-		MouseConstrain();
-	}
-#endif
 
 	if (RequestMacOff) {
 		RequestMacOff = false;

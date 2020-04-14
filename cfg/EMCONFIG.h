@@ -7,6 +7,9 @@
 	you know what you're doing.
 */
 
+#ifndef EMCONFIG_H
+#define EMCONFIG_H
+
 #define EmClassicKbrd 1
 #define EmADB 0
 #define EmRTC 1
@@ -168,3 +171,5 @@ enum {
 
 #define WantDisasm 0
 #define ExtraAbnormalReports 0
+
+#endif

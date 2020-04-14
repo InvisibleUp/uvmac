@@ -4,6 +4,9 @@
 	Hopefully, one day, we can remove this file entirely.
 */
 
+#ifndef CNFGRAPI_H
+#define CNFGRAPI_H
+
 // TODO: replace below with struct of variable options
 #define RomFileName "vMac.ROM"
 #define kCheckSumRom_Size 0x00020000
@@ -74,3 +77,5 @@
 #define kStrHomePage "https://github.com/invisibleup/minivmac"
 
 #define kBldOpts "obsolete"
+
+#endif

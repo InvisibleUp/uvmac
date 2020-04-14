@@ -23,6 +23,7 @@ SrcFiles := \
 	src/HW/KBRD/KBRDEMDV.c \
 	src/HW/SOUND/SNDEMDEV.c \
 	src/UTIL/DATE2SEC.c \
+	src/UI/COMOSGLU.c \
 
 windows :
 	mkdir -p "bld/"

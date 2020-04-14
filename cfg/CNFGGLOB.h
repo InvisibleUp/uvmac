@@ -5,6 +5,9 @@
 	Hopefully, one day, we can remove this file entirely.
 */
 
+#ifndef CNFGGLOB_H
+#define CNFGGLOB_H
+
 #include <stdint.h>
 
 #define MayInline inline __attribute__((always_inline))
@@ -31,7 +34,7 @@
 #define IncludePbufs 1
 #define NumPbufs 4
 
-#define EnableMouseMotion 1
+#define EnableMouseMotion 0
 
 #define IncludeHostTextClipExchange 1
 #define EmLocalTalk 0
@@ -42,3 +45,5 @@
 extern uint16_t vMacScreenHeight;
 extern uint16_t vMacScreenWidth;
 extern uint16_t vMacScreenDepth;
+
+#endif

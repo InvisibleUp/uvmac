@@ -17,6 +17,8 @@
 #ifndef GLOBGLUE_H
 #define GLOBGLUE_H
 
+#include "CNFGRAPI.h"
+#include "EMCONFIG.h"
 
 #define kEmMd_Twig43      0
 #define kEmMd_Twiggy      1

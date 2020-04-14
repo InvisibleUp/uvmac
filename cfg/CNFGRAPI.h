@@ -4,15 +4,15 @@
 	Hopefully, one day, we can remove this file entirely.
 */
 
+// TODO: replace below with struct of variable options
 #define RomFileName "vMac.ROM"
 #define kCheckSumRom_Size 0x00020000
 #define kRomCheckSum1 0x4D1EEEE1
 #define kRomCheckSum2 0x4D1EEAE1
 #define kRomCheckSum3 0x4D1F8172
-#define RomStartCheckSum 1
-#define EnableDragDrop 1
-#define SaveDialogEnable 1
-#define EnableAltKeysMode 0
+
+// Keybindings
+// TODO: Make these variable
 #define MKC_formac_Control MKC_CM
 #define MKC_formac_Command MKC_Command
 #define MKC_formac_Option MKC_Option
@@ -39,28 +39,35 @@
 #define MKC_formac_ROption MKC_Option
 #define MKC_formac_RShift MKC_Shift
 #define MKC_UnMappedKey  MKC_Control
-#define VarFullScreen 1
-#define WantInitFullScreen 0
-#define MayFullScreen 1
-#define MayNotFullScreen 1
-#define WantInitMagnify 0
-#define EnableMagnify 1
-#define WindowScale 2
-#define WantInitRunInBackground 1
-#define WantInitNotAutoSlow 0
-#define WantInitSpeedValue 0
-#define WantEnblCtrlInt 1
-#define WantEnblCtrlRst 1
-#define WantEnblCtrlKtg 1
-#define NeedRequestInsertDisk 1
-#define NeedDoMoreCommandsMsg 1
-#define NeedDoAboutMsg 1
-#define UseControlKeys 1
+
+// Options (please remove / make variable as many as possible!)
+#define RomStartCheckSum        1  // Let emu verify ROM chksum on startup
+#define EnableDragDrop          1  // Enable drag+drop of disk images
+#define SaveDialogEnable        1  // Allow user to choose loc. for new disks
+#define EnableAltKeysMode       0  // Vim-like keybindings. TODO: remove
+
+#define WantInitFullScreen      0  // Start with full-screen mode on
+#define MayFullScreen           1  // Full screen is an option
+#define MayNotFullScreen        1  // Windowed is an option
+
+#define WantInitMagnify         0  // Start magnified (boolean)
+#define WindowScale             2  // Magnification power (TODO: make a var!!!)
+
+#define WantInitRunInBackground 1  // Start running in background (boolean)
+#define WantInitNotAutoSlow     0  // Deprecated/ TODO: remove
+#define WantInitSpeedValue      0  // Initial clock multiplier (0 = 1x)
+#define WantEnblCtrlInt         1  // Enable interrupt key (from prog. switch)
+#define WantEnblCtrlRst         1  // Enable reset key (from prog. switch)
+#define WantEnblCtrlKtg         1  // Emulated control key toggle via Ctrl+K
+
+#define NeedRequestInsertDisk   1  // Disk open dialog on Ctrl+O
+#define NeedDoMoreCommandsMsg   1  // Special > More Commands tutorial message
+#define NeedDoAboutMsg          1  // About mini vMac message
+#define UseControlKeys          1  // Enable Control Mode (options mode)
+#define NeedIntlChars           0  // Include int'l chars for Control Mode
+#define ItnlKyBdFix             1  // force keyboard to match Mac layout
 
 /* version and other info to display to user */
-
-#define NeedIntlChars 0
-#define ItnlKyBdFix 1
 #define kStrAppName "micro vMac"
 #define kAppVariationStr "uvmac-0.37.0-wx64"
 #define kStrCopyrightYear "2020"

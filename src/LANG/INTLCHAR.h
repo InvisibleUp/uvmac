@@ -31,6 +31,12 @@
 	ClStrAppendSubstCStr encoding
 	HTML character entity
 */
+#ifndef INTLCHAR_H
+#define INTLCHAR_H
+
+#include "UI/COMOSGLU.h"
+#include "UI/MYOSGLUE.h"
+
 LOCALVAR const uint8_t CellData[] = {
 	/* kCellUpA 101 0x41 0x0041 'A' 'A' A */
 	0x00, 0x00, 0x00, 0x3C, 0x42, 0x42, 0x42, 0x7E,
@@ -2150,3 +2156,5 @@ LOCALPROC ClStrFromSubstCStr(int *L, uint8_t *r, char *s)
 		}
 	}
 }
+
+#endif // INTLCHAR_H

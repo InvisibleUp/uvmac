@@ -5,3 +5,4 @@ bld
 *.dsk
 *.ROM
 *.kdev4
+*.pdb

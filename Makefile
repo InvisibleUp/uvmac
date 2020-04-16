@@ -1,5 +1,5 @@
 # Makefile
-# Currently only builds Mac Plus emulator for Windows x64
+# Currently only builds Mac Plus emulator for Windows x64 or Linux X11
 
 CC := gcc
 CCFLAGS := -O2 -Wall -Wmissing-prototypes -Wno-uninitialized -Wundef -Wstrict-prototypes -Icfg/ -Isrc/
@@ -24,11 +24,18 @@ SrcFiles := \
 	src/HW/SOUND/SNDEMDEV.c \
 	src/UTIL/DATE2SEC.c \
 	src/UI/COMOSGLU.c \
+	src/UI/CONTROLM.c \
+	
+Win32Files := \
+	src/UI/WIN32/OSGLUWIN.c \
+	src/UI/WIN32/INTLKBRD.c \
+	src/UI/WIN32/DBGLOG.c \
+	src/UI/WIN32/KEYBOARD.c \
 
 windows :
 	mkdir -p "bld/"
 	windres -i "src/UI/WIN32/main.rc" --input-format=rc -o "bld/main.res" -O coff  --include-dir "src/"
-	$(CC) -o "microvmac.exe" $(SrcFiles) "src/UI/WIN32/OSGLUWIN.c" \
+	$(CC) -o "microvmac.exe" $(SrcFiles) $(Win32Files) \
 	"bld/main.res" $(CCFLAGS) -mwindows -lwinmm -lole32 -luuid 
 
 linux : 

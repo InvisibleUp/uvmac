@@ -164,11 +164,11 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
+GLOBALOSGLUFUNC MacErr_t vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
 	uint32_t NewSony_Count = 0;
 
@@ -191,9 +191,9 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	return err; /*& figure out what really to return &*/
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
+GLOBALOSGLUFUNC MacErr_t vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
 	long v;
 
@@ -208,7 +208,7 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 	return err; /*& figure out what really to return &*/
 }
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
+LOCALFUNC MacErr_t vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	FILE *refnum = Drives[Drive_No];
 
@@ -233,13 +233,13 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 	return mnvm_noErr;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEject(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, false);
 }
 
 #if IncludeSonyNew
-GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEjectDelete(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, true);
 }
@@ -257,7 +257,7 @@ LOCALPROC UnInitDrives(void)
 }
 
 #if IncludeSonyGetName
-GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t vSonyGetName(tDrive Drive_No, tPbuf *r)
 {
 	char *drivepath = DriveNames[Drive_No];
 	if (NULL == drivepath) {
@@ -421,9 +421,9 @@ LOCALPROC MakeNewDiskAtDefault(uint32_t L)
 
 /* --- ROM --- */
 
-LOCALFUNC tMacErr LoadMacRomFrom(char *path)
+LOCALFUNC MacErr_t LoadMacRomFrom(char *path)
 {
-	tMacErr err;
+	MacErr_t err;
 	FILE *ROM_File;
 	int File_Size;
 
@@ -453,7 +453,7 @@ LOCALFUNC tMacErr LoadMacRomFrom(char *path)
 
 LOCALFUNC bool LoadMacRom(void)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	if (mnvm_fnfErr == (err = LoadMacRomFrom(RomFileName)))
 	{

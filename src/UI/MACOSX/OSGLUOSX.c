@@ -642,11 +642,11 @@ LOCALPROC PStrFromChar(ps3p r, char x)
 
 #define CheckSavetMacErr(result) (mnvm_noErr == (err = (result)))
 	/*
-		where 'err' is a variable of type tMacErr in the function
+		where 'err' is a variable of type MacErr_t in the function
 		this is used in
 	*/
 
-#define To_tMacErr(result) ((tMacErr)(uint16_t)(result))
+#define To_tMacErr(result) ((MacErr_t)(uint16_t)(result))
 
 #define CheckSaveMacErr(result) (CheckSavetMacErr(To_tMacErr(result)))
 
@@ -674,11 +674,11 @@ LOCALPROC UniCharStrFromSubstCStr(int *L, UniChar *x, char *s)
 
 #define NotAfileRef (-1)
 
-LOCALFUNC tMacErr MakeFSRefUniChar(FSRef *ParentRef,
+LOCALFUNC MacErr_t MakeFSRefUniChar(FSRef *ParentRef,
 	UniCharCount fileNameLength, const UniChar *fileName,
 	bool *isFolder, FSRef *ChildRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	Boolean isFolder0;
 	Boolean isAlias;
 
@@ -694,7 +694,7 @@ LOCALFUNC tMacErr MakeFSRefUniChar(FSRef *ParentRef,
 	return err;
 }
 
-LOCALFUNC tMacErr MakeFSRefC(FSRef *ParentRef, char *fileName,
+LOCALFUNC MacErr_t MakeFSRefC(FSRef *ParentRef, char *fileName,
 	bool *isFolder, FSRef *ChildRef)
 {
 	int L;
@@ -706,10 +706,10 @@ LOCALFUNC tMacErr MakeFSRefC(FSRef *ParentRef, char *fileName,
 }
 
 #if UseActvFile
-LOCALFUNC tMacErr OpenNamedFileInFolderRef(FSRef *ParentRef,
+LOCALFUNC MacErr_t OpenNamedFileInFolderRef(FSRef *ParentRef,
 	char *fileName, short *refnum)
 {
-	tMacErr err;
+	MacErr_t err;
 	bool isFolder;
 	FSRef ChildRef;
 	HFSUniStr255 forkName;
@@ -728,10 +728,10 @@ LOCALFUNC tMacErr OpenNamedFileInFolderRef(FSRef *ParentRef,
 #endif
 
 #if dbglog_HAVE || UseActvFile
-LOCALFUNC tMacErr OpenWriteNamedFileInFolderRef(FSRef *ParentRef,
+LOCALFUNC MacErr_t OpenWriteNamedFileInFolderRef(FSRef *ParentRef,
 	char *fileName, short *refnum)
 {
-	tMacErr err;
+	MacErr_t err;
 	bool isFolder;
 	FSRef ChildRef;
 	HFSUniStr255 forkName;
@@ -757,10 +757,10 @@ LOCALFUNC tMacErr OpenWriteNamedFileInFolderRef(FSRef *ParentRef,
 }
 #endif
 
-LOCALFUNC tMacErr FindNamedChildRef(FSRef *ParentRef,
+LOCALFUNC MacErr_t FindNamedChildRef(FSRef *ParentRef,
 	char *ChildName, FSRef *ChildRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	bool isFolder;
 
 	if (CheckSavetMacErr(MakeFSRefC(ParentRef, ChildName,
@@ -775,10 +775,10 @@ LOCALFUNC tMacErr FindNamedChildRef(FSRef *ParentRef,
 }
 
 #if UseActvFile || (IncludeSonyNew && ! SaveDialogEnable)
-LOCALFUNC tMacErr FindOrMakeNamedChildRef(FSRef *ParentRef,
+LOCALFUNC MacErr_t FindOrMakeNamedChildRef(FSRef *ParentRef,
 	char *ChildName, FSRef *ChildRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	bool isFolder;
 	int L;
 	UniChar x[ClStrMaxLength];
@@ -857,7 +857,7 @@ LOCALVAR SInt16 dbglog_File = NotAfileRef;
 
 LOCALFUNC bool dbglog_open0(void)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	err = OpenWriteNamedFileInFolderRef(&DatDirRef,
 		"dbglog.txt", &dbglog_File);
@@ -974,12 +974,12 @@ LOCALFUNC bool CheckDateTime(void)
 
 LOCALVAR SInt16 Drives[NumDrives]; /* open disk image files */
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
+GLOBALOSGLUFUNC MacErr_t vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
 	ByteCount actualCount;
-	tMacErr result;
+	MacErr_t result;
 
 	if (IsWrite) {
 		result = To_tMacErr(FSWriteFork(
@@ -1006,16 +1006,16 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	return result;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
+GLOBALOSGLUFUNC MacErr_t vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
 	SInt64 forkSize;
-	tMacErr err = To_tMacErr(
+	MacErr_t err = To_tMacErr(
 		FSGetForkSize(Drives[Drive_No], &forkSize));
 	*Sony_Count = forkSize;
 	return err;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEject(tDrive Drive_No)
 {
 	SInt16 refnum = Drives[Drive_No];
 	Drives[Drive_No] = NotAfileRef;
@@ -1028,11 +1028,11 @@ GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
 }
 
 #if IncludeSonyNew
-GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEjectDelete(tDrive Drive_No)
 {
 	FSRef ref;
-	tMacErr err0;
-	tMacErr err;
+	MacErr_t err0;
+	MacErr_t err;
 
 	err0 = To_tMacErr(FSGetForkCBInfo(Drives[Drive_No], 0,
 		NULL /* iterator */,
@@ -1053,12 +1053,12 @@ GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
 #endif
 
 #if IncludeSonyGetName
-GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t vSonyGetName(tDrive Drive_No, tPbuf *r)
 {
 	FSRef ref;
 	HFSUniStr255 outName;
 	CFStringRef DiskName;
-	tMacErr err;
+	MacErr_t err;
 
 	if (CheckSaveMacErr(FSGetForkCBInfo(Drives[Drive_No], 0,
 		NULL /* iterator */,
@@ -1105,9 +1105,9 @@ GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
+GLOBALOSGLUFUNC MacErr_t HTCEexport(tPbuf i)
 {
-	tMacErr err;
+	MacErr_t err;
 	ScrapRef scrapRef;
 
 	if (CheckSaveMacErr(ClearCurrentScrap()))
@@ -1129,9 +1129,9 @@ GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t HTCEimport(tPbuf *r)
 {
-	tMacErr err;
+	MacErr_t err;
 	ScrapRef scrap;
 	ScrapFlavorFlags flavorFlags;
 	Size byteCount;
@@ -2889,7 +2889,7 @@ LOCALPROC UnInitDrives(void)
 	}
 }
 
-LOCALFUNC tMacErr Sony_Insert0(SInt16 refnum, bool locked)
+LOCALFUNC MacErr_t Sony_Insert0(SInt16 refnum, bool locked)
 {
 	tDrive Drive_No;
 
@@ -2903,7 +2903,7 @@ LOCALFUNC tMacErr Sony_Insert0(SInt16 refnum, bool locked)
 	}
 }
 
-LOCALPROC ReportStandardOpenDiskError(tMacErr err)
+LOCALPROC ReportStandardOpenDiskError(MacErr_t err)
 {
 	if (mnvm_noErr != err) {
 		if (mnvm_tmfoErr == err) {
@@ -2918,9 +2918,9 @@ LOCALPROC ReportStandardOpenDiskError(tMacErr err)
 	}
 }
 
-LOCALFUNC tMacErr InsertADiskFromFSRef(FSRef *theRef)
+LOCALFUNC MacErr_t InsertADiskFromFSRef(FSRef *theRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	HFSUniStr255 forkName;
 	SInt16 refnum;
 	bool locked = false;
@@ -2947,9 +2947,9 @@ LOCALFUNC tMacErr InsertADiskFromFSRef(FSRef *theRef)
 	return err;
 }
 
-LOCALFUNC tMacErr LoadMacRomFromRefNum(SInt16 refnum)
+LOCALFUNC MacErr_t LoadMacRomFromRefNum(SInt16 refnum)
 {
-	tMacErr err;
+	MacErr_t err;
 	ByteCount actualCount;
 
 	if (mnvm_noErr != (err = To_tMacErr(
@@ -2969,9 +2969,9 @@ LOCALFUNC tMacErr LoadMacRomFromRefNum(SInt16 refnum)
 	return err;
 }
 
-LOCALFUNC tMacErr LoadMacRomFromFSRef(FSRef *theRef)
+LOCALFUNC MacErr_t LoadMacRomFromFSRef(FSRef *theRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	HFSUniStr255 forkName;
 	SInt16 refnum;
 
@@ -2989,9 +2989,9 @@ LOCALFUNC tMacErr LoadMacRomFromFSRef(FSRef *theRef)
 	return err;
 }
 
-LOCALFUNC tMacErr InsertADiskFromFSRef1(FSRef *theRef)
+LOCALFUNC MacErr_t InsertADiskFromFSRef1(FSRef *theRef)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	if (! ROM_loaded) {
 		err = LoadMacRomFromFSRef(theRef);
@@ -3002,9 +3002,9 @@ LOCALFUNC tMacErr InsertADiskFromFSRef1(FSRef *theRef)
 	return err;
 }
 
-LOCALFUNC tMacErr InsertDisksFromDocList(AEDescList *docList)
+LOCALFUNC MacErr_t InsertDisksFromDocList(AEDescList *docList)
 {
-	tMacErr err = mnvm_noErr;
+	MacErr_t err = mnvm_noErr;
 	long itemsInList;
 	long index;
 	AEKeyword keyword;
@@ -3030,10 +3030,10 @@ label_fail:
 	return err;
 }
 
-LOCALFUNC tMacErr InsertADiskFromNameEtc(FSRef *ParentRef,
+LOCALFUNC MacErr_t InsertADiskFromNameEtc(FSRef *ParentRef,
 	char *fileName)
 {
-	tMacErr err;
+	MacErr_t err;
 	bool isFolder;
 	FSRef ChildRef;
 
@@ -3053,10 +3053,10 @@ LOCALFUNC tMacErr InsertADiskFromNameEtc(FSRef *ParentRef,
 }
 
 #if IncludeSonyNew
-LOCALFUNC tMacErr WriteZero(SInt16 refnum, uint32_t L)
+LOCALFUNC MacErr_t WriteZero(SInt16 refnum, uint32_t L)
 {
 #define ZeroBufferSize 2048
-	tMacErr err = mnvm_noErr;
+	MacErr_t err = mnvm_noErr;
 	uint32_t i;
 	uint8_t buffer[ZeroBufferSize];
 	ByteCount actualCount;
@@ -3085,10 +3085,10 @@ label_fail:
 #endif
 
 #if IncludeSonyNew
-LOCALFUNC tMacErr CreateFileCFStringRef(FSRef *saveFileParent,
+LOCALFUNC MacErr_t CreateFileCFStringRef(FSRef *saveFileParent,
 	CFStringRef saveFileName, FSRef *NewRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	UniChar buffer[255];
 
 	CFIndex len = CFStringGetLength(saveFileName);
@@ -3111,10 +3111,10 @@ LOCALFUNC tMacErr CreateFileCFStringRef(FSRef *saveFileParent,
 #endif
 
 #if IncludeSonyNew
-LOCALFUNC tMacErr MakeNewDisk0(FSRef *saveFileParent,
+LOCALFUNC MacErr_t MakeNewDisk0(FSRef *saveFileParent,
 	CFStringRef saveFileName, uint32_t L)
 {
-	tMacErr err;
+	MacErr_t err;
 	FSRef NewRef;
 	HFSUniStr255 forkName;
 	SInt16 refnum;
@@ -3331,10 +3331,10 @@ LOCALPROC MakeNewDisk(uint32_t L, CFStringRef NewDiskName)
 }
 #endif
 
-LOCALFUNC tMacErr LoadMacRomFromNameFolder(FSRef *ParentRef,
+LOCALFUNC MacErr_t LoadMacRomFromNameFolder(FSRef *ParentRef,
 	char *fileName)
 {
-	tMacErr err;
+	MacErr_t err;
 	bool isFolder;
 	FSRef ChildRef;
 
@@ -3348,9 +3348,9 @@ LOCALFUNC tMacErr LoadMacRomFromNameFolder(FSRef *ParentRef,
 	return err;
 }
 
-LOCALFUNC tMacErr LoadMacRomFromPrefDir(void)
+LOCALFUNC MacErr_t LoadMacRomFromPrefDir(void)
 {
-	tMacErr err;
+	MacErr_t err;
 	FSRef PrefRef;
 	FSRef GryphelRef;
 	FSRef ROMsRef;
@@ -3372,7 +3372,7 @@ LOCALFUNC tMacErr LoadMacRomFromPrefDir(void)
 
 LOCALFUNC bool LoadMacRom(void)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	if (mnvm_fnfErr == (err =
 		LoadMacRomFromNameFolder(&DatDirRef, RomFileName)))
@@ -3386,7 +3386,7 @@ LOCALFUNC bool LoadMacRom(void)
 
 LOCALFUNC bool Sony_InsertIth(int i)
 {
-	tMacErr err = mnvm_noErr;
+	MacErr_t err = mnvm_noErr;
 
 	if ((i > 9) || ! FirstFreeDisk(nullpr)) {
 		return false;
@@ -3423,9 +3423,9 @@ LOCALFUNC bool LoadInitialImages(void)
 
 #define ActvCodeFileName "act_1"
 
-LOCALFUNC tMacErr OpenActvCodeFile(SInt16 *refnum)
+LOCALFUNC MacErr_t OpenActvCodeFile(SInt16 *refnum)
 {
-	tMacErr err;
+	MacErr_t err;
 	FSRef PrefRef;
 	FSRef GryphelRef;
 	FSRef ActRef;
@@ -3445,9 +3445,9 @@ LOCALFUNC tMacErr OpenActvCodeFile(SInt16 *refnum)
 	return err;
 }
 
-LOCALFUNC tMacErr ActvCodeFileLoad(uint8_t * p)
+LOCALFUNC MacErr_t ActvCodeFileLoad(uint8_t * p)
 {
-	tMacErr err;
+	MacErr_t err;
 	SInt16 refnum;
 
 	if (CheckSavetMacErr(OpenActvCodeFile(&refnum))) {
@@ -3460,9 +3460,9 @@ LOCALFUNC tMacErr ActvCodeFileLoad(uint8_t * p)
 	return err;
 }
 
-LOCALFUNC tMacErr ActvCodeFileSave(uint8_t * p)
+LOCALFUNC MacErr_t ActvCodeFileSave(uint8_t * p)
 {
-	tMacErr err;
+	MacErr_t err;
 	SInt16 refnum;
 	FSRef PrefRef;
 	FSRef GryphelRef;
@@ -3683,9 +3683,9 @@ static pascal OSErr GlobalTrackingHandler(DragTrackingMessage message,
 	return noErr;
 }
 
-LOCALFUNC tMacErr InsertADiskOrAliasFromFSRef(FSRef *theRef)
+LOCALFUNC MacErr_t InsertADiskOrAliasFromFSRef(FSRef *theRef)
 {
-	tMacErr err;
+	MacErr_t err;
 	Boolean isFolder;
 	Boolean isAlias;
 
@@ -3698,9 +3698,9 @@ LOCALFUNC tMacErr InsertADiskOrAliasFromFSRef(FSRef *theRef)
 	return err;
 }
 
-LOCALFUNC tMacErr InsertADiskOrAliasFromSpec(FSSpec *spec)
+LOCALFUNC MacErr_t InsertADiskOrAliasFromSpec(FSSpec *spec)
 {
-	tMacErr err;
+	MacErr_t err;
 	FSRef newRef;
 
 	if (CheckSaveMacErr(FSpMakeFSRef(spec, &newRef)))

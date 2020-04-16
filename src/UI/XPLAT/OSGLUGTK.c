@@ -149,7 +149,7 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
+GLOBALOSGLUFUNC MacErr_t vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
@@ -170,14 +170,14 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	return mnvm_noErr; /*& figure out what really to return &*/
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
+GLOBALOSGLUFUNC MacErr_t vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
 	fseek(Drives[Drive_No], 0, SEEK_END);
 	*Sony_Count = ftell(Drives[Drive_No]);
 	return mnvm_noErr; /*& figure out what really to return &*/
 }
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
+LOCALFUNC MacErr_t vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	DiskEjectedNotify(Drive_No);
 
@@ -188,7 +188,7 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 	return mnvm_noErr;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEject(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, false);
 }
@@ -242,9 +242,9 @@ LOCALFUNC bool Sony_Insert1(char *drivepath, bool silentfail)
 	return false;
 }
 
-LOCALFUNC tMacErr LoadMacRomFrom(char *path)
+LOCALFUNC MacErr_t LoadMacRomFrom(char *path)
 {
-	tMacErr err;
+	MacErr_t err;
 	FILE *ROM_File;
 	int File_Size;
 
@@ -319,7 +319,7 @@ LOCALVAR char *rom_path = NULL;
 
 LOCALFUNC bool LoadMacRom(void)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	if ((NULL == rom_path)
 		|| (mnvm_fnfErr == (err = LoadMacRomFrom(rom_path))))

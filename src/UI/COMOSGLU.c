@@ -99,9 +99,9 @@ GLOBALPROC PbufDisposeNotify(tPbuf Pbuf_No)
 	PbufAllocatedMask &= ~ ((uint32_t)1 << Pbuf_No);
 }
 
-GLOBALOSGLUFUNC tMacErr CheckPbuf(tPbuf Pbuf_No)
+GLOBALOSGLUFUNC MacErr_t CheckPbuf(tPbuf Pbuf_No)
 {
-	tMacErr result;
+	MacErr_t result;
 
 	if (Pbuf_No >= NumPbufs) {
 		result = mnvm_nsDrvErr;
@@ -114,9 +114,9 @@ GLOBALOSGLUFUNC tMacErr CheckPbuf(tPbuf Pbuf_No)
 	return result;
 }
 
-GLOBALOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, uint32_t *Count)
+GLOBALOSGLUFUNC MacErr_t PbufGetSize(tPbuf Pbuf_No, uint32_t *Count)
 {
-	tMacErr result = CheckPbuf(Pbuf_No);
+	MacErr_t result = CheckPbuf(Pbuf_No);
 
 	if (mnvm_noErr == result) {
 		*Count = PbufSize[Pbuf_No];

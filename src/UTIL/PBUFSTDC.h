@@ -24,10 +24,10 @@ LOCALVAR void *PbufDat[NumPbufs];
 #endif
 
 #if IncludePbufs
-LOCALFUNC tMacErr PbufNewFromPtr(void *p, uint32_t count, tPbuf *r)
+LOCALFUNC MacErr_t PbufNewFromPtr(void *p, uint32_t count, tPbuf *r)
 {
 	tPbuf i;
-	tMacErr err;
+	MacErr_t err;
 
 	if (! FirstFreePbuf(&i)) {
 		free(p);
@@ -54,9 +54,9 @@ LOCALPROC PbufKillToPtr(void **p, uint32_t *count, tPbuf r)
 #endif
 
 #if IncludePbufs
-GLOBALOSGLUFUNC tMacErr PbufNew(uint32_t count, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t PbufNew(uint32_t count, tPbuf *r)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	void *p = calloc(1, count);
 	if (NULL != p) {

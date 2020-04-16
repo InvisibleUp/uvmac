@@ -302,10 +302,10 @@ GLOBALPROC DoReportAbnormalID(uint16_t id
 
 
 #if IncludeExtnPbufs
-LOCALFUNC tMacErr PbufTransferVM(CPTR Buffera,
+LOCALFUNC MacErr_t PbufTransferVM(CPTR Buffera,
 	tPbuf i, uint32_t offset, uint32_t count, bool IsWrite)
 {
-	tMacErr result;
+	MacErr_t result;
 	uint32_t contig;
 	uint8_t * Buffer;
 
@@ -342,7 +342,7 @@ label_1:
 #if IncludeExtnPbufs
 LOCALPROC ExtnParamBuffers_Access(CPTR p)
 {
-	tMacErr result = mnvm_controlErr;
+	MacErr_t result = mnvm_controlErr;
 
 	switch (get_vm_word(p + ExtnDat_commnd)) {
 		case kCmndVersion:
@@ -423,7 +423,7 @@ LOCALPROC ExtnParamBuffers_Access(CPTR p)
 #if IncludeExtnHostTextClipExchange
 LOCALPROC ExtnHostTextClipExchange_Access(CPTR p)
 {
-	tMacErr result = mnvm_controlErr;
+	MacErr_t result = mnvm_controlErr;
 
 	switch (get_vm_word(p + ExtnDat_commnd)) {
 		case kCmndVersion:
@@ -475,7 +475,7 @@ LOCALPROC ExtnHostTextClipExchange_Access(CPTR p)
 
 LOCALPROC ExtnFind_Access(CPTR p)
 {
-	tMacErr result = mnvm_controlErr;
+	MacErr_t result = mnvm_controlErr;
 
 	switch (get_vm_word(p + ExtnDat_commnd)) {
 		case kCmndVersion:

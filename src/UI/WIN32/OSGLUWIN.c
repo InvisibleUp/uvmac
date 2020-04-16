@@ -270,10 +270,10 @@ LOCALVAR HGLOBAL PbufDat[NumPbufs];
 #endif
 
 #if IncludePbufs
-LOCALFUNC tMacErr PbufNewFromHandle(HGLOBAL h, uint32_t count, tPbuf *r)
+LOCALFUNC MacErr_t PbufNewFromHandle(HGLOBAL h, uint32_t count, tPbuf *r)
 {
 	tPbuf i;
-	tMacErr err;
+	MacErr_t err;
 
 	if (! FirstFreePbuf(&i)) {
 		(void) GlobalFree(h);
@@ -290,10 +290,10 @@ LOCALFUNC tMacErr PbufNewFromHandle(HGLOBAL h, uint32_t count, tPbuf *r)
 #endif
 
 #if IncludePbufs
-GLOBALOSGLUFUNC tMacErr PbufNew(uint32_t count, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t PbufNew(uint32_t count, tPbuf *r)
 {
 	HGLOBAL h;
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	h = GlobalAlloc(GMEM_DDESHARE | GMEM_ZEROINIT, count);
 	if (h != NULL) {
@@ -3578,7 +3578,7 @@ LOCALVAR const uint8_t Native2MacRomanTab[] = {
 };
 
 #if IncludePbufs
-LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
+LOCALFUNC MacErr_t NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 {
 #if UseUni
 #define UnsignedChar uint16_t
@@ -3589,7 +3589,7 @@ LOCALFUNC tMacErr NativeTextToMacRomanPbuf(HGLOBAL x, tPbuf *r)
 	LPTSTR p1;
 	uint32_t n;
 	UnsignedChar v;
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	p1 = GlobalLock(x);
 	if (p1 != NULL) {
@@ -3738,10 +3738,10 @@ LOCALFUNC bool MacRomanTextToNativeHand(tPbuf Pbuf_no,
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
+GLOBALOSGLUFUNC MacErr_t HTCEexport(tPbuf i)
 {
 	HGLOBAL h;
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	if (MacRomanTextToNativeHand(i, false, &h)) {
 		if (! OpenClipboard(MainWnd)) {
@@ -3772,9 +3772,9 @@ GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t HTCEimport(tPbuf *r)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	if (IsClipboardFormatAvailable(CF_TEXT)) {
 		if (! OpenClipboard(MainWnd)) {
@@ -3830,13 +3830,13 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
+GLOBALOSGLUFUNC MacErr_t vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
 	HANDLE refnum;
 	DWORD newL;
-	tMacErr result;
+	MacErr_t result;
 	DWORD BytesTransferred = 0;
 
 	refnum = Drives[Drive_No];
@@ -3895,9 +3895,9 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	return result;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
+GLOBALOSGLUFUNC MacErr_t vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
-	tMacErr result;
+	MacErr_t result;
 	DWORD L;
 
 	L = GetFileSize(Drives[Drive_No], nullpr);
@@ -3911,7 +3911,7 @@ GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 	return result;
 }
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
+LOCALFUNC MacErr_t vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	HANDLE refnum = Drives[Drive_No];
 
@@ -3946,13 +3946,13 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 	return mnvm_noErr;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEject(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, false);
 }
 
 #if IncludeSonyNew
-GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEjectDelete(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, true);
 }
@@ -3996,10 +3996,10 @@ LOCALFUNC bool LPTSTRtoHand(LPTSTR s, HGLOBAL *r)
 #endif
 
 #if IncludeSonyGetName
-GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t vSonyGetName(tDrive Drive_No, tPbuf *r)
 {
 	WIN32_FIND_DATA fd;
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	HGLOBAL ph = DriveNames[Drive_No];
 	if (NULL != ph) {
 		LPTSTR drivepath = GlobalLock(ph);
@@ -4295,12 +4295,12 @@ LOCALFUNC bool FileExists(LPTSTR pathName, bool *directory)
 	return IsOk;
 }
 
-LOCALFUNC tMacErr ResolveNamedChild0(LPTSTR pathName,
+LOCALFUNC MacErr_t ResolveNamedChild0(LPTSTR pathName,
 	LPTSTR Child, bool *directory)
 {
 	size_t newlen;
 	size_t oldlen = _tcslen(pathName);
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	newlen = oldlen + 1 + _tcslen(Child);
 	if (newlen + 1 < _MAX_PATH) {
@@ -4330,7 +4330,7 @@ LOCALFUNC tMacErr ResolveNamedChild0(LPTSTR pathName,
 	return err;
 }
 
-LOCALFUNC tMacErr ResolveNamedChild(LPTSTR pathName,
+LOCALFUNC MacErr_t ResolveNamedChild(LPTSTR pathName,
 	char *Child, bool *directory)
 {
 	TCHAR Child0[ClStrMaxLength + 1];
@@ -4363,7 +4363,7 @@ LOCALFUNC bool MakeNamedChildDir(LPTSTR pathName, char *Child)
 {
 	bool directory;
 	bool IsOk = false;
-	tMacErr err = ResolveNamedChild(pathName, Child, &directory);
+	MacErr_t err = ResolveNamedChild(pathName, Child, &directory);
 
 	if (mnvm_noErr == err) {
 		IsOk = directory;
@@ -4648,7 +4648,7 @@ LOCALPROC MakeNewDisk(uint32_t L, HGLOBAL NewDiskNameDat)
 		LPTSTR p = GlobalLock(NewDiskNameDat);
 
 		if (p != NULL) {
-			tMacErr err = ResolveNamedChild0(pathName, p,
+			MacErr_t err = ResolveNamedChild0(pathName, p,
 				&directory);
 
 			if (mnvm_fnfErr == err) {

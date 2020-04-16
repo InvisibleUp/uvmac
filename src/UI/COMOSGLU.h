@@ -90,8 +90,8 @@ GLOBALVAR uint32_t PbufSize[NumPbufs];
 GLOBALFUNC bool FirstFreePbuf(tPbuf *r);
 GLOBALPROC PbufNewNotify(tPbuf Pbuf_No, uint32_t count);
 GLOBALPROC PbufDisposeNotify(tPbuf Pbuf_No);
-GLOBALOSGLUFUNC tMacErr CheckPbuf(tPbuf Pbuf_No);
-GLOBALOSGLUFUNC tMacErr PbufGetSize(tPbuf Pbuf_No, uint32_t *Count);
+GLOBALOSGLUFUNC MacErr_t CheckPbuf(tPbuf Pbuf_No);
+GLOBALOSGLUFUNC MacErr_t PbufGetSize(tPbuf Pbuf_No, uint32_t *Count);
 #endif
 
 GLOBALFUNC bool FirstFreeDisk(tDrive *Drive_No);

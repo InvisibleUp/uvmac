@@ -445,9 +445,9 @@ LOCALFUNC bool MacRomanFileNameToNSString(tPbuf i,
 #endif
 
 #if IncludeSonyGetName || IncludeHostTextClipExchange
-LOCALFUNC tMacErr NSStringToRomanPbuf(NSString *string, tPbuf *r)
+LOCALFUNC MacErr_t NSStringToRomanPbuf(NSString *string, tPbuf *r)
 {
-	tMacErr v = mnvm_miscErr;
+	MacErr_t v = mnvm_miscErr;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 #if 0
 	const char *s = [s0
@@ -708,11 +708,11 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
+GLOBALOSGLUFUNC MacErr_t vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
 	uint32_t NewSony_Count = 0;
 
@@ -735,9 +735,9 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	return err; /*& figure out what really to return &*/
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
+GLOBALOSGLUFUNC MacErr_t vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
 	long v;
 
@@ -831,7 +831,7 @@ LOCALPROC UnlockFile(FILE *refnum)
 }
 #endif
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
+LOCALFUNC MacErr_t vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	FILE *refnum = Drives[Drive_No];
 
@@ -864,13 +864,13 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 	return mnvm_noErr;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEject(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, false);
 }
 
 #if IncludeSonyNew
-GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEjectDelete(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, true);
 }
@@ -888,9 +888,9 @@ LOCALPROC UnInitDrives(void)
 }
 
 #if IncludeSonyGetName
-GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t vSonyGetName(tDrive Drive_No, tPbuf *r)
 {
-	tMacErr v = mnvm_miscErr;
+	MacErr_t v = mnvm_miscErr;
 	NSString *filePath = DriveNames[Drive_No];
 	if (NULL != filePath) {
 		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -970,11 +970,11 @@ LOCALFUNC bool Sony_Insert2(char *s)
 	}
 }
 
-LOCALFUNC tMacErr LoadMacRomPath(NSString *RomPath)
+LOCALFUNC MacErr_t LoadMacRomPath(NSString *RomPath)
 {
 	FILE *ROM_File;
 	int File_Size;
-	tMacErr err = mnvm_fnfErr;
+	MacErr_t err = mnvm_fnfErr;
 	const char *path = [RomPath fileSystemRepresentation];
 
 	ROM_File = fopen(path, "rb");
@@ -1100,10 +1100,10 @@ LOCALPROC MakeNewDisk0(uint32_t L, NSString *sPath)
 
 /* --- ROM --- */
 
-LOCALFUNC tMacErr LoadMacRomFrom(NSString *parentPath)
+LOCALFUNC MacErr_t LoadMacRomFrom(NSString *parentPath)
 {
 	NSString *RomPath;
-	tMacErr err = mnvm_fnfErr;
+	MacErr_t err = mnvm_fnfErr;
 
 	if (FindNamedChildFilePath(parentPath, RomFileName, &RomPath)) {
 		err = LoadMacRomPath(RomPath);
@@ -1112,17 +1112,17 @@ LOCALFUNC tMacErr LoadMacRomFrom(NSString *parentPath)
 	return err;
 }
 
-LOCALFUNC tMacErr LoadMacRomFromAppDir(void)
+LOCALFUNC MacErr_t LoadMacRomFromAppDir(void)
 {
 	return LoadMacRomFrom(DataPath);
 }
 
-LOCALFUNC tMacErr LoadMacRomFromPrefDir(void)
+LOCALFUNC MacErr_t LoadMacRomFromPrefDir(void)
 {
 	NSString *PrefsPath;
 	NSString *GryphelPath;
 	NSString *RomsPath;
-	tMacErr err = mnvm_fnfErr;
+	MacErr_t err = mnvm_fnfErr;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(
 		NSLibraryDirectory, NSUserDomainMask, YES);
 	if ((nil != paths) && ([paths count] > 0))
@@ -1139,11 +1139,11 @@ LOCALFUNC tMacErr LoadMacRomFromPrefDir(void)
 	return err;
 }
 
-LOCALFUNC tMacErr LoadMacRomFromGlobalDir(void)
+LOCALFUNC MacErr_t LoadMacRomFromGlobalDir(void)
 {
 	NSString *GryphelPath;
 	NSString *RomsPath;
-	tMacErr err = mnvm_fnfErr;
+	MacErr_t err = mnvm_fnfErr;
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(
 		NSApplicationSupportDirectory, NSLocalDomainMask, NO);
 	if ((nil != paths) && ([paths count] > 0))
@@ -1161,7 +1161,7 @@ LOCALFUNC tMacErr LoadMacRomFromGlobalDir(void)
 
 LOCALFUNC bool LoadMacRom(void)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	if (mnvm_fnfErr == (err = LoadMacRomFromAppDir()))
 	if (mnvm_fnfErr == (err = LoadMacRomFromPrefDir()))
@@ -1174,11 +1174,11 @@ LOCALFUNC bool LoadMacRom(void)
 
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
+GLOBALOSGLUFUNC MacErr_t HTCEexport(tPbuf i)
 {
 	void *Buffer;
 	uint32_t L;
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	PbufKillToPtr(&Buffer, &L, i);
 
@@ -1222,9 +1222,9 @@ GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t HTCEimport(tPbuf *r)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
 	NSArray *supportedTypes = [NSArray

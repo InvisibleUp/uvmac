@@ -78,9 +78,9 @@ LOCALVAR char *app_parent = NULL;
 LOCALVAR char *app_name = NULL;
 #endif
 
-LOCALFUNC tMacErr ChildPath(char *x, char *y, char **r)
+LOCALFUNC MacErr_t ChildPath(char *x, char *y, char **r)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	int nx = strlen(x);
 	int ny = strlen(y);
 	{
@@ -108,9 +108,9 @@ LOCALFUNC tMacErr ChildPath(char *x, char *y, char **r)
 }
 
 #if IncludeSonyNew
-LOCALFUNC tMacErr FindOrMakeChild(char *x, char *y, char **r)
+LOCALFUNC MacErr_t FindOrMakeChild(char *x, char *y, char **r)
 {
-	tMacErr err;
+	MacErr_t err;
 	struct stat folder_info;
 	char *r0;
 
@@ -350,7 +350,7 @@ LOCALVAR const uint8_t Native2MacRomanTab[] = {
 #endif
 
 #if IncludePbufs
-LOCALFUNC tMacErr NativeTextToMacRomanPbuf(char *x, tPbuf *r)
+LOCALFUNC MacErr_t NativeTextToMacRomanPbuf(char *x, tPbuf *r)
 {
 	if (NULL == x) {
 		return mnvm_miscErr;
@@ -502,11 +502,11 @@ LOCALPROC InitDrives(void)
 	}
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
+GLOBALOSGLUFUNC MacErr_t vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
 	uint32_t NewSony_Count = 0;
 
@@ -529,9 +529,9 @@ GLOBALOSGLUFUNC tMacErr vSonyTransfer(bool IsWrite, uint8_t * Buffer,
 	return err; /*& figure out what really to return &*/
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
+GLOBALOSGLUFUNC MacErr_t vSonyGetSize(tDrive Drive_No, uint32_t *Sony_Count)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 	FILE *refnum = Drives[Drive_No];
 	long v;
 
@@ -614,7 +614,7 @@ LOCALPROC UnlockFile(FILE *refnum)
 }
 #endif
 
-LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
+LOCALFUNC MacErr_t vSonyEject0(tDrive Drive_No, bool deleteit)
 {
 	FILE *refnum = Drives[Drive_No];
 
@@ -643,13 +643,13 @@ LOCALFUNC tMacErr vSonyEject0(tDrive Drive_No, bool deleteit)
 	return mnvm_noErr;
 }
 
-GLOBALOSGLUFUNC tMacErr vSonyEject(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEject(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, false);
 }
 
 #if IncludeSonyNew
-GLOBALOSGLUFUNC tMacErr vSonyEjectDelete(tDrive Drive_No)
+GLOBALOSGLUFUNC MacErr_t vSonyEjectDelete(tDrive Drive_No)
 {
 	return vSonyEject0(Drive_No, true);
 }
@@ -667,7 +667,7 @@ LOCALPROC UnInitDrives(void)
 }
 
 #if IncludeSonyGetName
-GLOBALOSGLUFUNC tMacErr vSonyGetName(tDrive Drive_No, tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t vSonyGetName(tDrive Drive_No, tPbuf *r)
 {
 	char *drivepath = DriveNames[Drive_No];
 	if (NULL == drivepath) {
@@ -744,9 +744,9 @@ LOCALFUNC bool Sony_Insert1(char *drivepath, bool silentfail)
 	return false;
 }
 
-LOCALFUNC tMacErr LoadMacRomFrom(char *path)
+LOCALFUNC MacErr_t LoadMacRomFrom(char *path)
 {
-	tMacErr err;
+	MacErr_t err;
 	FILE *ROM_File;
 	int File_Size;
 
@@ -894,7 +894,7 @@ LOCALPROC MakeNewDisk(uint32_t L, char *drivename)
 	if (NULL == d) {
 		MakeNewDisk0(L, drivename); /* in current directory */
 	} else {
-		tMacErr err;
+		MacErr_t err;
 		char *t = NULL;
 		char *t2 = NULL;
 
@@ -929,9 +929,9 @@ LOCALVAR char *rom_path = NULL;
 #include <unistd.h>
 #endif
 
-LOCALFUNC tMacErr FindUserHomeFolder(char **r)
+LOCALFUNC MacErr_t FindUserHomeFolder(char **r)
 {
-	tMacErr err;
+	MacErr_t err;
 	char *s;
 #if 0
 	struct passwd *user;
@@ -967,9 +967,9 @@ LOCALFUNC tMacErr FindUserHomeFolder(char **r)
 	return err;
 }
 
-LOCALFUNC tMacErr LoadMacRomFromHome(void)
+LOCALFUNC MacErr_t LoadMacRomFromHome(void)
 {
-	tMacErr err;
+	MacErr_t err;
 	char *s;
 	char *t = NULL;
 	char *t2 = NULL;
@@ -991,9 +991,9 @@ LOCALFUNC tMacErr LoadMacRomFromHome(void)
 }
 
 #ifdef CanGetAppPath
-LOCALFUNC tMacErr LoadMacRomFromAppPar(void)
+LOCALFUNC MacErr_t LoadMacRomFromAppPar(void)
 {
-	tMacErr err;
+	MacErr_t err;
 	char *d =
 #ifdef CanGetAppPath
 		(NULL == d_arg) ? app_parent :
@@ -1019,7 +1019,7 @@ LOCALFUNC tMacErr LoadMacRomFromAppPar(void)
 
 LOCALFUNC bool LoadMacRom(void)
 {
-	tMacErr err;
+	MacErr_t err;
 
 	if ((NULL == rom_path)
 		|| (mnvm_fnfErr == (err = LoadMacRomFrom(rom_path))))
@@ -2477,9 +2477,9 @@ LOCALPROC FreeClipBuffer(void)
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEexport(tPbuf i)
+GLOBALOSGLUFUNC MacErr_t HTCEexport(tPbuf i)
 {
-	tMacErr err = mnvm_miscErr;
+	MacErr_t err = mnvm_miscErr;
 
 	FreeClipBuffer();
 	if (MacRomanTextToNativePtr(i, false,
@@ -2593,7 +2593,7 @@ LOCALPROC HTCEimport_do(void)
 #endif
 
 #if IncludeHostTextClipExchange
-GLOBALOSGLUFUNC tMacErr HTCEimport(tPbuf *r)
+GLOBALOSGLUFUNC MacErr_t HTCEimport(tPbuf *r)
 {
 	HTCEimport_do();
 

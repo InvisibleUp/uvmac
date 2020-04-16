@@ -1136,7 +1136,7 @@ LOCALPROC WarnMsgUnsupportedROM(void)
 }
 #endif
 
-LOCALFUNC tMacErr ROM_IsValid(void)
+LOCALFUNC MacErr_t ROM_IsValid(void)
 {
 #if CheckRomCheckSum
 	uint32_t CheckSum = Calc_Checksum();

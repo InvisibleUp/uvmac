@@ -428,7 +428,7 @@ LOCALFUNC uint16_t Vid_GetMode(void)
 	return (UseColorMode && (vMacScreenDepth != 0)) ? 129 : 128;
 }
 
-LOCALFUNC tMacErr Vid_SetMode(uint16_t v)
+LOCALFUNC MacErr_t Vid_SetMode(uint16_t v)
 {
 	if (
 		(vMacScreenDepth == 0)
@@ -518,7 +518,7 @@ LOCALPROC FillScreenWithGrayPattern(void)
 
 GLOBALPROC ExtnVideo_Access(CPTR p)
 {
-	tMacErr result = mnvm_controlErr;
+	MacErr_t result = mnvm_controlErr;
 
 	switch (get_vm_word(p + ExtnDat_commnd)) {
 		case kCmndVersion:

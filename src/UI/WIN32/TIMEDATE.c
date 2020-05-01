@@ -8,6 +8,31 @@ LOCALVAR DWORD TimeMilliBase;
 LOCALVAR uint32_t NextFracTime;
 bool HaveSetTimeResolution = false;
 
+// API wrapper defines
+
+/*
+	Timer resolution, as used by timeBeginPeriod(), in milliseconds.
+	Setting TimeResolution to 1 seems to drastically slow down
+	the clock in Virtual PC 7.0.2 for Mac. Using 3 is more polite
+	anyway, and should not cause much observable difference.
+	(note that 1/60 of a frame is 16.7 milliseconds)
+*/
+#ifndef TimeResolution
+#define TimeResolution 3
+#endif
+/* 
+	Windows NT: The default precision of the timeGetTime function can be five
+	milliseconds or more, depending on the machine. You can use the
+	timeBeginPeriod and timeEndPeriod functions to increase the precision of
+	timeGetTime. If you do so, the minimum difference between successive values
+	returned by timeGetTime can be as large as the minimum period value set using
+	timeBeginPeriod and timeEndPeriod. Use the QueryPerformanceCounter and
+	QueryPerformanceFrequency functions to measure short time intervals at a high
+	resolution. (MSDN for Visual Studio '97)
+	(TODO: use QueryPerformanceCounter instead? Always works on WinXP+)
+*/
+#define GetTimeMillisec timeGetTime
+
 void IncrNextTime(void)
 {
 	NextFracTime += InvTimeStep;
@@ -27,7 +52,7 @@ bool UpdateTrueEmulatedTime(void)
 	DWORD LatestTime;
 	int32_t TimeDiff;
 
-	LatestTime = timeGetTime();
+	LatestTime = GetTimeMillisec();
 	if (LatestTime != LastTime) {
 		LastTime = LatestTime;
 		TimeDiff = (LatestTime - NextIntTime);
@@ -39,8 +64,10 @@ bool UpdateTrueEmulatedTime(void)
 				InitNextTime();
 
 #if dbglog_TimeStuff
-				dbglog_writelnNum("emulation interrupted",
-					TrueEmulatedTime);
+				dbglog_writelnNum(
+					"emulation interrupted",
+					TrueEmulatedTime
+				);
 #endif
 			} else {
 				do {
@@ -62,6 +89,7 @@ bool UpdateTrueEmulatedTime(void)
 	return false;
 }
 
+// Check that emulated clock equals real clock
 bool CheckDateTime(void)
 {
 	uint32_t NewMacDateInSecond;
@@ -76,6 +104,7 @@ bool CheckDateTime(void)
 	}
 }
 
+// Initialize emulated RTC check
 bool Init60thCheck(void)
 {
 	SYSTEMTIME s;
@@ -84,9 +113,12 @@ bool Init60thCheck(void)
 	DWORD t;
 
 	GetLocalTime(&s);
-	t = timeGetTime();
-	TimeSecBase = Date2MacSeconds(s.wSecond, s.wMinute, s.wHour,
-		s.wDay, s.wMonth, s.wYear);
+	t = GetTimeMillisec();
+	
+	TimeSecBase = Date2MacSeconds(
+		s.wSecond, s.wMinute, s.wHour,
+		s.wDay, s.wMonth, s.wYear
+	);
 	TimeMilliBase = t - s.wMilliseconds;
 
 	if (AutoTimeZone) {
@@ -100,7 +132,7 @@ bool Init60thCheck(void)
 		}
 	}
 
-	LastTime = timeGetTime();
+	LastTime = GetTimeMillisec();
 	InitNextTime();
 
 	OnTrueTime = TrueEmulatedTime;
@@ -112,6 +144,7 @@ bool Init60thCheck(void)
 
 void Timer_Suspend(void)
 {
+	// If using higher-precision timer, stop
 	if (HaveSetTimeResolution) {
 		(void) timeEndPeriod(TimeResolution);
 		HaveSetTimeResolution = false;
@@ -122,16 +155,13 @@ void Timer_Resume(void)
 {
 	TIMECAPS tc;
 
-	if (timeGetDevCaps(&tc, sizeof(TIMECAPS)) == TIMERR_NOERROR)
-	{
-		if ((TimeResolution >= tc.wPeriodMin)
-			&& (TimeResolution <= tc.wPeriodMax))
-		{
-			if (timeBeginPeriod(TimeResolution)
-				== TIMERR_NOERROR)
-			{
-				HaveSetTimeResolution = true;
-			}
-		}
+	// Try to use higher-precision timer
+	if (
+		timeGetDevCaps(&tc, sizeof(TIMECAPS)) == TIMERR_NOERROR &&
+		(TimeResolution >= tc.wPeriodMin) &&
+		(TimeResolution <= tc.wPeriodMax) &&
+		timeBeginPeriod(TimeResolution) == TIMERR_NOERROR
+	) {
+		HaveSetTimeResolution = true;
 	}
 }

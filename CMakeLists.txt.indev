@@ -1,0 +1,24 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(microvmac)
+
+set_property(C_STANDARD 99)
+set_property(C_STANDARD_REQUIRED True)
+
+set(TARGET_PLATFORM AUTO CACHE STRING "Set platform to compile for")
+set_property(CACHE TARGET_PLATFORM PROPERTY STRINGS WINDOWS X11 OSX OS9 NDS GTK SDL SDL2)
+
+include_directories(cfg)
+
+file(GLOB_RECURSE microvmac_SOURCES "src/*.cpp")
+file(GLOB_RECURSE microvmac_HEADERS "src/*.h")
+
+set (microvmac_INCLUDE_DIRS "")
+foreach (_headerFile ${microvmac_HEADERS})
+    get_filename_component(_dir ${_headerFile} PATH)
+    list (APPEND microvmac_INCLUDE_DIRS ${_dir})
+endforeach()
+list(REMOVE_DUPLICATES microvmac_INCLUDE_DIRS)
+
+add_executable(microvmac VERSION 0.37.0 ${microvmac_SOURCES})
+target_include_directories(microvmac PRIVATE ${microvmac_INCLUDE_DIRS})

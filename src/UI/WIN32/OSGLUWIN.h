@@ -28,15 +28,6 @@
 #define EnableGrabSpecialKeys (MayFullScreen && GrabKeysFullScreen)
 #endif /* EnableGrabSpecialKeys */
 
-/*
-	Setting TimeResolution to 1 seems to drastically slow down
-	the clock in Virtual PC 7.0.2 for Mac. Using 3 is more polite
-	anyway, and should not cause much observable difference.
-*/
-#ifndef TimeResolution
-#define TimeResolution 3
-#endif
-
 /* Resource Ids */
 
 #define IDI_VMAC      256

@@ -36,9 +36,10 @@
 #include "incbin/incbin.h"
 #include "PATCHES/ROMEMDEV.h"
 
-#define UseSonyPatch \
+// Temporarily disable due to CMake errors
+/*#define UseSonyPatch \
 	((CurEmMd <= kEmMd_Classic) || (CurEmMd == kEmMd_II) \
-		|| (CurEmMd == kEmMd_IIx))
+		|| (CurEmMd == kEmMd_IIx))*/
 
 #ifndef UseLargeScreenHack
 #define UseLargeScreenHack 0

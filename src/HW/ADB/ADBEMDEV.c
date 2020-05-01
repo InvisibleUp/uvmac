@@ -18,11 +18,13 @@
 	Apple Desktop Bus EMulated DEVice
 */
 
+#if EmADB
+
 #ifndef AllFiles
-#include "SYSDEPNS.h"
-#include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
+#include "SYSDEPNS.h"
 #include "GLOBGLUE.h"
+#include "UI/MYOSGLUE.h"
 #endif
 
 #include "HW/ADB/ADBEMDEV.h"
@@ -212,3 +214,5 @@ GLOBALPROC ADB_Update(void)
 		}
 	}
 }
+
+#endif

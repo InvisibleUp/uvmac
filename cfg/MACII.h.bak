@@ -7,17 +7,15 @@
 	you know what you're doing.
 */
 
-#define EmClassicKbrd 0
-#define EmADB 1
-#define EmRTC 1
-#define EmPMU 0
-#define EmVIA2 1
+//#define EmClassicKbrd 0
+//#define EmADB 1
+//#define EmRTC 1
+//#define EmPMU 0
+//#define EmVIA2 1
 #define Use68020 1
 #define EmFPU 1
 #define EmMMU 0
 #define EmASC 1
-
-#define CurEmMd kEmMd_II
 
 #define kMyClockMult 2
 
@@ -37,22 +35,6 @@
 
 #define EmVidCard 1
 #define kVidROM_Size 0x000800
-
-#define MaxATTListN 20
-#define IncludeExtnPbufs 0
-#define IncludeExtnHostTextClipExchange 0
-
-#define Sony_SupportDC42 1
-#define Sony_SupportTags 0
-#define Sony_WantChecksumsUpdated 0
-#define Sony_VerifyChecksums 0
-#define CaretBlinkTime 0x08
-#define SpeakerVol 0x07
-#define DoubleClickTime 0x08
-#define MenuBlink 0x03
-#define AutoKeyThresh 0x06
-#define AutoKeyRate 0x03
-
 
 /* the Wire variables are 1/0, not true/false */
 
@@ -232,6 +214,3 @@ enum {
 
 #define kROM_Base 0x00800000
 #define kROM_ln2Spc 20
-
-#define WantDisasm 0
-#define ExtraAbnormalReports 0

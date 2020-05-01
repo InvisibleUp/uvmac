@@ -6,3 +6,4 @@ bld
 *.ROM
 *.kdev4
 *.pdb
+build/

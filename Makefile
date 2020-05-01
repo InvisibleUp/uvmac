@@ -31,6 +31,8 @@ Win32Files := \
 	src/UI/WIN32/INTLKBRD.c \
 	src/UI/WIN32/DBGLOG.c \
 	src/UI/WIN32/KEYBOARD.c \
+	src/UI/WIN32/SOUND.c \
+	src/UI/WIN32/TIMEDATE.c \
 
 windows :
 	mkdir -p "bld/"

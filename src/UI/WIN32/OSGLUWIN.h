@@ -6,6 +6,7 @@
 #include "CNFGGLOB.h"
 #include "UI/COMOSGLU.h"
 #include "UI/CONTROLM.h"
+#include "UI/WIN32/SOUND.h"
 
 /* Define the undefined */
 
@@ -26,6 +27,15 @@
 #ifndef EnableGrabSpecialKeys
 #define EnableGrabSpecialKeys (MayFullScreen && GrabKeysFullScreen)
 #endif /* EnableGrabSpecialKeys */
+
+/*
+	Setting TimeResolution to 1 seems to drastically slow down
+	the clock in Virtual PC 7.0.2 for Mac. Using 3 is more polite
+	anyway, and should not cause much observable difference.
+*/
+#ifndef TimeResolution
+#define TimeResolution 3
+#endif
 
 /* Resource Ids */
 
@@ -123,5 +133,27 @@ void GrabSpecialKeys(void);
 void UnGrabSpecialKeys(void);
 void CheckForLostKeyUps(void);
 #endif
+
+/* --- time, date, location --- */
+
+#define dbglog_TimeStuff (0 && dbglog_HAVE)
+
+extern uint32_t TrueEmulatedTime;
+
+#define InvTimeDivPow 16
+#define InvTimeDiv (1 << InvTimeDivPow)
+#define InvTimeDivMask (InvTimeDiv - 1)
+#define InvTimeStep 1089590 /* 1000 / 60.14742 * InvTimeDiv */
+
+DWORD LastTime;
+DWORD NextIntTime;
+
+void IncrNextTime(void);
+void InitNextTime(void);
+bool UpdateTrueEmulatedTime(void);
+bool CheckDateTime(void);
+bool Init60thCheck(void);
+void Timer_Suspend(void);
+void Timer_Resume(void);
 
 #endif // OSGLUWIN_H

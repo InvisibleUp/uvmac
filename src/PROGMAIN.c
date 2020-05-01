@@ -155,6 +155,16 @@ const DevMethods_t DEVICES[] = {
 	.timebegin = EmVIA2 ? VIA2_ExtraTimeBegin : NULL,
 	.timeend = EmVIA2 ? VIA2_ExtraTimeEnd : NULL,
 	},
+	// Screen
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
+	.endtick = Screen_EndTickNotify,
+	.subtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
 	// Sony disk drive
 	{
 	.init = NULL,
@@ -230,16 +240,6 @@ const DevMethods_t DEVICES[] = {
 	.reset = NULL,
 	.starttick = EmVidCard ? Vid_Update : NULL,
 	.endtick = NULL,
-	.subtick = NULL,
-	.timebegin = NULL,
-	.timeend = NULL,
-	},
-	// Screen
-	{
-	.init = NULL,
-	.reset = NULL,
-	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
-	.endtick = Screen_EndTickNotify,
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
@@ -335,12 +335,28 @@ LOCALPROC SubTickTaskEnd(void)
 
 LOCALPROC SixtiethSecondNotify(void)
 {
-	int i;
+	/*int i;
 	// Begin new frame
 	InterruptReset_Update();
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
 		if (DEVICES[i].starttick != NULL) { DEVICES[i].starttick(); }
-	}
+	}*/
+	
+	// Temporary fix to non-functional RTC
+	
+	Mouse_Update();
+	InterruptReset_Update();
+	if (EmClassicKbrd) { KeyBoard_Update(); }
+	if (EmADB) { ADB_Update(); }
+
+	Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
+	Sony_Update();
+
+#if EmLocalTalk
+	LocalTalkTick();
+#endif
+	if (EmRTC) { RTC_Interrupt(); }
+	if (EmVidCard) { Vid_Update(); }
 
 	SubTickTaskStart();
 }

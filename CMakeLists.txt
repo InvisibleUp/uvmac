@@ -170,18 +170,14 @@ add_library(
     src/UI/WIN32/OSGLUWIN.c
     src/UI/WIN32/SOUND.c
     src/UI/WIN32/TIMEDATE.c
-#    src/UI/WIN32/main.rc
-#    src/UI/WIN32/ICONAPPW.ico
-#    src/UI/WIN32/ICONDSKW.ico
-#    src/UI/WIN32/ICONROMW.ico
+    src/UI/WIN32/main.rc
 )
 target_include_directories(ui_win32 PRIVATE cfg/ src/)
 target_include_directories(ui_win32 PRIVATE src/UI/ src/UI/WIN32/)
+configure_file(src/UI/WIN32/ICONAPPW.ico ICONAPPW.ico COPYONLY)
+configure_file(src/UI/WIN32/ICONDSKW.ico ICONDSKW.ico COPYONLY)
+configure_file(src/UI/WIN32/ICONROMW.ico ICONROMW.ico COPYONLY)
 target_link_libraries(ui_win32 PUBLIC winmm ole32 uuid)
-#set_source_files_properties(src/UI/WIN32/main.rc PROPERTIES LANGUAGE RC)
-#set_source_files_properties(src/UI/WIN32/ICONAPPW.ico PROPERTIES EXTERNAL_OBJECT True)
-#set_source_files_properties(src/UI/WIN32/ICONDSKW.ico PROPERTIES EXTERNAL_OBJECT True)
-#set_source_files_properties(src/UI/WIN32/ICONROMW.ico PROPERTIES EXTERNAL_OBJECT True)
 
 #add_library(
 #    ui_sdl2 OBJECT
@@ -194,7 +190,7 @@ target_link_libraries(ui_win32 PUBLIC winmm ole32 uuid)
 ## Final compiled program definition
 
 add_executable(
-    microvmac
+    microvmac WIN32
     src/PROGMAIN.c
     src/GLOBGLUE.c
     src/PATCHES/ROMEMDEV.c
@@ -204,6 +200,7 @@ target_include_directories(microvmac PRIVATE cfg/ src/)
 set_target_properties(microvmac PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED True)
 #target_link_libraries(microvmac INTERFACE tgt_macplus) # temporary
 target_link_libraries(microvmac PRIVATE incbin ui_win32)
+configure_file(src/PATCHES/SONY.bin SONY.bin COPYONLY)
 
 # temporary, because "INTERFACE" isn't working how I expect it to
 target_link_libraries(

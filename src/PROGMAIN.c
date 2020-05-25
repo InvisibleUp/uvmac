@@ -216,7 +216,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},
 	// ADB
-	{
+	/*{
 	.init = NULL,
 	.reset = NULL,
 	.starttick = EmADB ? ADB_Update : NULL,
@@ -224,7 +224,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// LocalTalk
 	/*{
 	.init = NULL,
@@ -235,7 +235,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},*/
 	// Video card
-	{
+	/*{
 	.init = EmVidCard ? Vid_Init : NULL,
 	.reset = NULL,
 	.starttick = EmVidCard ? Vid_Update : NULL,
@@ -243,7 +243,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// ASC
 	{
 	.init = NULL,
@@ -347,7 +347,7 @@ LOCALPROC SixtiethSecondNotify(void)
 	Mouse_Update();
 	InterruptReset_Update();
 	if (EmClassicKbrd) { KeyBoard_Update(); }
-	if (EmADB) { ADB_Update(); }
+	//if (EmADB) { ADB_Update(); }
 
 	Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
 	Sony_Update();
@@ -356,7 +356,7 @@ LOCALPROC SixtiethSecondNotify(void)
 	LocalTalkTick();
 #endif
 	if (EmRTC) { RTC_Interrupt(); }
-	if (EmVidCard) { Vid_Update(); }
+	//if (EmVidCard) { Vid_Update(); }
 
 	SubTickTaskStart();
 }

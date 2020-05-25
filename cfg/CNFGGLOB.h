@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#define MayInline inline __attribute__((always_inline))
+#define MayInline inline
 #define SmallGlobals 0
 #define cIncludeUnused 0
 #define UnusedParam(p) (void) p

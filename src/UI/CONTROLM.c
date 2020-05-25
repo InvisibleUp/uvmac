@@ -490,10 +490,6 @@ LOCALPROC SetSpeedValue(uint8_t i)
 	ControlMessage = kCntrlMsgNewSpeed;
 }
 
-#if 1
-FORWARDPROC ToggleWantFullScreen(void);
-#endif
-
 #if IncludeHostTextClipExchange
 LOCALPROC HTCEexportSubstCStr(char *s)
 {

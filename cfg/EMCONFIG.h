@@ -10,7 +10,7 @@
 #ifndef EMCONFIG_H
 #define EMCONFIG_H
 
-//#define CurEmMd kEmMd_Plus
+#define CurEmMd kEmMd_Plus
 
 #define MaxATTListN 32
 #define IncludeExtnPbufs 1

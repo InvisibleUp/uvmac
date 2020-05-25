@@ -36,9 +36,12 @@ add_library(
     hw_disk OBJECT
     src/HW/DISK/IWMEMDEV.c
     src/HW/DISK/SONYEMDV.c
+    src/PATCHES/SONYDRV.c
 )
-target_include_directories(hw_disk PRIVATE src/ cfg/)
+target_include_directories(hw_disk PRIVATE src/ cfg/ rsrc/)
 target_include_directories(hw_disk PRIVATE src/HW/DISK/)
+configure_file(rsrc/SONYDRV.bin SONYDRV.bin COPYONLY)
+configure_file(rsrc/SONYICO.bin SONYICO.bin COPYONLY)
 
 add_library(
     hw_kbrd OBJECT
@@ -90,6 +93,7 @@ target_include_directories(hw_scc PRIVATE src/HW/SCC/)
 add_library(
     hw_screen OBJECT
     src/HW/SCREEN/SCRNEMDV.c
+    src/PATCHES/SCRNHACK.c
 )
 target_include_directories(hw_screen PRIVATE src/ cfg/)
 target_include_directories(hw_screen PRIVATE src/HW/SCREEN/)
@@ -170,13 +174,13 @@ add_library(
     src/UI/WIN32/OSGLUWIN.c
     src/UI/WIN32/SOUND.c
     src/UI/WIN32/TIMEDATE.c
-    src/UI/WIN32/main.rc
+    rsrc/WIN32/main.rc
 )
-target_include_directories(ui_win32 PRIVATE cfg/ src/)
+target_include_directories(ui_win32 PRIVATE cfg/ src/ rsrc/)
 target_include_directories(ui_win32 PRIVATE src/UI/ src/UI/WIN32/)
-configure_file(src/UI/WIN32/ICONAPPW.ico ICONAPPW.ico COPYONLY)
-configure_file(src/UI/WIN32/ICONDSKW.ico ICONDSKW.ico COPYONLY)
-configure_file(src/UI/WIN32/ICONROMW.ico ICONROMW.ico COPYONLY)
+configure_file(rsrc/WIN32/ICONAPPW.ico ICONAPPW.ico COPYONLY)
+configure_file(rsrc/WIN32/ICONDSKW.ico ICONDSKW.ico COPYONLY)
+configure_file(rsrc/WIN32/ICONROMW.ico ICONROMW.ico COPYONLY)
 target_link_libraries(ui_win32 PUBLIC winmm ole32 uuid)
 
 #add_library(
@@ -200,7 +204,6 @@ target_include_directories(microvmac PRIVATE cfg/ src/)
 set_target_properties(microvmac PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED True)
 #target_link_libraries(microvmac INTERFACE tgt_macplus) # temporary
 target_link_libraries(microvmac PRIVATE incbin ui_win32)
-configure_file(src/PATCHES/SONY.bin SONY.bin COPYONLY)
 
 # temporary, because "INTERFACE" isn't working how I expect it to
 target_link_libraries(

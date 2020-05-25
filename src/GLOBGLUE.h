@@ -19,6 +19,7 @@
 
 #include "CNFGRAPI.h"
 #include "EMCONFIG.h"
+#include "SYSDEPNS.h"
 
 #define kEmMd_Twig43      0
 #define kEmMd_Twiggy      1

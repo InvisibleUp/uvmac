@@ -871,7 +871,7 @@ GLOBALVAR char *SavedLongMsg = nullpr;
 #if WantAbnormalReports
 GLOBALVAR uint16_t SavedIDMsg = 0;
 #endif
-GLOBALVAR bool SavedFatalMsg = nullpr;
+GLOBALVAR bool SavedFatalMsg = false;
 
 GLOBALPROC MacMsg(char *briefMsg, char *longMsg, bool fatal)
 {

@@ -17,6 +17,21 @@
 #ifndef ROMEMDEV_H
 #define ROMEMDEV_H
 
+
+#ifndef UseLargeScreenHack
+#define UseLargeScreenHack 0
+#endif
+#ifndef DisableRomCheck
+#define DisableRomCheck 1
+#endif
+#ifndef DisableRamTest
+#define DisableRamTest 1
+#endif
+
+#define kVidMem_Base 0x00540000
+
+
 EXPORTFUNC bool ROM_Init(void);
+
 
 #endif

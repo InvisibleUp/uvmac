@@ -7,3 +7,4 @@ bld
 *.kdev4
 *.pdb
 build/
+.vs/*

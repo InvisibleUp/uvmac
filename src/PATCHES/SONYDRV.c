@@ -39,19 +39,19 @@ void Sony_LoadDriver(uint8_t *pto, int *size)
 #endif
 }
 
-void Sony_LoadIcon(uint8_t *pto)
+void Sony_LoadIcon(uint8_t *pto, int *icoSize)
 {
 	disk_icon_addr = (pto - ROM) + kROM_Base;
 #if defined(gSonyIconData)
 	memcpy(pto, gSonyIcon, gSonyIconSize;
-	pto += sizeof(gSonyIconSize);
+	*icoSize = gSonyIconSize;
 #elif defined(_WINDOWS)
 	HRSRC hIcoInfo = FindResource(NULL, "SONY_ICO", RT_RCDATA);
 	HGLOBAL hIco = LoadResource(NULL, hIcoInfo);
 	DWORD sIco = SizeofResource(NULL, hIcoInfo);
 	void *pIco = LockResource(hIco);
 	memcpy(pto, pIco, sIco);
-	pto += sizeof(sIco);
+	*icoSize = sIco;
 #else
 #error("Unsupported platform/compiler")
 #endif
@@ -72,24 +72,26 @@ void Sony_TwiggyPatch(uint8_t *pto)
 
 void Sony_CallPatch(uint8_t *pto, int drvSize)
 {
-	pto += drvSize;
 	do_put_mem_word(pto, kcom_callcheck);
-	pto += 2;
-	do_put_mem_word(pto, kExtnSony);
-	pto += 2;
-	do_put_mem_long(pto, kExtn_Block_Base); /* pokeaddr */
-	pto += 4;
+	do_put_mem_word(pto+2, kExtnSony);
+	do_put_mem_long(pto+4, kExtn_Block_Base); /* pokeaddr */
 }
 
 void Sony_Install(void)
 {
 	uint8_t * pto = Sony_DriverBase + ROM;
-	int drvSize = 0;
+	int drvSize, icoSize;
 	if (!UseSonyPatch) { return; }
 	Sony_LoadDriver(pto, &drvSize);
 	Sony_TwiggyPatch(pto);
+
+	pto += drvSize;
 	Sony_CallPatch(pto, drvSize);
-	Sony_LoadIcon(pto);
+	pto += 8;
+
+	Sony_LoadIcon(pto, &icoSize);
+	pto += icoSize;
+
 	// yeah this sucks but it's so awful and intertwined that i have no choice
-	ScreenHack_Install(pto);
+	//ScreenHack_Install(pto);
 }

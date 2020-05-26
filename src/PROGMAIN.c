@@ -137,8 +137,8 @@ const DevMethods_t DEVICES[] = {
 	},
 	// VIA1
 	{
-	.init = NULL,
-	.reset = VIA1_Zap,
+	.init = VIA1_Zap,
+	.reset = VIA1_Reset,
 	.starttick = NULL,
 	.endtick = NULL,
 	.subtick = NULL,

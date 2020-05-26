@@ -17,7 +17,7 @@
 /*
 	Versatile Interface Adapter EMulated DEVice
 
-	Emulates the VIA found in the Mac Plus.
+	Emulates the Synertek SY6522 VIA found up until the Mac Plus.
 
 	This code adapted from vMac by Philip Cummins.
 */

@@ -8,3 +8,4 @@ bld
 *.pdb
 build/
 .vs/*
+make/

@@ -29,8 +29,6 @@
 #define IncludeSonyNew 1
 #define IncludeSonyNameNew 1
 
-#define kROM_Size 0x00020000
-
 #define IncludePbufs 1
 #define NumPbufs 4
 

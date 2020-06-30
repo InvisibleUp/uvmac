@@ -4,9 +4,7 @@
 	Included in the resource file for WIN32 builds
 */
 #include <stdint.h>
-#ifdef _WINDOWS
-#include <windows.h>
-#endif
+#include <string.h>
 #include "incbin/incbin.h"
 
 #include "EMCONFIG.h"
@@ -17,44 +15,20 @@
 #include "PATCHES/SCRNHACK.h"
 
 // Include binaries
-#ifndef _WINDOWS
-INCBIN(SonyDriver, "SONYDRV.bin");
-INCBIN(SonyIcon, "SONYICO.bin");
-#endif
+INCBIN(SonyDriver, "rsrc/SONYDRV.bin");
+INCBIN(SonyIcon, "rsrc/SONYICO.bin");
 
 void Sony_LoadDriver(uint8_t *pto, int *size)
 {
-#if defined(gSonyDriverData)
 	memcpy(pto, gSonyDriverData, gSonyDriverSize);
 	*size = gSonyDriverSize;
-#elif defined(_WINDOWS)
-	HRSRC hDrvInfo = FindResource(NULL, "SONY_DRV", RT_RCDATA);
-	HGLOBAL hDrv = LoadResource(NULL, hDrvInfo);
-	DWORD sDrv = SizeofResource(NULL, hDrvInfo);
-	void *pDrv = LockResource(hDrv);
-	memcpy(pto, pDrv, sDrv);
-	*size = sDrv;
-#else
-#error("Unsupported platform/compiler")
-#endif
 }
 
 void Sony_LoadIcon(uint8_t *pto, int *icoSize)
 {
 	disk_icon_addr = (pto - ROM) + kROM_Base;
-#if defined(gSonyIconData)
-	memcpy(pto, gSonyIcon, gSonyIconSize;
+	memcpy(pto, gSonyIconData, gSonyIconSize);
 	*icoSize = gSonyIconSize;
-#elif defined(_WINDOWS)
-	HRSRC hIcoInfo = FindResource(NULL, "SONY_ICO", RT_RCDATA);
-	HGLOBAL hIco = LoadResource(NULL, hIcoInfo);
-	DWORD sIco = SizeofResource(NULL, hIcoInfo);
-	void *pIco = LockResource(hIco);
-	memcpy(pto, pIco, sIco);
-	*icoSize = sIco;
-#else
-#error("Unsupported platform/compiler")
-#endif
 }
 
 void Sony_TwiggyPatch(uint8_t *pto)

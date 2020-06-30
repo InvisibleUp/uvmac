@@ -10,6 +10,35 @@
 #ifndef EMCONFIG_H
 #define EMCONFIG_H
 
+// Keybindings
+// TODO: Make these variable
+#define MKC_formac_Control MKC_CM
+#define MKC_formac_Command MKC_Command
+#define MKC_formac_Option MKC_Option
+#define MKC_formac_Shift MKC_Shift
+#define MKC_formac_CapsLock MKC_CapsLock
+#define MKC_formac_Escape MKC_Escape
+#define MKC_formac_BackSlash MKC_BackSlash
+#define MKC_formac_Slash MKC_Slash
+#define MKC_formac_Grave MKC_Grave
+#define MKC_formac_Enter MKC_Enter
+#define MKC_formac_PageUp MKC_PageUp
+#define MKC_formac_PageDown MKC_PageDown
+#define MKC_formac_Home MKC_Home
+#define MKC_formac_End MKC_End
+#define MKC_formac_Help MKC_Help
+#define MKC_formac_ForwardDel MKC_ForwardDel
+#define MKC_formac_F1 MKC_Option
+#define MKC_formac_F2 MKC_Command
+#define MKC_formac_F3 MKC_F3
+#define MKC_formac_F4 MKC_F4
+#define MKC_formac_F5 MKC_F5
+#define MKC_formac_RControl MKC_CM
+#define MKC_formac_RCommand MKC_Command
+#define MKC_formac_ROption MKC_Option
+#define MKC_formac_RShift MKC_Shift
+#define MKC_UnMappedKey  MKC_Control
+
 #define CurEmMd kEmMd_Plus
 
 #define MaxATTListN 32

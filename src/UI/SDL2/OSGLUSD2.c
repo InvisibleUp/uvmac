@@ -169,9 +169,7 @@ LOCALPROC dbglog_close0(void)
 #define WantColorTransValid 0
 
 #include "UI/COMOSGLU.h"
-
-#include "UTILS/PBUFSTDC.h"
-
+#include "UTIL/PBUFSTDC.h"
 #include "UI/CONTROLM.h"
 
 /* --- text translation --- */

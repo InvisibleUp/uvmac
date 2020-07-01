@@ -49,6 +49,14 @@ typedef void (*SpclModeBody) (void);
 #define Keyboard_UpdateKeyMap1 Keyboard_UpdateKeyMap
 #define DisconnectKeyCodes1 DisconnectKeyCodes
 
+bool SpeedStopped = false;
+bool RunInBackground = (WantInitRunInBackground != 0);
+bool WantFullScreen = (WantInitFullScreen != 0);
+bool WantMagnify = (WantInitMagnify != 0);
+bool RequestInsertDisk = false;
+uint8_t RequestIthDisk = 0;
+bool ControlKeyPressed = false;
+
 /* Cell drawing */
 
 LOCALPROC DrawCell(unsigned int h, unsigned int v, int x)

@@ -120,6 +120,8 @@ MAC_SRC = {
 	'Plus': 
 		MAC_SRC_COMMON +
 		HW_SRC['SCREEN'] +
+		HW_SRC['SCC'] +
+		HW_SRC['SCSI'] +
 		HW_SRC['MOUSE'] +
 		HW_SRC['KBRD'],
 	'II': 
@@ -144,7 +146,17 @@ UI_SRC = {
 	'SDL2': [
 		'src/UI/COMOSGLU.c',
 		'src/UI/CONTROLM.c',
-		'src/UI/SDL2/OSGLUSD2.c'
+		'src/UI/SDL2/OSGLUSD2.c',
+		#'src/UI/SDL2/CLIPBRD.c',
+		'src/UI/SDL2/DBGLOG.c',
+		'src/UI/SDL2/DRIVES.c',
+		'src/UI/SDL2/INTL.c',
+		'src/UI/SDL2/KEYBOARD.c',
+		'src/UI/SDL2/MOUSE.c',
+		'src/UI/SDL2/ROM.c',
+		'src/UI/SDL2/SOUND.c',
+		'src/UI/SDL2/TIMEDATE.c',
+		'src/UI/SDL2/VIDEO.c',
 	]
 }
 
@@ -153,31 +165,12 @@ EMU_SRC = [
 	'src/GLOBGLUE.c',
 	'src/PATCHES/ROMEMDEV.c',
 	'src/UTIL/DATE2SEC.c',
-	'src/incbin/incbin.c',
+	'src/LANG/INTLCHAR.c',
 ]
 
 EMU_INC = include_directories([
 	'cfg/',
 	'src/',
-	'src/HW/ADB',
-	'src/HW/DISK',
-	'src/HW/KBRD',
-	'src/HW/M68K',
-	'src/HW/MOUSE',
-	'src/HW/POWERMAN',
-	'src/HW/RTC',
-	'src/HW/SCC',
-	'src/HW/SCREEN',
-	'src/HW/SCSI',
-	'src/HW/SOUND',
-	'src/HW/VIA',
-	'src/HW/VIDCARD',
-	'src/LANG',
-	'src/UI',
-	'src/UI/SDL2',
-#	'src/UI/WIN32',
-	'src/UTIL',
-	'src/incbin',
 ])
 
 ## Final compiled program definition

@@ -18,6 +18,7 @@
 	COMmon code for Operating System GLUe
 */
 
+#include <stdlib.h>
 #include "SYSDEPNS.h"
 #include "GLOBGLUE.h"
 #include "MYOSGLUE.h"

@@ -163,7 +163,8 @@ void DoKeyCode(SDL_Keysym *r, bool down)
 {
 	uint8_t v = SDLScan2MacKeyCode(r->scancode);
 	if (MKC_None != v) {
-		Keyboard_UpdateKeyMap2(v, down);
+		// this probably breaks keyboard support
+		//Keyboard_UpdateKeyMap2(v, down);
 	}
 }
 
@@ -181,6 +182,6 @@ void ReconnectKeyCodes3(void)
 
 void DisconnectKeyCodes3(void)
 {
-	DisconnectKeyCodes2();
+	//DisconnectKeyCodes2();
 	MouseButtonSet(false);
 }

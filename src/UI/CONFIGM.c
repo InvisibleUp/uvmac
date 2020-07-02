@@ -5,7 +5,7 @@
  * 
  */
 
-#include <SDL2.h> // everything else is deprecated now
+#include <SDL.h> // everything else is deprecated now
 #include <stdlib.h>
 #include <stdint.h>
 #include "CONFIGM.h"
@@ -18,5 +18,6 @@ void ConfigMode_Tick()
 	// Get the screen context and just draw something there for now
 	
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-	SDL_RenderDrawRect(renderer, {.x = 16, .y = 16, .w = 128, .h = 128});
+	const SDL_Rect rect = {.x = 16, .y = 16, .w = 128, .h = 128};
+	SDL_RenderDrawRect(renderer, &rect);
 }

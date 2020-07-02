@@ -149,7 +149,7 @@ LOCALPROC HandleTheEvent(SDL_Event *event)
 		case SDL_KEYUP:
 			DoKeyCode(&event->key.keysym, false);
 			break;
-		case SDL_MOUSEWHEEL:
+		/*case SDL_MOUSEWHEEL:
 			if (event->wheel.x < 0) {
 				Keyboard_UpdateKeyMap2(MKC_Left, true);
 				Keyboard_UpdateKeyMap2(MKC_Left, false);
@@ -164,7 +164,7 @@ LOCALPROC HandleTheEvent(SDL_Event *event)
 				Keyboard_UpdateKeyMap2(MKC_Up, true);
 				Keyboard_UpdateKeyMap2(MKC_Up, false);
 			}
-			break;
+			break;*/
 		case SDL_DROPFILE:
 			{
 				char *s = event->drop.file;
@@ -839,20 +839,12 @@ LOCALPROC CheckForSavedTasks(void)
 		}
 	}
 
-	if (CurSpeedStopped != (SpeedStopped ||
-		(gBackgroundFlag && ! RunInBackground)))
-	{
-		CurSpeedStopped = ! CurSpeedStopped;
-		if (CurSpeedStopped) {
-			EnterSpeedStopped();
+	// TODO: fix this
+	/*if (CurSpeedStopped != (SpeedStopped ||
+		(gBackgroundFlag && ! RunInBackground))){
 		} else {
 			LeaveSpeedStopped();
-		}
-	}
-
-	if ((nullpr != SavedBriefMsg) & ! MacMsgDisplayed) {
-		MacMsgDisplayOn();
-	}
+		}*/
 
 #if EnableRecreateW
 	if (0
@@ -1095,10 +1087,6 @@ LOCALFUNC bool InitOSGLU(void)
 
 LOCALPROC UnInitOSGLU(void)
 {
-	if (MacMsgDisplayed) {
-		MacMsgDisplayOff();
-	}
-
 	RestoreKeyRepeat();
 #if MayFullScreen
 	UngrabMachine();

@@ -495,33 +495,6 @@ GLOBALPROC ScreenChangedAll(void)
 	ScreenChangedRight = vMacScreenWidth;
 }
 
-GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * screencurrentbuff)
-{
-	int16_t top;
-	int16_t left;
-	int16_t bottom;
-	int16_t right;
-
-	if (! EmVideoDisable) {
-		if (ScreenFindChanges(screencurrentbuff, EmLagTime,
-			&top, &left, &bottom, &right))
-		{
-			if (top < ScreenChangedTop) {
-				ScreenChangedTop = top;
-			}
-			if (bottom > ScreenChangedBottom) {
-				ScreenChangedBottom = bottom;
-			}
-			if (left < ScreenChangedLeft) {
-				ScreenChangedLeft = left;
-			}
-			if (right > ScreenChangedRight) {
-				ScreenChangedRight = right;
-			}
-		}
-	}
-}
-
 #if MayFullScreen
 GLOBALVAR uint16_t ViewHSize;
 GLOBALVAR uint16_t ViewVSize;

@@ -1,168 +1,19 @@
-/*
-	HW/SCREEN/SCRNMAPR.h
+/* SCRNMAPR.h */
+#include <stdint.h>
+#pragma once
 
-	Copyright (C) 2012 Paul C. Pratt
+typedef struct {
+    uint16_t top;
+    uint16_t left;
+    uint16_t right;
+    uint16_t bottom;
+} rect_t;
 
-	You can redistribute this file and/or modify it under the terms
-	of version 2 of the GNU General Public License as published by
-	the Free Software Foundation.  You should have received a copy
-	of the license along with this file; see the file COPYING.
+typedef uint32_t color_t;
 
-	This file is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	license for more details.
-*/
-
-/*
-	SCReeN MAPpeR
-*/
-
-/* required arguments for this template */
-
-#ifndef ScrnMapr_DoMap /* procedure to be created by this template */
-#error "ScrnMapr_DoMap not defined"
-#endif
-#ifndef ScrnMapr_Src
-#error "ScrnMapr_Src not defined"
-#endif
-#ifndef ScrnMapr_Dst
-#error "ScrnMapr_Dst not defined"
-#endif
-#ifndef ScrnMapr_SrcDepth
-#error "ScrnMapr_SrcDepth not defined"
-#endif
-#ifndef ScrnMapr_DstDepth
-#error "ScrnMapr_DstDepth not defined"
-#endif
-#ifndef ScrnMapr_Map
-#error "ScrnMapr_Map not defined"
-#endif
-
-/* optional argument for this template */
-
-#ifndef ScrnMapr_Scale
-#define ScrnMapr_Scale 1
-#endif
-
-/* check of parameters */
-
-#if (ScrnMapr_SrcDepth < 0) || (ScrnMapr_SrcDepth > 3)
-#error "bad ScrnMapr_SrcDepth"
-#endif
-
-#if (ScrnMapr_DstDepth < ScrnMapr_SrcDepth)
-#error "bad ScrnMapr_Dst"
-#endif
-
-/* calculate a few things local to this template */
-
-#define ScrnMapr_MapElSz \
-	(ScrnMapr_Scale << (ScrnMapr_DstDepth - ScrnMapr_SrcDepth))
-
-#if 0 == (ScrnMapr_MapElSz & 3)
-#define ScrnMapr_TranT uint32_t
-#define ScrnMapr_TranLn2Sz 2
-#elif 0 == (ScrnMapr_MapElSz & 1)
-#define ScrnMapr_TranT uint16_t
-#define ScrnMapr_TranLn2Sz 1
-#else
-#define ScrnMapr_TranT uint8_t
-#define ScrnMapr_TranLn2Sz 0
-#endif
-
-#define ScrnMapr_TranN (ScrnMapr_MapElSz >> ScrnMapr_TranLn2Sz)
-
-#define ScrnMapr_ScrnWB (vMacScreenWidth >> (3 - ScrnMapr_SrcDepth))
-
-/* now define the procedure */
-
-LOCALPROC ScrnMapr_DoMap(int16_t top, int16_t left,
-	int16_t bottom, int16_t right)
-{
-	int i;
-	int j;
-#if (ScrnMapr_TranN > 4) || (ScrnMapr_Scale > 2)
-	int k;
-#endif
-	uint32_t t0;
-	ScrnMapr_TranT *pMap;
-#if ScrnMapr_Scale > 1
-	ScrnMapr_TranT *p3;
-#endif
-
-	uint16_t leftB = left >> (3 - ScrnMapr_SrcDepth);
-	uint16_t rightB = (right + (1 << (3 - ScrnMapr_SrcDepth)) - 1)
-		>> (3 - ScrnMapr_SrcDepth);
-	uint16_t jn = rightB - leftB;
-	uint16_t SrcSkip = ScrnMapr_ScrnWB - jn;
-	uint8_t *pSrc = ((uint8_t *)ScrnMapr_Src)
-		+ leftB + ScrnMapr_ScrnWB * (uint32_t)top;
-	ScrnMapr_TranT *pDst = ((ScrnMapr_TranT *)ScrnMapr_Dst)
-		+ ((leftB + ScrnMapr_ScrnWB * ScrnMapr_Scale * (uint32_t)top)
-			* ScrnMapr_TranN);
-	uint32_t DstSkip = SrcSkip * ScrnMapr_TranN;
-
-	for (i = bottom - top; --i >= 0; ) {
-#if ScrnMapr_Scale > 1
-		p3 = pDst;
-#endif
-
-		for (j = jn; --j >= 0; ) {
-			t0 = *pSrc++;
-			pMap =
-				&((ScrnMapr_TranT *)ScrnMapr_Map)[t0 * ScrnMapr_TranN];
-
-#if ScrnMapr_TranN > 4
-			for (k = ScrnMapr_TranN; --k >= 0; ) {
-				*pDst++ = *pMap++;
-			}
-#else
-
-#if ScrnMapr_TranN >= 2
-			*pDst++ = *pMap++;
-#endif
-#if ScrnMapr_TranN >= 3
-			*pDst++ = *pMap++;
-#endif
-#if ScrnMapr_TranN >= 4
-			*pDst++ = *pMap++;
-#endif
-			*pDst++ = *pMap;
-
-#endif /* ! ScrnMapr_TranN > 4 */
-
-		}
-		pSrc += SrcSkip;
-		pDst += DstSkip;
-
-#if ScrnMapr_Scale > 1
-#if ScrnMapr_Scale > 2
-		for (k = ScrnMapr_Scale - 1; --k >= 0; )
-#endif
-		{
-			pMap = p3;
-			for (j = ScrnMapr_TranN * jn; --j >= 0; ) {
-				*pDst++ = *pMap++;
-			}
-			pDst += DstSkip;
-		}
-#endif /* ScrnMapr_Scale > 1 */
-	}
-}
-
-/* undefine template locals and parameters */
-
-#undef ScrnMapr_ScrnWB
-#undef ScrnMapr_TranN
-#undef ScrnMapr_TranLn2Sz
-#undef ScrnMapr_TranT
-#undef ScrnMapr_MapElSz
-
-#undef ScrnMapr_DoMap
-#undef ScrnMapr_Src
-#undef ScrnMapr_Dst
-#undef ScrnMapr_SrcDepth
-#undef ScrnMapr_DstDepth
-#undef ScrnMapr_Map
-#undef ScrnMapr_Scale
+// Copy a rectangular bitmap region, scaling and converting color depth as needed
+void ScrnMapr_DoMap(
+    rect_t bounds,
+    const uint8_t *src, uint8_t *dst, uint8_t src_depth, uint8_t dst_depth,
+    const uint8_t *map, uint8_t scale
+);

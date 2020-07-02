@@ -38,7 +38,7 @@ conf = configuration_data({
 	# Enable about dialog
 	'NeedDoAboutMsg': 1,
 	# Enable Control Mode (options menu)
-	'UseControlKeys': 1,
+	'UseControlKeys': 0,
 	# Include international characters for Control Mode
 	'NeedIntlChars': 0,
 	# Force keyboard to match Mac layout on Windows
@@ -131,34 +131,22 @@ MAC_SRC = {
 }
 
 # User interface definitions
-UI_SRC = {
-	'WIN32': [
-		'src/UI/COMOSGLU.c',
-		'src/UI/CONTROLM.c',
-		'src/UI/WIN32/DBGLOG.c',
-		'src/UI/WIN32/INTLKBRD.c',
-		'src/UI/WIN32/KEYBOARD.c',
-		'src/UI/WIN32/OSGLUWIN.c',
-		'src/UI/WIN32/SOUND.c',
-		'src/UI/WIN32/TIMEDATE.c',
-		'rsrc/WIN32/main.rc',
-	],
-	'SDL2': [
-		'src/UI/COMOSGLU.c',
-		'src/UI/CONTROLM.c',
-		'src/UI/SDL2/OSGLUSD2.c',
-		#'src/UI/SDL2/CLIPBRD.c',
-		'src/UI/SDL2/DBGLOG.c',
-		'src/UI/SDL2/DRIVES.c',
-		'src/UI/SDL2/INTL.c',
-		'src/UI/SDL2/KEYBOARD.c',
-		'src/UI/SDL2/MOUSE.c',
-		'src/UI/SDL2/ROM.c',
-		'src/UI/SDL2/SOUND.c',
-		'src/UI/SDL2/TIMEDATE.c',
-		'src/UI/SDL2/VIDEO.c',
-	]
-}
+UI_SRC = [
+	'src/UI/COMOSGLU.c',
+	'src/UI/CONTROLM.c',
+	'src/UI/CONFIGM.c',
+	'src/UI/SDL2/OSGLUSD2.c',
+	#'src/UI/SDL2/CLIPBRD.c',
+	'src/UI/SDL2/DBGLOG.c',
+	'src/UI/SDL2/DRIVES.c',
+	'src/UI/SDL2/INTL.c',
+	'src/UI/SDL2/KEYBOARD.c',
+	'src/UI/SDL2/MOUSE.c',
+	'src/UI/SDL2/ROM.c',
+	'src/UI/SDL2/SOUND.c',
+	'src/UI/SDL2/TIMEDATE.c',
+	'src/UI/SDL2/VIDEO.c',
+]
 
 EMU_SRC = [
 	'src/PROGMAIN.c',
@@ -177,7 +165,7 @@ EMU_INC = include_directories([
 # Just gonna do an SDL2 Mac Plus for now
 executable(
 	'microvmac',
-	sources: MAC_SRC['Plus'] + UI_SRC['SDL2'] + EMU_SRC,
+	sources: MAC_SRC['Plus'] + UI_SRC + EMU_SRC,
 	dependencies: [lSDL2],
 	include_directories: EMU_INC,
 )

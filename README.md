@@ -6,10 +6,28 @@ Forked from Mini vMac v36.4 by Paul C. Pratt (http://www.gryphel.com/c/minivmac)
 
 This fork was created to clean up and modernize the code base, make the project easier to compile and hack on, and allow for much easier user configuration. The intent of Mini vMac was to create a "emulator collection" of many very optimized "variations" of the same codebase. I consider this much more trouble than it's worth, and intend to focus more on maintainability and accuracy.
 
+## Supported Platforms
+
+µvMac *absolutely requires* SDL2. There are no plans to support platforms that SDL2 does not target. For 99% of users, this should not be a concern. Dropping support for esoteric platforms and exclusively using SDL2 vastly simplifies the complexity of the code.
+
+Here's an incomplete list of platforms that can, in theory, be targeted. These are listed in order of support.
+
+- Linux
+- Windows
+- macOS
+- FreeBSD/OpenBSD/NetBSD/etc.
+- Haiku
+- Emscripten
+
 ## Screenshots
 
-![System 7.1 running on an emulated Macintosh Plus](macplus.png)
-![System 7.1 running on an emulated Macintosh II](macii.png)
+![System 7.1 running on an emulated Macintosh Plus](docs/macplus.png)
+![System 7.1 running on an emulated Macintosh II](docs/macii.png)
+
+The below images are mockups of an upcoming feature, the configuration manager. This replaces Control Mode in Mini vMac, and also appears when you start the emulator.
+
+![Mockup of the config manager's initial screen](docs/bootdlg_start.png)
+![Mockup of the config manager's device selection screen](docs/bootdlg_model.png)
 
 ## Legal info
 

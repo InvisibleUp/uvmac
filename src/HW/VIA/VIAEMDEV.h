@@ -18,7 +18,7 @@
 #define VIAEMDEV_H
 #include <stdint.h>
 
-void VIA1_Zap(void);
+bool VIA1_Zap(void);
 void VIA1_Reset(void);
 
 uint32_t VIA1_Access(uint32_t Data, bool WriteMem, uint32_t addr);

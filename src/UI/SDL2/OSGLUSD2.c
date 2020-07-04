@@ -336,13 +336,6 @@ LOCALFUNC bool CreateMainWindow(void)
 	Uint32 flags = 0 /* SDL_WINDOW_HIDDEN */;
 	bool v = false;
 
-#if 1 && 1
-	if (UseMagnify) {
-		NewWindowHeight *= WindowScale;
-		NewWindowWidth *= WindowScale;
-	}
-#endif
-
 #if 1
 	if (UseFullScreen)
 #endif
@@ -396,8 +389,7 @@ LOCALFUNC bool CreateMainWindow(void)
 		NewWindowWidth, NewWindowHeight,
 		flags)))
 	{
-		fprintf(stderr, "SDL_CreateWindow fails: %s\n",
-			SDL_GetError());
+		fprintf(stderr, "SDL_CreateWindow fails: %s\n", SDL_GetError());
 	} else
 	if (NULL == (renderer = SDL_CreateRenderer(
 		main_wind, -1,
@@ -410,34 +402,24 @@ LOCALFUNC bool CreateMainWindow(void)
 			/* would rather not require vsync */
 		)))
 	{
-		fprintf(stderr, "SDL_CreateRenderer fails: %s\n",
-			SDL_GetError());
+		fprintf(stderr, "SDL_CreateRenderer fails: %s\n", SDL_GetError());
 	} else
 	if (NULL == (texture = SDL_CreateTexture(
 		renderer,
-		SDL_PIXELFORMAT_ARGB8888,
+		SDL_PIXELFORMAT_RGBX8888,
 		SDL_TEXTUREACCESS_STREAMING,
-#if UseSDLscaling
 		vMacScreenWidth, vMacScreenHeight
-#else
-		NewWindowWidth, NewWindowHeight
-#endif
 		)))
 	{
-		fprintf(stderr, "SDL_CreateTexture fails: %s\n",
-			SDL_GetError());
+		fprintf(stderr, "SDL_CreateTexture fails: %s\n", SDL_GetError());
 	} else
 	if (NULL == (format = SDL_AllocFormat(SDL_PIXELFORMAT_ARGB8888)))
 	{
-		fprintf(stderr, "SDL_AllocFormat fails: %s\n",
-			SDL_GetError());
+		fprintf(stderr, "SDL_AllocFormat fails: %s\n", SDL_GetError());
 	} else
 	{
-		/* SDL_ShowWindow(main_wind); */
-
 		SDL_RenderClear(renderer);
 
-#if 0
 		SDL_DisplayMode info;
 
 		if (0 != SDL_GetCurrentDisplayMode(0, &info)) {
@@ -446,7 +428,6 @@ LOCALFUNC bool CreateMainWindow(void)
 
 			return false;
 		}
-#endif
 
 #if 1
 		if (UseFullScreen)

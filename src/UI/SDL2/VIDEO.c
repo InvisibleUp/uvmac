@@ -22,7 +22,7 @@ bool UseMagnify = (WantInitMagnify != 0);
 
 bool gBackgroundFlag = false;
 bool gTrueBackgroundFlag = false;
-bool CurSpeedStopped = true;
+bool CurSpeedStopped = false;
 SDL_Window *main_wind = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *texture = NULL;
@@ -66,18 +66,38 @@ GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * src_ptr)
 {
 	if (EmVideoDisable) { return; }
 	
-	uint32_t src_format = GetPixFormatFromDepth(vMacScreenDepth);
+	uint32_t src_format = GetPixFormatFromDepth(vMacScreenDepth+1);
+	void *pixels;
+	int pitch;
 	
+	// Setup source surface
 	SDL_Surface *src = SDL_CreateRGBSurfaceWithFormatFrom(
 		src_ptr, 
 		vMacScreenWidth,
 		vMacScreenHeight,
-		vMacScreenDepth,
+		vMacScreenDepth+1,
 		vMacScreenByteWidth,
 		src_format
 	);
 	
-	SDL_LockTexture(texture, NULL, NULL, NULL);
+	// Setup dst surface
+	SDL_LockTexture(texture, NULL, &pixels, &pitch);
+	SDL_Surface *dst = SDL_CreateRGBSurfaceWithFormatFrom(
+		pixels, 
+		vMacScreenWidth,
+		vMacScreenHeight,
+		32, vMacScreenWidth * 4,
+		SDL_PIXELFORMAT_RGBX8888
+	);
+	
+	// Blit src to dst
+	SDL_BlitSurface(src, NULL, dst, NULL);
+	
+	// Free surfaces
+	SDL_FreeSurface(src);
+	SDL_FreeSurface(dst);
+	
+	// Render the texture
 	SDL_RenderCopy(renderer, texture, NULL, NULL);
 	SDL_UnlockTexture(texture);
 	SDL_RenderPresent(renderer);

@@ -591,10 +591,11 @@ LOCALPROC VIA1_Clear(void)
 	VIA1_T1IntReady = false;
 }
 
-GLOBALPROC VIA1_Zap(void)
+bool VIA1_Zap(void)
 {
 	VIA1_Clear();
 	VIA1_InterruptRequest = 0;
+	return true;
 }
 
 GLOBALPROC VIA1_Reset(void)

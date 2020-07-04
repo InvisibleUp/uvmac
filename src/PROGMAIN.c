@@ -19,6 +19,7 @@
 */
 
 #include <string.h>
+#include <assert.h>
 #include "SYSDEPNS.h"
 
 #include "UI/MYOSGLUE.h"
@@ -155,16 +156,6 @@ const DevMethods_t DEVICES[] = {
 	.timebegin = EmVIA2 ? VIA2_ExtraTimeBegin : NULL,
 	.timeend = EmVIA2 ? VIA2_ExtraTimeEnd : NULL,
 	},
-	// Screen
-	{
-	.init = NULL,
-	.reset = NULL,
-	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
-	.endtick = Screen_EndTickNotify,
-	.subtick = NULL,
-	.timebegin = NULL,
-	.timeend = NULL,
-	},
 	// Sony disk drive
 	{
 	.init = NULL,
@@ -263,7 +254,17 @@ const DevMethods_t DEVICES[] = {
 	.subtick = (SoundEnabled && (CurEmMd != kEmMd_PB100)) ? MacSound_SubTick : NULL,
 	.timebegin = NULL,
 	.timeend = NULL
-	}
+	},
+	// Screen
+	{
+	.init = NULL,
+	.reset = NULL,
+	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
+	.endtick = Screen_EndTickNotify,
+	.subtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
 };
 
 LOCALPROC EmulatedHardwareZap(void)
@@ -406,8 +407,7 @@ LOCALFUNC bool InitEmulation(void)
 	int i;
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
 		if (DEVICES[i].init != NULL) {
-			bool retval = DEVICES[i].init();
-			if (retval == false) { return false; }
+			assert(DEVICES[i].init());
 		}
 	}
 

@@ -29,6 +29,10 @@ The below images are mockups of an upcoming feature, the configuration manager. 
 ![Mockup of the config manager's initial screen](docs/bootdlg_start.png)
 ![Mockup of the config manager's device selection screen](docs/bootdlg_model.png)
 
+The configuration manager will require resources from a ROM. Here's the screen you get when you start up for the first time, without a ROM.
+
+![Flashing ? on a ROM chip, and a message asking you to find a ROM](docs/norom-mockup.gif)
+
 ## Legal info
 
 You can redistribute µvMac and/or modify it under the terms

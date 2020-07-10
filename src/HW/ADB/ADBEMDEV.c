@@ -18,8 +18,6 @@
 	Apple Desktop Bus EMulated DEVice
 */
 
-#if EmADB
-
 #ifndef AllFiles
 #include "EMCONFIG.h"
 #include "SYSDEPNS.h"
@@ -214,5 +212,3 @@ GLOBALPROC ADB_Update(void)
 		}
 	}
 }
-
-#endif

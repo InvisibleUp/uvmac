@@ -39,8 +39,6 @@
 #define MKC_formac_RShift MKC_Shift
 #define MKC_UnMappedKey  MKC_Control
 
-#define CurEmMd kEmMd_Plus
-
 #define MaxATTListN 32
 #define IncludeExtnPbufs 1
 // temporary
@@ -57,11 +55,13 @@
 #define AutoKeyThresh 0x06
 #define AutoKeyRate 0x03
 
-#if (CurEmMd == kEmMd_Plus)
-#include "MACPLUS.h"
-#elif (CurEmMd == kEmMd_II)
+#define CurEmMd kEmMd_II
+
+//#if (CurEmMd == kEmMd_Plus)
+//#include "MACPLUS.h"
+//#elif (CurEmMd == kEmMd_II)
 #include "MACII.h"
-#endif
+//#endif
 
 #define WantDisasm 0
 #define ExtraAbnormalReports 0

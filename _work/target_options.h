@@ -4,7 +4,7 @@
 // Max VRAM on Mac II(x) is 2MiB
 
 // Supported Macintosh models
-enum MacModel {
+typedef enum MacModel {
 	mdl_Twig43,                    // Twiggy prototype (ROM 4.3T 07/04/83)
 	mdl_Twiggy,                                // Twiggy prototype (later)
 	mdl_m128K,                                                     // 128K
@@ -17,10 +17,10 @@ enum MacModel {
 	mdl_PB100,                                            // PowerBook 100
 	mdl_II,                                                          // II
 	mdl_IIx                                                         // IIx
-};
+} MacModel_t;
 
 // Supported ROM types
-enum MacROM {
+typedef enum MacROM {
 	rom_Twig43,                                       // ROM 4.3T 07/04/83
 	rom_Twiggy,                                // Twiggy prototype (later)
 	rom_64K,                                                  // 128K/512K
@@ -30,41 +30,41 @@ enum MacROM {
 	rom_IIx,                                     // Mac II FDHD, IIx, IIcx
 	rom_PB100,                                            // PowerBook 100
 	rom_Classic                                             // Mac Classic
-};
+} MacROM_t;
 
-enum M68KType {
+typedef enum M68KType {
 	m68000,
 	m68020,
 	m68020FPU
-};
+} M68KType_t;
 
 // ROM information. Duplicate MacROMs are alternate ROMS also supported
 struct MacROMInfo {
-	enum MacROM;
+	MacROM_t rom;
 	uint32_t cksum;
 	uint32_t size;
 };
 const struct MacROMInfo MacROMInfoTable[] = {
-	{rom_Twig43, 0x27F4E04B, 2 << 16},
-	{rom_Twiggy, 0x2884371D, 2 << 16},
-	{rom_64K,    0x28BA61CE, 2 << 16}, // Mac 128K (?)
-	{rom_64K,    0x28BA4E50, 2 << 16}, // Mac 512K (?)
-	{rom_128K,   0x4D1EEEE1, 2 << 17}, // v1, 'Lonely Hearts'
-	{rom_128K,   0x4D1EEAE1, 2 << 17}, // v2, 'Lonely Heifers'
-	{rom_128K,   0x4D1F8172, 2 << 17}, // v3, 'Loud Harmonicas'
-	{rom_SE,     0xB2E362A8, 2 << 18},
-	{rom_II,     0x97851DB6, 2 << 18}, // v1
-	{rom_II,     0x9779D2C4, 2 << 18}, // v2
-	{rom_IIx,    0x97221136, 2 << 18},
-	{rom_PB100,  0x96645F9C, 2 << 18}
+	{rom_Twig43, 0x27F4E04B, 1 << 16},
+	{rom_Twiggy, 0x2884371D, 1 << 16},
+	{rom_64K,    0x28BA61CE, 1 << 16}, // Mac 128K (?)
+	{rom_64K,    0x28BA4E50, 1 << 16}, // Mac 512K (?)
+	{rom_128K,   0x4D1EEEE1, 1 << 17}, // v1, 'Lonely Hearts'
+	{rom_128K,   0x4D1EEAE1, 1 << 17}, // v2, 'Lonely Heifers'
+	{rom_128K,   0x4D1F8172, 1 << 17}, // v3, 'Loud Harmonicas'
+	{rom_SE,     0xB2E362A8, 1 << 18},
+	{rom_II,     0x97851DB6, 1 << 18}, // v1
+	{rom_II,     0x9779D2C4, 1 << 18}, // v2
+	{rom_IIx,    0x97221136, 1 << 18},
+	{rom_PB100,  0x96645F9C, 1 << 18}
 };
 
 // Model information
 // We're using base models for RAM and such; no addons
 struct MacModelInfo {
-	enum MacModel;
-	enum MacROM;
-	enum M68KType;
+	MacModel_t MacModel;
+	MacROM_t MacROM;
+	M68KType_t M68KType;
 	uint32_t RAMaSize; // RAM in first address space (?)
 	uint32_t RAMbSize;
 	uint32_t RAMvidSize; // External video RAM size
@@ -88,14 +88,14 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.MacModel = mdl_Twig43,
 		.MacROM = rom_Twig43,
 		.M68KType = m68000,
-		.RAMaSize = 2 >> 16,
+		.RAMaSize = 2 << 16,
 		.RAMbSize = 0,
 		.RAMvidSize = 0,
 		.hres = 512,
 		.vres = 384,
 		.bpp = 1,
 		.MaxATTListN = 16,
-		.ClockMult = 1,
+		.ClockSpeed = 1,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,
@@ -109,13 +109,13 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.MacROM = rom_Twiggy,
 		.M68KType = m68000,
 		.RAMaSize = 2 >> 16,
-		.RAMbSize = 0,
+		<<AMbSize = 0,
 		.RAMvidSize = 0,
 		.hres = 512,
 		.vres = 384,
 		.bpp = 1,
 		.MaxATTListN = 16,
-		.ClockMult = 1,
+		.ClockSpeed = 1,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,
@@ -126,7 +126,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 	// 128K
 	{
 		.MacModel = mdl_m128K,
-		.MacROM = rom_64k,
+		.MacROM = rom_64K,
 		.M68KType = m68000,
 		.RAMaSize = 2 >> 16,
 		.RAMbSize = 0,
@@ -135,7 +135,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.vres = 384,
 		.bpp = 1,
 		.MaxATTListN = 16,
-		.ClockMult = 1,
+		.ClockSpeed = 1,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,
@@ -146,7 +146,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 	// 512K
 	{
 		.MacModel = mdl_m512K,
-		.MacROM = rom_64k,
+		.MacROM = rom_64K,
 		.M68KType = m68000,
 		.RAMaSize = 2 >> 19,
 		.RAMbSize = 0,
@@ -155,7 +155,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.vres = 384,
 		.bpp = 1,
 		.MaxATTListN = 16,
-		.ClockMult = 1,
+		.ClockSpeed = 1,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,
@@ -166,7 +166,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 	// 512Ke
 	{
 		.MacModel = mdl_m512Ke,
-		.MacROM = rom_128k,
+		.MacROM = rom_128K,
 		.M68KType = m68000,
 		.RAMaSize = 2 >> 19,
 		.RAMbSize = 0,
@@ -175,7 +175,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.vres = 384,
 		.bpp = 1,
 		.MaxATTListN = 16,
-		.ClockMult = 1,
+		.ClockSpeed = 1,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,
@@ -186,7 +186,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 	// Plus
 	{
 		.MacModel = mdl_Plus,
-		.MacROM = rom_128k,
+		.MacROM = rom_128K,
 		.M68KType = m68000,
 		.RAMaSize = 2 >> 19, // same RAM for SE, SEFDHD, Classic
 		.RAMbSize = 2 >> 19,
@@ -195,7 +195,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.vres = 384,
 		.bpp = 1,
 		.MaxATTListN = 16,
-		.ClockMult = 1,
+		.ClockSpeed = 1,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,
@@ -215,7 +215,7 @@ const struct MacModelInfo MacModelInfoTable[] = {
 		.vres = 480,
 		.bpp = 8,
 		.MaxATTListN = 20,
-		.ClockMult = 2,
+		.ClockSpeed = 2,
 		.ADB = false,
 		.RTC = false,
 		.PMU = false,

@@ -91,7 +91,7 @@ LOCALPROC WarnMsgUnsupportedROM(void)
 
 MacErr_t ROM_IsValid(void)
 {
-	if(CheckRomCheckSum) {
+	/*if(CheckRomCheckSum) {
 		uint32_t CheckSum = Calc_Checksum();
 
 		if (CheckSum != do_get_mem_long(ROM)) {
@@ -107,7 +107,7 @@ MacErr_t ROM_IsValid(void)
 			WarnMsgUnsupportedROM();
 			return mnvm_miscErr;
 		}
-	}
+	}*/
 
 	ROM_loaded = true;
 	SpeedStopped = false;

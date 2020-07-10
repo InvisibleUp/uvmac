@@ -262,28 +262,28 @@ LOCALVAR struct regstruct
 
 
 #ifdef r_regs
-register struct regstruct *g_regs asm (r_regs);
+struct regstruct *g_regs asm (r_regs);
 #define V_regs (*g_regs)
 #else
 #define V_regs regs
 #endif
 
 #ifdef r_pc_p
-register uint8_t * g_pc_p asm (r_pc_p);
+uint8_t * g_pc_p asm (r_pc_p);
 #define V_pc_p g_pc_p
 #else
 #define V_pc_p V_regs.pc_p
 #endif
 
 #ifdef r_MaxCyclesToGo
-register int32_t g_MaxCyclesToGo asm (r_MaxCyclesToGo);
+int32_t g_MaxCyclesToGo asm (r_MaxCyclesToGo);
 #define V_MaxCyclesToGo g_MaxCyclesToGo
 #else
 #define V_MaxCyclesToGo V_regs.MaxCyclesToGo
 #endif
 
 #ifdef r_pc_pHi
-register uint8_t * g_pc_pHi asm (r_pc_pHi);
+uint8_t * g_pc_pHi asm (r_pc_pHi);
 #define V_pc_pHi g_pc_pHi
 #else
 #define V_pc_pHi V_regs.pc_pHi
@@ -8200,13 +8200,6 @@ LOCALIPROC DoCodeMMU(void)
 	ReportAbnormalID(0x0121, "MMU op");
 	DoCodeFdefault();
 }
-#endif
-
-#if EmFPU
-
-#include "FPMATHEM.h"
-#include "FPCPEMDV.h"
-
 #endif
 
 #if HaveGlbReg

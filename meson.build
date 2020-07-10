@@ -78,6 +78,7 @@ HW_SRC = {
 #		'src/HW/M68K/DISAM68K.c',
 		'src/HW/M68K/M68KITAB.c',
 		'src/HW/M68K/MINEM68K.c',
+#		'src/HW/M68K/FPCPEMDV.c',
 	],
 	'MOUSE': [
 		'src/HW/MOUSE/MOUSEMDV.c',
@@ -99,8 +100,10 @@ HW_SRC = {
 		'src/HW/SCSI/SCSIEMDV.c',
 	],
 	'SOUND': [
-#		'src/HW/SOUND/ASCEMDEV.c',
 		'src/HW/SOUND/SNDEMDEV.c',
+	],
+	'SOUND_ASC': [
+		'src/HW/SOUND/ASCEMDEV.c',
 	],
 	'VIA1': [
 		'src/HW/VIA/VIAEMDEV.c',
@@ -113,21 +116,19 @@ HW_SRC = {
 	],
 }
 
-MAC_SRC_COMMON = HW_SRC['DISK'] + HW_SRC['M68K'] + HW_SRC['RTC'] + HW_SRC['SOUND'] + HW_SRC['VIA1']
+MAC_SRC_COMMON = HW_SRC['DISK'] + HW_SRC['M68K'] + HW_SRC['RTC'] + HW_SRC['SOUND'] + HW_SRC['VIA1'] + HW_SRC['SCREEN'] + HW_SRC['SCC'] + HW_SRC['SCSI'] + HW_SRC['MOUSE']
 
 # Macintosh definitions
 MAC_SRC = {
 	'Plus': 
 		MAC_SRC_COMMON +
-		HW_SRC['SCREEN'] +
-		HW_SRC['SCC'] +
-		HW_SRC['SCSI'] +
-		HW_SRC['MOUSE'] +
 		HW_SRC['KBRD'],
 	'II': 
 		MAC_SRC_COMMON +
 		HW_SRC['VIDCARD'] +
-		HW_SRC['ADB'],
+		HW_SRC['ADB'] +
+		HW_SRC['VIA2'] +
+		HW_SRC['SOUND_ASC']
 }
 
 # User interface definitions
@@ -165,7 +166,7 @@ EMU_INC = include_directories([
 # Just gonna do an SDL2 Mac Plus for now
 executable(
 	'microvmac',
-	sources: MAC_SRC['Plus'] + UI_SRC + EMU_SRC,
+	sources: MAC_SRC['II'] + UI_SRC + EMU_SRC,
 	dependencies: [lSDL2],
 	include_directories: EMU_INC,
 )

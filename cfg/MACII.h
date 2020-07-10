@@ -7,17 +7,20 @@
 	you know what you're doing.
 */
 
-//#define EmClassicKbrd 0
-//#define EmADB 1
-//#define EmRTC 1
-//#define EmPMU 0
-//#define EmVIA2 1
+#pragma once
+
+#define EmClassicKbrd 0
+#define EmADB 1
+#define EmRTC 1
+#define EmPMU 0
+#define EmVIA2 1
 #define Use68020 1
-#define EmFPU 1
+//#define EmFPU 1 //temporarily disable, because it's broken 
+#define EmFPU 0
 #define EmMMU 0
 #define EmASC 1
 
-#define kMyClockMult 2
+#define ClockMult 2
 
 #define WantCycByPriOp 0
 #define WantCloserCyc 0
@@ -35,6 +38,11 @@
 
 #define EmVidCard 1
 #define kVidROM_Size 0x000800
+
+#define RomFileName "MacII.ROM"
+#define kRomCheckSum1 0x97851DB
+#define kRomCheckSum2 0x9779D2C
+#define kROM_Size (1 << 18)
 
 /* the Wire variables are 1/0, not true/false */
 

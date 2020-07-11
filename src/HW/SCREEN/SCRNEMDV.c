@@ -24,6 +24,7 @@
 	Macintosh port of vMac, by Philip Cummins.
 */
 
+#include <stddef.h>
 #include "SYSDEPNS.h"
 #include "UI/MYOSGLUE.h"
 #include "UTIL/ENDIANAC.h"
@@ -51,9 +52,12 @@ uint32_t vMacScreenByteWidth;
 uint32_t vMacScreenMonoNumBytes;
 uint32_t vMacScreenMonoByteWidth;
 bool UseLargeScreenHack;
+char *ScreenColorBlack = NULL;
+char *ScreenColorWhite = NULL;
 
 bool Screen_Init(void)
 {
+	// enable a palette because heck it
 	return true;
 }
 
@@ -73,6 +77,10 @@ bool Screen_LoadCfg()
 	if (!okay) { return false; }
 	vMacScreenDepth  = temp;
 	okay = Config_GetBool(CONFIG_VIDEO_USEHACK, &UseLargeScreenHack, false);
+	if (!okay) { return false; }
+	okay = Config_GetString(CONFIG_VIDEO_BLACK, &ScreenColorBlack, "#000000");
+	if (!okay) { return false; }
+	okay = Config_GetString(CONFIG_VIDEO_WHITE, &ScreenColorWhite, "#FFFFFF");
 	if (!okay) { return false; }
 	
 	// Compute the other sorts of things

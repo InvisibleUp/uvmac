@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_pixels.h>
 #include "CNFGRAPI.h"
@@ -32,10 +33,31 @@ SDL_PixelFormat *format = NULL;
 uint8_t * ScalingBuff = nullpr;
 uint8_t * CLUT_final;
 
+SDL_Color bwpalette[2];
+bool bwpalette_loaded = false;
+
 // Set the display palette from the Macintosh's memory or w/e
 static int SetPalette(SDL_Palette *palette, const SDL_Color *macColors, int ncolors)
 {
 	return SDL_SetPaletteColors(palette, macColors, 0, ncolors);
+}
+
+static SDL_Color HexToColor(const char *hexIn, SDL_Color fallback) {
+	unsigned int r, g, b;
+	assert(hexIn != NULL);
+	int numRead = sscanf(hexIn, "#%02x%02x%02x", &r, &g, &b);
+	if (numRead != 3) { return fallback; }
+	SDL_Color result = {.r = r, .g = g, .b = b};
+	return result;
+}
+
+void LoadCustomPalette()
+{
+	if (bwpalette_loaded) { return; }
+	SDL_Color fallbacks[] = { {.r=255,.g=255,.b=255}, {.r=0,.b=0,.g=0} };
+	bwpalette[0] = HexToColor(ScreenColorWhite, fallbacks[0]);
+	bwpalette[1] = HexToColor(ScreenColorBlack, fallbacks[1]);
+	bwpalette_loaded = true;
 }
 
 // Get pixel format for a given screen depth
@@ -80,6 +102,8 @@ GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * src_ptr)
 		vMacScreenByteWidth,
 		src_format
 	);
+	LoadCustomPalette();
+	SetPalette(src->format->palette, bwpalette, 2);
 	
 	// Setup dst surface
 	SDL_LockTexture(texture, NULL, &pixels, &pitch);

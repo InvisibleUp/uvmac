@@ -60,6 +60,16 @@ typedef struct DevMethods {
 } DevMethods_t;
 
 const DevMethods_t DEVICES[] = {
+	// VIA
+	{
+	.init = VIA_Zap,
+	.reset = VIA_Reset,
+	.starttick = VIA_TickTimers,
+	.endtick = NULL,
+	.subtick = NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
+	},
 	// RTC
 	{
 	.init = EmRTC ? RTC_Init : NULL,
@@ -90,16 +100,6 @@ const DevMethods_t DEVICES[] = {
 	.timebegin = NULL,
 	.timeend = NULL,
 	},
-	// ICT
-	{
-	.init = NULL,
-	.reset = ICT_Zap,
-	.starttick = NULL,
-	.endtick = NULL,
-	.subtick = NULL,
-	.timebegin = NULL,
-	.timeend = NULL,
-	},
 	// IWM
 	{
 	.init = NULL,
@@ -111,7 +111,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},
 	// SCC
-	{
+/*	{
 	.init = NULL,
 	.reset = SCC_Reset,
 	.starttick = NULL,
@@ -119,22 +119,12 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// SCSI
 	{
 	.init = NULL,
 	.reset = SCSI_Reset,
 	.starttick = NULL,
-	.endtick = NULL,
-	.subtick = NULL,
-	.timebegin = NULL,
-	.timeend = NULL,
-	},
-	// VIA1
-	{
-	.init = VIA_Zap,
-	.reset = VIA_Reset,
-	.starttick = VIA_TickTimers,
 	.endtick = NULL,
 	.subtick = NULL,
 	.timebegin = NULL,
@@ -243,7 +233,7 @@ const DevMethods_t DEVICES[] = {
 	{
 	.init = Screen_Init,
 	.reset = NULL,
-	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
+	.starttick = Screen_RaiseVBlank,
 	.endtick = Screen_EndTickNotify,
 	.subtick = NULL,
 	.timebegin = NULL,
@@ -303,14 +293,14 @@ LOCALPROC SubTickTaskDo(void)
 			might not equal CyclesScaledPerTick.
 		*/
 
-		ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
+		//ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
 	}
 }
 
 LOCALPROC SubTickTaskStart(void)
 {
 	SubTickCounter = 0;
-	ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
+	//ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
 }
 
 LOCALPROC SubTickTaskEnd(void)
@@ -334,7 +324,8 @@ LOCALPROC SixtiethSecondNotify(void)
 	if (EmClassicKbrd) { KeyBoard_Update(); }
 	//if (EmADB) { ADB_Update(); }
 
-	Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
+	//Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
+	Screen_RaiseVBlank();
 	Sony_Update();
 
 #if EmLocalTalk
@@ -398,7 +389,9 @@ LOCALFUNC bool InitEmulation(void)
 	EmulatedHardwareZap();
 	return true;
 }
+ // VBlank interrupt
 
+#if 0
 LOCALPROC ICT_DoTask(int taskid)
 {
 	switch (taskid) {
@@ -478,18 +471,19 @@ LOCALFUNC uint32_t ICT_DoGetNext(uint32_t maxn)
 
 	return v;
 }
+#endif
 
 LOCALPROC m68k_go_nCycles_1(uint32_t n)
 {
-	uint32_t n2;
-	uint32_t StopiCount = NextiCount + n;
-	do {
-		ICT_DoCurrentTasks();
+	//uint32_t n2;
+	//uint32_t StopiCount = NextiCount + n;
+	//do {
+		/*ICT_DoCurrentTasks();
 		n2 = ICT_DoGetNext(n);
-		NextiCount += n2;
-		m68k_go_nCycles(n2);
-		n = StopiCount - NextiCount;
-	} while (n != 0);
+		NextiCount += n2;*/
+		m68k_go_nCycles(n);
+		//n = StopiCount - NextiCount;
+	//} while (n != 0);
 }
 
 LOCALVAR uint32_t ExtraSubTicksToDo = 0;

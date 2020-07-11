@@ -17,24 +17,19 @@
 /*
 	SouND EMulated DEVice
 
-	Emulation of Sound in the Mac Plus could go here.
+	Emulation of pre-ASC sound circuitry
 
 	This code adapted from "Sound.c" in vMac by Philip Cummins.
 */
 
-#ifndef AllFiles
 #include "SYSDEPNS.h"
 
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 #include "HW/M68K/MINEM68K.h"
-#endif
-
 #include "HW/SOUND/SNDEMDEV.h"
-
-
-#if SoundEnabled
+#include "HW/VIA/VIAEMDEV.h"
 
 #define kSnd_Main_Offset   0x0300
 #define kSnd_Alt_Offset    0x5F00
@@ -102,10 +97,28 @@ LOCALVAR const uint8_t SubTick_n[kNumSubTicks] = {
 LOCALVAR uint32_t SoundInvertPhase = 0;
 LOCALVAR uint16_t SoundInvertState = 0;
 
-IMPORTFUNC uint16_t GetSoundInvertTime(void);
+/// VIA INTERFACE FUNCTIONS //////////////////////////////////////////////////
+
+uint8_t MacSound_GetVolume()
+{
+	return VIA_Read(VIA1, rIRA) & 0b00000111;
+}
+
+bool MacSound_CheckDisabled()
+{
+	return VIA_ReadBit(VIA1, rIRB, 7);
+}
+
+bool MacSound_NeedAltBuffer()
+{
+	return !VIA_ReadBit(VIA1, rIRA, 3);
+}
+
+/// END VIA FUNCTIONS ////////////////////////////////////////////////////////
 
 GLOBALPROC MacSound_SubTick(int SubTick)
 {
+	if (!SoundEnabled) { return; }
 	uint16_t actL;
 	tpSoundSamp p;
 	uint16_t i;
@@ -121,10 +134,10 @@ GLOBALPROC MacSound_SubTick(int SubTick)
 #else
 	CPTR addr = addy + (2 * StartOffset);
 #endif
-	uint16_t SoundInvertTime = GetSoundInvertTime();
-	uint8_t SoundVolume = SoundVolb0
-		| (SoundVolb1 << 1)
-		| (SoundVolb2 << 2);
+	uint16_t SoundInvertTime = ((VIA_Read(VIA1, rT1CH) << 8) | VIA_Read(VIA1, rT1CL));
+	uint8_t SoundVolume = MacSound_GetVolume();
+	bool SoundDisable = MacSound_CheckDisabled();
+	if (VIA_ReadBit(VIA1, rACR, 7) == 0) { SoundInvertTime = 0; }
 
 #if dbglog_HAVE && 0
 	dbglog_StartLine();
@@ -219,5 +232,3 @@ label_retry:
 		}
 	}
 }
-
-#endif

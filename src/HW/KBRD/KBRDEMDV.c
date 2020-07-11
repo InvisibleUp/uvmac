@@ -22,14 +22,12 @@
 	This code adapted from "Keyboard.c" in vMac by Philip Cummins.
 */
 
-#ifndef AllFiles
 #include "SYSDEPNS.h"
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#endif
-
 #include "HW/KBRD/KBRDEMDV.h"
+#include "HW/VIA/VIAEMDEV.h"
 
 #ifdef _VIA_Debug
 #include <stdio.h>
@@ -39,8 +37,12 @@
 	ReportAbnormalID unused 0x0B03 - 0x0BFF
 */
 
-IMPORTPROC KYBD_ShiftOutData(uint8_t v);
-IMPORTFUNC uint8_t KYBD_ShiftInData(void);
+void KYBD_ShiftOutData(uint8_t v) {
+	VIA_ShiftInData(VIA1, v);
+}
+uint8_t KYBD_ShiftInData(void) {
+	return VIA_ShiftOutData(VIA1);
+}
 
 enum {
 	kKybdStateIdle,
@@ -62,9 +64,14 @@ LOCALPROC GotKeyBoardData(uint8_t v)
 		HaveKeyBoardResult = true;
 		KeyBoardResult = v;
 	} else {
-		KYBD_ShiftOutData(v);
-		VIA1_iCB2 = 1;
+		v = VIA_Read(VIA1, rSR);
+		VIA_RaiseInterrupt(VIA1, 2);
 	}
+}
+
+static bool Kybd_CheckDataReady()
+{
+	return VIA_ReadBit(VIA1, rIFR, 2);
 }
 
 LOCALVAR uint8_t InstantCommandData = 0x7B;
@@ -163,7 +170,6 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 #endif
 			HaveKeyBoardResult = false;
 			KYBD_ShiftOutData(KeyBoardResult);
-			VIA1_iCB2 = 1;
 		}
 	}
 }
@@ -172,13 +178,13 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 {
 	switch (KybdState) {
 		case kKybdStateIdle:
-			if (VIA1_iCB2 == 0) {
+			if (Kybd_CheckDataReady() == 0) {
 				KybdState = kKybdStateRecievingCommand;
 #ifdef _VIA_Debug
 				fprintf(stderr, "posting kICT_Kybd_ReceiveCommand\n");
 #endif
-				ICT_add(kICT_Kybd_ReceiveCommand,
-					6800UL * kCycleScale / 64 * ClockMult);
+				/*ICT_add(kICT_Kybd_ReceiveCommand,
+					6800UL * kCycleScale / 64 * ClockMult);*/
 
 				if (InquiryCommandTimer != 0) {
 					InquiryCommandTimer = 0; /* abort Inquiry */
@@ -186,14 +192,14 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 			}
 			break;
 		case kKybdStateRecievedCommand:
-			if (VIA1_iCB2 == 1) {
+			if (Kybd_CheckDataReady() == 1) {
 				KybdState = kKybdStateRecievingEndCommand;
 #ifdef _VIA_Debug
 				fprintf(stderr,
 					"posting kICT_Kybd_ReceiveEndCommand\n");
 #endif
-				ICT_add(kICT_Kybd_ReceiveEndCommand,
-					6800UL * kCycleScale / 64 * ClockMult);
+				/*ICT_add(kICT_Kybd_ReceiveEndCommand,
+					6800UL * kCycleScale / 64 * ClockMult);*/
 			}
 			break;
 	}

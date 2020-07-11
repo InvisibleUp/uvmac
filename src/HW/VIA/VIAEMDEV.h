@@ -32,7 +32,10 @@ typedef struct {
 	uint16_t  vT1C;     // Timer 1 counter
 	uint16_t  vT2L;     // Timer 2 latch
 	uint16_t  vT2C;     // Timer 2 counter
-	VIA_ISR_t vISR[8];  // ISRs to automatically call when interrupt is raised
+	
+	//VIA_ISR_t vISR[8];    // ISRs to automatically call when interrupt is raised
+	VIA_ISR_t vISR_A[8];  // ISRs to call when vBufA changes
+	VIA_ISR_t vISR_B[8];  // ISRs to call when vBufB changes
 } VIA_State_t;
 
 /* Names from SY6522 datasheet */
@@ -56,6 +59,11 @@ typedef enum {
 	rINVALID = 16, // end of list
 } VIA_Register_t;
 
+#define DataRegA 0
+#define DataRegB 1
+#define VIA1     0
+#define VIA2     1
+
 /// PUBLIC FUNCTIONS /////////////////////////////////////////////////////////
 
 // Hardware reset
@@ -66,19 +74,21 @@ void VIA_Reset(void);
 // Raise an interrupt by irq number, calling registered ISR if required
 void VIA_RaiseInterrupt(uint8_t id, uint8_t irq);
 // Register a VIA interrupt service routine
-void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr);
+//void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr);
+// Register data state-change notification interrupts
+void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t bit, VIA_ISR_t isr);
 
 // Tick all timers by one step (call every 1.2766 us)
 void VIA_TickTimers();
 
-// Write to a register
+// Write to a register. Does not raise data ISRs.
 void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data);
 // Read to a register
 uint8_t VIA_Read(uint8_t id, VIA_Register_t reg);
 // Read a single bit
 bool VIA_ReadBit(uint8_t id, VIA_Register_t reg, uint8_t bit);
-// Write a single bit
-void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool set);
+// Write a single bit. Can raise data ISR if required.
+void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool runISR);
 
 // NOTE: for these, raise the interrupt manually w/ VIA_RaiseInterrupt
 void VIA_ShiftInData(uint8_t id, uint8_t v);

@@ -21,6 +21,7 @@
 bool Screen_LoadCfg(void);
 bool Screen_Init(void);
 void Screen_EndTickNotify(void);
+void Screen_RaiseVBlank();
 
 extern uint16_t vMacScreenHeight;
 extern uint16_t vMacScreenWidth;

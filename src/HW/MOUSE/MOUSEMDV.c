@@ -23,7 +23,6 @@
 	Macintosh port of vMac, by Philip Cummins.
 */
 
-#ifndef AllFiles
 #include "SYSDEPNS.h"
 #include "UI/MYOSGLUE.h"
 #include "UTIL/ENDIANAC.h"
@@ -31,9 +30,38 @@
 #include "GLOBGLUE.h"
 #include "HW/SCC/SCCEMDEV.h"
 #include "HW/M68K/MINEM68K.h"
-#endif
-
 #include "HW/MOUSE/MOUSEMDV.h"
+#include "HW/VIA/VIAEMDEV.h"
+
+static void Mouse_SetButtonUp(bool value)
+{
+	switch(CurEmMd) {
+	case kEmMd_Twig43:
+	case kEmMd_Twiggy:
+	case kEmMd_128K:
+	case kEmMd_512Ke:
+	case kEmMd_Plus:
+		VIA_WriteBit(VIA1, rIRB, 3, value, false);
+		return;
+	default:
+		return;
+	}
+}
+
+static bool Mouse_Enabled()
+{
+	switch(CurEmMd) {
+	case kEmMd_Twig43:
+	case kEmMd_Twiggy:
+	case kEmMd_128K:
+	case kEmMd_512Ke:
+	case kEmMd_Plus:
+		//return SCC_InterruptsEnabled();
+		return true;
+	default:
+		return false;
+	}
+}
 
 GLOBALPROC Mouse_Update(void)
 {
@@ -110,7 +138,7 @@ GLOBALPROC Mouse_Update(void)
 			(nullpr != (p = EvtQOutP())))
 		{
 			if (EvtQElKindMouseButton == p->kind) {
-				MouseBtnUp = p->u.press.down ? 0 : 1;
+				Mouse_SetButtonUp(p->u.press.down ? 0 : 1);
 				EvtQOutDone();
 				MasterEvtQLock = 4;
 			}

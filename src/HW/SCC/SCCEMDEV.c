@@ -38,6 +38,8 @@
 	"Zilog SCC/ESCC User's Manual".
 */
 
+#if 0
+
 #ifndef AllFiles
 #include "SYSDEPNS.h"
 
@@ -47,6 +49,7 @@
 #endif
 
 #include "HW/SCC/SCCEMDEV.h"
+#include "HW/VIA/VIAEMDEV.h"
 
 /*
 	ReportAbnormalID unused 0x0721, 0x0722, 0x074D - 0x07FF
@@ -253,6 +256,33 @@ LOCALVAR int ReadModem;
 static int rx_data_offset = 0;
 	/* when data pending, this is used */
 #endif
+
+/// VIA INTERFACE FUNCTIONS //////////////////////////////////////////////////
+
+bool SCC_GetvSCCWrReq()
+{
+	return VIA_ReadBit(VIA1, rIRA, 7);
+}
+
+void SCC_SetvSCCWrReq(bool value)
+{
+	VIA_WriteBit(VIA1, rIRA, 7, value, false);
+}
+
+bool SCC_GetvSync()
+{
+	switch(CurEmMd) {
+	case kEmMd_SE:
+	case kEmMd_SEFDHD:
+	case kEmMd_II:
+	case kEmMd_IIx:
+		return VIA_ReadBit(VIA1, rIRA, 3);
+	default:
+		return false;
+	}
+}
+
+/// END VIA INTERFACE FUNCTIONS //////////////////////////////////////////////
 
 EXPORTFUNC bool SCC_InterruptsEnabled(void)
 {
@@ -2799,3 +2829,5 @@ GLOBALFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr)
 
 	return Data;
 }
+
+#endif

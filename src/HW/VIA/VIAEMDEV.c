@@ -34,6 +34,10 @@ VIA_State_t VIA_State[VIA_MAXNUM];
 // Hardware reset
 bool VIA_Zap(void) {
 	memset(VIA_State, 0, sizeof(VIA_State));
+	for (int i = 0; i < VIA_MAXNUM; i += 1) {
+		VIA_State[i].vBufA = 0xFF;
+		VIA_State[i].vBufB = 0xFF;
+	}
 	return true;
 }
 // Software reset
@@ -44,27 +48,44 @@ void VIA_Reset(void) {
 // Raise an interrupt by irq number
 void VIA_RaiseInterrupt(uint8_t id, uint8_t irq)
 {
-	assert (id == 0 || id == 1);
-	assert (irq <= 6);
+	assert (id < VIA_MAXNUM);
+	assert (irq < 7);
 	
 	// Set interrupt flag
 	VIA_State[id].vIFR |= (1 << irq) | (1 << 7);
 	
-	// Call interrupt handler, if required
+	/*// Call interrupt handler, if required
 	if (VIA_State[id].vISR[irq] != NULL) {
 		VIA_State[id].vISR[irq]();
-	}
+	}*/
 }
 
 // Register a VIA interrupt service routine
-void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr)
+/*void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr)
 {
+	assert(irq < 7);
+	assert(id < VIA_MAXNUM);
 	VIA_State[id].vISR[irq] = isr;
+}*/
+
+// Register data state-change notification interrupts
+void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t irq, VIA_ISR_t isr)
+{
+	assert(id < VIA_MAXNUM);
+	assert(port == DataRegA || port == DataRegB);
+	assert(irq < 8);
+	
+	if (port == DataRegA) {
+		VIA_State[id].vISR_A[irq] = isr;
+	} else {
+		VIA_State[id].vISR_B[irq] = isr;
+	}
 }
 
 // Tick VIA timer 1 (and set PB7 as needed)
 static void VIA_TickTimer1(uint8_t id)
 {
+	assert(id < VIA_MAXNUM);
 	VIA_State_t *via  = &VIA_State[id];
 	uint8_t T1_MODE   = (via->vACR & 0b11000000) >> 6;
 	bool T1_PULSE     = (T1_MODE & 0b01) != 0;
@@ -82,6 +103,7 @@ static void VIA_TickTimer1(uint8_t id)
 // Tick VIA timer 2. Raise interrupt if required
 static void VIA_TickTimer2(uint8_t id, bool forceTick)
 {
+	assert(id < VIA_MAXNUM);
 	VIA_State_t *via  = &VIA_State[id];
 	// Check we're not in the mode where T2 counts PB6 falling edges
 	bool T2_ISCOUNTER = VIA_ReadBit(id, rACR, 5);
@@ -95,21 +117,18 @@ static void VIA_TickTimer2(uint8_t id, bool forceTick)
 // Tick all timers by one step (call every 1.2766 us)
 void VIA_TickTimers()
 {
-	for (uint8_t id = 0; id < 2; id += 1) {
+	for (uint8_t id = 0; id < VIA_MAXNUM; id += 1) {
 		VIA_TickTimer1(id);
 		VIA_TickTimer2(id, false);
 	}
 }
 
 
-// Write to a register
+// Write to a register, bypassing data ISRs
 void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
 {
-	assert(id == 0 || id == 1);
+	assert(id < VIA_MAXNUM);
 	assert(reg < rINVALID);
-	
-	// store PB6's state
-	bool PB6_old = VIA_ReadBit(id, rIRB, 6);
 	VIA_State_t *via = &VIA_State[id];
 	
 	switch(reg) {
@@ -146,19 +165,12 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
 		break;
 	default: assert(true);
 	}
-	
-	// Decrement timer 2 if in counter mode and PB6 hits falling edge
-	bool PB6_new = VIA_ReadBit(id, rIRB, 6);
-	bool T2_ISCOUNTER = VIA_ReadBit(id, rACR, 5);
-	if (PB6_old == true && PB6_new == false && T2_ISCOUNTER) {
-		VIA_TickTimer2(id, true);
-	}
 }
 
 // Read to a register
 uint8_t VIA_Read(uint8_t id, VIA_Register_t reg)
 {
-	assert(id == 0 || id == 1);
+	assert(id < VIA_MAXNUM);
 	assert(reg < rINVALID);
 	VIA_State_t *via = &VIA_State[id];
 	
@@ -170,14 +182,14 @@ uint8_t VIA_Read(uint8_t id, VIA_Register_t reg)
 	case rORA:  return via->vBufA;
 	case rDDRB: return via->vDirB;
 	case rDDRA: return via->vDirA;
-	case rT1CL: via->vIFR   &= 0b10111111;
-	            return (via->vT1C & 0xFF00);
-	case rT1CH: return (via->vT1C & 0x00FF) >> 8;
-	case rT1LL: return (via->vT1L & 0xFF00);
-	case rT1LH: return (via->vT1L & 0x00FF) >> 8;
-	case rT2CL: via->vIFR   &= 0b11011111;
-	            return (via->vT2C & 0xFF00);
-	case rT2CH: return (via->vT2C & 0x00FF) >> 8;
+	case rT1CL: //via->vIFR &= 0b10111111;
+	            return (via->vT1C & 0xFF00) >> 8;
+	case rT1CH: return (via->vT1C & 0x00FF);
+	case rT1LL: return (via->vT1L & 0xFF00) >> 8;
+	case rT1LH: return (via->vT1L & 0x00FF);
+	case rT2CL: //via->vIFR &= 0b11011111;
+	            return (via->vT2C & 0xFF00) >> 8;
+	case rT2CH: return (via->vT2C & 0x00FF);
 	case rSR:   return via->vSR;
 	case rACR:  return via->vACR;
 	case rPCR:  return via->vPCR;
@@ -194,19 +206,32 @@ bool VIA_ReadBit(uint8_t id, VIA_Register_t reg, uint8_t bit)
 }
 
 // Write a single bit
-void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool set)
+void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool runISR)
 {
-	uint8_t data = VIA_Read(id, reg);
-	if (set) { data |=  (1 << bit); }
-	else     { data &= ~(1 << bit); }
+	uint8_t olddata = VIA_Read(id, reg);
+	uint8_t data = olddata;
+	if (value) { data |=  (1 << bit); } // set
+	else       { data &= ~(1 << bit); } // clear
 	VIA_Write(id, reg, data);
+	
+	// Call data-change ISR
+	if (!runISR || (data == olddata)) { return; }
+	if (reg == rIRA || reg == rORA) {
+		if (VIA_State[id].vISR_A[bit] != NULL) {
+			VIA_State[id].vISR_A[bit]();
+		}
+	} else if (reg == rIRB) {
+		if (VIA_State[id].vISR_B[bit] != NULL) {
+			VIA_State[id].vISR_B[bit]();
+		}
+	}
 }
 
 // Called by either end; store data in vSR.
 // TODO: this probably shouldn't be instant.
 void VIA_ShiftInData(uint8_t id, uint8_t v)
 {
-	assert(id == 0 | id == 1);
+	assert(id < VIA_MAXNUM);
 	VIA_State[id].vSR = v;
 }
 
@@ -214,6 +239,7 @@ void VIA_ShiftInData(uint8_t id, uint8_t v)
 // TODO: this probably shouldn't be instant.
 uint8_t VIA_ShiftOutData(uint8_t id)
 {
+	assert(id < VIA_MAXNUM);
 	return VIA_State[id].vSR;
 }
 

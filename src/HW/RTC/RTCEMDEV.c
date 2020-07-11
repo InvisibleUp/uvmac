@@ -27,6 +27,7 @@
 #include "UTIL/ENDIANAC.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
+#include "HW/VIA/VIAEMDEV.h"
 
 /* define _RTC_Debug */
 #ifdef _RTC_Debug
@@ -143,11 +144,53 @@ GLOBALPROC DumpRTC(void)
 }
 #endif
 
+/// VIA interface wrappers ///////////////////////////////////////////////////
+bool RTC_CheckEnabled()
+{
+	// for all Macs except Portable, which isn't emulated yet,
+	return (VIA_ReadBit(VIA1, rIRB, 2) == 0);
+}
+
+bool RTC_CheckDataClock()
+{
+	// for all Macs except Portable, which isn't emulated yet,
+	return (VIA_ReadBit(VIA1, rIRB, 1) == 0);
+}
+
+bool RTC_GetSerialData()
+{
+	// for all Macs except Portable, which isn't emulated yet,
+	return (VIA_ReadBit(VIA1, rIRB, 0) == 0);
+}
+
+void RTC_SetSerialData(bool value)
+{
+	// for all Macs except Portable, which isn't emulated yet,
+	VIA_WriteBit(VIA1, rIRB, 0, value, false);
+}
+
+// Register outgoing ISRs
+void RTC_RegisterISRs()
+{
+	// for all Macs except Portable, which isn't emulated yet,
+	VIA_RegisterDataISR(DataRegB, VIA1, 2, RTCunEnabled_ChangeNtfy);
+	VIA_RegisterDataISR(DataRegB, VIA1, 1, RTCclock_ChangeNtfy);
+	VIA_RegisterDataISR(DataRegB, VIA1, 0, RTCdataLine_ChangeNtfy);
+}
+
+void RTC_RaiseOneSecIRQ()
+{
+	VIA_RaiseInterrupt(VIA1, 0);
+}
+
+
+/// End VIA wrappers /////////////////////////////////////////////////////////
+
 GLOBALFUNC bool RTC_Init(void)
 {
 	int Counter;
 	uint32_t secs;
-
+	
 	RTC.Mode = RTC.ShiftData = RTC.Counter = 0;
 	RTC.DataOut = RTC.DataNextOut = 0;
 	RTC.WrProtect = false;
@@ -296,12 +339,10 @@ if ((0 == vMacScreenDepth) || (vMacScreenDepth >= 4)) {
 
 #endif /* RTCinitPRAM */
 
+	RTC_RegisterISRs();
+
 	return true;
 }
-
-#ifdef RTC_OneSecond_PulseNtfy
-IMPORTPROC RTC_OneSecond_PulseNtfy(void);
-#endif
 
 GLOBALPROC RTC_Interrupt(void)
 {
@@ -319,10 +360,6 @@ GLOBALPROC RTC_Interrupt(void)
 		RTC.Seconds_1[3] = (Seconds & 0xFF000000) >> 24;
 
 		LastRealDate = NewRealDate;
-
-#ifdef RTC_OneSecond_PulseNtfy
-		RTC_OneSecond_PulseNtfy();
-#endif
 	}
 }
 
@@ -437,9 +474,11 @@ LOCALPROC RTC_DoCmd(void)
 	}
 }
 
+/// INTERRUPT SERVICE ROUTINES ///////////////////////////////////////////////
+
 GLOBALPROC RTCunEnabled_ChangeNtfy(void)
 {
-	if (RTCunEnabled) {
+	if (!RTC_CheckEnabled()) {
 		/* abort anything going on */
 		if (RTC.Counter != 0) {
 #ifdef _RTC_Debug
@@ -457,24 +496,22 @@ GLOBALPROC RTCunEnabled_ChangeNtfy(void)
 
 GLOBALPROC RTCclock_ChangeNtfy(void)
 {
-	if (! RTCunEnabled) {
-		if (RTCclock) {
-			RTC.DataOut = RTC.DataNextOut;
-			RTC.Counter = (RTC.Counter - 1) & 0x07;
-			if (RTC.DataOut) {
-				RTCdataLine = ((RTC.ShiftData >> RTC.Counter) & 0x01);
-				/*
-					should notify VIA if changed, so can check
-					data direction
-				*/
-				if (RTC.Counter == 0) {
-					RTC.DataNextOut = 0;
-				}
-			} else {
-				RTC.ShiftData = (RTC.ShiftData << 1) | RTCdataLine;
-				if (RTC.Counter == 0) {
-					RTC_DoCmd();
-				}
+	if (RTC_CheckEnabled() && RTC_CheckDataClock()) {
+		RTC.DataOut = RTC.DataNextOut;
+		RTC.Counter = (RTC.Counter - 1) & 0x07;
+		if (RTC.DataOut) {
+			RTC_SetSerialData((RTC.ShiftData >> RTC.Counter) & 0x01);
+			/*
+				should notify VIA if changed, so can check
+				data direction
+			*/
+			if (RTC.Counter == 0) {
+				RTC.DataNextOut = 0;
+			}
+		} else {
+			RTC.ShiftData = (RTC.ShiftData << 1) | RTC_GetSerialData();
+			if (RTC.Counter == 0) {
+				RTC_DoCmd();
 			}
 		}
 	}

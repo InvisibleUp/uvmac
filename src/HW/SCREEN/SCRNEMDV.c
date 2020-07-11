@@ -31,6 +31,7 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 #include "HW/SCREEN/SCRNEMDV.h"
+#include "HW/VIA/VIAEMDEV.h"
 #include "CFGMAN.h"
 
 #if ! IncludeVidMem
@@ -54,6 +55,11 @@ uint32_t vMacScreenMonoByteWidth;
 bool UseLargeScreenHack;
 char *ScreenColorBlack = NULL;
 char *ScreenColorWhite = NULL;
+
+bool Screen_UseMainPage()
+{
+	return VIA_ReadBit(VIA1, rIRA, 6);
+}
 
 bool Screen_Init(void)
 {
@@ -101,7 +107,7 @@ void Screen_EndTickNotify(void)
 #if IncludeVidMem
 	screencurrentbuff = VidMem;
 #else
-	if (SCRNvPage2 == 1) {
+	if (Screen_UseMainPage()) {
 		screencurrentbuff = get_ram_address(kMain_Buffer);
 	} else {
 		screencurrentbuff = get_ram_address(kAlternate_Buffer);
@@ -109,4 +115,9 @@ void Screen_EndTickNotify(void)
 #endif
 
 	Screen_OutputFrame(screencurrentbuff);
+}
+
+void Screen_RaiseVBlank()
+{
+	VIA_RaiseInterrupt(VIA1, 1);
 }

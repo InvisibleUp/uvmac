@@ -36,6 +36,7 @@
 
 #include "GLOBGLUE.h"
 #include "HW/RAM/RAMADDR.h"
+#include "HW/VIA/VIAEMDEV.h"
 
 /*
 	ReportAbnormalID unused 0x111D - 0x11FF
@@ -57,12 +58,9 @@ bool ControlKeyPressed = false;
 
 IMPORTPROC m68k_reset(void);
 IMPORTPROC IWM_Reset(void);
-IMPORTPROC SCC_Reset(void);
+//IMPORTPROC SCC_Reset(void);
 IMPORTPROC SCSI_Reset(void);
-IMPORTPROC VIA1_Reset(void);
-#if EmVIA2
-IMPORTPROC VIA2_Reset(void);
-#endif
+IMPORTPROC VIA_Reset(void);
 IMPORTPROC Sony_Reset(void);
 
 IMPORTPROC ExtnDisk_Access(CPTR p);
@@ -84,12 +82,9 @@ IMPORTPROC SetHeadATTel(ATTep p);
 IMPORTFUNC ATTep FindATTel(CPTR addr);
 
 IMPORTFUNC uint32_t SCSI_Access(uint32_t Data, bool WriteMem, CPTR addr);
-IMPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
+//IMPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
 IMPORTFUNC uint32_t IWM_Access(uint32_t Data, bool WriteMem, CPTR addr);
-IMPORTFUNC uint32_t VIA1_Access(uint32_t Data, bool WriteMem, CPTR addr);
-#if EmVIA2
-IMPORTFUNC uint32_t VIA2_Access(uint32_t Data, bool WriteMem, CPTR addr);
-#endif
+//IMPORTFUNC uint32_t VIA1_Access(uint32_t Data, bool WriteMem, CPTR addr);
 #if EmASC
 IMPORTFUNC uint32_t ASC_Access(uint32_t Data, bool WriteMem, CPTR addr);
 #endif
@@ -107,12 +102,9 @@ GLOBALVAR uint32_t disk_icon_addr;
 GLOBALPROC customreset(void)
 {
 	IWM_Reset();
-	SCC_Reset();
+	//SCC_Reset();
 	SCSI_Reset();
-	VIA1_Reset();
-#if EmVIA2
-	VIA2_Reset();
-#endif
+	VIA_Reset();
 	Sony_Reset();
 	Extn_Reset();
 #if CurEmMd <= kEmMd_Plus
@@ -129,17 +121,8 @@ GLOBALPROC customreset(void)
 }
 
 GLOBALVAR uint8_t * RAM = nullpr;
-
-#if EmVidCard
 GLOBALVAR uint8_t * VidROM = nullpr;
-#endif
-
-#if IncludeVidMem
 GLOBALVAR uint8_t * VidMem = nullpr;
-#endif
-
-GLOBALVAR uint8_t Wires[kNumWires];
-
 
 #if WantDisasm
 IMPORTPROC m68k_WantDisasmContext(void);
@@ -1081,6 +1064,7 @@ LOCALPROC SetUp_RAM24(void)
 LOCALPROC SetUp_address(void)
 {
 	ATTer r;
+	bool MemOverlay = VIA_ReadBit(VIA1, rIRA, 4);
 
 	if (MemOverlay) {
 		r.cmpmask = Overlay_ROM_CmpZeroMask |
@@ -1237,8 +1221,11 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 						"access VIA1 nonstandard address");
 				}
 #endif
-				Data = VIA1_Access(Data, WriteMem,
-					(addr >> 9) & kVIA1_Mask);
+				if (WriteMem) {
+					VIA_Write(VIA1, (addr >> 9) & kVIA1_Mask, Data);
+				} else {
+					Data = VIA_Read(VIA1, (addr >> 9) & kVIA1_Mask);
+				}
 			}
 
 			break;
@@ -1250,11 +1237,10 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 						|| (0x3e02 == (addr & 0x1FFFF))))
 				{
 					/* for weirdness at offset 0x71E in ROM */
-					Data =
-						(VIA2_Access(Data, WriteMem,
-							(addr >> 9) & kVIA2_Mask) << 8)
-						| VIA2_Access(Data, WriteMem,
-							(addr >> 9) & kVIA2_Mask);
+					Data = (
+						VIA_Read(VIA2, (addr >> 9) & kVIA2_Mask) << 8) |
+						VIA_Read(VIA2, (addr >> 9) & kVIA2_Mask);
+					);
 
 				} else {
 					ReportAbnormalID(0x1109, "access VIA2 word");
@@ -1305,7 +1291,7 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 #endif
 #endif
 				} else {
-					SCC_Reset();
+					//SCC_Reset();
 				}
 			} else
 #endif
@@ -1328,8 +1314,8 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 						"access SCC nonstandard address");
 				}
 #endif
-				Data = SCC_Access(Data, WriteMem,
-					(addr >> 1) & kSCC_Mask);
+				/*Data = SCC_Access(Data, WriteMem,
+					(addr >> 1) & kSCC_Mask);*/
 			}
 			break;
 		case kMMDV_Extn:
@@ -1548,8 +1534,9 @@ GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 		NewIPL = 0;
 	}
 #else
-	uint8_t VIAandNotSCC = VIA1_InterruptRequest
-		& ~ SCCInterruptRequest;
+	uint8_t VIA1_InterruptRequest = (VIA_Read(VIA1, rIFR) & 0b01111111) != 0;
+	uint8_t SCCInterruptRequest = 0;
+	uint8_t VIAandNotSCC = VIA1_InterruptRequest & ~ SCCInterruptRequest;
 	uint8_t NewIPL = VIAandNotSCC
 		| (SCCInterruptRequest << 1)
 		| (InterruptButton << 2);
@@ -1562,20 +1549,14 @@ GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 
 GLOBALFUNC bool AddrSpac_Init(void)
 {
-	int i;
-
-	for (i = 0; i < kNumWires; i++) {
-		Wires[i] = 1;
-	}
-
-	MINEM68K_Init(
-		&CurIPL);
+	MINEM68K_Init(&CurIPL);
 	return true;
 }
 
 GLOBALPROC Memory_Reset(void)
 {
-	MemOverlay = 1;
+	// reset memory overlay
+	VIA_WriteBit(VIA1, rIRA, 4, 1, false);
 	SetUpMemBanks();
 }
 
@@ -1626,7 +1607,7 @@ GLOBALFUNC bool FindKeyEvent(int *VirtualKey, bool *KeyDown)
 #ifdef _VIA_Debug
 #include <stdio.h>
 #endif
-
+/*
 GLOBALVAR uimr ICTactive;
 GLOBALVAR iCountt ICTwhen[kNumICTs];
 
@@ -1650,7 +1631,7 @@ GLOBALFUNC iCountt GetCuriCount(void)
 
 GLOBALPROC ICT_add(int taskid, uint32_t n)
 {
-	/* n must be > 0 */
+	// n must be > 0 
 	int32_t x = GetCyclesRemaining();
 	uint32_t when = NextiCount - x + n;
 
@@ -1664,3 +1645,4 @@ GLOBALPROC ICT_add(int taskid, uint32_t n)
 		NextiCount = when;
 	}
 }
+*/

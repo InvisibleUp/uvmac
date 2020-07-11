@@ -117,6 +117,8 @@ GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * src_ptr)
 	
 	// Blit src to dst
 	SDL_BlitSurface(src, NULL, dst, NULL);
+	// For teh lulz, try a crappy blur
+	//blur(dst, 1);
 	
 	// Free surfaces
 	SDL_FreeSurface(src);

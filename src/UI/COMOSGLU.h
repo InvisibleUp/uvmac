@@ -27,9 +27,6 @@
 #include "MYOSGLUE.h"
 #define EnableRecreateW 1
 
-extern GLOBALVAR uint8_t * ROM;
-extern GLOBALVAR bool ROM_loaded;
-
 extern GLOBALVAR uint32_t vSonyWritableMask;
 extern GLOBALVAR uint32_t vSonyInsertedMask;
 
@@ -212,6 +209,7 @@ extern GLOBALVAR bool EvtQNeedRecover;
 GLOBALPROC Keyboard_UpdateKeyMap(uint8_t key, bool down);
 GLOBALPROC MouseButtonSet(bool down);
 GLOBALPROC MousePositionSet(uint16_t h, uint16_t v);
+GLOBALPROC MousePositionNotify(int h, int v);
 GLOBALPROC InitKeyCodes(void);
 GLOBALPROC DisconnectKeyCodes(uint32_t KeepMask);
 GLOBALPROC EvtQTryRecoverFromFull(void);

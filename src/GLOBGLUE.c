@@ -22,6 +22,8 @@
 	Some code here adapted from "custom.c" in vMac by Philip Cummins,
 	in turn descended from code in the Un*x Amiga Emulator by
 	Bernd Schmidt.
+	
+	TODO: Try to yank as much out of this as we possibly can.
 */
 
 #ifndef AllFiles
@@ -42,6 +44,16 @@
 /*
 	ReportAbnormalID ranges unused 0x12xx - 0xFFxx
 */
+
+// Global variables (temporary location?)
+bool SpeedStopped = false;
+bool RunInBackground = (WantInitRunInBackground != 0);
+bool WantFullScreen = (WantInitFullScreen != 0);
+bool WantMagnify = (WantInitMagnify != 0);
+bool RequestInsertDisk = false;
+uint8_t RequestIthDisk = 0;
+bool ControlKeyPressed = false;
+
 
 IMPORTPROC m68k_reset(void);
 IMPORTPROC IWM_Reset(void);

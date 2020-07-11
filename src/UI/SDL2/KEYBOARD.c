@@ -1,10 +1,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "CNFGRAPI.h"
 #include "EMCONFIG.h"
 #include "SYSDEPNS.h"
+#include "UI/COMOSGLU.h"
 #include "UTIL/ENDIANAC.h"
 #include "UI/MYOSGLUE.h"
 #include "STRCONST.h"

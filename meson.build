@@ -114,9 +114,14 @@ HW_SRC = {
 	'VIDCARD': [
 		'src/HW/VIDCARD/VIDEMDEV.c',
 	],
+	'RAM': [
+	],
+	'ROM': [
+		'src/HW/ROM/ROMEMDEV.c',
+	]
 }
 
-MAC_SRC_COMMON = HW_SRC['DISK'] + HW_SRC['M68K'] + HW_SRC['RTC'] + HW_SRC['SOUND'] + HW_SRC['VIA1'] + HW_SRC['SCREEN'] + HW_SRC['SCC'] + HW_SRC['SCSI'] + HW_SRC['MOUSE']
+MAC_SRC_COMMON = HW_SRC['DISK'] + HW_SRC['M68K'] + HW_SRC['RTC'] + HW_SRC['SOUND'] + HW_SRC['VIA1'] + HW_SRC['SCREEN'] + HW_SRC['SCC'] + HW_SRC['SCSI'] + HW_SRC['MOUSE'] + HW_SRC['ROM']
 
 # Macintosh definitions
 MAC_SRC = {
@@ -135,7 +140,6 @@ MAC_SRC = {
 UI_SRC = [
 	'src/UI/COMOSGLU.c',
 	'src/UI/CONTROLM.c',
-	'src/UI/CONFIGM.c',
 	'src/UI/SDL2/OSGLUSD2.c',
 	#'src/UI/SDL2/CLIPBRD.c',
 	'src/UI/SDL2/DBGLOG.c',

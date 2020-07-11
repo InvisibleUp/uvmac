@@ -2,8 +2,13 @@
 #include <string.h>
 #include <stdio.h>
 #include "SYSDEPNS.h" 
+#include "ERRCODES.h"
+#include "STRCONST.h"
 #include "UI/MYOSGLUE.h"
 #include "UI/COMOSGLU.h"
+#include "UI/CONTROLM.h"
+#include "UI/SDL2/OSGLUSD2.h"
+#include "HW/ROM/ROMEMDEV.h"
 
 /* --- ROM --- */
 
@@ -81,3 +86,39 @@ bool LoadMacRom(void)
 
 	return true; /* keep launching Mini vMac, regardless */
 }
+
+MacErr_t LoadMacRomFrom(char *path)
+{
+	MacErr_t err;
+	FilePtr ROM_File;
+	int File_Size;
+
+	ROM_File = FileOpen(path, "rb");
+	if (NULL == ROM_File) {
+		err = mnvm_fnfErr;
+	} else {
+		File_Size = FileRead(ROM, 1, kROM_Size, ROM_File);
+		if (File_Size != kROM_Size) {
+#ifdef FileEof
+			if (FileEof(ROM_File))
+#else
+			if (File_Size > 0)
+#endif
+			{
+				MacMsgOverride(kStrShortROMTitle,
+					kStrShortROMMessage);
+				err = mnvm_eofErr;
+			} else {
+				MacMsgOverride(kStrNoReadROMTitle,
+					kStrNoReadROMMessage);
+				err = mnvm_miscErr;
+			}
+		} else {
+			err = ROM_IsValid();
+		}
+		FileClose(ROM_File);
+	}
+
+	return err;
+}
+

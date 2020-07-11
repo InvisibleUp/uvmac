@@ -21,6 +21,15 @@
 #include "EMCONFIG.h"
 #include "SYSDEPNS.h"
 
+// various globals
+extern bool SpeedStopped;
+extern bool RunInBackground;
+extern bool WantFullScreen;
+extern bool WantMagnify;
+extern bool RequestInsertDisk;
+extern uint8_t RequestIthDisk;
+extern bool ControlKeyPressed;
+
 #define kEmMd_Twig43      0
 #define kEmMd_Twiggy      1
 #define kEmMd_128K        2

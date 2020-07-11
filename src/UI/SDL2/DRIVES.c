@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "CNFGRAPI.h"
 #include "EMCONFIG.h"
 #include "SYSDEPNS.h"
@@ -9,41 +9,13 @@
 #include "UI/MYOSGLUE.h"
 #include "UI/COMOSGLU.h"
 #include "STRCONST.h"
+#include "HW/ROM/ROMEMDEV.h"
+#include "UI/CONTROLM.h"
+#include "UI/SDL2/OSGLUSD2.h"
 
 /* --- drives --- */
 
 #define NotAfileRef NULL
-
-#ifndef UseRWops
-#define UseRWops 0
-#endif
-
-#if UseRWops
-#define FilePtr SDL_RWops *
-#define Seek SDL_RWseek
-#define SeekSet RW_SEEK_SET
-#define SeekCur RW_SEEK_CUR
-#define SeekEnd RW_SEEK_END
-#define FileRead(ptr, size, nmemb, stream) \
-	SDL_RWread(stream, ptr, size, nmemb)
-#define FileWrite(ptr, size, nmemb, stream) \
-	SDL_RWwrite(stream, ptr, size, nmemb)
-#define FileTell SDL_RWtell
-#define FileClose SDL_RWclose
-#define FileOpen SDL_RWFromFile
-#else
-#define FilePtr FILE *
-#define Seek fseek
-#define SeekSet SEEK_SET
-#define SeekCur SEEK_CUR
-#define SeekEnd SEEK_END
-#define FileRead fread
-#define FileWrite fwrite
-#define FileTell ftell
-#define FileClose fclose
-#define FileOpen fopen
-#define FileEof feof
-#endif
 
 FilePtr Drives[NumDrives]; /* open disk image files */
 
@@ -188,41 +160,6 @@ bool Sony_Insert1(char *drivepath, bool silentfail)
 		return Sony_Insert0(refnum, locked, drivepath);
 	}
 	return false;
-}
-
-MacErr_t LoadMacRomFrom(char *path)
-{
-	MacErr_t err;
-	FilePtr ROM_File;
-	int File_Size;
-
-	ROM_File = FileOpen(path, "rb");
-	if (NULL == ROM_File) {
-		err = mnvm_fnfErr;
-	} else {
-		File_Size = FileRead(ROM, 1, kROM_Size, ROM_File);
-		if (File_Size != kROM_Size) {
-#ifdef FileEof
-			if (FileEof(ROM_File))
-#else
-			if (File_Size > 0)
-#endif
-			{
-				MacMsgOverride(kStrShortROMTitle,
-					kStrShortROMMessage);
-				err = mnvm_eofErr;
-			} else {
-				MacMsgOverride(kStrNoReadROMTitle,
-					kStrNoReadROMMessage);
-				err = mnvm_miscErr;
-			}
-		} else {
-			err = ROM_IsValid();
-		}
-		FileClose(ROM_File);
-	}
-
-	return err;
 }
 
 bool Sony_Insert1a(char *drivepath, bool silentfail)

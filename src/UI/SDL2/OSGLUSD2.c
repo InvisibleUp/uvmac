@@ -33,6 +33,7 @@
 #include "OSGLUSD2.h"
 #include "LANG/INTLCHAR.h"
 #include "HW/SCREEN/SCRNEMDV.h"
+#include "HW/ROM/ROMEMDEV.h"
 #include "CFGMAN.h"
 
 /* --- some simple utilities --- */
@@ -768,7 +769,7 @@ LOCALPROC EnterBackground(void)
 	ForceShowCursor();
 }
 
-LOCALPROC LeaveSpeedStopped(void)
+void LeaveSpeedStopped(void)
 {
 #if SoundEnabled
 	Sound_Start();
@@ -777,7 +778,7 @@ LOCALPROC LeaveSpeedStopped(void)
 	StartUpTimeAdjust();
 }
 
-LOCALPROC EnterSpeedStopped(void)
+void EnterSpeedStopped(void)
 {
 #if SoundEnabled
 	Sound_Stop();

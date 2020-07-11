@@ -228,4 +228,39 @@ typedef struct EvtQEl EvtQEl;
 EXPORTOSGLUFUNC EvtQEl * EvtQOutP(void);
 EXPORTOSGLUPROC EvtQOutDone(void);
 
+/*** Might be SDL2-specific? ***/
+// INTL.c
+void NativeStrFromCStr(char *r, char *s);
+// DRIVES.c
+void InitDrives();
+bool Sony_Insert1a(char *drivepath, bool silentfail);
+bool LoadInitialImages();
+void UnInitDrives();
+// MOUSE.c
+void ForceShowCursor();
+void CheckMouseState();
+// KEYBOARD.c
+void DisconnectKeyCodes3();
+void ReconnectKeyCodes3();
+void DisableKeyRepeat();
+void RestoreKeyRepeat();
+// SOUND.c
+void Sound_Start();
+void Sound_Stop();
+void Sound_SecondNotify();
+bool Sound_Init();
+void Sound_UnInit();
+// TIMEDATE.c
+void StartUpTimeAdjust();
+bool UpdateTrueEmulatedTime();
+bool CheckDateTime();
+bool InitLocationDat();
+void IncrNextTime(void);
+// ROM.c
+bool LoadMacRom();
+MacErr_t LoadMacRomFrom(char *path);
+// OSGLUSD2.c
+void EnterSpeedStopped();
+void LeaveSpeedStopped();
+
 #endif

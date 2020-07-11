@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "UI/MYOSGLUE.h"
 
 /* --- defines and macros and such --- */
@@ -46,6 +46,38 @@
 #define dbglog_SoundStuff (0 && dbglog_HAVE)
 #define dbglog_SoundBuffStats (0 && dbglog_HAVE)
 
+#ifndef UseRWops
+#define UseRWops 0
+#endif
+
+#if UseRWops
+#define FilePtr SDL_RWops *
+#define Seek SDL_RWseek
+#define SeekSet RW_SEEK_SET
+#define SeekCur RW_SEEK_CUR
+#define SeekEnd RW_SEEK_END
+#define FileRead(ptr, size, nmemb, stream) \
+	SDL_RWread(stream, ptr, size, nmemb)
+#define FileWrite(ptr, size, nmemb, stream) \
+	SDL_RWwrite(stream, ptr, size, nmemb)
+#define FileTell SDL_RWtell
+#define FileClose SDL_RWclose
+#define FileOpen SDL_RWFromFile
+#else
+#define FilePtr FILE *
+#define Seek fseek
+#define SeekSet SEEK_SET
+#define SeekCur SEEK_CUR
+#define SeekEnd SEEK_END
+#define FileRead fread
+#define FileWrite fwrite
+#define FileTell ftell
+#define FileClose fclose
+#define FileOpen fopen
+#define FileEof feof
+#endif
+
+
 
 /* --- globals --- */
 
@@ -77,3 +109,7 @@ extern bool HaveCursorHidden;
 extern bool WantCursorHidden;
 
 extern tpSoundSamp TheSoundBuffer;
+
+// Functions
+
+void DoKeyCode(SDL_Keysym *r, bool down);

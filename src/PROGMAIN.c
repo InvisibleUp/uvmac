@@ -28,7 +28,6 @@
 #include "HW/M68K/M68KITAB.h"
 #include "HW/M68K/MINEM68K.h"
 #include "HW/VIA/VIAEMDEV.h"
-#include "HW/VIA/VIA2EMDV.h"
 #include "HW/DISK/IWMEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"
 #include "HW/RTC/RTCEMDEV.h"
@@ -133,23 +132,13 @@ const DevMethods_t DEVICES[] = {
 	},
 	// VIA1
 	{
-	.init = VIA1_Zap,
-	.reset = VIA1_Reset,
-	.starttick = NULL,
+	.init = VIA_Zap,
+	.reset = VIA_Reset,
+	.starttick = VIA_TickTimers,
 	.endtick = NULL,
 	.subtick = NULL,
-	.timebegin = VIA1_ExtraTimeBegin,
-	.timeend = VIA1_ExtraTimeEnd,
-	},
-	// VIA2
-	{
-	.init = NULL,
-	.reset = EmVIA2 ? VIA2_Zap : NULL,
-	.starttick = NULL,
-	.endtick = NULL,
-	.subtick = NULL,
-	.timebegin = EmVIA2 ? VIA2_ExtraTimeBegin : NULL,
-	.timeend = EmVIA2 ? VIA2_ExtraTimeEnd : NULL,
+	.timebegin = NULL,
+	.timeend = NULL,
 	},
 	// Sony disk drive
 	{

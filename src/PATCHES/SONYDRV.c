@@ -12,7 +12,11 @@
 #include "UTIL/ENDIANAC.h"
 #include "UI/MYOSGLUE.h"
 #include "PATCHES/SONYDRV.h"
-#include "PATCHES/SCRNHACK.h"
+#include "PATCHES/ROMEMDEV.h"
+//#include "PATCHES/SCRNHACK.h"
+
+// temporary screenhack stuff
+#include "HW/SCREEN/SCRNEMDV.h"
 
 // Include binaries
 INCBIN(SonyDriver, "rsrc/SONYDRV.bin");
@@ -66,6 +70,6 @@ void Sony_Install(void)
 	Sony_LoadIcon(pto, &icoSize);
 	pto += icoSize;
 
-	// yeah this sucks but it's so awful and intertwined that i have no choice
-	//ScreenHack_Install(pto);
+	// currently broken
+	//ScreenHack_Install(&pto);
 }

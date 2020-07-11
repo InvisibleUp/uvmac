@@ -1,7 +1,7 @@
 /*
  * CONFIG Mode
  * 
- * A replacement for Control Mode, with prettier grapgics and actual settings
+ * A replacement for Control Mode, with prettier graphics and actual settings
  * 
  */
 

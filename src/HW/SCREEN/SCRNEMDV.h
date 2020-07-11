@@ -18,6 +18,20 @@
 #ifndef SCRNEMDV_H
 #define SCRNEMDV_H
 
-EXPORTPROC Screen_EndTickNotify(void);
+bool Screen_LoadCfg(void);
+bool Screen_Init(void);
+void Screen_EndTickNotify(void);
+
+extern uint16_t vMacScreenHeight;
+extern uint16_t vMacScreenWidth;
+extern uint16_t vMacScreenDepth;
+extern uint32_t vMacScreenNumPixels;
+extern uint32_t vMacScreenNumBits;
+extern uint32_t vMacScreenNumBytes;
+extern uint32_t vMacScreenBitWidth;
+extern uint32_t vMacScreenByteWidth;
+extern uint32_t vMacScreenMonoNumBytes;
+extern uint32_t vMacScreenMonoByteWidth;
+bool UseLargeScreenHack;
 
 #endif

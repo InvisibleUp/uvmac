@@ -18,9 +18,6 @@
 #define ROMEMDEV_H
 
 
-#ifndef UseLargeScreenHack
-#define UseLargeScreenHack 0
-#endif
 #ifndef DisableRomCheck
 #define DisableRomCheck 1
 #endif

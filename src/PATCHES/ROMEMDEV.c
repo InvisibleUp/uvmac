@@ -32,6 +32,7 @@
 #include "UTIL/ENDIANAC.h"
 #include "PATCHES/ROMEMDEV.h"
 #include "PATCHES/SCRNHACK.h"
+#include "PATCHES/SONYDRV.h"
 #ifdef CurAltHappyMac
 #include "HPMCHACK.h"
 #endif

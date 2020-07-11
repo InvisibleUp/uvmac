@@ -55,12 +55,12 @@
 #define AutoKeyThresh 0x06
 #define AutoKeyRate 0x03
 
-#define CurEmMd kEmMd_II
+#define CurEmMd kEmMd_Plus
 
 //#if (CurEmMd == kEmMd_Plus)
-//#include "MACPLUS.h"
+#include "MACPLUS.h"
 //#elif (CurEmMd == kEmMd_II)
-#include "MACII.h"
+//#include "MACII.h"
 //#endif
 
 #define WantDisasm 0

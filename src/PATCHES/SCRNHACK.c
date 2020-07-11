@@ -28,13 +28,12 @@
 #include "GLOBGLUE.h"
 #include "incbin/incbin.h"
 #include "PATCHES/ROMEMDEV.h"
+#include "HW/SCREEN/SCRNEMDV.h"
 
-void ScreenHack_Install(uint8_t *pto)
+static void ScreenHack_Install_64K(uint8_t **pto)
 {
-	uint8_t * patchp = pto;
-	if (!UseLargeScreenHack) {return; }
-
-#if CurEmMd <= kEmMd_128K
+	uint8_t *patchp = *pto;
+	
 	do_put_mem_long(112 + ROM, kVidMem_Base);
 	do_put_mem_long(260 + ROM, kVidMem_Base);
 	do_put_mem_long(292 + ROM, kVidMem_Base
@@ -54,11 +53,11 @@ void ScreenHack_Install(uint8_t *pto)
 
 	/* screen setup, main */
 	{
-		pto = 862 + ROM;
-		do_put_mem_word(pto, 0x4EB9); /* JSR */
-		pto += 2;
-		do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-		pto += 4;
+		*pto = 862 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
 		do_put_mem_word(patchp, 0x21FC); /* MOVE.L */
 		patchp += 2;
@@ -99,58 +98,64 @@ void ScreenHack_Install(uint8_t *pto)
 	do_put_mem_word(2052 + ROM, vMacScreenWidth / 8 - 2);
 
 	/* cursor handling */
-#if vMacScreenWidth >= 1024
-	pto = 3448 + ROM;
-	do_put_mem_word(pto, 0x4EB9); /* JSR */
-	pto += 2;
-	do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-	pto += 4;
+	if (vMacScreenWidth >= 1024) {
+		*pto = 3448 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
-	do_put_mem_word(patchp, 0x41F8); /* Lea.L     (CrsrSave),A0 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0x088C);
-	patchp += 2;
-	do_put_mem_word(patchp, 0x203C); /* MOVE.L #$x,D0 */
-	patchp += 2;
-	do_put_mem_long(patchp, (vMacScreenWidth / 8));
-	patchp += 4;
-	do_put_mem_word(patchp, 0x4E75); /* RTS */
-	patchp += 2;
-#else
-	do_put_mem_word(3452 + ROM, 0x7000 + (vMacScreenWidth / 8));
-#endif
+		do_put_mem_word(patchp, 0x41F8); /* Lea.L     (CrsrSave),A0 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0x088C);
+		patchp += 2;
+		do_put_mem_word(patchp, 0x203C); /* MOVE.L #$x,D0 */
+		patchp += 2;
+		do_put_mem_long(patchp, (vMacScreenWidth / 8));
+		patchp += 4;
+		do_put_mem_word(patchp, 0x4E75); /* RTS */
+		patchp += 2;
+	} else {
+		do_put_mem_word(3452 + ROM, 0x7000 + (vMacScreenWidth / 8));
+	}
+	
 	do_put_mem_word(3572 + ROM, vMacScreenWidth - 32);
 	do_put_mem_word(3578 + ROM, vMacScreenWidth - 32);
 	do_put_mem_word(3610 + ROM, vMacScreenHeight - 16);
 	do_put_mem_word(3616 + ROM, vMacScreenHeight);
-#if vMacScreenWidth >= 1024
-	pto = 3646 + ROM;
-	do_put_mem_word(pto, 0x4EB9); /* JSR */
-	pto += 2;
-	do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-	pto += 4;
+	
+	if (vMacScreenWidth >= 1024) {
+		*pto = 3646 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
-	do_put_mem_word(patchp, 0x2A3C); /* MOVE.L #$x,D5 */
-	patchp += 2;
-	do_put_mem_long(patchp, (vMacScreenWidth / 8));
-	patchp += 4;
-	do_put_mem_word(patchp, 0xC2C5); /* MulU      D5,D1 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0xD3C1); /* AddA.L    D1,A1 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0x4E75); /* RTS */
-	patchp += 2;
-#else
-	do_put_mem_word(3646 + ROM, 0x7A00 + (vMacScreenWidth / 8));
-#endif
+		do_put_mem_word(patchp, 0x2A3C); /* MOVE.L #$x,D5 */
+		patchp += 2;
+		do_put_mem_long(patchp, (vMacScreenWidth / 8));
+		patchp += 4;
+		do_put_mem_word(patchp, 0xC2C5); /* MulU      D5,D1 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0xD3C1); /* AddA.L    D1,A1 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0x4E75); /* RTS */
+		patchp += 2;
+	} else {
+		do_put_mem_word(3646 + ROM, 0x7A00 + (vMacScreenWidth / 8));
+	}
 
 	/* set up screen bitmap */
 	do_put_mem_word(3832 + ROM, vMacScreenHeight);
 	do_put_mem_word(3838 + ROM, vMacScreenWidth);
 	/* do_put_mem_word(7810 + ROM, vMacScreenHeight); */
+}
 
-#elif CurEmMd <= kEmMd_Plus
-
+// Currently not functional
+static void ScreenHack_Install_128K(uint8_t **pto)
+{
+	uint8_t *patchp = *pto;
+	
 	do_put_mem_long(138 + ROM, kVidMem_Base);
 	do_put_mem_long(326 + ROM, kVidMem_Base);
 	do_put_mem_long(356 + ROM, kVidMem_Base
@@ -173,11 +178,11 @@ void ScreenHack_Install(uint8_t *pto)
 
 	/* screen setup, main */
 	{
-		pto = 1132 + ROM;
-		do_put_mem_word(pto, 0x4EB9); /* JSR */
-		pto += 2;
-		do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-		pto += 4;
+		*pto = 1132 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
 		do_put_mem_word(patchp, 0x21FC); /* MOVE.L */
 		patchp += 2;
@@ -222,50 +227,50 @@ void ScreenHack_Install(uint8_t *pto)
 	do_put_mem_word(3894 + ROM, vMacScreenWidth / 8 - 2);
 
 	/* cursor handling */
-#if vMacScreenWidth >= 1024
-	pto = 7372 + ROM;
-	do_put_mem_word(pto, 0x4EB9); /* JSR */
-	pto += 2;
-	do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-	pto += 4;
+	if (vMacScreenWidth >= 1024) {
+		*pto = 7372 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
-	do_put_mem_word(patchp, 0x41F8); /* Lea.L     (CrsrSave), A0 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0x088C);
-	patchp += 2;
-	do_put_mem_word(patchp, 0x203C); /* MOVE.L #$x, D0 */
-	patchp += 2;
-	do_put_mem_long(patchp, (vMacScreenWidth / 8));
-	patchp += 4;
-	do_put_mem_word(patchp, 0x4E75); /* RTS */
-	patchp += 2;
-#else
-	do_put_mem_word(7376 + ROM, 0x7000 + (vMacScreenWidth / 8));
-#endif
+		do_put_mem_word(patchp, 0x41F8); /* Lea.L     (CrsrSave), A0 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0x088C);
+		patchp += 2;
+		do_put_mem_word(patchp, 0x203C); /* MOVE.L #$x, D0 */
+		patchp += 2;
+		do_put_mem_long(patchp, (vMacScreenWidth / 8));
+		patchp += 4;
+		do_put_mem_word(patchp, 0x4E75); /* RTS */
+		patchp += 2;
+	} else {
+		do_put_mem_word(7376 + ROM, 0x7000 + (vMacScreenWidth / 8));
+	}
 	do_put_mem_word(7496 + ROM, vMacScreenWidth - 32);
 	do_put_mem_word(7502 + ROM, vMacScreenWidth - 32);
 	do_put_mem_word(7534 + ROM, vMacScreenHeight - 16);
 	do_put_mem_word(7540 + ROM, vMacScreenHeight);
-#if vMacScreenWidth >= 1024
-	pto = 7570 + ROM;
-	do_put_mem_word(pto, 0x4EB9); /* JSR */
-	pto += 2;
-	do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-	pto += 4;
+	if (vMacScreenWidth >= 1024) {
+		*pto = 7570 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
-	do_put_mem_word(patchp, 0x2A3C); /* MOVE.L #$x,D5 */
-	patchp += 2;
-	do_put_mem_long(patchp, (vMacScreenWidth / 8));
-	patchp += 4;
-	do_put_mem_word(patchp, 0xC2C5); /* MulU      D5,D1 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0xD3C1); /* AddA.L    D1,A1 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0x4E75); /* RTS */
-	patchp += 2;
-#else
-	do_put_mem_word(7570 + ROM, 0x7A00 + (vMacScreenWidth / 8));
-#endif
+		do_put_mem_word(patchp, 0x2A3C); /* MOVE.L #$x,D5 */
+		patchp += 2;
+		do_put_mem_long(patchp, (vMacScreenWidth / 8));
+		patchp += 4;
+		do_put_mem_word(patchp, 0xC2C5); /* MulU      D5,D1 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0xD3C1); /* AddA.L    D1,A1 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0x4E75); /* RTS */
+		patchp += 2;
+	} else {
+		do_put_mem_word(7570 + ROM, 0x7A00 + (vMacScreenWidth / 8));
+	}
 
 	/* set up screen bitmap */
 	do_put_mem_word(7784 + ROM, vMacScreenHeight);
@@ -297,16 +302,19 @@ void ScreenHack_Install(uint8_t *pto)
 	do_put_mem_word(5212 + ROM, vMacScreenHeight / 2 - 101);
 	do_put_mem_word(5214 + ROM, vMacScreenWidth / 2 - 218);
 #endif
+}
 
-#elif CurEmMd <= kEmMd_Classic
-
+void ScreenHack_Install_256K(uint8_t **pto)
+{
+	uint8_t *patchp = *pto;
+	
 	/* screen setup, main */
 	{
-		pto = 1482 + ROM;
-		do_put_mem_word(pto, 0x4EB9); /* JSR */
-		pto += 2;
-		do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-		pto += 4;
+		*pto = 1482 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
 		do_put_mem_word(patchp, 0x21FC); /* MOVE.L */
 		patchp += 2;
@@ -357,55 +365,79 @@ void ScreenHack_Install(uint8_t *pto)
 	do_put_mem_word(4586 + ROM, vMacScreenWidth / 8);
 
 	/* cursor handling */
-#if vMacScreenWidth >= 1024
-	pto = 101886 + ROM;
-	do_put_mem_word(pto, 0x4EB9); /* JSR */
-	pto += 2;
-	do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-	pto += 4;
+	if (vMacScreenWidth >= 1024) {
+		*pto = 101886 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
-	do_put_mem_word(patchp, 0x41F8); /* Lea.L     (CrsrSave),A0 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0x088C);
-	patchp += 2;
-	do_put_mem_word(patchp, 0x203C); /* MOVE.L #$x,D0 */
-	patchp += 2;
-	do_put_mem_long(patchp, (vMacScreenWidth / 8));
-	patchp += 4;
-	do_put_mem_word(patchp, 0x4E75); /* RTS */
-	patchp += 2;
-#else
-	do_put_mem_word(101890 + ROM, 0x7000 + (vMacScreenWidth / 8));
-#endif
+		do_put_mem_word(patchp, 0x41F8); /* Lea.L     (CrsrSave),A0 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0x088C);
+		patchp += 2;
+		do_put_mem_word(patchp, 0x203C); /* MOVE.L #$x,D0 */
+		patchp += 2;
+		do_put_mem_long(patchp, (vMacScreenWidth / 8));
+		patchp += 4;
+		do_put_mem_word(patchp, 0x4E75); /* RTS */
+		patchp += 2;
+	} else {
+		do_put_mem_word(101890 + ROM, 0x7000 + (vMacScreenWidth / 8));
+	}
 	do_put_mem_word(102010 + ROM, vMacScreenWidth - 32);
 	do_put_mem_word(102016 + ROM, vMacScreenWidth - 32);
 	do_put_mem_word(102048 + ROM, vMacScreenHeight - 16);
 	do_put_mem_word(102054 + ROM, vMacScreenHeight);
-#if vMacScreenWidth >= 1024
-	pto = 102084 + ROM;
-	do_put_mem_word(pto, 0x4EB9); /* JSR */
-	pto += 2;
-	do_put_mem_long(pto, kROM_Base + (patchp - ROM));
-	pto += 4;
+	
+	if (vMacScreenWidth >= 1024) {
+		*pto = 102084 + ROM;
+		do_put_mem_word(*pto, 0x4EB9); /* JSR */
+		*pto += 2;
+		do_put_mem_long(*pto, kROM_Base + (patchp - ROM));
+		*pto += 4;
 
-	do_put_mem_word(patchp, 0x2A3C); /* MOVE.L #$x, D5 */
-	patchp += 2;
-	do_put_mem_long(patchp, (vMacScreenWidth / 8));
-	patchp += 4;
-	do_put_mem_word(patchp, 0xC2C5); /* MulU      D5, D1 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0xD3C1); /* AddA.L    D1, A1 */
-	patchp += 2;
-	do_put_mem_word(patchp, 0x4E75); /* RTS */
-	patchp += 2;
-#else
-	do_put_mem_word(102084 + ROM, 0x7A00 + (vMacScreenWidth / 8));
-#endif
+		do_put_mem_word(patchp, 0x2A3C); /* MOVE.L #$x, D5 */
+		patchp += 2;
+		do_put_mem_long(patchp, (vMacScreenWidth / 8));
+		patchp += 4;
+		do_put_mem_word(patchp, 0xC2C5); /* MulU      D5, D1 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0xD3C1); /* AddA.L    D1, A1 */
+		patchp += 2;
+		do_put_mem_word(patchp, 0x4E75); /* RTS */
+		patchp += 2;
+	} else {
+		do_put_mem_word(102084 + ROM, 0x7A00 + (vMacScreenWidth / 8));
+	}
 
 	/* set up screen bitmap */
 	do_put_mem_word(102298 + ROM, vMacScreenHeight);
 	do_put_mem_word(102304 + ROM, vMacScreenWidth);
 	do_put_mem_word(102324 + ROM, vMacScreenHeight);
+}
 
-#endif
+void ScreenHack_Install(uint8_t **pto)
+{
+	if (!UseLargeScreenHack) { return; }
+	
+	switch(CurEmMd) {
+	case kEmMd_Twiggy:
+	case kEmMd_Twig43:
+	case kEmMd_128K:
+		ScreenHack_Install_64K(pto);
+		break;
+	case kEmMd_512Ke:
+	case kEmMd_Plus:
+		ScreenHack_Install_128K(pto);
+		break;
+	case kEmMd_SE:
+	case kEmMd_SEFDHD:
+	case kEmMd_Classic:
+		ScreenHack_Install_256K(pto);
+		break;
+	default:
+		// unsupported
+		break;
+	}
 }

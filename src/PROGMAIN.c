@@ -46,11 +46,6 @@
 
 #include "PROGMAIN.h"
 
-// Temporary location for config variables
-uint16_t vMacScreenHeight = 342;
-uint16_t vMacScreenWidth = 512;
-uint16_t vMacScreenDepth = 0;
-
 // Let's define a bunch of function structure thingies
 
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
@@ -257,7 +252,7 @@ const DevMethods_t DEVICES[] = {
 	},
 	// Screen
 	{
-	.init = NULL,
+	.init = Screen_Init,
 	.reset = NULL,
 	.starttick = Sixtieth_PulseNtfy, // VBlank interrupt
 	.endtick = Screen_EndTickNotify,

@@ -152,9 +152,11 @@ UI_SRC = [
 EMU_SRC = [
 	'src/PROGMAIN.c',
 	'src/GLOBGLUE.c',
+	'src/CFGMAN.c',
 	'src/PATCHES/ROMEMDEV.c',
 	'src/UTIL/DATE2SEC.c',
 	'src/LANG/INTLCHAR.c',
+	'src/tomlc99/toml.c'
 ]
 
 EMU_INC = include_directories([
@@ -166,7 +168,7 @@ EMU_INC = include_directories([
 # Just gonna do an SDL2 Mac Plus for now
 executable(
 	'microvmac',
-	sources: MAC_SRC['II'] + UI_SRC + EMU_SRC,
+	sources: MAC_SRC['Plus'] + UI_SRC + EMU_SRC,
 	dependencies: [lSDL2],
 	include_directories: EMU_INC,
 )

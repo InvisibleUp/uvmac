@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <SDL.h>
-#include <SDL_pixels.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_pixels.h>
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
 #include "UTIL/ENDIANAC.h"
@@ -10,6 +10,7 @@
 #include "UI/COMOSGLU.h"
 #include "STRCONST.h"
 #include "OSGLUSD2.h"
+#include "HW/SCREEN/SCRNEMDV.h"
 
 /* --- video out --- */
 

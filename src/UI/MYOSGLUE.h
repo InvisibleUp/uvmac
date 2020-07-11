@@ -122,16 +122,6 @@ EXPORTVAR(uint32_t, CurMacDelta)
 #endif
 
 
-#define vMacScreenNumPixels \
-	((long)vMacScreenHeight * (long)vMacScreenWidth)
-#define vMacScreenNumBits (vMacScreenNumPixels << vMacScreenDepth)
-#define vMacScreenNumBytes (vMacScreenNumBits / 8)
-#define vMacScreenBitWidth ((long)vMacScreenWidth << vMacScreenDepth)
-#define vMacScreenByteWidth (vMacScreenBitWidth / 8)
-
-#define vMacScreenMonoNumBytes (vMacScreenNumPixels / 8)
-#define vMacScreenMonoByteWidth ((long)vMacScreenWidth / 8)
-
 EXPORTVAR(bool, UseColorMode)
 EXPORTVAR(bool, ColorModeWorks)
 

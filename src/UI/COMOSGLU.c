@@ -23,8 +23,8 @@
 #include "GLOBGLUE.h"
 #include "MYOSGLUE.h"
 #include "CNFGRAPI.h"
-
 #include "COMOSGLU.h"
+#include "HW/SCREEN/SCRNEMDV.h"
 
 GLOBALVAR uint8_t * ROM = nullpr;
 GLOBALVAR bool ROM_loaded = false;

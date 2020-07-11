@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
 #include "UTIL/ENDIANAC.h"
@@ -32,6 +32,8 @@
 #include "STRCONST.h"
 #include "OSGLUSD2.h"
 #include "LANG/INTLCHAR.h"
+#include "HW/SCREEN/SCRNEMDV.h"
+#include "CFGMAN.h"
 
 /* --- some simple utilities --- */
 
@@ -206,7 +208,7 @@ LOCALPROC HandleTheEvent(SDL_Event *event)
 LOCALVAR int argc;
 LOCALVAR char **argv;
 
-LOCALFUNC bool Screen_Init(void)
+LOCALFUNC bool SDL_InitDisplay(void)
 {
 	bool v = false;
 
@@ -799,12 +801,12 @@ LOCALPROC CheckForSavedTasks(void)
 
 	if (RequestMacOff) {
 		RequestMacOff = false;
-		if (AnyDiskInserted()) {
+		/*if (AnyDiskInserted()) {
 			MacMsgOverride(kStrQuitWarningTitle,
 				kStrQuitWarningMessage);
-		} else {
+		} else {*/
 			ForceMacOff = true;
-		}
+		//}
 	}
 
 	if (ForceMacOff) {
@@ -1043,6 +1045,7 @@ LOCALPROC UninitWhereAmI(void)
 
 LOCALFUNC bool InitOSGLU(void)
 {
+	if (Config_TryInit())
 	if (AllocMemory())
 #if CanGetAppPath
 	if (InitWhereAmI())
@@ -1057,7 +1060,7 @@ LOCALFUNC bool InitOSGLU(void)
 #if SoundEnabled
 	if (Sound_Init())
 #endif
-	if (Screen_Init())
+	if (SDL_InitDisplay())
 	if (CreateMainWindow())
 	if (WaitForRom())
 	{

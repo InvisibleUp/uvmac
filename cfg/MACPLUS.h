@@ -1,3 +1,4 @@
+#pragma once
 #define EmClassicKbrd 1
 #define EmADB 0
 #define EmRTC 1

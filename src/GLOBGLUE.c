@@ -1607,7 +1607,7 @@ GLOBALFUNC bool FindKeyEvent(int *VirtualKey, bool *KeyDown)
 #ifdef _VIA_Debug
 #include <stdio.h>
 #endif
-/*
+
 GLOBALVAR uimr ICTactive;
 GLOBALVAR iCountt ICTwhen[kNumICTs];
 
@@ -1645,4 +1645,4 @@ GLOBALPROC ICT_add(int taskid, uint32_t n)
 		NextiCount = when;
 	}
 }
-*/
+

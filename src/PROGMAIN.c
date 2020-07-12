@@ -64,14 +64,14 @@ const DevMethods_t DEVICES[] = {
 	{
 	.init = VIA_Zap,
 	.reset = VIA_Reset,
-	.starttick = VIA_TickTimers,
+	.starttick = NULL,//VIA_TickTimers,
 	.endtick = NULL,
 	.subtick = NULL,
-	.timebegin = NULL,
-	.timeend = NULL,
+	.timebegin = VIA1_ExtraTimeBegin,
+	.timeend = VIA1_ExtraTimeEnd,
 	},
 	// RTC
-	{
+/*	{
 	.init = EmRTC ? RTC_Init : NULL,
 	.reset = NULL,
 	.starttick = NULL,
@@ -79,7 +79,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// ROM
 	{
 	.init = ROM_Init,
@@ -121,7 +121,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},*/
 	// SCSI
-	{
+/*	{
 	.init = NULL,
 	.reset = SCSI_Reset,
 	.starttick = NULL,
@@ -139,7 +139,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// Extn
 	{
 	.init = NULL,
@@ -161,7 +161,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},
 	// Mouse
-	{
+/*	{
 	.init = NULL,
 	.reset = NULL,
 	.starttick = Mouse_Update,
@@ -169,9 +169,9 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// Classic Keyboard
-	{
+/*	{
 	.init = NULL,
 	.reset = NULL,
 	.starttick = EmClassicKbrd ? KeyBoard_Update : NULL,
@@ -179,7 +179,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},
+	},*/
 	// ADB
 	/*{
 	.init = NULL,
@@ -210,7 +210,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},*/
 	// ASC
-	{
+/*	{
 	.init = NULL,
 	.reset = NULL,
 	.starttick = NULL,
@@ -218,7 +218,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = EmASC ? ASC_SubTick : NULL,
 	.timebegin = NULL,
 	.timeend = NULL
-	},
+	},*/
 	// Sound (non-ASC)
 	{
 	.init = NULL,
@@ -293,14 +293,14 @@ LOCALPROC SubTickTaskDo(void)
 			might not equal CyclesScaledPerTick.
 		*/
 
-		//ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
+		ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
 	}
 }
 
 LOCALPROC SubTickTaskStart(void)
 {
 	SubTickCounter = 0;
-	//ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
+	ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
 }
 
 LOCALPROC SubTickTaskEnd(void)
@@ -324,7 +324,6 @@ LOCALPROC SixtiethSecondNotify(void)
 	if (EmClassicKbrd) { KeyBoard_Update(); }
 	//if (EmADB) { ADB_Update(); }
 
-	//Sixtieth_PulseNtfy(); /* Vertical Blanking Interrupt */
 	Screen_RaiseVBlank();
 	Sony_Update();
 
@@ -391,7 +390,6 @@ LOCALFUNC bool InitEmulation(void)
 }
  // VBlank interrupt
 
-#if 0
 LOCALPROC ICT_DoTask(int taskid)
 {
 	switch (taskid) {
@@ -422,14 +420,6 @@ LOCALPROC ICT_DoTask(int taskid)
 		case kICT_VIA1_Timer2Check:
 			VIA1_DoTimer2Check();
 			break;
-#if EmVIA2
-		case kICT_VIA2_Timer1Check:
-			VIA2_DoTimer1Check();
-			break;
-		case kICT_VIA2_Timer2Check:
-			VIA2_DoTimer2Check();
-			break;
-#endif
 		default:
 			ReportAbnormalID(0x1001, "unknown taskid in ICT_DoTask");
 			break;
@@ -471,19 +461,18 @@ LOCALFUNC uint32_t ICT_DoGetNext(uint32_t maxn)
 
 	return v;
 }
-#endif
 
 LOCALPROC m68k_go_nCycles_1(uint32_t n)
 {
-	//uint32_t n2;
-	//uint32_t StopiCount = NextiCount + n;
-	//do {
-		/*ICT_DoCurrentTasks();
+	uint32_t n2;
+	uint32_t StopiCount = NextiCount + n;
+	do {
+		ICT_DoCurrentTasks();
 		n2 = ICT_DoGetNext(n);
-		NextiCount += n2;*/
-		m68k_go_nCycles(n);
-		//n = StopiCount - NextiCount;
-	//} while (n != 0);
+		NextiCount += n2;
+		m68k_go_nCycles(n2);
+		n = StopiCount - NextiCount;
+	} while (n != 0);
 }
 
 LOCALVAR uint32_t ExtraSubTicksToDo = 0;

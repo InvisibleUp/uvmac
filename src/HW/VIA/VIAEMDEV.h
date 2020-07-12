@@ -33,7 +33,7 @@ typedef struct {
 	uint16_t  vT2L;     // Timer 2 latch
 	uint16_t  vT2C;     // Timer 2 counter
 	
-	//VIA_ISR_t vISR[8];    // ISRs to automatically call when interrupt is raised
+	VIA_ISR_t vISR[8];    // ISRs to automatically call when interrupt is raised
 	VIA_ISR_t vISR_A[8];  // ISRs to call when vBufA changes
 	VIA_ISR_t vISR_B[8];  // ISRs to call when vBufB changes
 } VIA_State_t;
@@ -79,7 +79,7 @@ void VIA_RaiseInterrupt(uint8_t id, uint8_t irq);
 void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t bit, VIA_ISR_t isr);
 
 // Tick all timers by one step (call every 1.2766 us)
-void VIA_TickTimers();
+//void VIA_TickTimers();
 
 // Write to a register. Does not raise data ISRs.
 void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data);
@@ -93,3 +93,10 @@ void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool 
 // NOTE: for these, raise the interrupt manually w/ VIA_RaiseInterrupt
 void VIA_ShiftInData(uint8_t id, uint8_t v);
 uint8_t VIA_ShiftOutData(uint8_t id);
+
+// Compatiblity stuff, probably
+void VIA1_DoTimer1Check();
+uint16_t VIA1_GetT1InvertTime();
+void VIA1_DoTimer2Check();
+void VIA1_ExtraTimeBegin(void);
+void VIA1_ExtraTimeEnd(void);

@@ -344,6 +344,7 @@ if ((0 == vMacScreenDepth) || (vMacScreenDepth >= 4)) {
 	return true;
 }
 
+// One-second interrupt, I think
 GLOBALPROC RTC_Interrupt(void)
 {
 	uint32_t Seconds = 0;
@@ -361,6 +362,7 @@ GLOBALPROC RTC_Interrupt(void)
 
 		LastRealDate = NewRealDate;
 	}
+	RTC_RaiseOneSecIRQ();
 }
 
 LOCALFUNC uint8_t RTC_Access_PRAM_Reg(uint8_t Data, bool WriteReg, uint8_t t)

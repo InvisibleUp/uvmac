@@ -27,6 +27,7 @@
 #include <string.h>
 #include <assert.h>
 #include "VIAEMDEV.h"
+#include "GLOBGLUE.h"
 
 /* Global state */
 VIA_State_t VIA_State[VIA_MAXNUM]; 
@@ -54,19 +55,36 @@ void VIA_RaiseInterrupt(uint8_t id, uint8_t irq)
 	// Set interrupt flag
 	VIA_State[id].vIFR |= (1 << irq) | (1 << 7);
 	
-	/*// Call interrupt handler, if required
+	// Call interrupt handler, if required
 	if (VIA_State[id].vISR[irq] != NULL) {
 		VIA_State[id].vISR[irq]();
-	}*/
+	}
+	VIAorSCCinterruptChngNtfy();
+}
+
+// Lower an interrupt by irq number
+void VIA_LowerInterrupt(uint8_t id, uint8_t irq)
+{
+	assert (id < VIA_MAXNUM);
+	assert (irq < 7);
+	
+	// Set interrupt flag
+	VIA_State[id].vIFR &= ~(1 << irq);
+	
+	// Call interrupt handler, if required
+	if (VIA_State[id].vISR[irq] != NULL) {
+		VIA_State[id].vISR[irq]();
+	}
+	VIAorSCCinterruptChngNtfy();
 }
 
 // Register a VIA interrupt service routine
-/*void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr)
+void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr)
 {
 	assert(irq < 7);
 	assert(id < VIA_MAXNUM);
 	VIA_State[id].vISR[irq] = isr;
-}*/
+}
 
 // Register data state-change notification interrupts
 void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t irq, VIA_ISR_t isr)
@@ -81,6 +99,8 @@ void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t irq, VIA_ISR_t isr)
 		VIA_State[id].vISR_B[irq] = isr;
 	}
 }
+/*
+const int TEMPSKIP = 1;
 
 // Tick VIA timer 1 (and set PB7 as needed)
 static void VIA_TickTimer1(uint8_t id)
@@ -93,10 +113,15 @@ static void VIA_TickTimer1(uint8_t id)
 	
 	if (via->vT1C == 0) {
 		if (T1_PULSE)     { via->vT1C = via->vT1L; }
-		if (T1_SNDTOGGLE) { via->vBufB ^= (1 << 7);  }
+		if (T1_SNDTOGGLE) {
+			bool snd_old = VIA_ReadBit(id, rIRB, 7);
+			VIA_WriteBit(id, rIRB, 7, !snd_old, true);
+		}
 		VIA_RaiseInterrupt(id, 6); // always IRQ6
 	} else {
-		via->vT1C -= 1;
+		if (via->vT1C < TEMPSKIP) { via->vT1C = 0; }
+		else { via->vT1C -= TEMPSKIP; }
+		//via->vT1C -= 1;
 	}
 }
 
@@ -110,8 +135,16 @@ static void VIA_TickTimer2(uint8_t id, bool forceTick)
 	if (T2_ISCOUNTER && !forceTick) { return; }
 	
 	// Do a normal tick
-	if (via->vT2C != 0) { via->vT2C -= 1; }
-	else                { VIA_RaiseInterrupt(id, 5); } // always IRQ5
+	if (via->vT2C != 0) { 
+		if (via->vT2C < TEMPSKIP) {
+			via->vT2C = 0;
+		} else {
+			via->vT2C -= 1;
+		}
+	}
+	else { 
+		VIA_RaiseInterrupt(id, 5); // always IRQ5
+	}
 }
 
 // Tick all timers by one step (call every 1.2766 us)
@@ -120,6 +153,24 @@ void VIA_TickTimers()
 	for (uint8_t id = 0; id < VIA_MAXNUM; id += 1) {
 		VIA_TickTimer1(id);
 		VIA_TickTimer2(id, false);
+	}
+}*/
+
+// Do fancy shift register stuff
+void VIA_TickShiftRegister(uint8_t id)
+{
+	assert(id < VIA_MAXNUM);
+	VIA_State_t *via  = &VIA_State[id];
+	
+	switch ((via->vACR & 0x1C) >> 2) {
+	case 3 : /* Shifting In */
+		break;
+	case 6 : /* shift out under o2 clock */
+		VIA_LowerInterrupt(id, 3);
+		VIA_RaiseInterrupt(id, 2);
+		break;
+	case 7 : /* Shifting Out */
+		break;
 	}
 }
 
@@ -131,8 +182,11 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
 	assert(reg < rINVALID);
 	VIA_State_t *via = &VIA_State[id];
 	
+	uint8_t data_old = VIA_Read(id, reg);
+	
 	switch(reg) {
-	case rIRB:  via->vBufB = data; break;
+	case rIRB:  via->vIFR &= 0b11100111; // clear keyboard interrupts
+	            via->vBufB = data; break;
 	case rIRA:
 	case rORA:  via->vBufA = data; break;
 	case rDDRB: via->vDirB = data; break;
@@ -165,6 +219,10 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
 		break;
 	default: assert(true);
 	}
+	
+	if ((data_old & via->vIFR) != (data & via->vIFR) && reg == rIFR) {
+		VIAorSCCinterruptChngNtfy();
+	}
 }
 
 // Read to a register
@@ -177,20 +235,22 @@ uint8_t VIA_Read(uint8_t id, VIA_Register_t reg)
 	switch(reg) {
 	// not sure if reading *all* of vBufA or vBufB is correct,
 	// but it shouldn't matter. 
-	case rIRB:  return via->vBufB;
+	case rIRB:  via->vIFR &= 0b11100111; // clear keyboard interrupts
+	            return via->vBufB;
 	case rIRA:
 	case rORA:  return via->vBufA;
 	case rDDRB: return via->vDirB;
 	case rDDRA: return via->vDirA;
-	case rT1CL: //via->vIFR &= 0b10111111;
+	case rT1CL: via->vIFR &= 0b10111111; // TODO: is this used correctly?
 	            return (via->vT1C & 0xFF00) >> 8;
 	case rT1CH: return (via->vT1C & 0x00FF);
 	case rT1LL: return (via->vT1L & 0xFF00) >> 8;
 	case rT1LH: return (via->vT1L & 0x00FF);
-	case rT2CL: //via->vIFR &= 0b11011111;
+	case rT2CL: via->vIFR &= 0b11011111; // TODO: is this used correctly?
 	            return (via->vT2C & 0xFF00) >> 8;
 	case rT2CH: return (via->vT2C & 0x00FF);
-	case rSR:   return via->vSR;
+	case rSR:   
+		        return via->vSR;
 	case rACR:  return via->vACR;
 	case rPCR:  return via->vPCR;
 	case rIFR:  return via->vIFR;
@@ -232,7 +292,13 @@ void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool 
 void VIA_ShiftInData(uint8_t id, uint8_t v)
 {
 	assert(id < VIA_MAXNUM);
+	VIA_State_t *via = &VIA_State[id];
+	
+	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
+	assert(ShiftMode == 0 || ShiftMode == 3);
 	VIA_State[id].vSR = v;
+	VIA_RaiseInterrupt(id, 2); // data ready
+	VIA_RaiseInterrupt(id, 4); // data clock
 }
 
 // Called by either end, get data out of vSR
@@ -240,6 +306,178 @@ void VIA_ShiftInData(uint8_t id, uint8_t v)
 uint8_t VIA_ShiftOutData(uint8_t id)
 {
 	assert(id < VIA_MAXNUM);
+	VIA_State_t *via = &VIA_State[id];
+	
+	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
+	assert(ShiftMode == 7);
+	VIA_RaiseInterrupt(id, 2); // data ready
+	VIA_RaiseInterrupt(id, 3); // data rx
+	VIA_WriteBit(id, rIFR, 4, (via->vSR & 1), false); // data clock
 	return VIA_State[id].vSR;
 }
 
+/// Old messy VIA timer code (VIA-1 only for now) ///
+
+#define CyclesPerViaTime (10 * ClockMult)
+#define CyclesScaledPerViaTime (kCycleScale * CyclesPerViaTime)
+
+// TODO: Move these into the VIA_State_t struct
+bool VIA1_T1Running = true;
+bool VIA1_T1IntReady = false;
+iCountt VIA1_T1LastTime = 0;
+uint8_t VIA1_T1_Active = 0;
+const uint8_t VIA_T1_IRQ = 6;
+
+bool VIA1_T2Running = true;
+bool VIA1_T2IntReady = false;
+bool VIA1_T2C_ShortTime = false;
+iCountt VIA1_T2LastTime = 0;
+uint8_t VIA1_T2_Active = 0;
+const uint8_t VIA_T2_IRQ = 5;
+
+
+void VIA1_DoTimer1Check()
+{
+	if (!VIA1_T1Running) { return; }
+	VIA_State_t *via = &VIA_State[VIA1];
+	
+	iCountt NewTime = GetCuriCount();
+	iCountt deltaTime = (NewTime - VIA1_T1LastTime);
+	if (deltaTime != 0) {
+		uint32_t Temp = via->vT1C; /* Get Timer 1 Counter */
+		uint32_t deltaTemp = (deltaTime / CyclesPerViaTime) << (16 - kLn2CycleScale);
+		/* may overflow */
+		uint32_t NewTemp = Temp - deltaTemp;
+		if (
+			(deltaTime > (0x00010000UL * CyclesScaledPerViaTime)) ||
+			((Temp <= deltaTemp) && (Temp != 0))
+		) {
+			//VIA_TickTimer1(VIA1);
+		}
+
+		via->vT1C = NewTemp;
+		VIA1_T1LastTime = NewTime;
+	}
+
+	VIA1_T1IntReady = false;
+	if ((via->vIFR & (1 << VIA_T1_IRQ)) == 0) {
+		if (((via->vACR & 0x40) != 0) || (VIA1_T1_Active == 1)) {
+			uint32_t NewTemp = via->vT1C; /* Get Timer 1 Counter */
+			uint32_t NewTimer;
+#ifdef _VIA_Debug
+			fprintf(stderr, "posting Timer1Check, %d, %d\n",
+				Temp, GetCuriCount());
+#endif
+			if (NewTemp == 0) {
+				NewTimer = (0x00010000UL * CyclesScaledPerViaTime);
+			} else {
+				NewTimer =
+					(1 + (NewTemp >> (16 - kLn2CycleScale)))
+						* CyclesPerViaTime;
+			}
+			ICT_add(kICT_VIA1_Timer1Check, NewTimer);
+			VIA1_T1IntReady = true;
+		}
+	}
+}
+
+/*
+static void VIA1_CheckT1IntReady(void)
+{
+	VIA_State_t *via = &VIA_State[VIA1];
+	if (VIA1_T1Running) {
+		bool NewT1IntReady = false;
+
+		if ((via->vIFR & (1 << VIA_T1_IRQ)) == 0) {
+			if (((via->vACR & 0x40) != 0) || (VIA1_T1_Active == 1)) {
+				NewT1IntReady = true;
+			}
+		}
+
+		if (VIA1_T1IntReady != NewT1IntReady) {
+			VIA1_T1IntReady = NewT1IntReady;
+			if (NewT1IntReady) {
+				VIA1_DoTimer1Check();
+			}
+		}
+	}
+}*/
+
+uint16_t VIA1_GetT1InvertTime(void)
+{
+	VIA_State_t *via = &VIA_State[VIA1];
+
+	if ((via->vACR & 0xC0) == 0xC0) {
+		return via->vT1L;
+	} else {
+		return 0;
+	}
+}
+
+void VIA1_DoTimer2Check(void)
+{
+	VIA_State_t *via = &VIA_State[VIA1];
+	if (VIA1_T2Running) {
+		iCountt NewTime = GetCuriCount();
+		/* Get Timer 2 Counter */
+		uint32_t Temp = via->vT2C;
+		iCountt deltaTime = (NewTime - VIA1_T2LastTime);
+		/* may overflow */
+		uint32_t deltaTemp = (deltaTime / CyclesPerViaTime) << (16 - kLn2CycleScale);
+		uint32_t NewTemp = Temp - deltaTemp;
+		if (VIA1_T2_Active == 1) {
+			if (
+				(deltaTime > (0x00010000UL * CyclesScaledPerViaTime)) ||
+				((Temp <= deltaTemp) && (Temp != 0))
+			) {
+				VIA1_T2C_ShortTime = false;
+				VIA1_T2_Active = 0;
+				VIA_RaiseInterrupt(VIA1, VIA_T2_IRQ);
+#if VIA1_dolog && 1
+				dbglog_WriteNote("VIA1 Timer 2 Interrupt");
+#endif
+			} else {
+				uint32_t NewTimer;
+#ifdef _VIA_Debug
+				fprintf(stderr, "posting Timer2Check, %d, %d\n",
+					Temp, GetCuriCount());
+#endif
+				if (NewTemp == 0) {
+					NewTimer = (0x00010000UL * CyclesScaledPerViaTime);
+				} else {
+					NewTimer = (1 + (NewTemp >> (16 - kLn2CycleScale)))
+						* CyclesPerViaTime;
+				}
+				ICT_add(kICT_VIA1_Timer2Check, NewTimer);
+			}
+		}
+		via->vT2C = NewTemp;
+		VIA1_T2LastTime = NewTime;
+	}
+}
+
+void VIA1_ExtraTimeBegin(void)
+{
+	if (VIA1_T1Running) {
+		VIA1_DoTimer1Check(); /* run up to this moment */
+		VIA1_T1Running = false;
+	}
+	if (VIA1_T2Running & (! VIA1_T2C_ShortTime)) {
+		VIA1_DoTimer2Check(); /* run up to this moment */
+		VIA1_T2Running = false;
+	}
+}
+
+void VIA1_ExtraTimeEnd(void)
+{
+	if (! VIA1_T1Running) {
+		VIA1_T1Running = true;
+		VIA1_T1LastTime = GetCuriCount();
+		VIA1_DoTimer1Check();
+	}
+	if (! VIA1_T2Running) {
+		VIA1_T2Running = true;
+		VIA1_T2LastTime = GetCuriCount();
+		VIA1_DoTimer2Check();
+	}
+}

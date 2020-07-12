@@ -58,7 +58,7 @@ char *ScreenColorWhite = NULL;
 
 bool Screen_UseMainPage()
 {
-	return VIA_ReadBit(VIA1, rIRA, 6);
+	return (VIA_ReadBit(VIA1, rIRA, 6) == 1);
 }
 
 bool Screen_Init(void)

@@ -40,13 +40,11 @@
 
 #if 0
 
-#ifndef AllFiles
 #include "SYSDEPNS.h"
 
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#endif
 
 #include "HW/SCC/SCCEMDEV.h"
 #include "HW/VIA/VIAEMDEV.h"

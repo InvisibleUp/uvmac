@@ -1222,7 +1222,7 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 				}
 #endif
 				if (WriteMem) {
-					VIA_Write(VIA1, (addr >> 9) & kVIA1_Mask, Data);
+					VIA_Write(VIA1, (addr >> 9) & kVIA1_Mask, Data, true);
 				} else {
 					Data = VIA_Read(VIA1, (addr >> 9) & kVIA1_Mask);
 				}

@@ -26,6 +26,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 #include "VIAEMDEV.h"
 #include "GLOBGLUE.h"
 
@@ -35,15 +36,20 @@ VIA_State_t VIA_State[VIA_MAXNUM];
 // Hardware reset
 bool VIA_Zap(void) {
 	memset(VIA_State, 0, sizeof(VIA_State));
-	for (int i = 0; i < VIA_MAXNUM; i += 1) {
-		VIA_State[i].vBufA = 0xFF;
-		VIA_State[i].vBufB = 0xFF;
-	}
+	VIA_Reset();
 	return true;
 }
 // Software reset
 void VIA_Reset(void) {
-	VIA_Zap();
+	for (int i = 0; i < VIA_MAXNUM; i += 1) {
+		VIA_State[i].vBufA = 0xFF;
+		VIA_State[i].vBufB = 0xFF;
+		VIA_State[i].vIER  = 0x00;
+		VIA_State[i].vIFR  = 0x00;
+		VIA_State[i].vSR   = 0x00;
+		VIA_State[i].vACR  = 0x00;
+		VIA_State[i].vPCR  = 0x00;
+	}
 }
 
 // Raise an interrupt by irq number
@@ -53,13 +59,20 @@ void VIA_RaiseInterrupt(uint8_t id, uint8_t irq)
 	assert (irq < 7);
 	
 	// Set interrupt flag
+	uint8_t vIFR_old = VIA_State[id].vIFR & VIA_State[id].vIER & 0b01111111;
 	VIA_State[id].vIFR |= (1 << irq) | (1 << 7);
+	uint8_t vIFR_new = VIA_State[id].vIFR & VIA_State[id].vIER & 0b01111111;
 	
 	// Call interrupt handler, if required
-	if (VIA_State[id].vISR[irq] != NULL) {
-		VIA_State[id].vISR[irq]();
+	if (vIFR_old != vIFR_new) {
+		/*if (VIA_State[id].vISR[irq] != NULL) {
+			VIA_State[id].vISR[irq]();
+		}*/
+		VIAorSCCinterruptChngNtfy();
+		//fprintf(stderr, "IRQ %d raised\n", irq);
+	} else {
+		//fprintf(stderr, "IRQ %d attempted\n", irq);
 	}
-	VIAorSCCinterruptChngNtfy();
 }
 
 // Lower an interrupt by irq number
@@ -69,13 +82,20 @@ void VIA_LowerInterrupt(uint8_t id, uint8_t irq)
 	assert (irq < 7);
 	
 	// Set interrupt flag
+	uint8_t vIFR_old = VIA_State[id].vIFR & VIA_State[id].vIER & 0b01111111;
 	VIA_State[id].vIFR &= ~(1 << irq);
+	uint8_t vIFR_new = VIA_State[id].vIFR & VIA_State[id].vIER & 0b01111111;
 	
 	// Call interrupt handler, if required
-	if (VIA_State[id].vISR[irq] != NULL) {
-		VIA_State[id].vISR[irq]();
+	if (vIFR_old != vIFR_new) {
+		/*if (VIA_State[id].vISR[irq] != NULL) {
+			VIA_State[id].vISR[irq]();
+		}*/
+		VIAorSCCinterruptChngNtfy();
+		//fprintf(stderr, "IRQ %d lowered\n", irq);
+	} else {
+		//fprintf(stderr, "IRQ %d attempted (lower)\n", irq);
 	}
-	VIAorSCCinterruptChngNtfy();
 }
 
 // Register a VIA interrupt service routine
@@ -95,9 +115,32 @@ void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t irq, VIA_ISR_t isr)
 	
 	if (port == DataRegA) {
 		VIA_State[id].vISR_A[irq] = isr;
+		//fprintf(stderr, "ISR PA%d registered\n", irq);
 	} else {
 		VIA_State[id].vISR_B[irq] = isr;
+		//fprintf(stderr, "ISR PB%d registered\n", irq);
 	}
+}
+
+static void VIA_RunDataISR(uint8_t id, VIA_Register_t reg, uint8_t bit)
+{
+	assert(id < VIA_MAXNUM);
+	if (reg == rIRA || reg == rORA) {
+		if (VIA_State[id].vISR_A[bit] != NULL) {
+			//fprintf(stderr, "ISR PA%d running\n", bit);
+			VIA_State[id].vISR_A[bit]();
+		} else {
+			//fprintf(stderr, "ISR PA%d not found\n", bit);
+		}
+	} else if (reg == rIRB) {
+		if (VIA_State[id].vISR_B[bit] != NULL) {
+			//fprintf(stderr, "ISR PB%d running\n", bit);
+			VIA_State[id].vISR_B[bit]();
+		} else {
+			//fprintf(stderr, "ISR PB%d not found\n", bit);
+		}
+	}
+	
 }
 /*
 const int TEMPSKIP = 1;
@@ -174,15 +217,32 @@ void VIA_TickShiftRegister(uint8_t id)
 	}
 }
 
+// temporary debugging stuff
+#define BIN_PAT "%c%c%c%c_%c%c%c%c"
+#define TO_BIN(byte)  \
+  (byte & 0x80 ? '1' : '0'), \
+  (byte & 0x40 ? '1' : '0'), \
+  (byte & 0x20 ? '1' : '0'), \
+  (byte & 0x10 ? '1' : '0'), \
+  (byte & 0x08 ? '1' : '0'), \
+  (byte & 0x04 ? '1' : '0'), \
+  (byte & 0x02 ? '1' : '0'), \
+  (byte & 0x01 ? '1' : '0') 
 
 // Write to a register, bypassing data ISRs
-void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
+void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 {
 	assert(id < VIA_MAXNUM);
 	assert(reg < rINVALID);
 	VIA_State_t *via = &VIA_State[id];
 	
 	uint8_t data_old = VIA_Read(id, reg);
+	uint8_t vIFR_old = via->vIFR & via->vIER & 0b01111111;
+	if (reg == rIRA || reg == rORA) {
+		//fprintf(stderr, "Set PA to "BIN_PAT"\n", TO_BIN(data));
+	} else {
+		//`fprintf(stderr, "Set PB to "BIN_PAT"\n", TO_BIN(data));
+	}
 	
 	switch(reg) {
 	case rIRB:  via->vIFR &= 0b11100111; // clear keyboard interrupts
@@ -206,13 +266,13 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
 	case rSR:   via->vSR = data; break;
 	case rACR:  via->vACR = data; break;
 	case rPCR:  via->vPCR = data; break;
-	case rIFR:  via->vIFR = data; break;
+	case rIFR:  via->vIFR &= (~data & 0b01111111); break;
 	case rIER:
 		switch(data & 0b10000000) {
 		case 0b00000000:  // clear
 			via->vIER &= ~(data & 0b01111111);
 			break;
-		case 0b10000000:  // set
+		default: // set
 			via->vIER |=  (data & 0b01111111);
 			break;
 		}
@@ -220,8 +280,37 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data)
 	default: assert(true);
 	}
 	
-	if ((data_old & via->vIFR) != (data & via->vIFR) && reg == rIFR) {
+	/*if ((data_old & via->vIFR) != (data & via->vIFR) && reg == rIFR) {
 		VIAorSCCinterruptChngNtfy();
+	}*/
+	
+	// Assert vBufA or vBufB ISRs if needed
+	uint8_t diff = (data ^ data_old);
+	if (runISR && (reg == rIRA || reg == rORA || reg == rIRB)) {
+		// Iterate through each bit
+		uint8_t bit = 0;
+		uint8_t mask = 0b1;
+		while (mask != 0) {
+			// Run ISR only on rising edge
+			if (diff & mask) { VIA_RunDataISR(id, reg, bit); }
+			bit += 1;
+			mask <<= 1;
+		}
+	}
+	
+	// Run global ISR if required
+	uint8_t vIFR_new = via->vIFR & via->vIER & 0b01111111;
+	if (runISR && (reg == rIFR || reg == rIER) && (vIFR_old != vIFR_new))
+	{
+		/*if (VIA_State[id].vISR[irq] != NULL) {
+			VIA_State[id].vISR[irq]();
+		}*/
+		VIAorSCCinterruptChngNtfy();
+		//fprintf(stderr, "IRQ raised ("BIN_PAT")\n", TO_BIN((vIFR_old ^ vIFR_new)));
+	}
+	else if (reg == rIFR || reg == rIER)
+	{
+		//fprintf(stderr, "IRQ attempt ("BIN_PAT")\n", TO_BIN((vIFR_old ^ vIFR_new)));
 	}
 }
 
@@ -272,20 +361,14 @@ void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool 
 	uint8_t data = olddata;
 	if (value) { data |=  (1 << bit); } // set
 	else       { data &= ~(1 << bit); } // clear
-	VIA_Write(id, reg, data);
+	VIA_Write(id, reg, data, runISR);
 	
 	// Call data-change ISR
-	if (!runISR || (data == olddata)) { return; }
-	if (reg == rIRA || reg == rORA) {
-		if (VIA_State[id].vISR_A[bit] != NULL) {
-			VIA_State[id].vISR_A[bit]();
-		}
-	} else if (reg == rIRB) {
-		if (VIA_State[id].vISR_B[bit] != NULL) {
-			VIA_State[id].vISR_B[bit]();
-		}
-	}
+	/*uint8_t diff = ~data & olddata;
+	if (!runISR || (diff == 0)) { return; }
+	VIA_RunDataISR(id, reg, bit);*/
 }
+
 
 // Called by either end; store data in vSR.
 // TODO: this probably shouldn't be instant.

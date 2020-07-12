@@ -82,7 +82,7 @@ void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t bit, VIA_ISR_t isr);
 //void VIA_TickTimers();
 
 // Write to a register. Does not raise data ISRs.
-void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data);
+void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR);
 // Read to a register
 uint8_t VIA_Read(uint8_t id, VIA_Register_t reg);
 // Read a single bit

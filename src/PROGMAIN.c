@@ -20,6 +20,7 @@
 
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 #include "SYSDEPNS.h"
 
 #include "UI/MYOSGLUE.h"
@@ -71,7 +72,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = VIA1_ExtraTimeEnd,
 	},
 	// RTC
-/*	{
+	{
 	.init = EmRTC ? RTC_Init : NULL,
 	.reset = NULL,
 	.starttick = NULL,
@@ -79,7 +80,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},*/
+	},
 	// ROM
 	{
 	.init = ROM_Init,
@@ -121,7 +122,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},*/
 	// SCSI
-/*	{
+	{
 	.init = NULL,
 	.reset = SCSI_Reset,
 	.starttick = NULL,
@@ -139,7 +140,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},*/
+	},
 	// Extn
 	{
 	.init = NULL,
@@ -161,7 +162,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},
 	// Mouse
-/*	{
+	{
 	.init = NULL,
 	.reset = NULL,
 	.starttick = Mouse_Update,
@@ -169,9 +170,9 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},*/
+	},
 	// Classic Keyboard
-/*	{
+	{
 	.init = NULL,
 	.reset = NULL,
 	.starttick = EmClassicKbrd ? KeyBoard_Update : NULL,
@@ -179,7 +180,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},*/
+	},
 	// ADB
 	/*{
 	.init = NULL,
@@ -383,9 +384,14 @@ LOCALFUNC bool InitEmulation(void)
 		if (DEVICES[i].init != NULL) {
 			assert(DEVICES[i].init());
 		}
+		if (DEVICES[i].reset != NULL) {
+			DEVICES[i].reset();
+		}
 	}
-
-	EmulatedHardwareZap();
+	
+	// temporarily register some ISRs until I put these in a better place
+	// Mac Plus only
+	VIA_RegisterDataISR(VIA1, DataRegA, 4, MemOverlay_ChangeNtfy);
 	return true;
 }
  // VBlank interrupt
@@ -572,6 +578,7 @@ LOCALPROC RunEmulatedTicksToTrueTime(void)
 	if (lag > 0) {
 		DoEmulateOneTick();
 		CurEmulatedTime += 1;
+		//fprintf(stderr, "Tick %d\n", CurEmulatedTime);
 		DoneWithDrawingForTick();
 
 		if (lag > 8) {

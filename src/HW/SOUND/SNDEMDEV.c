@@ -134,10 +134,9 @@ GLOBALPROC MacSound_SubTick(int SubTick)
 #else
 	CPTR addr = addy + (2 * StartOffset);
 #endif
-	uint16_t SoundInvertTime = ((VIA_Read(VIA1, rT1CH) << 8) | VIA_Read(VIA1, rT1CL));
+	uint16_t SoundInvertTime = VIA1_GetT1InvertTime();
 	uint8_t SoundVolume = MacSound_GetVolume();
 	bool SoundDisable = MacSound_CheckDisabled();
-	if (VIA_ReadBit(VIA1, rACR, 7) == 0) { SoundInvertTime = 0; }
 
 #if dbglog_HAVE && 0
 	dbglog_StartLine();

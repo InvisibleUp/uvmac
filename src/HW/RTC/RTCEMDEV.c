@@ -178,12 +178,6 @@ void RTC_RegisterISRs()
 	VIA_RegisterDataISR(DataRegB, VIA1, 0, RTCdataLine_ChangeNtfy);
 }
 
-void RTC_RaiseOneSecIRQ()
-{
-	VIA_RaiseInterrupt(VIA1, 0);
-}
-
-
 /// End VIA wrappers /////////////////////////////////////////////////////////
 
 GLOBALFUNC bool RTC_Init(void)
@@ -362,7 +356,6 @@ GLOBALPROC RTC_Interrupt(void)
 
 		LastRealDate = NewRealDate;
 	}
-	RTC_RaiseOneSecIRQ();
 }
 
 LOCALFUNC uint8_t RTC_Access_PRAM_Reg(uint8_t Data, bool WriteReg, uint8_t t)

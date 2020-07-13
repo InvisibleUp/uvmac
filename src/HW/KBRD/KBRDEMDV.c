@@ -56,7 +56,6 @@ LOCALPROC GotKeyBoardData(uint8_t v)
 		KeyBoardResult = v;
 	} else {
 		VIA_ShiftInData_Ext(VIA1, v);
-		VIA_RaiseInterrupt(VIA1, 2);
 	}
 }
 

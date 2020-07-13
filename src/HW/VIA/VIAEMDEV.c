@@ -344,7 +344,7 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 			mask <<= 1;
 		}
 		VIAorSCCinterruptChngNtfy();
-		fprintf(stderr, "IRQ raised ("BIN_PAT")\n", TO_BIN((vIFR_old ^ vIFR_new)));
+		fprintf(stderr, "IRQ changed ("BIN_PAT") -> ("BIN_PAT")\n", TO_BIN(vIFR_old & (vIFR_old ^ vIFR_new)), TO_BIN(vIFR_new & (vIFR_old ^ vIFR_new)));
 	}
 	else if (reg == rIFR || reg == rIER)
 	{
@@ -354,16 +354,17 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 	if (reg == rACR) {
 		uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
 		uint8_t ShiftMode_old = (data_old & 0x1C) >> 2;
-		// Check if shift direction has changed
-		if (ShiftMode != 0 && (ShiftMode & 0b100) != (ShiftMode_old & 0b100)) {
-			if ((ShiftMode & 0b100) == 0) {
-				VIA_RaiseInterrupt(id, 2);
-			}
-		}
 		// Clear keyboard interrupt flag if we modified shift register params
-		// Supposedly, this isn't sufficient. I have no idea what that means.
-		else if (ShiftMode == 0) {
+		if (ShiftMode == 0) {
+			// lower interrupt if we're now disabling that
 			VIA_LowerInterrupt(id, 2);
+		} else {
+			// Check if shift direction has changed
+			if ((ShiftMode & 0b100) != (ShiftMode_old & 0b100)) {
+				if ((ShiftMode & 0b100) == 0) { // if now shifting in
+					VIA_RaiseInterrupt(id, 2);  // raise interrupt
+				}
+			}
 		}
 	}
 }
@@ -400,7 +401,8 @@ uint8_t VIA_Read(uint8_t id, VIA_Register_t reg)
 	case rACR:  return via->vACR;
 	case rPCR:  return via->vPCR;
 	case rIFR:  return via->vIFR;
-	case rIER:  return via->vIER |= 0b10000000;
+	case rIER:  if (via->vIER == 0) { return 0; }
+	            else { return via->vIER |= 0b10000000; }
 	default:    assert(true); return 0;
 	}
 }
@@ -435,11 +437,17 @@ void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool 
 }
 
 // ShiftMode states (from M68k perspective)
-// 3: Shifting in (to M68k)
-// 6: Shifting out under O2 clock (raise interrupt when done)
-// 7: Shifting out
+// 0: Shift in under external control w/ no interrupts.
+// 1: Shift in under control of Timer 2
+// 2: Shift in under system clock control
+// 3: Shift in under external control. ISR every byte. R/W resets ISR.
+// 4: Shift out under T2 control (forever)
+// 5: Shift out under T2 control
+// 6: Shift out under system clock control
+// 7: Shift out under external control. ISR every byte. R/W resets ISR.
 
 // TODO: this probably shouldn't be instant.
+// also i got the in/out mixed up compared to the datasheet. oh well.
 void VIA_ShiftInData_M68k(uint8_t id, uint8_t v)
 {
 	assert(id < VIA_MAXNUM);
@@ -448,6 +456,7 @@ void VIA_ShiftInData_M68k(uint8_t id, uint8_t v)
 	//VIA_LowerInterrupt(id, 2); // data ready
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
 	
+	VIA_LowerInterrupt(id, 2); // reset "data ready"
 	VIA_State[id].vSR = v;
 	if (ShiftMode == 6) {
 		VIA_RaiseInterrupt(id, 2); // data ready
@@ -462,19 +471,19 @@ uint8_t VIA_ShiftOutData_M68k(uint8_t id)
 	VIA_State_t *via = &VIA_State[id];
 	
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
-	if (ShiftMode == 3) {
+	VIA_LowerInterrupt(id, 2); // reset "data ready"
+	uint8_t result = VIA_State[id].vSR;
+	/*if (ShiftMode == 3) {
 		VIA_RaiseInterrupt(id, 2); // data ready
 		VIA_RaiseInterrupt(id, 4); // data clock
-		// data bit
+		// last data bit
 		if (via->vSR & 1) {
 			VIA_RaiseInterrupt(id, 3);
 		} else {
 			VIA_LowerInterrupt(id, 3);
 		}
-	} else {
-		VIA_LowerInterrupt(id, 2); // data ready
-	}
-	return VIA_State[id].vSR;
+	}*/
+	return result;
 }
 
 // Same functions, from the peripheal end
@@ -487,11 +496,10 @@ void VIA_ShiftInData_Ext(uint8_t id, uint8_t v)
 	
 	assert(ShiftMode == 0 || ShiftMode == 3);
 	
-	// Not immediately after startup?
-	if (ShiftMode != 0) {
+	if (ShiftMode == 3) {
 		VIA_State[id].vSR = v;
-		VIA_RaiseInterrupt(id, 2); // data ready
-		VIA_RaiseInterrupt(id, 4); // data clock
+		VIA_State[id].vIFR |= 0b10010100; // data ready; no callback
+		VIAorSCCinterruptChngNtfy();
 	}
 }
 
@@ -505,14 +513,14 @@ uint8_t VIA_ShiftOutData_Ext(uint8_t id)
 	fprintf(stderr, "vSR: %d, %d, %d (ext)\n", false, ShiftMode, VIA_State[id].vSR);
 	assert(ShiftMode == 7);
 	
-	VIA_RaiseInterrupt(id, 2); // data ready
-	VIA_RaiseInterrupt(id, 4); // data clock
+	VIA_State[id].vIFR |= 0b10010100; // data ready; no callback
 	// data bit
 	if (via->vSR & 1) {
-		VIA_RaiseInterrupt(id, 3);
+		VIA_State[id].vIFR |= 0b00001000;
 	} else {
-		VIA_LowerInterrupt(id, 3);
+		VIA_State[id].vIFR &= 0b11110111;
 	}
+	VIAorSCCinterruptChngNtfy();
 	return VIA_State[id].vSR;
 }
 

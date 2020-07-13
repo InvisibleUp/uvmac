@@ -73,6 +73,7 @@ void VIA_Reset(void);
 
 // Raise an interrupt by irq number, calling registered ISR if required
 void VIA_RaiseInterrupt(uint8_t id, uint8_t irq);
+void VIA_LowerInterrupt(uint8_t id, uint8_t irq);
 // Register a VIA interrupt service routine
 void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr);
 // Register data state-change notification interrupts

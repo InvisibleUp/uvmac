@@ -38,8 +38,6 @@
 	"Zilog SCC/ESCC User's Manual".
 */
 
-#if 0
-
 #include "SYSDEPNS.h"
 
 #include "UI/MYOSGLUE.h"
@@ -257,17 +255,19 @@ static int rx_data_offset = 0;
 
 /// VIA INTERFACE FUNCTIONS //////////////////////////////////////////////////
 
-bool SCC_GetvSCCWrReq()
+uint8_t SCCInterruptRequest;
+
+static bool SCC_GetvSCCWrReq()
 {
 	return VIA_ReadBit(VIA1, rIRA, 7);
 }
 
-void SCC_SetvSCCWrReq(bool value)
+static void SCC_SetvSCCWrReq(bool value)
 {
 	VIA_WriteBit(VIA1, rIRA, 7, value, false);
 }
 
-bool SCC_GetvSync()
+static bool SCC_GetvSync()
 {
 	switch(CurEmMd) {
 	case kEmMd_SE:
@@ -598,7 +598,7 @@ LOCALPROC SCC_ResetChannel(int chan)
 
 GLOBALPROC SCC_Reset(void)
 {
-	SCCwaitrq = 1;
+	SCC_SetvSCCWrReq(1);
 
 	SCC.SCC_Interrupt_Type = 0;
 
@@ -2827,5 +2827,3 @@ GLOBALFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr)
 
 	return Data;
 }
-
-#endif

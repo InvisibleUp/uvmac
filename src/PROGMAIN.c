@@ -112,7 +112,7 @@ const DevMethods_t DEVICES[] = {
 	.timeend = NULL,
 	},
 	// SCC
-/*	{
+	{
 	.init = NULL,
 	.reset = SCC_Reset,
 	.starttick = NULL,
@@ -120,7 +120,7 @@ const DevMethods_t DEVICES[] = {
 	.subtick = NULL,
 	.timebegin = NULL,
 	.timeend = NULL,
-	},*/
+	},
 	// SCSI
 	{
 	.init = NULL,
@@ -392,6 +392,7 @@ LOCALFUNC bool InitEmulation(void)
 	// temporarily register some ISRs until I put these in a better place
 	// Mac Plus only
 	VIA_RegisterDataISR(VIA1, DataRegA, 4, MemOverlay_ChangeNtfy);
+	VIA_RegisterISR(VIA1, 2, Kybd_DataLineChngNtfy);
 	return true;
 }
  // VBlank interrupt

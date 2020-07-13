@@ -74,7 +74,7 @@ void VIA_Reset(void);
 // Raise an interrupt by irq number, calling registered ISR if required
 void VIA_RaiseInterrupt(uint8_t id, uint8_t irq);
 // Register a VIA interrupt service routine
-//void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr);
+void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr);
 // Register data state-change notification interrupts
 void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t bit, VIA_ISR_t isr);
 
@@ -90,9 +90,10 @@ bool VIA_ReadBit(uint8_t id, VIA_Register_t reg, uint8_t bit);
 // Write a single bit. Can raise data ISR if required.
 void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool runISR);
 
-// NOTE: for these, raise the interrupt manually w/ VIA_RaiseInterrupt
-void VIA_ShiftInData(uint8_t id, uint8_t v);
-uint8_t VIA_ShiftOutData(uint8_t id);
+void VIA_ShiftInData_M68k(uint8_t id, uint8_t v);
+uint8_t VIA_ShiftOutData_M68k(uint8_t id);
+void VIA_ShiftInData_Ext(uint8_t id, uint8_t v);
+uint8_t VIA_ShiftOutData_Ext(uint8_t id);
 
 // Compatiblity stuff, probably
 void VIA1_DoTimer1Check();

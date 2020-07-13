@@ -37,6 +37,7 @@
 #include "GLOBGLUE.h"
 #include "HW/RAM/RAMADDR.h"
 #include "HW/VIA/VIAEMDEV.h"
+#include "HW/SCC/SCCEMDEV.h"
 
 /*
 	ReportAbnormalID unused 0x111D - 0x11FF
@@ -1519,28 +1520,28 @@ LOCALVAR uint8_t CurIPL = 0;
 
 GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 {
-#if (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)
 	uint8_t NewIPL;
-
-	if (InterruptButton) {
-		NewIPL = 7;
-	} else if (SCCInterruptRequest) {
-		NewIPL = 4;
-	} else if (VIA2_InterruptRequest) {
-		NewIPL = 2;
-	} else if (VIA1_InterruptRequest) {
-		NewIPL = 1;
-	} else {
-		NewIPL = 0;
-	}
-#else
 	uint8_t VIA1_InterruptRequest = (VIA_Read(VIA1, rIFR) & 0b01111111) != 0;
-	uint8_t SCCInterruptRequest = 0;
-	uint8_t VIAandNotSCC = VIA1_InterruptRequest & ~ SCCInterruptRequest;
-	uint8_t NewIPL = VIAandNotSCC
-		| (SCCInterruptRequest << 1)
-		| (InterruptButton << 2);
-#endif
+	uint8_t VIA2_InterruptRequest = (VIA_Read(VIA2, rIFR) & 0b01111111) != 0;
+	
+    if ((CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)) {
+		if (InterruptButton) {
+			NewIPL = 7;
+		} else if (SCCInterruptRequest) {
+			NewIPL = 4;
+		} else if (VIA2_InterruptRequest) {
+			NewIPL = 2;
+		} else if (VIA1_InterruptRequest) {
+			NewIPL = 1;
+		} else {
+			NewIPL = 0;
+		}
+	} else {
+		uint8_t VIAandNotSCC = VIA1_InterruptRequest & ~ SCCInterruptRequest;
+		NewIPL = VIAandNotSCC
+			| (SCCInterruptRequest << 1)
+			| (InterruptButton << 2);
+	}
 	if (NewIPL != CurIPL) {
 		CurIPL = NewIPL;
 		m68k_IPLchangeNtfy();

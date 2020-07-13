@@ -17,10 +17,9 @@
 #ifndef SCCEMDEV_H
 #define SCCEMDEV_H
 
+extern uint8_t SCCInterruptRequest;
 EXPORTPROC SCC_Reset(void);
-
 EXPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
-
 EXPORTFUNC bool SCC_InterruptsEnabled(void);
 
 #if EmLocalTalk

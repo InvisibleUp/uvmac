@@ -29,20 +29,11 @@
 #include "HW/KBRD/KBRDEMDV.h"
 #include "HW/VIA/VIAEMDEV.h"
 
-#ifdef _VIA_Debug
 #include <stdio.h>
-#endif
 
 /*
 	ReportAbnormalID unused 0x0B03 - 0x0BFF
 */
-
-void KYBD_ShiftOutData(uint8_t v) {
-	VIA_ShiftInData(VIA1, v);
-}
-uint8_t KYBD_ShiftInData(void) {
-	return VIA_ShiftOutData(VIA1);
-}
 
 enum {
 	kKybdStateIdle,
@@ -64,7 +55,7 @@ LOCALPROC GotKeyBoardData(uint8_t v)
 		HaveKeyBoardResult = true;
 		KeyBoardResult = v;
 	} else {
-		v = VIA_Read(VIA1, rSR);
+		VIA_ShiftInData_Ext(VIA1, v);
 		VIA_RaiseInterrupt(VIA1, 2);
 	}
 }
@@ -118,8 +109,9 @@ GLOBALPROC DoKybd_ReceiveCommand(void)
 		ReportAbnormalID(0x0B01,
 			"KybdState != kKybdStateRecievingCommand");
 	} else {
-		uint8_t in = KYBD_ShiftInData();
+		uint8_t in = VIA_ShiftOutData_Ext(VIA1);
 
+		fprintf(stderr, "KybdStateRecievedCommand\n");
 		KybdState = kKybdStateRecievedCommand;
 
 		switch (in) {
@@ -161,6 +153,7 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 			"KybdState != kKybdStateRecievingEndCommand");
 	} else {
 		KybdState = kKybdStateIdle;
+		fprintf(stderr, "KybdStateIdle\n");
 #ifdef _VIA_Debug
 		fprintf(stderr, "enter DoKybd_ReceiveEndCommand\n");
 #endif
@@ -169,7 +162,7 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 			fprintf(stderr, "HaveKeyBoardResult: %d\n", KeyBoardResult);
 #endif
 			HaveKeyBoardResult = false;
-			KYBD_ShiftOutData(KeyBoardResult);
+			VIA_ShiftInData_Ext(VIA1, KeyBoardResult);
 		}
 	}
 }
@@ -178,13 +171,14 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 {
 	switch (KybdState) {
 		case kKybdStateIdle:
-			if (Kybd_CheckDataReady() == 0) {
+			if (Kybd_CheckDataReady() == 1) {
+				fprintf(stderr, "KybdStateRecievingCommand\n");
 				KybdState = kKybdStateRecievingCommand;
 #ifdef _VIA_Debug
 				fprintf(stderr, "posting kICT_Kybd_ReceiveCommand\n");
 #endif
-				/*ICT_add(kICT_Kybd_ReceiveCommand,
-					6800UL * kCycleScale / 64 * ClockMult);*/
+				ICT_add(kICT_Kybd_ReceiveCommand,
+					6800UL * kCycleScale / 64 * ClockMult);
 
 				if (InquiryCommandTimer != 0) {
 					InquiryCommandTimer = 0; /* abort Inquiry */
@@ -192,14 +186,15 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 			}
 			break;
 		case kKybdStateRecievedCommand:
-			if (Kybd_CheckDataReady() == 1) {
+			if (Kybd_CheckDataReady() == 0) {
 				KybdState = kKybdStateRecievingEndCommand;
+				fprintf(stderr, "KybdStateRecievingEndCommand\n");
 #ifdef _VIA_Debug
 				fprintf(stderr,
 					"posting kICT_Kybd_ReceiveEndCommand\n");
 #endif
-				/*ICT_add(kICT_Kybd_ReceiveEndCommand,
-					6800UL * kCycleScale / 64 * ClockMult);*/
+				ICT_add(kICT_Kybd_ReceiveEndCommand,
+					6800UL * kCycleScale / 64 * ClockMult);
 			}
 			break;
 	}

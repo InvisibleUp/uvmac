@@ -392,7 +392,7 @@ LOCALFUNC bool InitEmulation(void)
 	// temporarily register some ISRs until I put these in a better place
 	// Mac Plus only
 	VIA_RegisterDataISR(VIA1, DataRegA, 4, MemOverlay_ChangeNtfy);
-	VIA_RegisterISR(VIA1, 2, Kybd_DataLineChngNtfy);
+	VIA_RegisterCB2ISR(VIA1, Kybd_DataLineChngNtfy);
 	return true;
 }
  // VBlank interrupt

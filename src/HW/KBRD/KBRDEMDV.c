@@ -61,7 +61,7 @@ LOCALPROC GotKeyBoardData(uint8_t v)
 
 static bool Kybd_CheckDataReady()
 {
-	return VIA_ReadBit(VIA1, rIFR, 2);
+	return VIA_GetCB2(VIA1);
 }
 
 LOCALVAR uint8_t InstantCommandData = 0x7B;
@@ -110,7 +110,7 @@ GLOBALPROC DoKybd_ReceiveCommand(void)
 	} else {
 		uint8_t in = VIA_ShiftOutData_Ext(VIA1);
 
-		fprintf(stderr, "KybdStateRecievedCommand\n");
+		//fprintf(stderr, "KybdStateRecievedCommand\n");
 		KybdState = kKybdStateRecievedCommand;
 
 		switch (in) {
@@ -152,7 +152,7 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 			"KybdState != kKybdStateRecievingEndCommand");
 	} else {
 		KybdState = kKybdStateIdle;
-		fprintf(stderr, "KybdStateIdle\n");
+		//fprintf(stderr, "KybdStateIdle\n");
 #ifdef _VIA_Debug
 		fprintf(stderr, "enter DoKybd_ReceiveEndCommand\n");
 #endif
@@ -170,8 +170,8 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 {
 	switch (KybdState) {
 		case kKybdStateIdle:
-			if (Kybd_CheckDataReady() == 1) {
-				fprintf(stderr, "KybdStateRecievingCommand\n");
+			if (Kybd_CheckDataReady() == false) {
+				//fprintf(stderr, "KybdStateRecievingCommand\n");
 				KybdState = kKybdStateRecievingCommand;
 #ifdef _VIA_Debug
 				fprintf(stderr, "posting kICT_Kybd_ReceiveCommand\n");
@@ -185,9 +185,9 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 			}
 			break;
 		case kKybdStateRecievedCommand:
-			if (Kybd_CheckDataReady() == 0) {
+			if (Kybd_CheckDataReady() == true) {
 				KybdState = kKybdStateRecievingEndCommand;
-				fprintf(stderr, "KybdStateRecievingEndCommand\n");
+				//fprintf(stderr, "KybdStateRecievingEndCommand\n");
 #ifdef _VIA_Debug
 				fprintf(stderr,
 					"posting kICT_Kybd_ReceiveEndCommand\n");

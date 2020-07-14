@@ -72,6 +72,7 @@ void VIA_Reset(void) {
 		VIA_State[i].vT1L  = 0x00;
 		VIA_State[i].vT2C  = 0x00;
 		VIA_State[i].vT2L  = 0x00;
+		VIA_State[i].vCB2  = true;
 	}
 	// temporary
 	VIA1_T1Running = false;
@@ -97,12 +98,7 @@ void VIA_RaiseInterrupt(uint8_t id, uint8_t irq)
 	
 	// Call interrupt handler, if required
 	if (vIFR_old != vIFR_new) {
-		if (irq == 2) {
-			fprintf(stderr, "IRQ %d raised\n", irq);
-		}
-		if (VIA_State[id].vISR[irq] != NULL) {
-			VIA_State[id].vISR[irq]();
-		}
+		//fprintf(stderr, "IRQ %d raised\n", irq);
 		VIAorSCCinterruptChngNtfy();
 	} else {
 		//fprintf(stderr, "IRQ %d attempted\n", irq);
@@ -122,28 +118,15 @@ void VIA_LowerInterrupt(uint8_t id, uint8_t irq)
 	
 	// Call interrupt handler, if required
 	if (vIFR_old != vIFR_new) {
-		if (irq == 2) {
-			fprintf(stderr, "IRQ %d lowered\n", irq);
-		}
+		//fprintf(stderr, "IRQ %d lowered\n", irq);
 		VIAorSCCinterruptChngNtfy();
-		if (VIA_State[id].vISR[irq] != NULL) {
-			VIA_State[id].vISR[irq]();
-		}
 	} else {
 		//fprintf(stderr, "IRQ %d attempted (lower)\n", irq);
 	}
 }
 
-// Register a VIA interrupt service routine
-void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr)
-{
-	assert(irq < 7);
-	assert(id < VIA_MAXNUM);
-	VIA_State[id].vISR[irq] = isr;
-}
-
 // Register data state-change notification interrupts
-void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t irq, VIA_ISR_t isr)
+void VIA_RegisterDataISR(uint8_t id, uint8_t port, uint8_t irq, VIA_ISR_t isr)
 {
 	assert(id < VIA_MAXNUM);
 	assert(port == DataRegA || port == DataRegB);
@@ -176,8 +159,37 @@ static void VIA_RunDataISR(uint8_t id, VIA_Register_t reg, uint8_t bit)
 			//fprintf(stderr, "ISR PB%d not found\n", bit);
 		}
 	}
-	
 }
+	
+// CB2 stuff
+void VIA_RegisterCB2ISR(uint8_t id, VIA_ISR_t isr)
+{
+	assert(id < VIA_MAXNUM);
+	VIA_State[id].vISR_CB2 = isr;
+}
+
+static void VIA_RunCB2ISR(uint8_t id)
+{
+	assert(id < VIA_MAXNUM);
+	if (VIA_State[id].vISR_CB2 != NULL) {
+		VIA_State[id].vISR_CB2();
+	}
+}
+
+// Get the value of CB2, specifically
+bool VIA_GetCB2(uint8_t id)
+{
+	assert(id < VIA_MAXNUM);
+	return VIA_State[id].vCB2;
+}
+
+// And likewise, set it
+void VIA_SetSB2(uint8_t id, bool value)
+{
+	assert(id < VIA_MAXNUM);
+	VIA_State[id].vCB2 = value;
+}
+
 /*
 const int TEMPSKIP = 1;
 
@@ -273,9 +285,9 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 		fprintf(stderr, "Set PB to "BIN_PAT"\n", TO_BIN(data));
 	}*/
 	//fprintf(stderr, "VIA%d Write %d <- %d\n", id+1, reg, data);
-	if (reg == rSR) {
+	/*if (reg == rSR) {
 		fprintf(stderr, "vSR: %d, %d, %d\n", true, ((via->vACR & 0x1C) >> 2), data);
-	}
+	}*/
 	
 	switch(reg) {
 	case rIRB:  via->vIFR &= 0b11100111; // clear keyboard interrupts
@@ -314,7 +326,7 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 	default: assert(true);
 	}
 	
-	// Assert vBufA or vBufB ISRs if needed
+	// Run vBufA or vBufB ISRs if needed
 	uint8_t diff = (data ^ data_old);
 	if (runISR && (reg == rIRA || reg == rORA || reg == rIRB)) {
 		// Iterate through each bit
@@ -328,29 +340,24 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 		}
 	}
 	
-	// Run global ISR if required
+	// Check ISRs for changes if required
 	uint8_t vIFR_new = via->vIFR & via->vIER & 0b01111111;
 	uint8_t vIFR_old = data_old & via->vIER & 0b01111111;
 	if (runISR && (reg == rIFR || reg == rIER) && (vIFR_old != vIFR_new))
 	{
-		// Iterate through each bit
-		uint8_t bit = 0;
-		uint8_t mask = 0b1;
-		while (mask != 0) {
-			if ((vIFR_new & vIFR_new & mask) != 0) { 
-				if (via->vISR[bit] != NULL) { via->vISR[bit](); }
-			}
-			bit += 1;
-			mask <<= 1;
-		}
+		/*fprintf(
+			stderr, "IRQ changed ("BIN_PAT") -> ("BIN_PAT")\n",
+			TO_BIN(vIFR_old & (vIFR_old ^ vIFR_new)),
+			TO_BIN(vIFR_new & (vIFR_old ^ vIFR_new))
+		);*/
 		VIAorSCCinterruptChngNtfy();
-		fprintf(stderr, "IRQ changed ("BIN_PAT") -> ("BIN_PAT")\n", TO_BIN(vIFR_old & (vIFR_old ^ vIFR_new)), TO_BIN(vIFR_new & (vIFR_old ^ vIFR_new)));
 	}
-	else if (reg == rIFR || reg == rIER)
+	/*else if (reg == rIFR || reg == rIER)
 	{
 		fprintf(stderr, "IRQ attempt ("BIN_PAT")\n", TO_BIN((data_old ^ vIFR_new)));
-	}
+	}*/
 	
+	// Check if shift mode has changed
 	if (reg == rACR) {
 		uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
 		uint8_t ShiftMode_old = (data_old & 0x1C) >> 2;
@@ -362,7 +369,9 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 			// Check if shift direction has changed
 			if ((ShiftMode & 0b100) != (ShiftMode_old & 0b100)) {
 				if ((ShiftMode & 0b100) == 0) { // if now shifting in
-					VIA_RaiseInterrupt(id, 2);  // raise interrupt
+					// notify keyboard/ADB controller
+					via->vCB2 = true;
+					VIA_RunCB2ISR(id);
 				}
 			}
 		}
@@ -376,9 +385,9 @@ uint8_t VIA_Read(uint8_t id, VIA_Register_t reg)
 	assert(reg < rINVALID);
 	VIA_State_t *via = &VIA_State[id];
 	
-	if (reg == rSR) {
+	/*if (reg == rSR) {
 		fprintf(stderr, "vSR: %d, %d, %d\n", false, ((via->vACR & 0x1C) >> 2), via->vSR);
-	}
+	}*/
 	
 	switch(reg) {
 	// not sure if reading *all* of vBufA or vBufB is correct,
@@ -437,14 +446,14 @@ void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool 
 }
 
 // ShiftMode states (from M68k perspective)
-// 0: Shift in under external control w/ no interrupts.
-// 1: Shift in under control of Timer 2
-// 2: Shift in under system clock control
-// 3: Shift in under external control. ISR every byte. R/W resets ISR.
-// 4: Shift out under T2 control (forever)
-// 5: Shift out under T2 control
-// 6: Shift out under system clock control
-// 7: Shift out under external control. ISR every byte. R/W resets ISR.
+// 0b000 (0): Shift in under external control w/ no interrupts.
+// 0b001 (1): Shift in under control of Timer 2
+// 0b010 (2): Shift in under system clock control
+// 0b011 (3): Shift in under external control. ISR every byte. R/W resets ISR.
+// 0b100 (4): Shift out under T2 control (forever)
+// 0b101 (5): Shift out under T2 control
+// 0b110 (6): Shift out under system clock control
+// 0b111 (7): Shift out under external control. ISR every byte. R/W resets ISR.
 
 // TODO: this probably shouldn't be instant.
 // also i got the in/out mixed up compared to the datasheet. oh well.
@@ -455,12 +464,19 @@ void VIA_ShiftInData_M68k(uint8_t id, uint8_t v)
 	
 	//VIA_LowerInterrupt(id, 2); // data ready
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
+	assert(((ShiftMode & 0b100) == 0b100) || (ShiftMode == 0));
 	
-	VIA_LowerInterrupt(id, 2); // reset "data ready"
 	VIA_State[id].vSR = v;
+	
+	// If shifting out under system clock...
 	if (ShiftMode == 6) {
-		VIA_RaiseInterrupt(id, 2); // data ready
-		VIA_RaiseInterrupt(id, 4); // data clock
+		// If data line is high, clear line and notify ADB/keyboard
+		if (VIA_State[id].vCB2 == true) {
+			VIA_State[id].vCB2 = false;
+			VIA_RunCB2ISR(id);
+		}
+		// and raise SR data ready ISR
+		VIA_RaiseInterrupt(id, 2);
 	}
 }
 
@@ -471,19 +487,12 @@ uint8_t VIA_ShiftOutData_M68k(uint8_t id)
 	VIA_State_t *via = &VIA_State[id];
 	
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
-	VIA_LowerInterrupt(id, 2); // reset "data ready"
-	uint8_t result = VIA_State[id].vSR;
-	/*if (ShiftMode == 3) {
-		VIA_RaiseInterrupt(id, 2); // data ready
-		VIA_RaiseInterrupt(id, 4); // data clock
-		// last data bit
-		if (via->vSR & 1) {
-			VIA_RaiseInterrupt(id, 3);
-		} else {
-			VIA_LowerInterrupt(id, 3);
-		}
-	}*/
-	return result;
+	assert((ShiftMode & 0b100) == 0b000);
+	
+	// Notify keyboard
+	//via->vCB2 = true;
+	//VIA_RunCB2ISR(id);
+	return VIA_State[id].vSR;
 }
 
 // Same functions, from the peripheal end
@@ -492,14 +501,13 @@ void VIA_ShiftInData_Ext(uint8_t id, uint8_t v)
 	assert(id < VIA_MAXNUM);
 	VIA_State_t *via = &VIA_State[id];
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
-	fprintf(stderr, "vSR: %d, %d, %d (ext)\n", true, ShiftMode, v);
+	//fprintf(stderr, "vSR: %d, %d, %d (ext)\n", true, ShiftMode, v);
 	
-	assert(ShiftMode == 0 || ShiftMode == 3);
+	assert ((ShiftMode & 0b100) == 0b000);
 	
-	if (ShiftMode == 3) {
+	if (ShiftMode != 0) {
 		VIA_State[id].vSR = v;
-		VIA_State[id].vIFR |= 0b10010100; // data ready; no callback
-		VIAorSCCinterruptChngNtfy();
+		VIA_RaiseInterrupt(id, 2); // data ready
 	}
 }
 
@@ -510,17 +518,12 @@ uint8_t VIA_ShiftOutData_Ext(uint8_t id)
 	VIA_State_t *via = &VIA_State[id];
 	
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
-	fprintf(stderr, "vSR: %d, %d, %d (ext)\n", false, ShiftMode, VIA_State[id].vSR);
-	assert(ShiftMode == 7);
+	//fprintf(stderr, "vSR: %d, %d, %d (ext)\n", false, ShiftMode, VIA_State[id].vSR);
+	assert(((ShiftMode & 0b100) == 0b100) || (ShiftMode == 0));
 	
-	VIA_State[id].vIFR |= 0b10010100; // data ready; no callback
-	// data bit
-	if (via->vSR & 1) {
-		VIA_State[id].vIFR |= 0b00001000;
-	} else {
-		VIA_State[id].vIFR &= 0b11110111;
-	}
-	VIAorSCCinterruptChngNtfy();
+	VIA_RaiseInterrupt(id, 2);
+	VIA_RaiseInterrupt(id, 4);
+	VIA_State[id].vCB2 = ((VIA_State[id].vSR & 1) == 1);
 	return VIA_State[id].vSR;
 }
 

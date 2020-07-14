@@ -19,23 +19,27 @@ typedef void (*VIA_ISR_t)(void);
 
 /* Names from Guide to Macintosh Family Hardware, Second Edition, pg. 159 */
 typedef struct {
-	uint8_t   vBufA;    // Data Register A
-	uint8_t   vBufB;    // Data Register B
-	uint8_t   vDirA;    // Data Direction A (0 = in, 1 = out)
-	uint8_t   vDirB;    // Data Direction B (0 = in, 1 = out)
-	uint8_t   vPCR;     // Peripheal Control
-	uint8_t   vACR;     // Auxiliary Control
-	uint8_t   vIFR;     // Interrupt Flag
-	uint8_t   vIER;     // Interrupt Enable
-	uint8_t   vSR;      // Shift register
-	uint16_t  vT1L;     // Timer 1 latch
-	uint16_t  vT1C;     // Timer 1 counter
-	uint16_t  vT2L;     // Timer 2 latch
-	uint16_t  vT2C;     // Timer 2 counter
+	uint8_t   vBufA;      // Data Register A
+	uint8_t   vBufB;      // Data Register B
+	uint8_t   vDirA;      // Data Direction A (0 = in, 1 = out)
+	uint8_t   vDirB;      // Data Direction B (0 = in, 1 = out)
+	uint8_t   vPCR;       // Peripheal Control
+	uint8_t   vACR;       // Auxiliary Control
+	uint8_t   vIFR;       // Interrupt Flag
+	uint8_t   vIER;       // Interrupt Enable
+	uint8_t   vSR;        // Shift register
+	uint16_t  vT1L;       // Timer 1 latch
+	uint16_t  vT1C;       // Timer 1 counter
+	uint16_t  vT2L;       // Timer 2 latch
+	uint16_t  vT2C;       // Timer 2 counter
 	
-	VIA_ISR_t vISR[8];    // ISRs to automatically call when interrupt is raised
+	// data-change ISRs
 	VIA_ISR_t vISR_A[8];  // ISRs to call when vBufA changes
 	VIA_ISR_t vISR_B[8];  // ISRs to call when vBufB changes
+	
+	// Shift register external device notifications
+	bool      vCB2;       // CB2 state
+	VIA_ISR_t vISR_CB2;   // thing to call when CB2 changes
 } VIA_State_t;
 
 /* Names from SY6522 datasheet */
@@ -74,10 +78,10 @@ void VIA_Reset(void);
 // Raise an interrupt by irq number, calling registered ISR if required
 void VIA_RaiseInterrupt(uint8_t id, uint8_t irq);
 void VIA_LowerInterrupt(uint8_t id, uint8_t irq);
-// Register a VIA interrupt service routine
-void VIA_RegisterISR(uint8_t id, uint8_t irq, VIA_ISR_t isr);
 // Register data state-change notification interrupts
-void VIA_RegisterDataISR(uint8_t port, uint8_t id, uint8_t bit, VIA_ISR_t isr);
+void VIA_RegisterDataISR(uint8_t id, uint8_t port, uint8_t bit, VIA_ISR_t isr);
+// Register a routine for CB2's ISR
+void VIA_RegisterCB2ISR(uint8_t id, VIA_ISR_t isr);
 
 // Tick all timers by one step (call every 1.2766 us)
 //void VIA_TickTimers();
@@ -90,6 +94,11 @@ uint8_t VIA_Read(uint8_t id, VIA_Register_t reg);
 bool VIA_ReadBit(uint8_t id, VIA_Register_t reg, uint8_t bit);
 // Write a single bit. Can raise data ISR if required.
 void VIA_WriteBit(uint8_t id, VIA_Register_t reg, uint8_t bit, bool value, bool runISR);
+// Get the value of CB2, specifically
+bool VIA_GetCB2(uint8_t id);
+// And likewise, set it
+void VIA_SetSB2(uint8_t id, bool value);
+
 
 void VIA_ShiftInData_M68k(uint8_t id, uint8_t v);
 uint8_t VIA_ShiftOutData_M68k(uint8_t id);

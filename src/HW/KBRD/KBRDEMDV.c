@@ -110,7 +110,7 @@ GLOBALPROC DoKybd_ReceiveCommand(void)
 	} else {
 		uint8_t in = VIA_ShiftOutData_Ext(VIA1);
 
-		//fprintf(stderr, "KybdStateRecievedCommand\n");
+		fprintf(stderr, "KybdStateRecievedCommand\n");
 		KybdState = kKybdStateRecievedCommand;
 
 		switch (in) {
@@ -152,7 +152,7 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 			"KybdState != kKybdStateRecievingEndCommand");
 	} else {
 		KybdState = kKybdStateIdle;
-		//fprintf(stderr, "KybdStateIdle\n");
+		fprintf(stderr, "KybdStateIdle\n");
 #ifdef _VIA_Debug
 		fprintf(stderr, "enter DoKybd_ReceiveEndCommand\n");
 #endif
@@ -168,10 +168,11 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 
 GLOBALPROC Kybd_DataLineChngNtfy(void)
 {
+	fprintf(stderr, "Kybd_DataLineChngNtfy (%d)\n", Kybd_CheckDataReady());
 	switch (KybdState) {
 		case kKybdStateIdle:
 			if (Kybd_CheckDataReady() == false) {
-				//fprintf(stderr, "KybdStateRecievingCommand\n");
+				fprintf(stderr, "KybdStateRecievingCommand\n");
 				KybdState = kKybdStateRecievingCommand;
 #ifdef _VIA_Debug
 				fprintf(stderr, "posting kICT_Kybd_ReceiveCommand\n");
@@ -187,7 +188,7 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 		case kKybdStateRecievedCommand:
 			if (Kybd_CheckDataReady() == true) {
 				KybdState = kKybdStateRecievingEndCommand;
-				//fprintf(stderr, "KybdStateRecievingEndCommand\n");
+				fprintf(stderr, "KybdStateRecievingEndCommand\n");
 #ifdef _VIA_Debug
 				fprintf(stderr,
 					"posting kICT_Kybd_ReceiveEndCommand\n");

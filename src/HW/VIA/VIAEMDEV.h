@@ -76,8 +76,8 @@ bool VIA_Zap(void);
 void VIA_Reset(void);
 
 // Raise an interrupt by irq number, calling registered ISR if required
-void VIA_RaiseInterrupt(uint8_t id, uint8_t irq);
-void VIA_LowerInterrupt(uint8_t id, uint8_t irq);
+void VIA_RaiseInterrupt(uint8_t id, uint8_t irq, bool notify);
+void VIA_LowerInterrupt(uint8_t id, uint8_t irq, bool notify);
 // Register data state-change notification interrupts
 void VIA_RegisterDataISR(uint8_t id, uint8_t port, uint8_t bit, VIA_ISR_t isr);
 // Register a routine for CB2's ISR
@@ -89,7 +89,7 @@ void VIA_RegisterCB2ISR(uint8_t id, VIA_ISR_t isr);
 // Write to a register. Does not raise data ISRs.
 void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR);
 // Read to a register
-uint8_t VIA_Read(uint8_t id, VIA_Register_t reg);
+uint8_t VIA_Read(uint8_t id, VIA_Register_t reg, bool runISR);
 // Read a single bit
 bool VIA_ReadBit(uint8_t id, VIA_Register_t reg, uint8_t bit);
 // Write a single bit. Can raise data ISR if required.

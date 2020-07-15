@@ -119,5 +119,5 @@ void Screen_EndTickNotify(void)
 
 void Screen_RaiseVBlank()
 {
-	VIA_RaiseInterrupt(VIA1, 1);
+	VIA_RaiseInterrupt(VIA1, 1, true);
 }

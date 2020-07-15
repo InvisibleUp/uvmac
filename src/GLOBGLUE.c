@@ -38,6 +38,7 @@
 #include "HW/RAM/RAMADDR.h"
 #include "HW/VIA/VIAEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"
+#include <stdio.h>
 
 /*
 	ReportAbnormalID unused 0x111D - 0x11FF
@@ -1222,10 +1223,12 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 						"access VIA1 nonstandard address");
 				}
 #endif
+				//fprintf(stderr, "VIA1_Access(%d, %d, %d)\n", Data, WriteMem, (addr >> 9) & kVIA1_Mask);
 				if (WriteMem) {
 					VIA_Write(VIA1, (addr >> 9) & kVIA1_Mask, Data, true);
 				} else {
-					Data = VIA_Read(VIA1, (addr >> 9) & kVIA1_Mask);
+					Data = VIA_Read(VIA1, (addr >> 9) & kVIA1_Mask, true);
+					//fprintf(stderr, "= %d\n", Data);
 				}
 			}
 
@@ -1239,8 +1242,8 @@ GLOBALFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 				{
 					/* for weirdness at offset 0x71E in ROM */
 					Data = (
-						VIA_Read(VIA2, (addr >> 9) & kVIA2_Mask) << 8) |
-						VIA_Read(VIA2, (addr >> 9) & kVIA2_Mask);
+						VIA_Read(VIA2, (addr >> 9) & kVIA2_Mask) << 8, true) |
+						VIA_Read(VIA2, (addr >> 9) & kVIA2_Mask, true);
 					);
 
 				} else {
@@ -1521,8 +1524,8 @@ LOCALVAR uint8_t CurIPL = 0;
 GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 {
 	uint8_t NewIPL;
-	uint8_t VIA1_InterruptRequest = (VIA_Read(VIA1, rIFR) & 0b01111111) != 0;
-	uint8_t VIA2_InterruptRequest = (VIA_Read(VIA2, rIFR) & 0b01111111) != 0;
+	uint8_t VIA1_InterruptRequest = (VIA_Read(VIA1, rIFR, false) & 0b01111111) != 0;
+	uint8_t VIA2_InterruptRequest = (VIA_Read(VIA2, rIFR, false) & 0b01111111) != 0;
 	
     if ((CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)) {
 		if (InterruptButton) {

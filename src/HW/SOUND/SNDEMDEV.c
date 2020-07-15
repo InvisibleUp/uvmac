@@ -101,7 +101,7 @@ LOCALVAR uint16_t SoundInvertState = 0;
 
 uint8_t MacSound_GetVolume()
 {
-	return VIA_Read(VIA1, rIRA) & 0b00000111;
+	return VIA_Read(VIA1, rIRA, false) & 0b00000111;
 }
 
 bool MacSound_CheckDisabled()

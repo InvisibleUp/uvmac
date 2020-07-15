@@ -355,6 +355,7 @@ GLOBALPROC RTC_Interrupt(void)
 		RTC.Seconds_1[3] = (Seconds & 0xFF000000) >> 24;
 
 		LastRealDate = NewRealDate;
+		VIA_RaiseInterrupt(VIA1, 0, true);
 	}
 }
 

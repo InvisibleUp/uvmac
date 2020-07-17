@@ -75,10 +75,11 @@ HW_SRC = {
 		'src/HW/KBRD/KBRDEMDV.c',
 	],
 	'M68K': [
-#		'src/HW/M68K/DISAM68K.c',
-		'src/HW/M68K/M68KITAB.c',
-		'src/HW/M68K/MINEM68K.c',
-#		'src/HW/M68K/FPCPEMDV.c',
+		'src/HW/M68K/m68kcpu.c',
+		'src/HW/M68K/m68kdasm.c',
+		'src/HW/M68K/m68khooks.c',
+		'src/HW/M68K/m68kops.c',
+		'src/HW/M68K/softfloat/softfloat.c',
 	],
 	'MOUSE': [
 		'src/HW/MOUSE/MOUSEMDV.c',

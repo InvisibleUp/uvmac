@@ -27,7 +27,6 @@
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "HW/M68K/MINEM68K.h"
 #include "HW/SOUND/SNDEMDEV.h"
 #include "HW/VIA/VIAEMDEV.h"
 

@@ -29,7 +29,6 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 #include "HW/SCC/SCCEMDEV.h"
-#include "HW/M68K/MINEM68K.h"
 #include "HW/MOUSE/MOUSEMDV.h"
 #include "HW/VIA/VIAEMDEV.h"
 

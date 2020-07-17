@@ -280,5 +280,7 @@ typedef ATTer *ATTep;
 EXPORTFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
 	bool WriteMem, bool ByteSize, CPTR addr);
 EXPORTFUNC bool MemAccessNtfy(ATTep pT);
+uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr, uint32_t *actL);
+ATTep get_address_realblock1(bool WriteMem, CPTR addr);
 
 #endif

@@ -38,6 +38,7 @@
 #include "HW/RAM/RAMADDR.h"
 #include "HW/VIA/VIAEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"
+#include "HW/M68K/m68k.h"
 #include <stdio.h>
 
 /*
@@ -56,6 +57,7 @@ bool WantMagnify = (WantInitMagnify != 0);
 bool RequestInsertDisk = false;
 uint8_t RequestIthDisk = 0;
 bool ControlKeyPressed = false;
+ATTep HeadATTel = NULL;
 
 
 IMPORTPROC m68k_reset(void);
@@ -81,7 +83,7 @@ IMPORTFUNC uint32_t GetCyclesRemaining(void);
 IMPORTPROC SetCyclesRemaining(uint32_t n);
 
 IMPORTPROC SetHeadATTel(ATTep p);
-IMPORTFUNC ATTep FindATTel(CPTR addr);
+LOCALFUNC ATTep FindATTel(CPTR addr);
 
 IMPORTFUNC uint32_t SCSI_Access(uint32_t Data, bool WriteMem, CPTR addr);
 //IMPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
@@ -645,8 +647,38 @@ LOCALPROC FinishATTList(void)
 		}
 #endif
 
-		SetHeadATTel(h);
+		//SetHeadATTel(h);
+		HeadATTel = h;
 	}
+}
+
+LOCALFUNC ATTep FindATTel(CPTR addr)
+{
+	ATTep prev;
+	ATTep p;
+
+	p = HeadATTel;
+	if ((addr & p->cmpmask) != p->cmpvalu) {
+		do {
+			prev = p;
+			p = p->Next;
+		} while ((addr & p->cmpmask) != p->cmpvalu);
+
+		/*{
+			ATTep next = p->Next;
+
+			if (nullpr == next) {
+				// don't move the end guard 
+			} else {
+				// move to first 
+				prev->Next = next;
+				p->Next = HeadATTel;
+				HeadATTel = p;
+			}
+		}*/
+	}
+
+	return p;
 }
 
 #if (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)
@@ -1460,7 +1492,7 @@ GLOBALPROC Addr32_ChangeNtfy(void)
 }
 #endif
 
-LOCALFUNC ATTep get_address_realblock1(bool WriteMem, CPTR addr)
+ATTep get_address_realblock1(bool WriteMem, CPTR addr)
 {
 	ATTep p;
 
@@ -1470,6 +1502,8 @@ Label_Retry:
 		(WriteMem ? kATTA_writereadymask : kATTA_readreadymask)))
 	{
 		/* ok */
+	} else if (0 != (p->Access & kATTA_mmdvmask)) {
+		/* also ok */
 	} else {
 		if (0 != (p->Access & kATTA_ntfymask)) {
 			if (MemAccessNtfy(p)) {
@@ -1482,7 +1516,7 @@ Label_Retry:
 	return p;
 }
 
-GLOBALFUNC uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
+uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
 	uint32_t *actL)
 {
 	uint32_t bankleft;
@@ -1547,13 +1581,12 @@ GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 	}
 	if (NewIPL != CurIPL) {
 		CurIPL = NewIPL;
-		m68k_IPLchangeNtfy();
+		m68k_set_irq(NewIPL);
 	}
 }
 
 GLOBALFUNC bool AddrSpac_Init(void)
 {
-	MINEM68K_Init(&CurIPL);
 	return true;
 }
 
@@ -1630,13 +1663,13 @@ GLOBALVAR iCountt NextiCount = 0;
 
 GLOBALFUNC iCountt GetCuriCount(void)
 {
-	return NextiCount - GetCyclesRemaining();
+	return NextiCount - m68k_cycles_remaining();
 }
 
 GLOBALPROC ICT_add(int taskid, uint32_t n)
 {
 	// n must be > 0 
-	int32_t x = GetCyclesRemaining();
+	int32_t x = m68k_cycles_remaining();
 	uint32_t when = NextiCount - x + n;
 
 #ifdef _VIA_Debug
@@ -1645,7 +1678,7 @@ GLOBALPROC ICT_add(int taskid, uint32_t n)
 	InsertICT(taskid, when);
 
 	if (x > (int32_t)n) {
-		SetCyclesRemaining(n);
+		m68k_modify_timeslice(n);
 		NextiCount = when;
 	}
 }

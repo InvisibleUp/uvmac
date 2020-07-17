@@ -26,8 +26,7 @@
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "HW/M68K/M68KITAB.h"
-#include "HW/M68K/MINEM68K.h"
+#include "HW/M68K/m68k.h"
 #include "HW/VIA/VIAEMDEV.h"
 #include "HW/DISK/IWMEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"
@@ -153,8 +152,8 @@ const DevMethods_t DEVICES[] = {
 	},
 	// m68k
 	{
-	.init = NULL,
-	.reset = m68k_reset,
+	.init = m68k_init_mac,
+	.reset = m68k_pulse_reset,
 	.starttick = NULL,
 	.endtick = NULL,
 	.subtick = NULL,
@@ -477,7 +476,7 @@ LOCALPROC m68k_go_nCycles_1(uint32_t n)
 		ICT_DoCurrentTasks();
 		n2 = ICT_DoGetNext(n);
 		NextiCount += n2;
-		m68k_go_nCycles(n2);
+		m68k_execute(n2 / 64); // TODO: verify scaler here
 		n = StopiCount - NextiCount;
 	} while (n != 0);
 }

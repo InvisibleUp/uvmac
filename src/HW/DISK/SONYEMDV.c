@@ -28,16 +28,13 @@
 	by Jesus A. Alvarez.
 */
 
-#ifndef AllFiles
 #include "SYSDEPNS.h"
 #include "UI/MYOSGLUE.h"
 #include "UTIL/ENDIANAC.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "HW/M68K/MINEM68K.h"
-#endif
-
 #include "HW/DISK/SONYEMDV.h"
+#include "HW/M68K/m68k.h"
 #include <stdio.h>
 
 /*

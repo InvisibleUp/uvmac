@@ -24,16 +24,12 @@
 
 /* NCR5380 chip emulation by Yoav Shadmi, 1998 */
 
-#ifndef AllFiles
 #include "SYSDEPNS.h"
 
 #include "UTIL/ENDIANAC.h"
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "HW/M68K/MINEM68K.h"
-#endif
-
 #include "HW/SCSI/SCSIEMDV.h"
 
 #define scsiRd   0x00

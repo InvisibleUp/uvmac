@@ -302,9 +302,9 @@ void VIA_Write(uint8_t id, VIA_Register_t reg, uint8_t data, bool runISR)
 		fprintf(stderr, "Set PB to "BIN_PAT"\n", TO_BIN(data));
 	}*/
 	//fprintf(stderr, "VIA%d Write %d <- %d\n", id+1, reg, data);
-	if (reg == rSR) {
+	/*if (reg == rSR) {
 		fprintf(stderr, "vSR: %d, %d, %d\n", true, ((via->vACR & 0x1C) >> 2), data);
-	}
+	}*/
 	
 	switch(reg) {
 	case rIRB:  via->vBufB = data; break;
@@ -402,9 +402,9 @@ uint8_t VIA_Read(uint8_t id, VIA_Register_t reg, bool runISR)
 	assert(reg < rINVALID);
 	VIA_State_t *via = &VIA_State[id];
 	
-	if (reg == rSR) {
+	/*if (reg == rSR) {
 		fprintf(stderr, "vSR: %d, %d, %d\n", false, ((via->vACR & 0x1C) >> 2), via->vSR);
-	}
+	}*/
 	
 	if (runISR) {
 		if (reg == rIRA || reg == rORA) {
@@ -530,7 +530,7 @@ void VIA_ShiftInData_Ext(uint8_t id, uint8_t v)
 	assert(id < VIA_MAXNUM);
 	VIA_State_t *via = &VIA_State[id];
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
-	fprintf(stderr, "vSR: %d, %d, %d (ext)\n", true, ShiftMode, v);
+	//fprintf(stderr, "vSR: %d, %d, %d (ext)\n", true, ShiftMode, v);
 	
 	assert ((ShiftMode & 0b100) == 0b000);
 	
@@ -548,7 +548,7 @@ uint8_t VIA_ShiftOutData_Ext(uint8_t id)
 	VIA_State_t *via = &VIA_State[id];
 	
 	uint8_t ShiftMode = (via->vACR & 0x1C) >> 2;
-	fprintf(stderr, "vSR: %d, %d, %d (ext)\n", false, ShiftMode, VIA_State[id].vSR);
+	//fprintf(stderr, "vSR: %d, %d, %d (ext)\n", false, ShiftMode, VIA_State[id].vSR);
 	assert(((ShiftMode & 0b100) == 0b100) || (ShiftMode == 0));
 	
 	VIA_RaiseInterrupt(id, 2, true);

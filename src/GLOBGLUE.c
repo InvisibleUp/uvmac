@@ -1553,8 +1553,6 @@ GLOBALPROC SetInterruptButton(bool v)
 	}
 }
 
-LOCALVAR uint8_t CurIPL = 0;
-
 GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 {
 	uint8_t NewIPL;
@@ -1579,10 +1577,8 @@ GLOBALPROC VIAorSCCinterruptChngNtfy(void)
 			| (SCCInterruptRequest << 1)
 			| (InterruptButton << 2);
 	}
-	if (NewIPL != CurIPL) {
-		CurIPL = NewIPL;
-		m68k_set_irq(NewIPL);
-	}
+	
+	m68k_set_irq(NewIPL);
 }
 
 GLOBALFUNC bool AddrSpac_Init(void)

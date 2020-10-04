@@ -106,7 +106,7 @@ GLOBALFUNC bool ROM_Init(void)
 
 	/* do_put_mem_word(862 + ROM, 0x4E71); */ /* shorten set memory */
 
-	Sony_Install();
+	//Sony_Install();
 	//ScreenHack_Install();	in above fcn temporarily
 
 #ifdef ln2mtb

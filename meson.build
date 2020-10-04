@@ -79,6 +79,7 @@ HW_SRC = {
 		'src/HW/M68K/m68kdasm.c',
 		'src/HW/M68K/m68khooks.c',
 		'src/HW/M68K/m68kops.c',
+		'src/HW/M68K/m68kgdb.c',
 		'src/HW/M68K/softfloat/softfloat.c',
 	],
 	'MOUSE': [

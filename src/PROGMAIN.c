@@ -472,6 +472,11 @@ LOCALPROC m68k_go_nCycles_1(uint32_t n)
 {
 	uint32_t n2;
 	uint32_t StopiCount = NextiCount + n;
+	
+	if (m68k_on_breakpoint && !m68k_need_singlestep) {
+		return;
+	}
+	
 	do {
 		ICT_DoCurrentTasks();
 		n2 = ICT_DoGetNext(n);
@@ -479,12 +484,19 @@ LOCALPROC m68k_go_nCycles_1(uint32_t n)
 		m68k_execute(n2 / 64); // TODO: verify scaler here
 		n = StopiCount - NextiCount;
 	} while (n != 0);
+	
+	if (m68k_on_breakpoint && m68k_need_singlestep) {
+		m68k_need_singlestep = false;
+	}
 }
 
 LOCALVAR uint32_t ExtraSubTicksToDo = 0;
 
 LOCALPROC DoEmulateOneTick(void)
 {
+	// GDB stub query
+	//gdbstub_reconnect();
+	
 	// AutoSlow
 	uint32_t NewQuietTime = QuietTime + 1;
 	uint32_t NewQuietSubTicks = QuietSubTicks + kNumSubTicks;

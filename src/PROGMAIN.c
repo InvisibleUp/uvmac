@@ -26,7 +26,7 @@
 #include "UI/MYOSGLUE.h"
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
-#include "HW/M68K/m68k.h"
+#include "lib/M68K/m68k.h"
 #include "HW/VIA/VIAEMDEV.h"
 #include "HW/DISK/IWMEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"

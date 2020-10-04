@@ -34,7 +34,7 @@
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
 #include "HW/DISK/SONYEMDV.h"
-#include "HW/M68K/m68k.h"
+#include "lib/M68K/m68k.h"
 #include <stdio.h>
 
 /*
@@ -925,6 +925,7 @@ typedef struct DriverDat_R DriverDat_R;
 #define kcom_checkval 0x841339E2
 
 //#define Sony_dolog (dbglog_HAVE && 0)
+//#define Sony_dolog true
 #define dbglog_StartLine()
 #define dbglog_writeCStr(str) fprintf(stderr, "%s", str)
 #define dbglog_writeHex(hex) fprintf(stderr, "$%X", hex)

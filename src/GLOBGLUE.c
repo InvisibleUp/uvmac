@@ -38,7 +38,7 @@
 #include "HW/RAM/RAMADDR.h"
 #include "HW/VIA/VIAEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"
-#include "HW/M68K/m68k.h"
+#include "lib/M68K/m68k.h"
 #include <stdio.h>
 
 /*

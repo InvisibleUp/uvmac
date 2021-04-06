@@ -1,5 +1,7 @@
 # µvMac 0.37.0
 
+***THIS CODEBASE IS INCOMPLETE AND DOES NOT CURRENTLY COMPILE TO A USABLE PRODUCT. ALSO, IT IS NOT UNDER ACTIVE DEVELOPMENT.***
+
 Forked from Mini vMac v36.4 by Paul C. Pratt (http://www.gryphel.com/c/minivmac), which was forked from vMac by Philip "PC" Cummins (http://www.vmac.org/main.html)
 
 µvMac (micro vMac) is a small, simple emulator for early Motorola 68000 based emulators. Currently we support systems from the original Macintosh 128K all the way up to the Macintosh II.
@@ -23,15 +25,6 @@ Here's an incomplete list of platforms that can, in theory, be targeted. These a
 
 ![System 7.1 running on an emulated Macintosh Plus](docs/macplus.png)
 ![System 7.1 running on an emulated Macintosh II](docs/macii.png)
-
-The below images are mockups of an upcoming feature, the configuration manager. This replaces Control Mode in Mini vMac, and also appears when you start the emulator.
-
-![Mockup of the config manager's initial screen](docs/bootdlg_start.png)
-![Mockup of the config manager's device selection screen](docs/bootdlg_model.png)
-
-The configuration manager will require resources from a ROM. Here's the screen you get when you start up for the first time, without a ROM.
-
-![Flashing ? on a ROM chip, and a message asking you to find a ROM](docs/norom-mockup.gif)
 
 ## Legal info
 

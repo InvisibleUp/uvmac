@@ -77,6 +77,7 @@ HW_SRC = {
 	'M68K': [
 		'lib/M68K/m68kcpu.c',
 		'lib/M68K/m68kdasm.c',
+		'lib/M68K/m68kops.c',
 		'lib/M68K/softfloat/softfloat.c',
 		'lib/M68K/m68khooks.c',
 		'lib/M68K/m68kgdb.c',

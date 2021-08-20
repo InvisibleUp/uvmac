@@ -4,6 +4,3 @@
 [submodule "src/tomlc99"]
 	path = src/tomlc99
 	url = https://github.com/cktan/tomlc99
-[submodule "src/HW/M68K"]
-	path = src/HW/M68K
-	url = https://github.com/kstenerud/Musashi.git

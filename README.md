@@ -24,9 +24,6 @@ mkdir subprojects/
 meson wrap install sdl2
 ```
 
-Also, for now, for the M68K core to work, you need to compile Musashi yourself. Follow the instructions in that project's README for details.
-
-
 ## Supported Platforms
 
 µvMac *absolutely requires* SDL2. There are no plans to support platforms that SDL2 does not target. For 99% of users, this should not be a concern. Dropping support for esoteric platforms and exclusively using SDL2 vastly simplifies the complexity of the code.

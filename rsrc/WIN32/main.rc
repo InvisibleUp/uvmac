@@ -1,4 +1,9 @@
-//LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#include "winresrc.h"
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+// Application manifest
+CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "app.manifest"
 
 // Icons
 ICO_APP 	ICON DISCARDABLE	"ICONAPPW.ico"
@@ -24,7 +29,7 @@ BEGIN
             VALUE "FileDescription",  "A 68k Macintosh emulator\0"
             VALUE "FileVersion",      "v0.37.0\0"
             VALUE "InternalName",     "microvmac\0"
-            VALUE "LegalCopyright",   "©1996-2020 various contributors. Licensed under the GPL v2.\0"
+            VALUE "LegalCopyright",   "(c)1996-2023 various contributors. Licensed under the GPL v2.\0"
             VALUE "OriginalFilename", "microvmac.exe\0"
             VALUE "ProductName",      "micro vMac\0"
             VALUE "ProductVersion",   "v0.37.0\0"

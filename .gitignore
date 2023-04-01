@@ -1,11 +1,27 @@
+# C/C++
 *.exe
 *.obj
-.vscode/*
-bld
+*.pdb
+
+# Mini vMac
 *.dsk
 *.ROM
-*.kdev4
-*.pdb
-build/
+
+# Visual Studio
 .vs/*
-make/
+.vs/
+
+# Visual Studio Code
+.vscode/
+.vscode/*
+
+# KDevelop 4
+*.kdev4
+
+# Meson
+build/
+builddir/
+subprojects/
+
+# Working files
+_work/

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "CNFGRAPI.h"
 #include "SYSDEPNS.h"
 #include "UTIL/ENDIANAC.h"

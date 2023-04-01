@@ -9,7 +9,11 @@
 #define GDBSTUB_PORT 4014
 
 #include <assert.h>
+#ifdef _WIN32
+#include <winsock2.h>
+#else
 #include <arpa/inet.h>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

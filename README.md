@@ -33,6 +33,17 @@ The configuration manager will require resources from a ROM. Here's the screen y
 
 ![Flashing ? on a ROM chip, and a message asking you to find a ROM](docs/norom-mockup.gif)
 
+## Compiling
+µvMac uses the Meson build system. See https://mesonbuild.com/ for instructions on how to download and use it.
+
+On Windows systems, you may need to run the following commands for SDL to work:
+```
+mkdir subprojects/
+meson wrap install sdl2
+```
+
+Also, for now, for the M68K core to work, you need to compile Musashi yourself. Follow the instructions in that project's README for details.
+
 ## Legal info
 
 You can redistribute µvMac and/or modify it under the terms

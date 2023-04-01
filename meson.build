@@ -60,11 +60,18 @@ configure_file(
 lSDL2 = dependency('SDL2', static: true)
 
 # Windows resources
-# todo: gate this off if not on Windows
 if target_machine.system() == 'windows'
 	windows = import('windows')
 	WIN_RSRC = windows.compile_resources(
 		'rsrc/WIN32/main.rc',
+		depend_files: [
+			'rsrc/WIN32/app.manifest',
+			'rsrc/WIN32/ICONAPPW.ico',
+			'rsrc/WIN32/ICONDSKW.ico',
+			'rsrc/WIN32/ICONROMW.ico',
+			'rsrc/SONYDRV.bin',
+			'rsrc/SONYICO.bin',
+		]
 	)
 else
 	WIN_RSRC = []

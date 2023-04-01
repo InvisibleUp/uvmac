@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 #include "incbin/incbin.h"
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
 
 #include "EMCONFIG.h"
 #include "GLOBGLUE.h"
@@ -19,21 +22,40 @@
 #include "HW/SCREEN/SCRNEMDV.h"
 
 // Include binaries
+#ifndef _MSC_VER
 INCBIN(SonyDriver, "rsrc/SONYDRV.bin");
 INCBIN(SonyIcon, "rsrc/SONYICO.bin");
+#endif
 
-#ifdef gSonyDriverData
 void Sony_LoadDriver(uint8_t *pto, int *size)
 {
+	#ifdef _MSC_VER
+	HRSRC hDrvInfo = FindResource(NULL, "SONY_DRV", RT_RCDATA);
+	HGLOBAL hDrv = LoadResource(NULL, hDrvInfo);
+	DWORD sDrv = SizeofResource(NULL, hDrvInfo);
+	void *pDrv = LockResource(hDrv);
+	memcpy(pto, pDrv, sDrv);
+	*size = sDrv;
+	#else
 	memcpy(pto, gSonyDriverData, gSonyDriverSize);
 	*size = gSonyDriverSize;
+	#endif
 }
 
 void Sony_LoadIcon(uint8_t *pto, int *icoSize)
 {
 	disk_icon_addr = (pto - ROM) + kROM_Base;
+	#ifdef _MSC_VER
+	HRSRC hIcoInfo = FindResource(NULL, "SONY_ICO", RT_RCDATA);
+	HGLOBAL hIco = LoadResource(NULL, hIcoInfo);
+	DWORD sIco = SizeofResource(NULL, hIcoInfo);
+	void *pIco = LockResource(hIco);
+	memcpy(pto, pIco, sIco);
+	pto += sizeof(sIco);
+	#else
 	memcpy(pto, gSonyIconData, gSonyIconSize);
 	*icoSize = gSonyIconSize;
+	#endif
 }
 
 void Sony_TwiggyPatch(uint8_t *pto)
@@ -74,10 +96,3 @@ void Sony_Install(void)
 	// currently broken
 	//ScreenHack_Install(&pto);
 }
-#else
-// Can't load patches; just stub this out for now
-void Sony_Install(void)
-{
-	return;
-}
-#endif

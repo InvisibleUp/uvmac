@@ -1,6 +1,6 @@
 # µvMac 0.37.0
 
-***THIS CODEBASE IS INCOMPLETE AND DOES NOT CURRENTLY COMPILE TO A USABLE PRODUCT. ALSO, IT IS NOT UNDER ACTIVE DEVELOPMENT.***
+***THIS CODEBASE IS INCOMPLETE, MAY NEVER BE COMPLETE, AND DOES NOT CURRENTLY COMPILE TO A USABLE PRODUCT.***
 
 Forked from Mini vMac v36.4 by Paul C. Pratt (http://www.gryphel.com/c/minivmac), which was forked from vMac by Philip "PC" Cummins (http://www.vmac.org/main.html)
 

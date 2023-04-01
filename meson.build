@@ -57,10 +57,16 @@ configure_file(
 )
 
 # Dependencies
-lSDL2 = dependency('SDL2')
+lSDL2 = dependency('SDL2', static: true)
+
+# Windows resources
+# todo: gate this off if not on Windows
+windows = import('windows')
+WIN_RSRC = windows.compile_resources(
+	'rsrc/WIN32/main.rc',
+)
 
 # Hardware libraries
-# Some are temporarily disabled while I get CMake up and running
 
 HW_SRC = {
 	'ADB':  [
@@ -174,8 +180,9 @@ EMU_INC = include_directories([
 # Just gonna do an SDL2 Mac Plus for now
 executable(
 	'microvmac',
-	sources: MAC_SRC['Plus'] + UI_SRC + EMU_SRC,
+	sources: MAC_SRC['Plus'] + UI_SRC + EMU_SRC + WIN_RSRC,
 	dependencies: [lSDL2],
 	include_directories: EMU_INC,
+	gui_app: true
 )
 

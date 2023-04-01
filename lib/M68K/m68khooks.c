@@ -78,7 +78,13 @@ unsigned int  m68k_read_memory_16(unsigned int address)
 	}
 	
 	// Return raw data
-	uint16_t result = __builtin_bswap16(*(uint16_t *)(r->usebase + address));
+	uint16_t result;
+	#ifdef _MSC_VER
+	result = _byteswap_ushort(*(uint16_t *)(r->usebase + address));
+	#else
+	// gcc-likes
+	result = __builtin_bswap16(*(uint16_t *)(r->usebase + address));
+	#endif
 	//fprintf(stderr, "read16 %X -> %X\n", address, result);
 	return result;
 }
@@ -104,7 +110,12 @@ unsigned int  m68k_read_memory_32(unsigned int address)
 	}
 	
 	// Return raw data
-	uint32_t result = __builtin_bswap32(*(uint32_t *)(r->usebase + address));
+	uint32_t result;
+	#ifdef _MSC_VER
+	result = _byteswap_ulong(*(uint32_t *)(r->usebase + address));
+	#else
+	result = __builtin_bswap32(*(uint32_t *)(r->usebase + address));
+	#endif
 	//fprintf(stderr, "read32 %X -> %X\n", address, result);
 	return result;
 }
@@ -168,7 +179,11 @@ void m68k_write_memory_8(unsigned int address, unsigned int value)
 void m68k_write_memory_16(unsigned int address, unsigned int value)
 {
 	ATTer *r = get_address_realblock1(true, address);
+	#ifdef _MSC_VER
+	value = _byteswap_ushort(value);
+	#else
 	value = __builtin_bswap16(value);
+	#endif
 	
 	// check for bus error
 	//assert (r != NULL);
@@ -192,7 +207,11 @@ void m68k_write_memory_16(unsigned int address, unsigned int value)
 void m68k_write_memory_32(unsigned int address, unsigned int value)
 {
 	ATTer *r = get_address_realblock1(true, address);
+	#ifdef _MSC_VER
+	value = _byteswap_ulong(value);
+	#else
 	value = __builtin_bswap32(value);
+	#endif
 	
 	// check for bus error
 	//assert(r != NULL);

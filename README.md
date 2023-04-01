@@ -45,6 +45,8 @@ Here's an incomplete list of platforms that can, in theory, be targeted. These a
 ![System 7.1 running on an emulated Macintosh Plus](docs/macplus.png)
 ![System 7.1 running on an emulated Macintosh II](docs/macii.png)
 
+<details>
+<summary>Future features; not representative of final product</summary>
 The below images are mockups of an upcoming feature, the configuration manager. This replaces Control Mode in Mini vMac, and also appears when you start the emulator.
 
 ![Mockup of the config manager's initial screen](docs/bootdlg_start.png)
@@ -53,6 +55,7 @@ The below images are mockups of an upcoming feature, the configuration manager. 
 The configuration manager will require resources from a ROM. Here's the screen you get when you start up for the first time, without a ROM.
 
 ![Flashing ? on a ROM chip, and a message asking you to find a ROM](docs/norom-mockup.gif)
+</details>
 
 ## Legal Info
 

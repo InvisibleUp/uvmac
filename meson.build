@@ -1,5 +1,5 @@
 # Project definition
-project('microvmac', 'c')
+project('microvmac', 'c', default_options: ['warning_level=everything', 'prefer_static=true'])
 
 # Configuration data
 conf = configuration_data({

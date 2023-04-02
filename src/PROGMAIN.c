@@ -50,13 +50,13 @@
 #define ARRAY_SIZE(array) (sizeof(array) / sizeof(*array))
 
 typedef struct DevMethods {
-	bool (*init)(void);
-	void (*reset)(void);
-	void (*starttick)(void);
-	void (*endtick)(void);
+	bool (*init)();
+	void (*reset)();
+	void (*starttick)();
+	void (*endtick)();
 	void (*subtick)(int);
-	void (*timebegin)(void);
-	void (*timeend)(void);
+	void (*timebegin)();
+	void (*timeend)();
 } DevMethods_t;
 
 const DevMethods_t DEVICES[] = {

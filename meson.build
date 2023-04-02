@@ -167,7 +167,7 @@ EMU_SRC = [
 	'src/GLOBGLUE.c',
 	'src/CFGMAN.c',
 	'src/LANG/INTLCHAR.c',
-	'src/tomlc99/toml.c'
+	'lib/tomlc99/toml.c'
 ]
 
 EMU_INC = include_directories([

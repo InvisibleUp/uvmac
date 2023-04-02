@@ -5,7 +5,7 @@
  * 
  */
 
-#include "tomlc99/toml.h"
+#include "lib/tomlc99/toml.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

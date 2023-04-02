@@ -28,7 +28,6 @@
 #ifndef MYOSGLUE_H
 #define MYOSGLUE_H
 
-#include "UTIL/DATE2SEC.h"
 #include "HW/KBRD/KEYCODES.h"
 #include "ERRCODES.h"
 

@@ -46,7 +46,7 @@ conf = configuration_data({
 	# Version information
 	'kStrAppName': '"micro vMac"',
 	'kAppVariationStr': '"0.37.0"',
-	'kStrCopyrightYear': '"2020"',
+	'kStrCopyrightYear': '"2023"',
 	'kMaintainerName': '"InvisibleUp"',
 	'kStrHomePage': '"https://github.com/invisibleup/minivmac/"',
 	'kBldOpts': '"obsolete"'
@@ -106,7 +106,6 @@ HW_SRC = {
 	],
 	'SCREEN': [
 		'src/HW/SCREEN/SCRNEMDV.c',
-		'src/PATCHES/SCRNHACK.c',
 	],
 	'SCSI': [
 		'src/HW/SCSI/SCSIEMDV.c',
@@ -126,10 +125,8 @@ HW_SRC = {
 	'VIDCARD': [
 		'src/HW/VIDCARD/VIDEMDEV.c',
 	],
-	'RAM': [
-	],
 	'ROM': [
-		'src/HW/ROM/ROMEMDEV.c',
+		'src/HW/ROM/ROMEMDEV.c'
 	]
 }
 
@@ -169,8 +166,6 @@ EMU_SRC = [
 	'src/PROGMAIN.c',
 	'src/GLOBGLUE.c',
 	'src/CFGMAN.c',
-	'src/PATCHES/ROMEMDEV.c',
-	'src/UTIL/DATE2SEC.c',
 	'src/LANG/INTLCHAR.c',
 	'src/tomlc99/toml.c'
 ]

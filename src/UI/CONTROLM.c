@@ -16,6 +16,7 @@
 
 /*
 	CONTROL Mode
+	(at this point just a few stubs for alerts)
 */
 
 #include "SYSDEPNS.h"
@@ -24,7 +25,6 @@
 #include "STRCONST.h"
 #include "ERRCODES.h"
 
-#include "LANG/INTLCHAR.h"
 #include "UI/COMOSGLU.h"
 #include "UI/MYOSGLUE.h"
 #include "UTIL/ENDIANAC.h"

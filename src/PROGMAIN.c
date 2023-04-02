@@ -31,7 +31,7 @@
 #include "HW/DISK/IWMEMDEV.h"
 #include "HW/SCC/SCCEMDEV.h"
 #include "HW/RTC/RTCEMDEV.h"
-#include "PATCHES/ROMEMDEV.h"
+#include "HW/ROM/ROMEMDEV.h"
 #include "HW/SCSI/SCSIEMDV.h"
 #include "HW/DISK/SONYEMDV.h"
 #include "HW/SCREEN/SCRNEMDV.h"
@@ -73,16 +73,6 @@ const DevMethods_t DEVICES[] = {
 	// RTC
 	{
 	.init = EmRTC ? RTC_Init : NULL,
-	.reset = NULL,
-	.starttick = NULL,
-	.endtick = NULL,
-	.subtick = NULL,
-	.timebegin = NULL,
-	.timeend = NULL,
-	},
-	// ROM
-	{
-	.init = ROM_Init,
 	.reset = NULL,
 	.starttick = NULL,
 	.endtick = NULL,

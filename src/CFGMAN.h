@@ -7,6 +7,7 @@
 
 /* Load or create config and prepare for use */
 #pragma once
+#include <stdint.h>
 
 bool Config_TryInit();
 

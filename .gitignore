@@ -12,8 +12,9 @@
 .vs/
 
 # Visual Studio Code
-.vscode/
 .vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # KDevelop 4
 *.kdev4

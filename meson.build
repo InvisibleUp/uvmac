@@ -187,6 +187,6 @@ executable(
 	sources: MAC_SRC['Plus'] + UI_SRC + EMU_SRC + WIN_RSRC,
 	dependencies: [lSDL2],
 	include_directories: EMU_INC,
-	gui_app: true
+	#gui_app: true
 )
 

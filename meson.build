@@ -69,8 +69,6 @@ WIN_RSRC = windows.compile_resources(
 		'rsrc/WIN32/ICONAPPW.ico',
 		'rsrc/WIN32/ICONDSKW.ico',
 		'rsrc/WIN32/ICONROMW.ico',
-		'rsrc/SONYDRV.bin',
-		'rsrc/SONYICO.bin',
 	]
 )
 
@@ -82,8 +80,6 @@ HW_SRC = {
 	],
 	'DISK': [
 		'src/HW/DISK/IWMEMDEV.c',
-		'src/HW/DISK/SONYEMDV.c',
-		'src/PATCHES/SONYDRV.c'
     ],
     'KBRD': [
 		'src/HW/KBRD/KBRDEMDV.c',

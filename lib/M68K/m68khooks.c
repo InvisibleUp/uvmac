@@ -282,20 +282,6 @@ void put_vm_long(uint32_t addr, uint32_t l) {
 	m68k_write_memory_32(addr, l);
 }
 
-void DiskInsertedPsuedoException(CPTR newpc, uint32_t data)
-{
-	/*uint sr;
-
-	sr = m68ki_init_exception();
-	m68ki_stack_frame_0000(REG_PPC, sr, EXCEPTION_1010);
-	m68ki_jump_vector(newpc);
-	
-	// push data onto... something?
-	m68k_set_reg(M68K_REG_A7, m68k_get_reg(NULL, M68K_REG_A7) - 4);
-	m68k_write_memory_32(m68k_get_reg(NULL, M68K_REG_A7), data);*/
-	return;
-}
-
 // purely for debugging purposes
 void m68k_instruction_hook(uint32_t pc)
 {

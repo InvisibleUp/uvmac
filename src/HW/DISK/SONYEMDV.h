@@ -19,7 +19,7 @@
 #else
 #define SONYEMDV_H
 #endif
-
+/*
 EXPORTPROC ExtnDisk_Access(CPTR p);
 EXPORTPROC ExtnSony_Access(CPTR p);
 
@@ -29,3 +29,4 @@ EXPORTPROC Sony_EjectAllDisks(void);
 EXPORTPROC Sony_Reset(void);
 
 EXPORTPROC Sony_Update(void);
+*/

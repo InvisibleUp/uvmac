@@ -133,8 +133,8 @@ const DevMethods_t DEVICES[] = {
 	// Sony disk drive
 	{
 	.init = NULL,
-	.reset = Sony_Reset,
-	.starttick = Sony_Update,
+	.reset = NULL,
+	.starttick = NULL,
 	.endtick = NULL,
 	.subtick = NULL,
 	.timebegin = NULL,
@@ -251,7 +251,7 @@ LOCALPROC EmulatedHardwareZap(void)
 
 LOCALPROC DoMacReset(void)
 {
-	Sony_EjectAllDisks();
+	//Sony_EjectAllDisks();
 	EmulatedHardwareZap();
 }
 
@@ -325,7 +325,7 @@ LOCALPROC SixtiethSecondNotify(void)
 	//if (EmADB) { ADB_Update(); }
 
 	Screen_RaiseVBlank();
-	Sony_Update();
+	//Sony_Update();
 
 #if EmLocalTalk
 	LocalTalkTick();

@@ -109,7 +109,7 @@ GLOBALPROC customreset(void)
 	//SCC_Reset();
 	SCSI_Reset();
 	VIA_Reset();
-	Sony_Reset();
+	//Sony_Reset();
 	Extn_Reset();
 #if CurEmMd <= kEmMd_Plus
 	WantMacReset = true;
@@ -531,10 +531,10 @@ LOCALPROC Extn_Access(uint32_t Data, CPTR addr)
 							break;
 #endif
 						case kExtnDisk:
-							ExtnDisk_Access(p);
+							//ExtnDisk_Access(p);
 							break;
 						case kExtnSony:
-							ExtnSony_Access(p);
+							//ExtnSony_Access(p);
 							break;
 						default:
 							put_vm_word(p + ExtnDat_result,
@@ -546,7 +546,7 @@ LOCALPROC Extn_Access(uint32_t Data, CPTR addr)
 			break;
 		case kDSK_QuitOnEject:
 			/* obsolete, kept for compatibility */
-			Sony_SetQuitOnEject();
+			//Sony_SetQuitOnEject();
 			break;
 	}
 }

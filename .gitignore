@@ -1,12 +1,23 @@
+# Binaries
 *.exe
 *.obj
-.vscode/*
-bld
 *.dsk
 *.ROM
+
+# Visual Studio
+.vs/*
+.vs/
+
+# Visual Studio Code
+.vscode/*
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# KDevelop 4
 *.kdev4
 *.pdb
+
+# Meson
 build/
-.vs/*
-make/
 subprojects/
+reconfigure/

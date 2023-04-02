@@ -1,0 +1,23 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: compile with Meson",
+            "command": "meson",
+            "args": [
+                "compile",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ],
+    "version": "2.0.0"
+}

@@ -78,7 +78,6 @@ else
 endif
 
 # Hardware libraries
-
 HW_SRC = {
 	'ADB':  [
 		'src/HW/ADB/ADBEMDEV.c'
@@ -177,12 +176,13 @@ EMU_SRC = [
 	'src/PATCHES/ROMEMDEV.c',
 	'src/UTIL/DATE2SEC.c',
 	'src/LANG/INTLCHAR.c',
-	'src/tomlc99/toml.c'
+	'lib/tomlc99/toml.c',
 ]
 
 EMU_INC = include_directories([
 	'cfg/',
 	'src/',
+	'lib/'
 ])
 
 ## Final compiled program definition

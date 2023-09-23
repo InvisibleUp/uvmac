@@ -30,7 +30,7 @@
 #include "UTIL/ENDIANAC.h"
 
 #include "UI/CONTROLM.h"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "UI/SDL2/OSGLUSD2.h"
 
 /* Constants and globals */

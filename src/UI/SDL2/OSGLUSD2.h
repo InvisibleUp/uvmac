@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include "UI/MYOSGLUE.h"
 
 /* --- defines and macros and such --- */

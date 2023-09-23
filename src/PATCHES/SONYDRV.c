@@ -22,6 +22,7 @@
 INCBIN(SonyDriver, "rsrc/SONYDRV.bin");
 INCBIN(SonyIcon, "rsrc/SONYICO.bin");
 
+#ifdef gSonyDriverData
 void Sony_LoadDriver(uint8_t *pto, int *size)
 {
 	memcpy(pto, gSonyDriverData, gSonyDriverSize);
@@ -73,3 +74,10 @@ void Sony_Install(void)
 	// currently broken
 	//ScreenHack_Install(&pto);
 }
+#else
+// Can't load patches; just stub this out for now
+void Sony_Install(void)
+{
+	return;
+}
+#endif

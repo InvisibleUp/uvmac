@@ -61,10 +61,14 @@ lSDL2 = dependency('SDL2', static: true)
 
 # Windows resources
 # todo: gate this off if not on Windows
-windows = import('windows')
-WIN_RSRC = windows.compile_resources(
-	'rsrc/WIN32/main.rc',
-)
+if target_machine.system() == 'windows'
+	windows = import('windows')
+	WIN_RSRC = windows.compile_resources(
+		'rsrc/WIN32/main.rc',
+	)
+else
+	WIN_RSRC = []
+endif
 
 # Hardware libraries
 

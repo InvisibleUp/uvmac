@@ -46,9 +46,9 @@ conf = configuration_data({
 	# Version information
 	'kStrAppName': '"micro vMac"',
 	'kAppVariationStr': '"0.37.0"',
-	'kStrCopyrightYear': '"2020"',
+	'kStrCopyrightYear': '"1996-2023"',
 	'kMaintainerName': '"InvisibleUp"',
-	'kStrHomePage': '"https://github.com/invisibleup/minivmac/"',
+	'kStrHomePage': '"https://github.com/invisibleup/uvmac/"',
 	'kBldOpts': '"obsolete"'
 })
 configure_file(

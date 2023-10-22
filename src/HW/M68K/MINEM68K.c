@@ -156,7 +156,7 @@ typedef void (reg_call *ArgSetDstP)(uint32_t f);
 #define HaveGlbReg 0
 #endif
 
-LOCALVAR struct regstruct
+static struct regstruct
 {
 	uint32_t regs[16]; /* Data and Address registers */
 
@@ -304,15 +304,15 @@ uint8_t * g_pc_pHi asm (r_pc_pHi);
 #endif
 
 #if WantDumpTable
-LOCALVAR uint32_t DumpTable[kNumIKinds];
+static uint32_t DumpTable[kNumIKinds];
 #endif
 
 #if USE_PCLIMIT
-FORWARDPROC Recalc_PC_Block(void);
-FORWARDFUNC uint32_t reg_call Recalc_PC_BlockReturnUi5r(uint32_t v);
+static void Recalc_PC_Block(void);
+static uint32_t reg_call Recalc_PC_BlockReturnUi5r(uint32_t v);
 #endif
 
-LOCALINLINEFUNC uint16_t nextiword(void)
+static uint16_t nextiword(void)
 /* NOT sign extended */
 {
 	uint16_t r = do_get_mem_word(V_pc_p);
@@ -327,7 +327,7 @@ LOCALINLINEFUNC uint16_t nextiword(void)
 	return r;
 }
 
-LOCALINLINEFUNC uint32_t nextiSByte(void)
+static uint32_t nextiSByte(void)
 {
 	uint32_t r = uint32_t_FromSByte(do_get_mem_byte(V_pc_p + 1));
 	V_pc_p += 2;
@@ -341,7 +341,7 @@ LOCALINLINEFUNC uint32_t nextiSByte(void)
 	return r;
 }
 
-LOCALINLINEFUNC uint32_t nextiSWord(void)
+static uint32_t nextiSWord(void)
 /* NOT sign extended */
 {
 	uint32_t r = uint32_t_FromSWord(do_get_mem_word(V_pc_p));
@@ -356,9 +356,9 @@ LOCALINLINEFUNC uint32_t nextiSWord(void)
 	return r;
 }
 
-FORWARDFUNC uint32_t nextilong_ext(void);
+static uint32_t nextilong_ext(void);
 
-LOCALINLINEFUNC uint32_t nextilong(void)
+static uint32_t nextilong(void)
 {
 	uint32_t r = do_get_mem_long(V_pc_p);
 	V_pc_p += 4;
@@ -373,7 +373,7 @@ LOCALINLINEFUNC uint32_t nextilong(void)
 	return r;
 }
 
-LOCALINLINEPROC BackupPC(void)
+static void BackupPC(void)
 {
 	V_pc_p -= 2;
 
@@ -384,187 +384,187 @@ LOCALINLINEPROC BackupPC(void)
 #endif
 }
 
-LOCALINLINEFUNC CPTR m68k_getpc(void)
+static CPTR m68k_getpc(void)
 {
 	return V_regs.pc + (V_pc_p - V_regs.pc_pLo);
 }
 
 
-FORWARDPROC DoCodeTst(void);
-FORWARDPROC DoCodeCmpB(void);
-FORWARDPROC DoCodeCmpW(void);
-FORWARDPROC DoCodeCmpL(void);
-FORWARDPROC DoCodeBccB(void);
-FORWARDPROC DoCodeBccW(void);
-FORWARDPROC DoCodeBraB(void);
-FORWARDPROC DoCodeBraW(void);
-FORWARDPROC DoCodeDBcc(void);
-FORWARDPROC DoCodeDBF(void);
-FORWARDPROC DoCodeSwap(void);
-FORWARDPROC DoCodeMoveL(void);
-FORWARDPROC DoCodeMoveW(void);
-FORWARDPROC DoCodeMoveB(void);
-FORWARDPROC DoCodeMoveA(void);
-FORWARDPROC DoCodeMoveQ(void);
-FORWARDPROC DoCodeAddB(void);
-FORWARDPROC DoCodeAddW(void);
-FORWARDPROC DoCodeAddL(void);
-FORWARDPROC DoCodeSubB(void);
-FORWARDPROC DoCodeSubW(void);
-FORWARDPROC DoCodeSubL(void);
-FORWARDPROC DoCodeLea(void);
-FORWARDPROC DoCodePEA(void);
-FORWARDPROC DoCodeA(void);
-FORWARDPROC DoCodeBsrB(void);
-FORWARDPROC DoCodeBsrW(void);
-FORWARDPROC DoCodeJsr(void);
-FORWARDPROC DoCodeLinkA6(void);
-FORWARDPROC DoCodeMOVEMRmML(void);
-FORWARDPROC DoCodeMOVEMApRL(void);
-FORWARDPROC DoCodeUnlkA6(void);
-FORWARDPROC DoCodeRts(void);
-FORWARDPROC DoCodeJmp(void);
-FORWARDPROC DoCodeClr(void);
-FORWARDPROC DoCodeAddA(void);
-FORWARDPROC DoCodeSubA(void);
-FORWARDPROC DoCodeCmpA(void);
-FORWARDPROC DoCodeAddXB(void);
-FORWARDPROC DoCodeAddXW(void);
-FORWARDPROC DoCodeAddXL(void);
-FORWARDPROC DoCodeSubXB(void);
-FORWARDPROC DoCodeSubXW(void);
-FORWARDPROC DoCodeSubXL(void);
-FORWARDPROC DoCodeAslB(void);
-FORWARDPROC DoCodeAslW(void);
-FORWARDPROC DoCodeAslL(void);
-FORWARDPROC DoCodeAsrB(void);
-FORWARDPROC DoCodeAsrW(void);
-FORWARDPROC DoCodeAsrL(void);
-FORWARDPROC DoCodeLslB(void);
-FORWARDPROC DoCodeLslW(void);
-FORWARDPROC DoCodeLslL(void);
-FORWARDPROC DoCodeLsrB(void);
-FORWARDPROC DoCodeLsrW(void);
-FORWARDPROC DoCodeLsrL(void);
-FORWARDPROC DoCodeRxlB(void);
-FORWARDPROC DoCodeRxlW(void);
-FORWARDPROC DoCodeRxlL(void);
-FORWARDPROC DoCodeRxrB(void);
-FORWARDPROC DoCodeRxrW(void);
-FORWARDPROC DoCodeRxrL(void);
-FORWARDPROC DoCodeRolB(void);
-FORWARDPROC DoCodeRolW(void);
-FORWARDPROC DoCodeRolL(void);
-FORWARDPROC DoCodeRorB(void);
-FORWARDPROC DoCodeRorW(void);
-FORWARDPROC DoCodeRorL(void);
-FORWARDPROC DoCodeBTstB(void);
-FORWARDPROC DoCodeBChgB(void);
-FORWARDPROC DoCodeBClrB(void);
-FORWARDPROC DoCodeBSetB(void);
-FORWARDPROC DoCodeBTstL(void);
-FORWARDPROC DoCodeBChgL(void);
-FORWARDPROC DoCodeBClrL(void);
-FORWARDPROC DoCodeBSetL(void);
-FORWARDPROC DoCodeAnd(void);
-FORWARDPROC DoCodeOr(void);
-FORWARDPROC DoCodeEor(void);
-FORWARDPROC DoCodeNot(void);
-FORWARDPROC DoCodeScc(void);
-FORWARDPROC DoCodeNegXB(void);
-FORWARDPROC DoCodeNegXW(void);
-FORWARDPROC DoCodeNegXL(void);
-FORWARDPROC DoCodeNegB(void);
-FORWARDPROC DoCodeNegW(void);
-FORWARDPROC DoCodeNegL(void);
-FORWARDPROC DoCodeEXTW(void);
-FORWARDPROC DoCodeEXTL(void);
-FORWARDPROC DoCodeMulU(void);
-FORWARDPROC DoCodeMulS(void);
-FORWARDPROC DoCodeDivU(void);
-FORWARDPROC DoCodeDivS(void);
-FORWARDPROC DoCodeExg(void);
-FORWARDPROC DoCodeMoveEaCR(void);
-FORWARDPROC DoCodeMoveSREa(void);
-FORWARDPROC DoCodeMoveEaSR(void);
-FORWARDPROC DoCodeOrISR(void);
-FORWARDPROC DoCodeAndISR(void);
-FORWARDPROC DoCodeEorISR(void);
-FORWARDPROC DoCodeOrICCR(void);
-FORWARDPROC DoCodeAndICCR(void);
-FORWARDPROC DoCodeEorICCR(void);
-FORWARDPROC DoCodeMOVEMApRW(void);
-FORWARDPROC DoCodeMOVEMRmMW(void);
-FORWARDPROC DoCodeMOVEMrmW(void);
-FORWARDPROC DoCodeMOVEMrmL(void);
-FORWARDPROC DoCodeMOVEMmrW(void);
-FORWARDPROC DoCodeMOVEMmrL(void);
-FORWARDPROC DoCodeAbcd(void);
-FORWARDPROC DoCodeSbcd(void);
-FORWARDPROC DoCodeNbcd(void);
-FORWARDPROC DoCodeRte(void);
-FORWARDPROC DoCodeNop(void);
-FORWARDPROC DoCodeMoveP0(void);
-FORWARDPROC DoCodeMoveP1(void);
-FORWARDPROC DoCodeMoveP2(void);
-FORWARDPROC DoCodeMoveP3(void);
-FORWARDPROC op_illg(void);
-FORWARDPROC DoCodeChk(void);
-FORWARDPROC DoCodeTrap(void);
-FORWARDPROC DoCodeTrapV(void);
-FORWARDPROC DoCodeRtr(void);
-FORWARDPROC DoCodeLink(void);
-FORWARDPROC DoCodeUnlk(void);
-FORWARDPROC DoCodeMoveRUSP(void);
-FORWARDPROC DoCodeMoveUSPR(void);
-FORWARDPROC DoCodeTas(void);
-FORWARDPROC DoCodeFdefault(void);
-FORWARDPROC DoCodeStop(void);
-FORWARDPROC DoCodeReset(void);
+static void DoCodeTst(void);
+static void DoCodeCmpB(void);
+static void DoCodeCmpW(void);
+static void DoCodeCmpL(void);
+static void DoCodeBccB(void);
+static void DoCodeBccW(void);
+static void DoCodeBraB(void);
+static void DoCodeBraW(void);
+static void DoCodeDBcc(void);
+static void DoCodeDBF(void);
+static void DoCodeSwap(void);
+static void DoCodeMoveL(void);
+static void DoCodeMoveW(void);
+static void DoCodeMoveB(void);
+static void DoCodeMoveA(void);
+static void DoCodeMoveQ(void);
+static void DoCodeAddB(void);
+static void DoCodeAddW(void);
+static void DoCodeAddL(void);
+static void DoCodeSubB(void);
+static void DoCodeSubW(void);
+static void DoCodeSubL(void);
+static void DoCodeLea(void);
+static void DoCodePEA(void);
+static void DoCodeA(void);
+static void DoCodeBsrB(void);
+static void DoCodeBsrW(void);
+static void DoCodeJsr(void);
+static void DoCodeLinkA6(void);
+static void DoCodeMOVEMRmML(void);
+static void DoCodeMOVEMApRL(void);
+static void DoCodeUnlkA6(void);
+static void DoCodeRts(void);
+static void DoCodeJmp(void);
+static void DoCodeClr(void);
+static void DoCodeAddA(void);
+static void DoCodeSubA(void);
+static void DoCodeCmpA(void);
+static void DoCodeAddXB(void);
+static void DoCodeAddXW(void);
+static void DoCodeAddXL(void);
+static void DoCodeSubXB(void);
+static void DoCodeSubXW(void);
+static void DoCodeSubXL(void);
+static void DoCodeAslB(void);
+static void DoCodeAslW(void);
+static void DoCodeAslL(void);
+static void DoCodeAsrB(void);
+static void DoCodeAsrW(void);
+static void DoCodeAsrL(void);
+static void DoCodeLslB(void);
+static void DoCodeLslW(void);
+static void DoCodeLslL(void);
+static void DoCodeLsrB(void);
+static void DoCodeLsrW(void);
+static void DoCodeLsrL(void);
+static void DoCodeRxlB(void);
+static void DoCodeRxlW(void);
+static void DoCodeRxlL(void);
+static void DoCodeRxrB(void);
+static void DoCodeRxrW(void);
+static void DoCodeRxrL(void);
+static void DoCodeRolB(void);
+static void DoCodeRolW(void);
+static void DoCodeRolL(void);
+static void DoCodeRorB(void);
+static void DoCodeRorW(void);
+static void DoCodeRorL(void);
+static void DoCodeBTstB(void);
+static void DoCodeBChgB(void);
+static void DoCodeBClrB(void);
+static void DoCodeBSetB(void);
+static void DoCodeBTstL(void);
+static void DoCodeBChgL(void);
+static void DoCodeBClrL(void);
+static void DoCodeBSetL(void);
+static void DoCodeAnd(void);
+static void DoCodeOr(void);
+static void DoCodeEor(void);
+static void DoCodeNot(void);
+static void DoCodeScc(void);
+static void DoCodeNegXB(void);
+static void DoCodeNegXW(void);
+static void DoCodeNegXL(void);
+static void DoCodeNegB(void);
+static void DoCodeNegW(void);
+static void DoCodeNegL(void);
+static void DoCodeEXTW(void);
+static void DoCodeEXTL(void);
+static void DoCodeMulU(void);
+static void DoCodeMulS(void);
+static void DoCodeDivU(void);
+static void DoCodeDivS(void);
+static void DoCodeExg(void);
+static void DoCodeMoveEaCR(void);
+static void DoCodeMoveSREa(void);
+static void DoCodeMoveEaSR(void);
+static void DoCodeOrISR(void);
+static void DoCodeAndISR(void);
+static void DoCodeEorISR(void);
+static void DoCodeOrICCR(void);
+static void DoCodeAndICCR(void);
+static void DoCodeEorICCR(void);
+static void DoCodeMOVEMApRW(void);
+static void DoCodeMOVEMRmMW(void);
+static void DoCodeMOVEMrmW(void);
+static void DoCodeMOVEMrmL(void);
+static void DoCodeMOVEMmrW(void);
+static void DoCodeMOVEMmrL(void);
+static void DoCodeAbcd(void);
+static void DoCodeSbcd(void);
+static void DoCodeNbcd(void);
+static void DoCodeRte(void);
+static void DoCodeNop(void);
+static void DoCodeMoveP0(void);
+static void DoCodeMoveP1(void);
+static void DoCodeMoveP2(void);
+static void DoCodeMoveP3(void);
+static void op_illg(void);
+static void DoCodeChk(void);
+static void DoCodeTrap(void);
+static void DoCodeTrapV(void);
+static void DoCodeRtr(void);
+static void DoCodeLink(void);
+static void DoCodeUnlk(void);
+static void DoCodeMoveRUSP(void);
+static void DoCodeMoveUSPR(void);
+static void DoCodeTas(void);
+static void DoCodeFdefault(void);
+static void DoCodeStop(void);
+static void DoCodeReset(void);
 
 #if Use68020
-FORWARDPROC DoCodeCallMorRtm(void);
-FORWARDPROC DoCodeBraL(void);
-FORWARDPROC DoCodeBccL(void);
-FORWARDPROC DoCodeBsrL(void);
-FORWARDPROC DoCodeEXTBL(void);
-FORWARDPROC DoCodeTRAPcc(void);
-FORWARDPROC DoCodeBkpt(void);
-FORWARDPROC DoCodeDivL(void);
-FORWARDPROC DoCodeMulL(void);
-FORWARDPROC DoCodeRtd(void);
-FORWARDPROC DoCodeMoveCCREa(void);
-FORWARDPROC DoMoveFromControl(void);
-FORWARDPROC DoMoveToControl(void);
-FORWARDPROC DoCodeLinkL(void);
-FORWARDPROC DoCodePack(void);
-FORWARDPROC DoCodeUnpk(void);
-FORWARDPROC DoCHK2orCMP2(void);
-FORWARDPROC DoCAS2(void);
-FORWARDPROC DoCAS(void);
-FORWARDPROC DoMOVES(void);
-FORWARDPROC DoBitField(void);
+static void DoCodeCallMorRtm(void);
+static void DoCodeBraL(void);
+static void DoCodeBccL(void);
+static void DoCodeBsrL(void);
+static void DoCodeEXTBL(void);
+static void DoCodeTRAPcc(void);
+static void DoCodeBkpt(void);
+static void DoCodeDivL(void);
+static void DoCodeMulL(void);
+static void DoCodeRtd(void);
+static void DoCodeMoveCCREa(void);
+static void DoMoveFromControl(void);
+static void DoMoveToControl(void);
+static void DoCodeLinkL(void);
+static void DoCodePack(void);
+static void DoCodeUnpk(void);
+static void DoCHK2orCMP2(void);
+static void DoCAS2(void);
+static void DoCAS(void);
+static void DoMOVES(void);
+static void DoBitField(void);
 #endif
 
 #if EmMMU
-FORWARDPROC DoCodeMMU(void);
+static void DoCodeMMU(void);
 #endif
 
 #if EmFPU
-FORWARDPROC DoCodeFPU_md60(void);
-FORWARDPROC DoCodeFPU_DBcc(void);
-FORWARDPROC DoCodeFPU_Trapcc(void);
-FORWARDPROC DoCodeFPU_Scc(void);
-FORWARDPROC DoCodeFPU_FBccW(void);
-FORWARDPROC DoCodeFPU_FBccL(void);
-FORWARDPROC DoCodeFPU_Save(void);
-FORWARDPROC DoCodeFPU_Restore(void);
-FORWARDPROC DoCodeFPU_dflt(void);
+static void DoCodeFPU_md60(void);
+static void DoCodeFPU_DBcc(void);
+static void DoCodeFPU_Trapcc(void);
+static void DoCodeFPU_Scc(void);
+static void DoCodeFPU_FBccW(void);
+static void DoCodeFPU_FBccL(void);
+static void DoCodeFPU_Save(void);
+static void DoCodeFPU_Restore(void);
+static void DoCodeFPU_dflt(void);
 #endif
 
 typedef void (*func_pointer_t)(void);
 
-LOCALVAR const func_pointer_t OpDispatch[kNumIKinds + 1] = {
+static const func_pointer_t OpDispatch[kNumIKinds + 1] = {
 	DoCodeTst /* kIKindTst */,
 	DoCodeCmpB /* kIKindCmpB */,
 	DoCodeCmpW /* kIKindCmpW */,
@@ -755,7 +755,7 @@ LOCALVAR const func_pointer_t OpDispatch[kNumIKinds + 1] = {
 
 #define BreakPointAddress 0xD198
 
-LOCALPROC BreakPointAction(void)
+static void BreakPointAction(void)
 {
 	dbglog_StartLine();
 	dbglog_writeCStr("breakpoint A0=");
@@ -767,7 +767,7 @@ LOCALPROC BreakPointAction(void)
 
 #endif
 
-LOCALINLINEPROC DecodeNextInstruction(func_pointer_t *d, uint16_t *Cycles,
+static void DecodeNextInstruction(func_pointer_t *d, uint16_t *Cycles,
 	DecOpYR *y)
 {
 	uint32_t opcode;
@@ -790,7 +790,7 @@ LOCALINLINEPROC DecodeNextInstruction(func_pointer_t *d, uint16_t *Cycles,
 	*d = OpDispatch[MainClas];
 }
 
-LOCALINLINEPROC UnDecodeNextInstruction(uint16_t Cycles)
+static void UnDecodeNextInstruction(uint16_t Cycles)
 {
 	V_MaxCyclesToGo += Cycles;
 
@@ -807,7 +807,7 @@ LOCALINLINEPROC UnDecodeNextInstruction(uint16_t Cycles)
 #endif
 }
 
-LOCALPROC m68k_go_MaxCycles(void)
+static void m68k_go_MaxCycles(void)
 {
 	uint16_t Cycles;
 	DecOpYR y;
@@ -853,9 +853,9 @@ LOCALPROC m68k_go_MaxCycles(void)
 	UnDecodeNextInstruction(Cycles);
 }
 
-FORWARDFUNC uint32_t reg_call get_byte_ext(CPTR addr);
+static uint32_t reg_call get_byte_ext(CPTR addr);
 
-LOCALFUNC uint32_t reg_call get_byte(CPTR addr)
+static uint32_t reg_call get_byte(CPTR addr)
 {
 	uint8_t * m = (addr & V_regs.MATCrdB.usemask) + V_regs.MATCrdB.usebase;
 
@@ -866,9 +866,9 @@ LOCALFUNC uint32_t reg_call get_byte(CPTR addr)
 	}
 }
 
-FORWARDPROC reg_call put_byte_ext(CPTR addr, uint32_t b);
+static void reg_call put_byte_ext(CPTR addr, uint32_t b);
 
-LOCALPROC reg_call put_byte(CPTR addr, uint32_t b)
+static void reg_call put_byte(CPTR addr, uint32_t b)
 {
 	uint8_t * m = (addr & V_regs.MATCwrB.usemask) + V_regs.MATCwrB.usebase;
 	if ((addr & V_regs.MATCwrB.cmpmask) == V_regs.MATCwrB.cmpvalu) {
@@ -878,9 +878,9 @@ LOCALPROC reg_call put_byte(CPTR addr, uint32_t b)
 	}
 }
 
-FORWARDFUNC uint32_t reg_call get_word_ext(CPTR addr);
+static uint32_t reg_call get_word_ext(CPTR addr);
 
-LOCALFUNC uint32_t reg_call get_word(CPTR addr)
+static uint32_t reg_call get_word(CPTR addr)
 {
 	uint8_t * m = (addr & V_regs.MATCrdW.usemask) + V_regs.MATCrdW.usebase;
 	if ((addr & V_regs.MATCrdW.cmpmask) == V_regs.MATCrdW.cmpvalu) {
@@ -890,9 +890,9 @@ LOCALFUNC uint32_t reg_call get_word(CPTR addr)
 	}
 }
 
-FORWARDPROC reg_call put_word_ext(CPTR addr, uint32_t w);
+static void reg_call put_word_ext(CPTR addr, uint32_t w);
 
-LOCALPROC reg_call put_word(CPTR addr, uint32_t w)
+static void reg_call put_word(CPTR addr, uint32_t w)
 {
 	uint8_t * m = (addr & V_regs.MATCwrW.usemask) + V_regs.MATCwrW.usebase;
 	if ((addr & V_regs.MATCwrW.cmpmask) == V_regs.MATCwrW.cmpvalu) {
@@ -902,9 +902,9 @@ LOCALPROC reg_call put_word(CPTR addr, uint32_t w)
 	}
 }
 
-FORWARDFUNC uint32_t reg_call get_long_misaligned_ext(CPTR addr);
+static uint32_t reg_call get_long_misaligned_ext(CPTR addr);
 
-LOCALFUNC uint32_t reg_call get_long_misaligned(CPTR addr)
+static uint32_t reg_call get_long_misaligned(CPTR addr)
 {
 	CPTR addr2 = addr + 2;
 	uint8_t * m = (addr & V_regs.MATCrdW.usemask) + V_regs.MATCrdW.usebase;
@@ -924,11 +924,11 @@ LOCALFUNC uint32_t reg_call get_long_misaligned(CPTR addr)
 }
 
 #if FasterAlignedL
-FORWARDFUNC uint32_t reg_call get_long_ext(CPTR addr);
+static uint32_t reg_call get_long_ext(CPTR addr);
 #endif
 
 #if FasterAlignedL
-LOCALFUNC uint32_t reg_call get_long(CPTR addr)
+static uint32_t reg_call get_long(CPTR addr)
 {
 	if (0 == (addr & 0x03)) {
 		uint8_t * m = (addr & V_regs.MATCrdL.usemask)
@@ -946,9 +946,9 @@ LOCALFUNC uint32_t reg_call get_long(CPTR addr)
 #define get_long get_long_misaligned
 #endif
 
-FORWARDPROC reg_call put_long_misaligned_ext(CPTR addr, uint32_t l);
+static void reg_call put_long_misaligned_ext(CPTR addr, uint32_t l);
 
-LOCALPROC reg_call put_long_misaligned(CPTR addr, uint32_t l)
+static void reg_call put_long_misaligned(CPTR addr, uint32_t l)
 {
 	CPTR addr2 = addr + 2;
 	uint8_t * m = (addr & V_regs.MATCwrW.usemask) + V_regs.MATCwrW.usebase;
@@ -964,11 +964,11 @@ LOCALPROC reg_call put_long_misaligned(CPTR addr, uint32_t l)
 }
 
 #if FasterAlignedL
-FORWARDPROC reg_call put_long_ext(CPTR addr, uint32_t l);
+static void reg_call put_long_ext(CPTR addr, uint32_t l);
 #endif
 
 #if FasterAlignedL
-LOCALPROC reg_call put_long(CPTR addr, uint32_t l)
+static void reg_call put_long(CPTR addr, uint32_t l)
 {
 	if (0 == (addr & 0x03)) {
 		uint8_t * m = (addr & V_regs.MATCwrL.usemask)
@@ -986,7 +986,7 @@ LOCALPROC reg_call put_long(CPTR addr, uint32_t l)
 #define put_long put_long_misaligned
 #endif
 
-LOCALFUNC uint32_t reg_call get_disp_ea(uint32_t base)
+static uint32_t reg_call get_disp_ea(uint32_t base)
 {
 	uint16_t dp = nextiword();
 	int regno = (dp >> 12) & 0x0F;
@@ -1096,12 +1096,12 @@ LOCALFUNC uint32_t reg_call get_disp_ea(uint32_t base)
 	}
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_Indirect(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_Indirect(uint8_t ArgDat)
 {
 	return V_regs.regs[ArgDat];
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_APosIncB(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_APosIncB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1111,7 +1111,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_APosIncB(uint8_t ArgDat)
 	return a;
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_APosIncW(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_APosIncW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1121,7 +1121,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_APosIncW(uint8_t ArgDat)
 	return a;
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_APosIncL(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_APosIncL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1131,7 +1131,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_APosIncL(uint8_t ArgDat)
 	return a;
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_APreDecB(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_APreDecB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 1;
@@ -1141,7 +1141,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_APreDecB(uint8_t ArgDat)
 	return a;
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_APreDecW(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_APreDecW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1151,7 +1151,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_APreDecW(uint8_t ArgDat)
 	return a;
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_APreDecL(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_APreDecL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 4;
@@ -1161,29 +1161,29 @@ LOCALFUNC uint32_t reg_call DecodeAddr_APreDecL(uint8_t ArgDat)
 	return a;
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_ADisp(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_ADisp(uint8_t ArgDat)
 {
 	return V_regs.regs[ArgDat] + nextiSWord();
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_AIndex(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_AIndex(uint8_t ArgDat)
 {
 	return get_disp_ea(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_AbsW(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_AbsW(uint8_t ArgDat)
 {
 	UnusedParam(ArgDat);
 	return nextiSWord();
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_AbsL(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_AbsL(uint8_t ArgDat)
 {
 	UnusedParam(ArgDat);
 	return nextilong();
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_PCDisp(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_PCDisp(uint8_t ArgDat)
 {
 	CPTR pc = m68k_getpc();
 
@@ -1191,7 +1191,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_PCDisp(uint8_t ArgDat)
 	return pc + nextiSWord();
 }
 
-LOCALFUNC uint32_t reg_call DecodeAddr_PCIndex(uint8_t ArgDat)
+static uint32_t reg_call DecodeAddr_PCIndex(uint8_t ArgDat)
 {
 	UnusedParam(ArgDat);
 	return get_disp_ea(m68k_getpc());
@@ -1199,7 +1199,7 @@ LOCALFUNC uint32_t reg_call DecodeAddr_PCIndex(uint8_t ArgDat)
 
 typedef uint32_t (reg_call *DecodeAddrP)(uint8_t ArgDat);
 
-LOCALVAR const DecodeAddrP DecodeAddrDispatch[kNumAMds] = {
+static const DecodeAddrP DecodeAddrDispatch[kNumAMds] = {
 	(DecodeAddrP)nullpr /* kAMdRegB */,
 	(DecodeAddrP)nullpr /* kAMdRegW */,
 	(DecodeAddrP)nullpr /* kAMdRegL */,
@@ -1238,42 +1238,42 @@ LOCALVAR const DecodeAddrP DecodeAddrDispatch[kNumAMds] = {
 	(DecodeAddrP)nullpr /* kAMdDat4 */
 };
 
-LOCALINLINEFUNC uint32_t DecodeAddrSrcDst(DecArgR *f)
+static uint32_t DecodeAddrSrcDst(DecArgR *f)
 {
 	return (DecodeAddrDispatch[f->AMd])(f->ArgDat);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_RegB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_RegB(uint8_t ArgDat)
 {
 	return uint32_t_FromSByte(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_RegW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_RegW(uint8_t ArgDat)
 {
 	return uint32_t_FromSWord(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_RegL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_RegL(uint8_t ArgDat)
 {
 	return uint32_t_FromSLong(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_IndirectB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_IndirectB(uint8_t ArgDat)
 {
 	return get_byte(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_IndirectW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_IndirectW(uint8_t ArgDat)
 {
 	return get_word(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_IndirectL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_IndirectL(uint8_t ArgDat)
 {
 	return get_long(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosIncB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APosIncB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1283,7 +1283,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosIncB(uint8_t ArgDat)
 	return get_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosIncW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APosIncW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1293,7 +1293,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosIncW(uint8_t ArgDat)
 	return get_word(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosIncL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APosIncL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1303,7 +1303,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosIncL(uint8_t ArgDat)
 	return get_long(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosInc7B(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APosInc7B(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1313,7 +1313,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APosInc7B(uint8_t ArgDat)
 	return get_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDecB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APreDecB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 1;
@@ -1323,7 +1323,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDecB(uint8_t ArgDat)
 	return get_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDecW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APreDecW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1333,7 +1333,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDecW(uint8_t ArgDat)
 	return get_word(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDecL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APreDecL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 4;
@@ -1343,7 +1343,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDecL(uint8_t ArgDat)
 	return get_long(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDec7B(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_APreDec7B(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1353,122 +1353,122 @@ LOCALFUNC uint32_t reg_call DecodeGetSrcDst_APreDec7B(uint8_t ArgDat)
 	return get_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_ADispB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_ADispB(uint8_t ArgDat)
 {
 	return get_byte(DecodeAddr_ADisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_ADispW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_ADispW(uint8_t ArgDat)
 {
 	return get_word(DecodeAddr_ADisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_ADispL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_ADispL(uint8_t ArgDat)
 {
 	return get_long(DecodeAddr_ADisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AIndexB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AIndexB(uint8_t ArgDat)
 {
 	return get_byte(get_disp_ea(V_regs.regs[ArgDat]));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AIndexW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AIndexW(uint8_t ArgDat)
 {
 	return get_word(get_disp_ea(V_regs.regs[ArgDat]));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AIndexL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AIndexL(uint8_t ArgDat)
 {
 	return get_long(get_disp_ea(V_regs.regs[ArgDat]));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AbsWB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AbsWB(uint8_t ArgDat)
 {
 	return get_byte(DecodeAddr_AbsW(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AbsWW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AbsWW(uint8_t ArgDat)
 {
 	return get_word(DecodeAddr_AbsW(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AbsWL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AbsWL(uint8_t ArgDat)
 {
 	return get_long(DecodeAddr_AbsW(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AbsLB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AbsLB(uint8_t ArgDat)
 {
 	return get_byte(DecodeAddr_AbsL(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AbsLW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AbsLW(uint8_t ArgDat)
 {
 	return get_word(DecodeAddr_AbsL(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_AbsLL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_AbsLL(uint8_t ArgDat)
 {
 	return get_long(DecodeAddr_AbsL(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_PCDispB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_PCDispB(uint8_t ArgDat)
 {
 	return get_byte(DecodeAddr_PCDisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_PCDispW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_PCDispW(uint8_t ArgDat)
 {
 	return get_word(DecodeAddr_PCDisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_PCDispL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_PCDispL(uint8_t ArgDat)
 {
 	return get_long(DecodeAddr_PCDisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_PCIndexB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_PCIndexB(uint8_t ArgDat)
 {
 	return get_byte(DecodeAddr_PCIndex(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_PCIndexW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_PCIndexW(uint8_t ArgDat)
 {
 	return get_word(DecodeAddr_PCIndex(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_PCIndexL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_PCIndexL(uint8_t ArgDat)
 {
 	return get_long(DecodeAddr_PCIndex(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_ImmedB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_ImmedB(uint8_t ArgDat)
 {
 	UnusedParam(ArgDat);
 	return nextiSByte();
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_ImmedW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_ImmedW(uint8_t ArgDat)
 {
 	UnusedParam(ArgDat);
 	return nextiSWord();
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_ImmedL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_ImmedL(uint8_t ArgDat)
 {
 	UnusedParam(ArgDat);
 	return uint32_t_FromSLong(nextilong());
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSrcDst_Dat4(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSrcDst_Dat4(uint8_t ArgDat)
 {
 	return ArgDat;
 }
 
 typedef uint32_t (reg_call *DecodeGetSrcDstP)(uint8_t ArgDat);
 
-LOCALVAR const DecodeGetSrcDstP DecodeGetSrcDstDispatch[kNumAMds] = {
+static const DecodeGetSrcDstP DecodeGetSrcDstDispatch[kNumAMds] = {
 	DecodeGetSrcDst_RegB /* kAMdRegB */,
 	DecodeGetSrcDst_RegW /* kAMdRegW */,
 	DecodeGetSrcDst_RegL /* kAMdRegL */,
@@ -1507,12 +1507,12 @@ LOCALVAR const DecodeGetSrcDstP DecodeGetSrcDstDispatch[kNumAMds] = {
 	DecodeGetSrcDst_Dat4 /* kAMdDat4 */
 };
 
-LOCALINLINEFUNC uint32_t DecodeGetSrcDst(DecArgR *f)
+static uint32_t DecodeGetSrcDst(DecArgR *f)
 {
 	return (DecodeGetSrcDstDispatch[f->AMd])(f->ArgDat);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_RegB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_RegB(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 
@@ -1523,7 +1523,7 @@ LOCALPROC reg_call DecodeSetSrcDst_RegB(uint32_t v, uint8_t ArgDat)
 #endif
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_RegW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_RegW(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 
@@ -1534,27 +1534,27 @@ LOCALPROC reg_call DecodeSetSrcDst_RegW(uint32_t v, uint8_t ArgDat)
 #endif
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_RegL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_RegL(uint32_t v, uint8_t ArgDat)
 {
 	V_regs.regs[ArgDat] = v;
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_IndirectB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_IndirectB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(V_regs.regs[ArgDat], v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_IndirectW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_IndirectW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(V_regs.regs[ArgDat], v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_IndirectL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_IndirectL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(V_regs.regs[ArgDat], v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APosIncB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APosIncB(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1564,7 +1564,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APosIncB(uint32_t v, uint8_t ArgDat)
 	put_byte(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APosIncW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APosIncW(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1574,7 +1574,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APosIncW(uint32_t v, uint8_t ArgDat)
 	put_word(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APosIncL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APosIncL(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1584,7 +1584,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APosIncL(uint32_t v, uint8_t ArgDat)
 	put_long(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APosInc7B(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APosInc7B(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1594,7 +1594,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APosInc7B(uint32_t v, uint8_t ArgDat)
 	put_byte(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APreDecB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APreDecB(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 1;
@@ -1604,7 +1604,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APreDecB(uint32_t v, uint8_t ArgDat)
 	put_byte(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APreDecW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APreDecW(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1614,7 +1614,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APreDecW(uint32_t v, uint8_t ArgDat)
 	put_word(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APreDecL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APreDecL(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 4;
@@ -1624,7 +1624,7 @@ LOCALPROC reg_call DecodeSetSrcDst_APreDecL(uint32_t v, uint8_t ArgDat)
 	put_long(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_APreDec7B(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_APreDec7B(uint32_t v, uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1634,102 +1634,102 @@ LOCALPROC reg_call DecodeSetSrcDst_APreDec7B(uint32_t v, uint8_t ArgDat)
 	put_byte(a, v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_ADispB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_ADispB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(V_regs.regs[ArgDat]
 		+ nextiSWord(), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_ADispW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_ADispW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(V_regs.regs[ArgDat]
 		+ nextiSWord(), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_ADispL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_ADispL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(V_regs.regs[ArgDat]
 		+ nextiSWord(), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AIndexB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AIndexB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(get_disp_ea(V_regs.regs[ArgDat]), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AIndexW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AIndexW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(get_disp_ea(V_regs.regs[ArgDat]), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AIndexL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AIndexL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(get_disp_ea(V_regs.regs[ArgDat]), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AbsWB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AbsWB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(DecodeAddr_AbsW(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AbsWW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AbsWW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(DecodeAddr_AbsW(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AbsWL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AbsWL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(DecodeAddr_AbsW(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AbsLB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AbsLB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(DecodeAddr_AbsL(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AbsLW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AbsLW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(DecodeAddr_AbsL(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_AbsLL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_AbsLL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(DecodeAddr_AbsL(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_PCDispB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_PCDispB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(DecodeAddr_PCDisp(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_PCDispW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_PCDispW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(DecodeAddr_PCDisp(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_PCDispL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_PCDispL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(DecodeAddr_PCDisp(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_PCIndexB(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_PCIndexB(uint32_t v, uint8_t ArgDat)
 {
 	put_byte(DecodeAddr_PCIndex(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_PCIndexW(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_PCIndexW(uint32_t v, uint8_t ArgDat)
 {
 	put_word(DecodeAddr_PCIndex(ArgDat), v);
 }
 
-LOCALPROC reg_call DecodeSetSrcDst_PCIndexL(uint32_t v, uint8_t ArgDat)
+static void reg_call DecodeSetSrcDst_PCIndexL(uint32_t v, uint8_t ArgDat)
 {
 	put_long(DecodeAddr_PCIndex(ArgDat), v);
 }
 
 typedef void (reg_call *DecodeSetSrcDstP)(uint32_t v, uint8_t ArgDat);
 
-LOCALVAR const DecodeSetSrcDstP DecodeSetSrcDstDispatch[kNumAMds] = {
+static const DecodeSetSrcDstP DecodeSetSrcDstDispatch[kNumAMds] = {
 	DecodeSetSrcDst_RegB /* kAMdRegB */,
 	DecodeSetSrcDst_RegW /* kAMdRegW */,
 	DecodeSetSrcDst_RegL /* kAMdRegL */,
@@ -1768,12 +1768,12 @@ LOCALVAR const DecodeSetSrcDstP DecodeSetSrcDstDispatch[kNumAMds] = {
 	(DecodeSetSrcDstP)nullpr /* kAMdDat4 */
 };
 
-LOCALINLINEPROC DecodeSetSrcDst(uint32_t v, DecArgR *f)
+static void DecodeSetSrcDst(uint32_t v, DecArgR *f)
 {
 	(DecodeSetSrcDstDispatch[f->AMd])(v, f->ArgDat);
 }
 
-LOCALPROC reg_call ArgSetDstRegBValue(uint32_t v)
+static void reg_call ArgSetDstRegBValue(uint32_t v)
 {
 	uint32_t *p = V_regs.ArgAddr.rga;
 
@@ -1784,7 +1784,7 @@ LOCALPROC reg_call ArgSetDstRegBValue(uint32_t v)
 #endif
 }
 
-LOCALPROC reg_call ArgSetDstRegWValue(uint32_t v)
+static void reg_call ArgSetDstRegWValue(uint32_t v)
 {
 	uint32_t *p = V_regs.ArgAddr.rga;
 
@@ -1795,29 +1795,29 @@ LOCALPROC reg_call ArgSetDstRegWValue(uint32_t v)
 #endif
 }
 
-LOCALPROC reg_call ArgSetDstRegLValue(uint32_t v)
+static void reg_call ArgSetDstRegLValue(uint32_t v)
 {
 	uint32_t *p = V_regs.ArgAddr.rga;
 
 	*p = v;
 }
 
-LOCALPROC reg_call ArgSetDstMemBValue(uint32_t v)
+static void reg_call ArgSetDstMemBValue(uint32_t v)
 {
 	put_byte(V_regs.ArgAddr.mem, v);
 }
 
-LOCALPROC reg_call ArgSetDstMemWValue(uint32_t v)
+static void reg_call ArgSetDstMemWValue(uint32_t v)
 {
 	put_word(V_regs.ArgAddr.mem, v);
 }
 
-LOCALPROC reg_call ArgSetDstMemLValue(uint32_t v)
+static void reg_call ArgSetDstMemLValue(uint32_t v)
 {
 	put_long(V_regs.ArgAddr.mem, v);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_RegB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_RegB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 
@@ -1827,7 +1827,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_RegB(uint8_t ArgDat)
 	return uint32_t_FromSByte(*p);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_RegW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_RegW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 
@@ -1837,7 +1837,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_RegW(uint8_t ArgDat)
 	return uint32_t_FromSWord(*p);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_RegL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_RegL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 
@@ -1847,7 +1847,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_RegL(uint8_t ArgDat)
 	return uint32_t_FromSLong(*p);
 }
 
-LOCALFUNC uint32_t reg_call getarg_byte(uint32_t a)
+static uint32_t reg_call getarg_byte(uint32_t a)
 {
 	V_regs.ArgAddr.mem = a;
 	V_regs.ArgSetDst = ArgSetDstMemBValue;
@@ -1855,7 +1855,7 @@ LOCALFUNC uint32_t reg_call getarg_byte(uint32_t a)
 	return get_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call getarg_word(uint32_t a)
+static uint32_t reg_call getarg_word(uint32_t a)
 {
 	V_regs.ArgAddr.mem = a;
 	V_regs.ArgSetDst = ArgSetDstMemWValue;
@@ -1863,7 +1863,7 @@ LOCALFUNC uint32_t reg_call getarg_word(uint32_t a)
 	return get_word(a);
 }
 
-LOCALFUNC uint32_t reg_call getarg_long(uint32_t a)
+static uint32_t reg_call getarg_long(uint32_t a)
 {
 	V_regs.ArgAddr.mem = a;
 	V_regs.ArgSetDst = ArgSetDstMemLValue;
@@ -1871,22 +1871,22 @@ LOCALFUNC uint32_t reg_call getarg_long(uint32_t a)
 	return get_long(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_IndirectB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_IndirectB(uint8_t ArgDat)
 {
 	return getarg_byte(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_IndirectW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_IndirectW(uint8_t ArgDat)
 {
 	return getarg_word(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_IndirectL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_IndirectL(uint8_t ArgDat)
 {
 	return getarg_long(V_regs.regs[ArgDat]);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosIncB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APosIncB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1896,7 +1896,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosIncB(uint8_t ArgDat)
 	return getarg_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosIncW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APosIncW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1906,7 +1906,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosIncW(uint8_t ArgDat)
 	return getarg_word(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosIncL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APosIncL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1916,7 +1916,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosIncL(uint8_t ArgDat)
 	return getarg_long(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosInc7B(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APosInc7B(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p;
@@ -1926,7 +1926,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APosInc7B(uint8_t ArgDat)
 	return getarg_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDecB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APreDecB(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 1;
@@ -1936,7 +1936,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDecB(uint8_t ArgDat)
 	return getarg_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDecW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APreDecW(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1946,7 +1946,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDecW(uint8_t ArgDat)
 	return getarg_word(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDecL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APreDecL(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 4;
@@ -1956,7 +1956,7 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDecL(uint8_t ArgDat)
 	return getarg_long(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDec7B(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_APreDec7B(uint8_t ArgDat)
 {
 	uint32_t *p = &V_regs.regs[ArgDat];
 	uint32_t a = *p - 2;
@@ -1966,102 +1966,102 @@ LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_APreDec7B(uint8_t ArgDat)
 	return getarg_byte(a);
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_ADispB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_ADispB(uint8_t ArgDat)
 {
 	return getarg_byte(V_regs.regs[ArgDat]
 		+ nextiSWord());
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_ADispW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_ADispW(uint8_t ArgDat)
 {
 	return getarg_word(V_regs.regs[ArgDat]
 		+ nextiSWord());
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_ADispL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_ADispL(uint8_t ArgDat)
 {
 	return getarg_long(V_regs.regs[ArgDat]
 		+ nextiSWord());
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AIndexB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AIndexB(uint8_t ArgDat)
 {
 	return getarg_byte(get_disp_ea(V_regs.regs[ArgDat]));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AIndexW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AIndexW(uint8_t ArgDat)
 {
 	return getarg_word(get_disp_ea(V_regs.regs[ArgDat]));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AIndexL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AIndexL(uint8_t ArgDat)
 {
 	return getarg_long(get_disp_ea(V_regs.regs[ArgDat]));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AbsWB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AbsWB(uint8_t ArgDat)
 {
 	return getarg_byte(DecodeAddr_AbsW(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AbsWW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AbsWW(uint8_t ArgDat)
 {
 	return getarg_word(DecodeAddr_AbsW(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AbsWL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AbsWL(uint8_t ArgDat)
 {
 	return getarg_long(DecodeAddr_AbsW(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AbsLB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AbsLB(uint8_t ArgDat)
 {
 	return getarg_byte(DecodeAddr_AbsL(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AbsLW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AbsLW(uint8_t ArgDat)
 {
 	return getarg_word(DecodeAddr_AbsL(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_AbsLL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_AbsLL(uint8_t ArgDat)
 {
 	return getarg_long(DecodeAddr_AbsL(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_PCDispB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_PCDispB(uint8_t ArgDat)
 {
 	return getarg_byte(DecodeAddr_PCDisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_PCDispW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_PCDispW(uint8_t ArgDat)
 {
 	return getarg_word(DecodeAddr_PCDisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_PCDispL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_PCDispL(uint8_t ArgDat)
 {
 	return getarg_long(DecodeAddr_PCDisp(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_PCIndexB(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_PCIndexB(uint8_t ArgDat)
 {
 	return getarg_byte(DecodeAddr_PCIndex(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_PCIndexW(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_PCIndexW(uint8_t ArgDat)
 {
 	return getarg_word(DecodeAddr_PCIndex(ArgDat));
 }
 
-LOCALFUNC uint32_t reg_call DecodeGetSetSrcDst_PCIndexL(uint8_t ArgDat)
+static uint32_t reg_call DecodeGetSetSrcDst_PCIndexL(uint8_t ArgDat)
 {
 	return getarg_long(DecodeAddr_PCIndex(ArgDat));
 }
 
 typedef uint32_t (reg_call *DecodeGetSetSrcDstP)(uint8_t ArgDat);
 
-LOCALVAR const DecodeGetSetSrcDstP
+static const DecodeGetSetSrcDstP
 	DecodeGetSetSrcDstDispatch[kNumAMds] =
 {
 	DecodeGetSetSrcDst_RegB /* kAMdRegB */,
@@ -2102,50 +2102,50 @@ LOCALVAR const DecodeGetSetSrcDstP
 	(DecodeGetSetSrcDstP)nullpr /* kAMdDat4 */
 };
 
-LOCALINLINEFUNC uint32_t DecodeGetSetSrcDst(DecArgR *f)
+static uint32_t DecodeGetSetSrcDst(DecArgR *f)
 {
 	return (DecodeGetSetSrcDstDispatch[f->AMd])(f->ArgDat);
 }
 
 
-LOCALINLINEFUNC uint32_t DecodeDst(void)
+static uint32_t DecodeDst(void)
 {
 	return DecodeAddrSrcDst(&V_regs.CurDecOpY.v[1]);
 }
 
-LOCALINLINEFUNC uint32_t DecodeGetSetDstValue(void)
+static uint32_t DecodeGetSetDstValue(void)
 {
 	return DecodeGetSetSrcDst(&V_regs.CurDecOpY.v[1]);
 }
 
-LOCALINLINEPROC ArgSetDstValue(uint32_t v)
+static void ArgSetDstValue(uint32_t v)
 {
 	V_regs.ArgSetDst(v);
 }
 
-LOCALINLINEPROC DecodeSetDstValue(uint32_t v)
+static void DecodeSetDstValue(uint32_t v)
 {
 	DecodeSetSrcDst(v, &V_regs.CurDecOpY.v[1]);
 }
 
-LOCALINLINEFUNC uint32_t DecodeGetSrcValue(void)
+static uint32_t DecodeGetSrcValue(void)
 {
 	return DecodeGetSrcDst(&V_regs.CurDecOpY.v[0]);
 }
 
-LOCALINLINEFUNC uint32_t DecodeGetDstValue(void)
+static uint32_t DecodeGetDstValue(void)
 {
 	return DecodeGetSrcDst(&V_regs.CurDecOpY.v[1]);
 }
 
-LOCALINLINEFUNC uint32_t DecodeGetSrcSetDstValue(void)
+static uint32_t DecodeGetSrcSetDstValue(void)
 {
 	V_regs.SrcVal = DecodeGetSrcValue();
 
 	return DecodeGetSetDstValue();
 }
 
-LOCALINLINEFUNC uint32_t DecodeGetSrcGetDstValue(void)
+static uint32_t DecodeGetSrcGetDstValue(void)
 {
 	V_regs.SrcVal = DecodeGetSrcValue();
 
@@ -2155,19 +2155,19 @@ LOCALINLINEFUNC uint32_t DecodeGetSrcGetDstValue(void)
 
 typedef void (*cond_actP)(void);
 
-LOCALPROC reg_call cctrue_T(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_T(cond_actP t_act, cond_actP f_act)
 {
 	UnusedParam(f_act);
 	t_act();
 }
 
-LOCALPROC reg_call cctrue_F(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_F(cond_actP t_act, cond_actP f_act)
 {
 	UnusedParam(t_act);
 	f_act();
 }
 
-LOCALPROC reg_call cctrue_HI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_HI(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (CFLG | ZFLG)) {
 		t_act();
@@ -2176,7 +2176,7 @@ LOCALPROC reg_call cctrue_HI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_LS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_LS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (CFLG | ZFLG)) {
 		t_act();
@@ -2185,7 +2185,7 @@ LOCALPROC reg_call cctrue_LS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (CFLG)) {
 		t_act();
@@ -2194,7 +2194,7 @@ LOCALPROC reg_call cctrue_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (CFLG)) {
 		t_act();
@@ -2203,7 +2203,7 @@ LOCALPROC reg_call cctrue_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_NE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_NE(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (ZFLG)) {
 		t_act();
@@ -2212,7 +2212,7 @@ LOCALPROC reg_call cctrue_NE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_EQ(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_EQ(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (ZFLG)) {
 		t_act();
@@ -2221,7 +2221,7 @@ LOCALPROC reg_call cctrue_EQ(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_VC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_VC(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (VFLG)) {
 		t_act();
@@ -2230,7 +2230,7 @@ LOCALPROC reg_call cctrue_VC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_VS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_VS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (VFLG)) {
 		t_act();
@@ -2239,7 +2239,7 @@ LOCALPROC reg_call cctrue_VS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_PL(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_PL(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (NFLG)) {
 		t_act();
@@ -2248,7 +2248,7 @@ LOCALPROC reg_call cctrue_PL(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_MI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_MI(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (NFLG)) {
 		t_act();
@@ -2257,7 +2257,7 @@ LOCALPROC reg_call cctrue_MI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_GE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_GE(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (NFLG ^ VFLG)) {
 		t_act();
@@ -2266,7 +2266,7 @@ LOCALPROC reg_call cctrue_GE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_LT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_LT(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (NFLG ^ VFLG)) {
 		t_act();
@@ -2275,7 +2275,7 @@ LOCALPROC reg_call cctrue_LT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_GT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_GT(cond_actP t_act, cond_actP f_act)
 {
 	if (0 == (ZFLG | (NFLG ^ VFLG))) {
 		t_act();
@@ -2284,7 +2284,7 @@ LOCALPROC reg_call cctrue_GT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_LE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_LE(cond_actP t_act, cond_actP f_act)
 {
 	if (0 != (ZFLG | (NFLG ^ VFLG))) {
 		t_act();
@@ -2296,7 +2296,7 @@ LOCALPROC reg_call cctrue_LE(cond_actP t_act, cond_actP f_act)
 #if Have_ASR
 #define Ui5rASR(x, s) ((uint32_t)(((int32_t)(x)) >> (s)))
 #else
-LOCALFUNC uint32_t Ui5rASR(uint32_t x, uint32_t s)
+static uint32_t Ui5rASR(uint32_t x, uint32_t s)
 {
 	uint32_t v;
 
@@ -2312,7 +2312,7 @@ LOCALFUNC uint32_t Ui5rASR(uint32_t x, uint32_t s)
 
 #if UseLazyCC
 
-LOCALPROC reg_call cctrue_TstL_HI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_HI(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) > ((uint32_t)0)) {
 		t_act();
@@ -2321,7 +2321,7 @@ LOCALPROC reg_call cctrue_TstL_HI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_LS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_LS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) <= ((uint32_t)0)) {
 		t_act();
@@ -2331,7 +2331,7 @@ LOCALPROC reg_call cctrue_TstL_LS(cond_actP t_act, cond_actP f_act)
 }
 
 #if 0 /* always true */
-LOCALPROC reg_call cctrue_TstL_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) >= ((uint32_t)0)) {
 		t_act();
@@ -2342,7 +2342,7 @@ LOCALPROC reg_call cctrue_TstL_CC(cond_actP t_act, cond_actP f_act)
 #endif
 
 #if 0 /* always false */
-LOCALPROC reg_call cctrue_TstL_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) < ((uint32_t)0)) {
 		t_act();
@@ -2352,7 +2352,7 @@ LOCALPROC reg_call cctrue_TstL_CS(cond_actP t_act, cond_actP f_act)
 }
 #endif
 
-LOCALPROC reg_call cctrue_TstL_NE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_NE(cond_actP t_act, cond_actP f_act)
 {
 	if (V_regs.LazyFlagArgDst != 0) {
 		t_act();
@@ -2361,7 +2361,7 @@ LOCALPROC reg_call cctrue_TstL_NE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_EQ(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_EQ(cond_actP t_act, cond_actP f_act)
 {
 	if (V_regs.LazyFlagArgDst == 0) {
 		t_act();
@@ -2370,7 +2370,7 @@ LOCALPROC reg_call cctrue_TstL_EQ(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_PL(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_PL(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)(V_regs.LazyFlagArgDst)) >= 0) {
 		t_act();
@@ -2379,7 +2379,7 @@ LOCALPROC reg_call cctrue_TstL_PL(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_MI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_MI(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)(V_regs.LazyFlagArgDst)) < 0) {
 		t_act();
@@ -2388,7 +2388,7 @@ LOCALPROC reg_call cctrue_TstL_MI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_GE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_GE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) >= ((int32_t)0)) {
 		t_act();
@@ -2397,7 +2397,7 @@ LOCALPROC reg_call cctrue_TstL_GE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_LT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_LT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) < ((int32_t)0)) {
 		t_act();
@@ -2406,7 +2406,7 @@ LOCALPROC reg_call cctrue_TstL_LT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_GT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_GT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) > ((int32_t)0)) {
 		t_act();
@@ -2415,7 +2415,7 @@ LOCALPROC reg_call cctrue_TstL_GT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_TstL_LE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_TstL_LE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) <= ((int32_t)0)) {
 		t_act();
@@ -2424,7 +2424,7 @@ LOCALPROC reg_call cctrue_TstL_LE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_HI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_HI(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint8_t)V_regs.LazyFlagArgDst) > ((uint8_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2433,7 +2433,7 @@ LOCALPROC reg_call cctrue_CmpB_HI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_LS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_LS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint8_t)V_regs.LazyFlagArgDst) <= ((uint8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2443,7 +2443,7 @@ LOCALPROC reg_call cctrue_CmpB_LS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint8_t)V_regs.LazyFlagArgDst) >= ((uint8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2453,7 +2453,7 @@ LOCALPROC reg_call cctrue_CmpB_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint8_t)V_regs.LazyFlagArgDst) < ((uint8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2463,7 +2463,7 @@ LOCALPROC reg_call cctrue_CmpB_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_NE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_NE(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint8_t)V_regs.LazyFlagArgDst) != ((uint8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2473,7 +2473,7 @@ LOCALPROC reg_call cctrue_CmpB_NE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_EQ(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_EQ(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint8_t)V_regs.LazyFlagArgDst) == ((uint8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2483,7 +2483,7 @@ LOCALPROC reg_call cctrue_CmpB_EQ(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_PL(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_PL(cond_actP t_act, cond_actP f_act)
 {
 	if (((int8_t)(V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc)) >= 0) {
 		t_act();
@@ -2492,7 +2492,7 @@ LOCALPROC reg_call cctrue_CmpB_PL(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_MI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_MI(cond_actP t_act, cond_actP f_act)
 {
 	if (((int8_t)(V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc)) < 0) {
 		t_act();
@@ -2501,7 +2501,7 @@ LOCALPROC reg_call cctrue_CmpB_MI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_GE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_GE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int8_t)V_regs.LazyFlagArgDst) >= ((int8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2511,7 +2511,7 @@ LOCALPROC reg_call cctrue_CmpB_GE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_LT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_LT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int8_t)V_regs.LazyFlagArgDst) < ((int8_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2520,7 +2520,7 @@ LOCALPROC reg_call cctrue_CmpB_LT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_GT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_GT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int8_t)V_regs.LazyFlagArgDst) > ((int8_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2529,7 +2529,7 @@ LOCALPROC reg_call cctrue_CmpB_GT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpB_LE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpB_LE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int8_t)V_regs.LazyFlagArgDst) <= ((int8_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2539,7 +2539,7 @@ LOCALPROC reg_call cctrue_CmpB_LE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_HI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_HI(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint16_t)V_regs.LazyFlagArgDst) > ((uint16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2549,7 +2549,7 @@ LOCALPROC reg_call cctrue_CmpW_HI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_LS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_LS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint16_t)V_regs.LazyFlagArgDst) <= ((uint16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2559,7 +2559,7 @@ LOCALPROC reg_call cctrue_CmpW_LS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint16_t)V_regs.LazyFlagArgDst) >= ((uint16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2569,7 +2569,7 @@ LOCALPROC reg_call cctrue_CmpW_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint16_t)V_regs.LazyFlagArgDst) < ((uint16_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2578,7 +2578,7 @@ LOCALPROC reg_call cctrue_CmpW_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_NE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_NE(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint16_t)V_regs.LazyFlagArgDst) != ((uint16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2588,7 +2588,7 @@ LOCALPROC reg_call cctrue_CmpW_NE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_EQ(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_EQ(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint16_t)V_regs.LazyFlagArgDst) == ((uint16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2598,7 +2598,7 @@ LOCALPROC reg_call cctrue_CmpW_EQ(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_PL(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_PL(cond_actP t_act, cond_actP f_act)
 {
 	if (((int16_t)(V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc)) >= 0) {
 		t_act();
@@ -2607,7 +2607,7 @@ LOCALPROC reg_call cctrue_CmpW_PL(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_MI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_MI(cond_actP t_act, cond_actP f_act)
 {
 	if (((int16_t)(V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc)) < 0) {
 		t_act();
@@ -2616,7 +2616,7 @@ LOCALPROC reg_call cctrue_CmpW_MI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_GE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_GE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int16_t)V_regs.LazyFlagArgDst) >= ((int16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2626,7 +2626,7 @@ LOCALPROC reg_call cctrue_CmpW_GE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_LT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_LT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int16_t)V_regs.LazyFlagArgDst) < ((int16_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2635,7 +2635,7 @@ LOCALPROC reg_call cctrue_CmpW_LT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_GT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_GT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int16_t)V_regs.LazyFlagArgDst) > ((int16_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2644,7 +2644,7 @@ LOCALPROC reg_call cctrue_CmpW_GT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpW_LE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpW_LE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int16_t)V_regs.LazyFlagArgDst) <= ((int16_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2654,7 +2654,7 @@ LOCALPROC reg_call cctrue_CmpW_LE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_HI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_HI(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) > ((uint32_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2663,7 +2663,7 @@ LOCALPROC reg_call cctrue_CmpL_HI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_LS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_LS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) <= ((uint32_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2673,7 +2673,7 @@ LOCALPROC reg_call cctrue_CmpL_LS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) >= ((uint32_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2683,7 +2683,7 @@ LOCALPROC reg_call cctrue_CmpL_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (((uint32_t)V_regs.LazyFlagArgDst) < ((uint32_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2692,7 +2692,7 @@ LOCALPROC reg_call cctrue_CmpL_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_NE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_NE(cond_actP t_act, cond_actP f_act)
 {
 	if (V_regs.LazyFlagArgDst != V_regs.LazyFlagArgSrc) {
 		t_act();
@@ -2701,7 +2701,7 @@ LOCALPROC reg_call cctrue_CmpL_NE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_EQ(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_EQ(cond_actP t_act, cond_actP f_act)
 {
 	if (V_regs.LazyFlagArgDst == V_regs.LazyFlagArgSrc) {
 		t_act();
@@ -2710,7 +2710,7 @@ LOCALPROC reg_call cctrue_CmpL_EQ(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_PL(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_PL(cond_actP t_act, cond_actP f_act)
 {
 	if ((((int32_t)(V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc)) >= 0))
 	{
@@ -2720,7 +2720,7 @@ LOCALPROC reg_call cctrue_CmpL_PL(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_MI(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_MI(cond_actP t_act, cond_actP f_act)
 {
 	if ((((int32_t)(V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc)) < 0)) {
 		t_act();
@@ -2729,7 +2729,7 @@ LOCALPROC reg_call cctrue_CmpL_MI(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_GE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_GE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) >= ((int32_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2739,7 +2739,7 @@ LOCALPROC reg_call cctrue_CmpL_GE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_LT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_LT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) < ((int32_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2748,7 +2748,7 @@ LOCALPROC reg_call cctrue_CmpL_LT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_GT(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_GT(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) > ((int32_t)V_regs.LazyFlagArgSrc)) {
 		t_act();
@@ -2757,7 +2757,7 @@ LOCALPROC reg_call cctrue_CmpL_GT(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_CmpL_LE(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_CmpL_LE(cond_actP t_act, cond_actP f_act)
 {
 	if (((int32_t)V_regs.LazyFlagArgDst) <= ((int32_t)V_regs.LazyFlagArgSrc))
 	{
@@ -2767,7 +2767,7 @@ LOCALPROC reg_call cctrue_CmpL_LE(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_Asr_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_Asr_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (0 ==
 		((V_regs.LazyFlagArgDst >> (V_regs.LazyFlagArgSrc - 1)) & 1))
@@ -2778,7 +2778,7 @@ LOCALPROC reg_call cctrue_Asr_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_Asr_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_Asr_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 !=
 		((V_regs.LazyFlagArgDst >> (V_regs.LazyFlagArgSrc - 1)) & 1))
@@ -2789,7 +2789,7 @@ LOCALPROC reg_call cctrue_Asr_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslB_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslB_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (0 ==
 		((V_regs.LazyFlagArgDst >> (8 - V_regs.LazyFlagArgSrc)) & 1))
@@ -2800,7 +2800,7 @@ LOCALPROC reg_call cctrue_AslB_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslB_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslB_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 !=
 		((V_regs.LazyFlagArgDst >> (8 - V_regs.LazyFlagArgSrc)) & 1))
@@ -2811,7 +2811,7 @@ LOCALPROC reg_call cctrue_AslB_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslB_VC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslB_VC(cond_actP t_act, cond_actP f_act)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = uint32_t_FromSByte(V_regs.LazyFlagArgDst << cnt);
@@ -2823,7 +2823,7 @@ LOCALPROC reg_call cctrue_AslB_VC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslB_VS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslB_VS(cond_actP t_act, cond_actP f_act)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = uint32_t_FromSByte(V_regs.LazyFlagArgDst << cnt);
@@ -2835,7 +2835,7 @@ LOCALPROC reg_call cctrue_AslB_VS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslW_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslW_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (0 ==
 		((V_regs.LazyFlagArgDst >> (16 - V_regs.LazyFlagArgSrc)) & 1))
@@ -2846,7 +2846,7 @@ LOCALPROC reg_call cctrue_AslW_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslW_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslW_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 !=
 		((V_regs.LazyFlagArgDst >> (16 - V_regs.LazyFlagArgSrc)) & 1))
@@ -2857,7 +2857,7 @@ LOCALPROC reg_call cctrue_AslW_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslW_VC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslW_VC(cond_actP t_act, cond_actP f_act)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = uint32_t_FromSWord(V_regs.LazyFlagArgDst << cnt);
@@ -2869,7 +2869,7 @@ LOCALPROC reg_call cctrue_AslW_VC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslW_VS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslW_VS(cond_actP t_act, cond_actP f_act)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = uint32_t_FromSWord(V_regs.LazyFlagArgDst << cnt);
@@ -2881,7 +2881,7 @@ LOCALPROC reg_call cctrue_AslW_VS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslL_CC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslL_CC(cond_actP t_act, cond_actP f_act)
 {
 	if (0 ==
 		((V_regs.LazyFlagArgDst >> (32 - V_regs.LazyFlagArgSrc)) & 1))
@@ -2892,7 +2892,7 @@ LOCALPROC reg_call cctrue_AslL_CC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslL_CS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslL_CS(cond_actP t_act, cond_actP f_act)
 {
 	if (0 !=
 		((V_regs.LazyFlagArgDst >> (32 - V_regs.LazyFlagArgSrc)) & 1))
@@ -2903,7 +2903,7 @@ LOCALPROC reg_call cctrue_AslL_CS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslL_VC(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslL_VC(cond_actP t_act, cond_actP f_act)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = uint32_t_FromSLong(V_regs.LazyFlagArgDst << cnt);
@@ -2915,7 +2915,7 @@ LOCALPROC reg_call cctrue_AslL_VC(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-LOCALPROC reg_call cctrue_AslL_VS(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_AslL_VS(cond_actP t_act, cond_actP f_act)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = uint32_t_FromSLong(V_regs.LazyFlagArgDst << cnt);
@@ -2927,7 +2927,7 @@ LOCALPROC reg_call cctrue_AslL_VS(cond_actP t_act, cond_actP f_act)
 	}
 }
 
-FORWARDPROC reg_call cctrue_Dflt(cond_actP t_act, cond_actP f_act);
+static void reg_call cctrue_Dflt(cond_actP t_act, cond_actP f_act);
 
 #endif /* UseLazyCC */
 
@@ -2939,7 +2939,7 @@ FORWARDPROC reg_call cctrue_Dflt(cond_actP t_act, cond_actP f_act);
 
 typedef void (reg_call *cctrueP)(cond_actP t_act, cond_actP f_act);
 
-LOCALVAR const cctrueP cctrueDispatch[CCdispSz + 1] = {
+static const cctrueP cctrueDispatch[CCdispSz + 1] = {
 	cctrue_T /* kLazyFlagsDefault T */,
 	cctrue_F /* kLazyFlagsDefault F */,
 	cctrue_HI /* kLazyFlagsDefault HI */,
@@ -3339,7 +3339,7 @@ LOCALVAR const cctrueP cctrueDispatch[CCdispSz + 1] = {
 };
 
 #if UseLazyCC
-LOCALINLINEPROC cctrue(cond_actP t_act, cond_actP f_act)
+static void cctrue(cond_actP t_act, cond_actP f_act)
 {
 	(cctrueDispatch[V_regs.LazyFlagKind * 16
 		+ V_regs.CurDecOpY.v[0].ArgDat])(t_act, f_act);
@@ -3347,28 +3347,28 @@ LOCALINLINEPROC cctrue(cond_actP t_act, cond_actP f_act)
 #endif
 
 
-LOCALPROC NeedDefaultLazyXFlagSubB(void)
+static void NeedDefaultLazyXFlagSubB(void)
 {
 	XFLG = Bool2Bit(((uint8_t)V_regs.LazyXFlagArgDst)
 		< ((uint8_t)V_regs.LazyXFlagArgSrc));
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagSubW(void)
+static void NeedDefaultLazyXFlagSubW(void)
 {
 	XFLG = Bool2Bit(((uint16_t)V_regs.LazyXFlagArgDst)
 		< ((uint16_t)V_regs.LazyXFlagArgSrc));
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagSubL(void)
+static void NeedDefaultLazyXFlagSubL(void)
 {
 	XFLG = Bool2Bit(((uint32_t)V_regs.LazyXFlagArgDst)
 		< ((uint32_t)V_regs.LazyXFlagArgSrc));
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAddB(void)
+static void NeedDefaultLazyXFlagAddB(void)
 {
 	uint8_t src = (uint8_t)V_regs.LazyXFlagArgSrc;
 	uint8_t dst = (uint8_t)V_regs.LazyXFlagArgDst;
@@ -3378,7 +3378,7 @@ LOCALPROC NeedDefaultLazyXFlagAddB(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAddW(void)
+static void NeedDefaultLazyXFlagAddW(void)
 {
 	uint16_t src = (uint16_t)V_regs.LazyXFlagArgSrc;
 	uint16_t dst = (uint16_t)V_regs.LazyXFlagArgDst;
@@ -3388,7 +3388,7 @@ LOCALPROC NeedDefaultLazyXFlagAddW(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAddL(void)
+static void NeedDefaultLazyXFlagAddL(void)
 {
 	uint32_t src = (uint32_t)V_regs.LazyXFlagArgSrc;
 	uint32_t dst = (uint32_t)V_regs.LazyXFlagArgDst;
@@ -3398,28 +3398,28 @@ LOCALPROC NeedDefaultLazyXFlagAddL(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagNegB(void)
+static void NeedDefaultLazyXFlagNegB(void)
 {
 	XFLG = Bool2Bit(((uint8_t)0)
 		< ((uint8_t)V_regs.LazyXFlagArgDst));
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagNegW(void)
+static void NeedDefaultLazyXFlagNegW(void)
 {
 	XFLG = Bool2Bit(((uint16_t)0)
 		< ((uint16_t)V_regs.LazyXFlagArgDst));
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagNegL(void)
+static void NeedDefaultLazyXFlagNegL(void)
 {
 	XFLG = Bool2Bit(((uint32_t)0)
 		< ((uint32_t)V_regs.LazyXFlagArgDst));
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAsr(void)
+static void NeedDefaultLazyXFlagAsr(void)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3429,34 +3429,34 @@ LOCALPROC NeedDefaultLazyXFlagAsr(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAslB(void)
+static void NeedDefaultLazyXFlagAslB(void)
 {
 	XFLG = (V_regs.LazyFlagArgDst >> (8 - V_regs.LazyFlagArgSrc)) & 1;
 
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAslW(void)
+static void NeedDefaultLazyXFlagAslW(void)
 {
 	XFLG = (V_regs.LazyFlagArgDst >> (16 - V_regs.LazyFlagArgSrc)) & 1;
 
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagAslL(void)
+static void NeedDefaultLazyXFlagAslL(void)
 {
 	XFLG = (V_regs.LazyFlagArgDst >> (32 - V_regs.LazyFlagArgSrc)) & 1;
 
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyXFlagDefault(void)
+static void NeedDefaultLazyXFlagDefault(void)
 {
 }
 
 typedef void (*NeedLazyFlagP)(void);
 
-LOCALVAR const NeedLazyFlagP
+static const NeedLazyFlagP
 	NeedLazyXFlagDispatch[kNumLazyFlagsKinds + 1] =
 {
 	NeedDefaultLazyXFlagDefault /* kLazyFlagsDefault */,
@@ -3488,7 +3488,7 @@ LOCALVAR const NeedLazyFlagP
 	0
 };
 
-LOCALPROC NeedDefaultLazyXFlag(void)
+static void NeedDefaultLazyXFlag(void)
 {
 #if ForceFlagsEval
 	if (kLazyFlagsDefault != V_regs.LazyXFlagKind) {
@@ -3500,7 +3500,7 @@ LOCALPROC NeedDefaultLazyXFlag(void)
 #endif
 }
 
-LOCALPROC NeedDefaultLazyFlagsTstL(void)
+static void NeedDefaultLazyFlagsTstL(void)
 {
 	uint32_t dst = V_regs.LazyFlagArgDst;
 
@@ -3512,7 +3512,7 @@ LOCALPROC NeedDefaultLazyFlagsTstL(void)
 	NeedDefaultLazyXFlag();
 }
 
-LOCALPROC NeedDefaultLazyFlagsCmpB(void)
+static void NeedDefaultLazyFlagsCmpB(void)
 {
 	uint32_t src = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3530,7 +3530,7 @@ LOCALPROC NeedDefaultLazyFlagsCmpB(void)
 	NeedDefaultLazyXFlag();
 }
 
-LOCALPROC NeedDefaultLazyFlagsCmpW(void)
+static void NeedDefaultLazyFlagsCmpW(void)
 {
 	uint32_t result0 = V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc;
 	uint32_t result = uint32_t_FromSWord(result0);
@@ -3550,7 +3550,7 @@ LOCALPROC NeedDefaultLazyFlagsCmpW(void)
 	NeedDefaultLazyXFlag();
 }
 
-LOCALPROC NeedDefaultLazyFlagsCmpL(void)
+static void NeedDefaultLazyFlagsCmpL(void)
 {
 	uint32_t src = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3574,7 +3574,7 @@ LOCALPROC NeedDefaultLazyFlagsCmpL(void)
 	NeedDefaultLazyXFlag();
 }
 
-LOCALPROC NeedDefaultLazyFlagsSubB(void)
+static void NeedDefaultLazyFlagsSubB(void)
 {
 	uint32_t src = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3593,7 +3593,7 @@ LOCALPROC NeedDefaultLazyFlagsSubB(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsSubW(void)
+static void NeedDefaultLazyFlagsSubW(void)
 {
 	uint32_t result0 = V_regs.LazyFlagArgDst - V_regs.LazyFlagArgSrc;
 	uint32_t result = uint32_t_FromSWord(result0);
@@ -3614,7 +3614,7 @@ LOCALPROC NeedDefaultLazyFlagsSubW(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsSubL(void)
+static void NeedDefaultLazyFlagsSubL(void)
 {
 	uint32_t src = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3639,7 +3639,7 @@ LOCALPROC NeedDefaultLazyFlagsSubL(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsAddB(void)
+static void NeedDefaultLazyFlagsAddB(void)
 {
 	uint32_t src = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3658,7 +3658,7 @@ LOCALPROC NeedDefaultLazyFlagsAddB(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsAddW(void)
+static void NeedDefaultLazyFlagsAddW(void)
 {
 	uint32_t src = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3678,7 +3678,7 @@ LOCALPROC NeedDefaultLazyFlagsAddW(void)
 }
 
 #if 0
-LOCALPROC NeedDefaultLazyFlagsAddCommon(uint32_t result)
+static void NeedDefaultLazyFlagsAddCommon(uint32_t result)
 {
 	ZFLG = Bool2Bit(result == 0);
 	{
@@ -3700,7 +3700,7 @@ LOCALPROC NeedDefaultLazyFlagsAddCommon(uint32_t result)
 }
 #endif
 
-LOCALPROC NeedDefaultLazyFlagsAddL(void)
+static void NeedDefaultLazyFlagsAddL(void)
 {
 #if 1
 	uint32_t src = V_regs.LazyFlagArgSrc;
@@ -3740,7 +3740,7 @@ LOCALPROC NeedDefaultLazyFlagsAddL(void)
 #endif
 }
 
-LOCALPROC NeedDefaultLazyFlagsNegCommon(uint32_t dstvalue, uint32_t result)
+static void NeedDefaultLazyFlagsNegCommon(uint32_t dstvalue, uint32_t result)
 {
 	flagtype flgs = Bool2Bit(uint32_t_MSBisSet(dstvalue));
 	flagtype flgn = Bool2Bit(uint32_t_MSBisSet(result));
@@ -3755,7 +3755,7 @@ LOCALPROC NeedDefaultLazyFlagsNegCommon(uint32_t dstvalue, uint32_t result)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsNegB(void)
+static void NeedDefaultLazyFlagsNegB(void)
 {
 	uint32_t dstvalue = V_regs.LazyFlagArgDst;
 	uint32_t result = uint32_t_FromSByte(0 - dstvalue);
@@ -3763,7 +3763,7 @@ LOCALPROC NeedDefaultLazyFlagsNegB(void)
 	NeedDefaultLazyFlagsNegCommon(dstvalue, result);
 }
 
-LOCALPROC NeedDefaultLazyFlagsNegW(void)
+static void NeedDefaultLazyFlagsNegW(void)
 {
 	uint32_t dstvalue = V_regs.LazyFlagArgDst;
 	uint32_t result = uint32_t_FromSWord(0 - dstvalue);
@@ -3771,7 +3771,7 @@ LOCALPROC NeedDefaultLazyFlagsNegW(void)
 	NeedDefaultLazyFlagsNegCommon(dstvalue, result);
 }
 
-LOCALPROC NeedDefaultLazyFlagsNegL(void)
+static void NeedDefaultLazyFlagsNegL(void)
 {
 	uint32_t dstvalue = V_regs.LazyFlagArgDst;
 	uint32_t result = uint32_t_FromSLong(0 - dstvalue);
@@ -3779,7 +3779,7 @@ LOCALPROC NeedDefaultLazyFlagsNegL(void)
 	NeedDefaultLazyFlagsNegCommon(dstvalue, result);
 }
 
-LOCALPROC NeedDefaultLazyFlagsAsr(void)
+static void NeedDefaultLazyFlagsAsr(void)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3796,7 +3796,7 @@ LOCALPROC NeedDefaultLazyFlagsAsr(void)
 	V_regs.LazyFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsAslB(void)
+static void NeedDefaultLazyFlagsAslB(void)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3818,7 +3818,7 @@ LOCALPROC NeedDefaultLazyFlagsAslB(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsAslW(void)
+static void NeedDefaultLazyFlagsAslW(void)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3840,7 +3840,7 @@ LOCALPROC NeedDefaultLazyFlagsAslW(void)
 	V_regs.LazyXFlagKind = kLazyFlagsDefault;
 }
 
-LOCALPROC NeedDefaultLazyFlagsAslL(void)
+static void NeedDefaultLazyFlagsAslL(void)
 {
 	uint32_t cnt = V_regs.LazyFlagArgSrc;
 	uint32_t dst = V_regs.LazyFlagArgDst;
@@ -3863,10 +3863,10 @@ LOCALPROC NeedDefaultLazyFlagsAslL(void)
 }
 
 #if UseLazyZ
-FORWARDPROC NeedDefaultLazyFlagsZSet(void);
+static void NeedDefaultLazyFlagsZSet(void);
 #endif
 
-LOCALVAR const NeedLazyFlagP
+static const NeedLazyFlagP
 	NeedLazyFlagDispatch[kNumLazyFlagsKinds + 1] =
 {
 	NeedDefaultLazyXFlag /* kLazyFlagsDefault */,
@@ -3898,13 +3898,13 @@ LOCALVAR const NeedLazyFlagP
 	0
 };
 
-LOCALPROC NeedDefaultLazyAllFlags0(void)
+static void NeedDefaultLazyAllFlags0(void)
 {
 	(NeedLazyFlagDispatch[V_regs.LazyFlagKind])();
 }
 
 #if ForceFlagsEval
-LOCALPROC NeedDefaultLazyAllFlags(void)
+static void NeedDefaultLazyAllFlags(void)
 {
 	if (kLazyFlagsDefault != V_regs.LazyFlagKind) {
 		ReportAbnormalID(0x0104,
@@ -3925,7 +3925,7 @@ LOCALPROC NeedDefaultLazyAllFlags(void)
 #endif
 
 #if UseLazyZ
-LOCALPROC NeedDefaultLazyFlagsZSet(void)
+static void NeedDefaultLazyFlagsZSet(void)
 {
 	flagtype SaveZFLG = ZFLG;
 
@@ -3937,7 +3937,7 @@ LOCALPROC NeedDefaultLazyFlagsZSet(void)
 #endif
 
 #if UseLazyCC
-LOCALPROC reg_call cctrue_Dflt(cond_actP t_act, cond_actP f_act)
+static void reg_call cctrue_Dflt(cond_actP t_act, cond_actP f_act)
 {
 	NeedDefaultLazyAllFlags();
 	cctrue(t_act, f_act);
@@ -3945,7 +3945,7 @@ LOCALPROC reg_call cctrue_Dflt(cond_actP t_act, cond_actP f_act)
 #endif
 
 #if ! UseLazyCC
-LOCALINLINEPROC cctrue(cond_actP t_act, cond_actP f_act)
+static void cctrue(cond_actP t_act, cond_actP f_act)
 {
 	NeedDefaultLazyAllFlags();
 	(cctrueDispatch[V_regs.CurDecOpY.v[0].ArgDat])(t_act, f_act);
@@ -3953,7 +3953,7 @@ LOCALINLINEPROC cctrue(cond_actP t_act, cond_actP f_act)
 #endif
 
 
-#define LOCALIPROC LOCALPROC /* LOCALPROCUSEDONCE */
+#define LOCALIPROC static void /* static void */
 
 LOCALIPROC DoCodeCmpB(void)
 {
@@ -4070,7 +4070,7 @@ LOCALIPROC DoCodeBraW(void)
 }
 
 #if WantCloserCyc
-LOCALPROC DoCodeBccB_t(void)
+static void DoCodeBccB_t(void)
 {
 	V_MaxCyclesToGo -= (10 * kCycleScale + 2 * RdAvgXtraCyc);
 	DoCodeBraB();
@@ -4079,7 +4079,7 @@ LOCALPROC DoCodeBccB_t(void)
 #define DoCodeBccB_t DoCodeBraB
 #endif
 
-LOCALPROC DoCodeBccB_f(void)
+static void DoCodeBccB_f(void)
 {
 #if WantCloserCyc
 	V_MaxCyclesToGo -= (8 * kCycleScale + RdAvgXtraCyc);
@@ -4093,7 +4093,7 @@ LOCALIPROC DoCodeBccB(void)
 	cctrue(DoCodeBccB_t, DoCodeBccB_f);
 }
 
-LOCALPROC SkipiWord(void)
+static void SkipiWord(void)
 {
 	V_pc_p += 2;
 
@@ -4105,7 +4105,7 @@ LOCALPROC SkipiWord(void)
 }
 
 #if WantCloserCyc
-LOCALPROC DoCodeBccW_t(void)
+static void DoCodeBccW_t(void)
 {
 	V_MaxCyclesToGo -= (10 * kCycleScale + 2 * RdAvgXtraCyc);
 	DoCodeBraW();
@@ -4115,7 +4115,7 @@ LOCALPROC DoCodeBccW_t(void)
 #endif
 
 #if WantCloserCyc
-LOCALPROC DoCodeBccW_f(void)
+static void DoCodeBccW_f(void)
 {
 	V_MaxCyclesToGo -= (12 * kCycleScale + 2 * RdAvgXtraCyc);
 	SkipiWord();
@@ -4160,7 +4160,7 @@ LOCALIPROC DoCodeDBF(void)
 }
 
 #if WantCloserCyc
-LOCALPROC DoCodeDBcc_t(void)
+static void DoCodeDBcc_t(void)
 {
 	V_MaxCyclesToGo -= (12 * kCycleScale + 2 * RdAvgXtraCyc);
 	SkipiWord();
@@ -4369,7 +4369,7 @@ LOCALIPROC DoCodeBsrW(void)
 #endif
 
 #if WantDumpAJump
-LOCALPROCUSEDONCE DumpAJump(CPTR toaddr)
+static void DumpAJump(CPTR toaddr)
 {
 	CPTR fromaddr = m68k_getpc();
 	if ((toaddr > fromaddr) || (toaddr < V_regs.pc))
@@ -4382,7 +4382,7 @@ LOCALPROCUSEDONCE DumpAJump(CPTR toaddr)
 }
 #endif
 
-LOCALPROC reg_call m68k_setpc(CPTR newpc)
+static void reg_call m68k_setpc(CPTR newpc)
 {
 #if WantDumpAJump
 	DumpAJump(newpc);
@@ -4483,7 +4483,7 @@ LOCALIPROC DoCodeCmpA(void)
 	HaveSetUpFlags();
 }
 
-LOCALFUNC uint16_t m68k_getCR(void)
+static uint16_t m68k_getCR(void)
 {
 	NeedDefaultLazyAllFlags();
 
@@ -4491,7 +4491,7 @@ LOCALFUNC uint16_t m68k_getCR(void)
 		| (VFLG << 1) | CFLG;
 }
 
-LOCALPROC reg_call m68k_setCR(uint16_t newcr)
+static void reg_call m68k_setCR(uint16_t newcr)
 {
 	XFLG = (newcr >> 4) & 1;
 	NFLG = (newcr >> 3) & 1;
@@ -4504,7 +4504,7 @@ LOCALPROC reg_call m68k_setCR(uint16_t newcr)
 }
 
 
-LOCALFUNC uint16_t m68k_getSR(void)
+static uint16_t m68k_getSR(void)
 {
 	return m68k_getCR()
 			| (V_regs.t1 << 15)
@@ -4518,7 +4518,7 @@ LOCALFUNC uint16_t m68k_getSR(void)
 			| (V_regs.intmask << 8);
 }
 
-LOCALPROC NeedToGetOut(void)
+static void NeedToGetOut(void)
 {
 	if (V_MaxCyclesToGo <= 0) {
 		/*
@@ -4533,13 +4533,13 @@ LOCALPROC NeedToGetOut(void)
 	}
 }
 
-LOCALPROC SetExternalInterruptPending(void)
+static void SetExternalInterruptPending(void)
 {
 	V_regs.ExternalInterruptPending = true;
 	NeedToGetOut();
 }
 
-LOCALPROC reg_call m68k_setSR(uint16_t newsr)
+static void reg_call m68k_setSR(uint16_t newsr)
 {
 	CPTR *pnewstk;
 	CPTR *poldstk = (V_regs.s != 0) ? (
@@ -4589,7 +4589,7 @@ LOCALPROC reg_call m68k_setSR(uint16_t newsr)
 	m68k_setCR(newsr);
 }
 
-LOCALPROC reg_call ExceptionTo(CPTR newpc
+static void reg_call ExceptionTo(CPTR newpc
 #if Use68020
 	, int nr
 #endif
@@ -4637,7 +4637,7 @@ LOCALPROC reg_call ExceptionTo(CPTR newpc
 	V_regs.TracePending = false;
 }
 
-LOCALPROC reg_call Exception(int nr)
+static void reg_call Exception(int nr)
 {
 	ExceptionTo(get_long(4 * nr
 #if Use68020
@@ -4657,7 +4657,7 @@ LOCALIPROC DoCodeA(void)
 	Exception(0xA);
 }
 
-LOCALFUNC uint16_t nextiword_nm(void)
+static uint16_t nextiword_nm(void)
 /* NOT sign extended */
 {
 	return nextiword();
@@ -4719,7 +4719,7 @@ LOCALIPROC DoCodeMOVEMApRL(void)
 	*dstp = p;
 }
 
-LOCALPROC reg_call SetCCRforAddX(uint32_t dstvalue, uint32_t srcvalue,
+static void reg_call SetCCRforAddX(uint32_t dstvalue, uint32_t srcvalue,
 	uint32_t result)
 {
 	ZFLG &= Bool2Bit(result == 0);
@@ -4801,7 +4801,7 @@ LOCALIPROC DoCodeAddXL(void)
 	}
 }
 
-LOCALPROC reg_call SetCCRforSubX(uint32_t dstvalue, uint32_t srcvalue,
+static void reg_call SetCCRforSubX(uint32_t dstvalue, uint32_t srcvalue,
 	uint32_t result)
 {
 	ZFLG &= Bool2Bit(result == 0);
@@ -4882,7 +4882,7 @@ LOCALIPROC DoCodeSubXL(void)
 	}
 }
 
-LOCALPROC reg_call DoCodeNullShift(uint32_t dstvalue)
+static void reg_call DoCodeNullShift(uint32_t dstvalue)
 {
 	V_regs.LazyFlagKind = kLazyFlagsTstL;
 	V_regs.LazyFlagArgDst = dstvalue;
@@ -4892,7 +4892,7 @@ LOCALPROC reg_call DoCodeNullShift(uint32_t dstvalue)
 	ArgSetDstValue(dstvalue);
 }
 
-LOCALPROC DoCodeOverAsl(uint32_t dstvalue)
+static void DoCodeOverAsl(uint32_t dstvalue)
 {
 	XFLG = CFLG = 0;
 	VFLG = Bool2Bit(0 != dstvalue);
@@ -4905,7 +4905,7 @@ LOCALPROC DoCodeOverAsl(uint32_t dstvalue)
 	ArgSetDstValue(0);
 }
 
-LOCALPROC reg_call DoCodeMaxAsr(uint32_t dstvalue)
+static void reg_call DoCodeMaxAsr(uint32_t dstvalue)
 {
 	XFLG = CFLG = dstvalue & 1;
 	VFLG = Bool2Bit(0 != dstvalue);
@@ -5026,7 +5026,7 @@ LOCALIPROC DoCodeAslL(void)
 	}
 }
 
-LOCALPROC DoCodeOverShift(void)
+static void DoCodeOverShift(void)
 {
 	XFLG = CFLG = 0;
 	ZFLG = 1;
@@ -5039,7 +5039,7 @@ LOCALPROC DoCodeOverShift(void)
 	ArgSetDstValue(0);
 }
 
-LOCALPROC DoCodeOverShiftN(void)
+static void DoCodeOverShiftN(void)
 {
 	NFLG = 1;
 	VFLG = 0;
@@ -5053,7 +5053,7 @@ LOCALPROC DoCodeOverShiftN(void)
 	ArgSetDstValue(~ 0);
 }
 
-LOCALPROC DoCodeOverAShift(uint32_t dstvalue)
+static void DoCodeOverAShift(uint32_t dstvalue)
 {
 	if (uint32_t_MSBisSet(dstvalue)) {
 		DoCodeOverShiftN();
@@ -5158,7 +5158,7 @@ LOCALIPROC DoCodeAsrL(void)
 	}
 }
 
-LOCALPROC reg_call DoCodeMaxLslShift(uint32_t dstvalue)
+static void reg_call DoCodeMaxLslShift(uint32_t dstvalue)
 {
 	XFLG = CFLG = dstvalue & 1;
 	ZFLG = 1;
@@ -5363,14 +5363,14 @@ LOCALIPROC DoCodeLsrL(void)
 	}
 }
 
-LOCALFUNC uint32_t DecodeGetSrcSetDstValueDfltFlags_nm(void)
+static uint32_t DecodeGetSrcSetDstValueDfltFlags_nm(void)
 {
 	NeedDefaultLazyAllFlags();
 
 	return DecodeGetSrcSetDstValue();
 }
 
-LOCALPROC reg_call DoCodeNullXShift(uint32_t dstvalue)
+static void reg_call DoCodeNullXShift(uint32_t dstvalue)
 {
 	CFLG = XFLG;
 
@@ -5743,7 +5743,7 @@ LOCALIPROC DoCodeRorL(void)
 
 
 #if UseLazyZ
-LOCALPROC WillSetZFLG(void)
+static void WillSetZFLG(void)
 {
 	if (kLazyFlagsZSet == V_regs.LazyFlagKind) {
 		/* ok */
@@ -5758,7 +5758,7 @@ LOCALPROC WillSetZFLG(void)
 #define WillSetZFLG NeedDefaultLazyAllFlags
 #endif
 
-LOCALINLINEFUNC uint32_t DecodeGetSrcGetDstValueSetZ(void)
+static uint32_t DecodeGetSrcGetDstValueSetZ(void)
 {
 	WillSetZFLG();
 
@@ -5781,7 +5781,7 @@ LOCALIPROC DoCodeBTstL(void)
 	ZFLG = ((dstvalue >> srcvalue) ^ 1) & 1;
 }
 
-LOCALINLINEFUNC uint32_t DecodeGetSrcSetDstValueSetZ(void)
+static uint32_t DecodeGetSrcSetDstValueSetZ(void)
 {
 	WillSetZFLG();
 
@@ -5927,7 +5927,7 @@ LOCALIPROC DoCodeNot(void)
 	ArgSetDstValue(dstvalue);
 }
 
-LOCALPROC DoCodeScc_t(void)
+static void DoCodeScc_t(void)
 {
 #if WantCloserCyc
 	if (kAMdRegB == V_regs.CurDecOpY.v[1].AMd) {
@@ -5937,7 +5937,7 @@ LOCALPROC DoCodeScc_t(void)
 	DecodeSetDstValue(0xff);
 }
 
-LOCALPROC DoCodeScc_f(void)
+static void DoCodeScc_f(void)
 {
 	DecodeSetDstValue(0);
 }
@@ -6027,7 +6027,7 @@ LOCALIPROC DoCodeNegL(void)
 	ArgSetDstValue(result);
 }
 
-LOCALPROC reg_call SetCCRforNegX(uint32_t dstvalue, uint32_t result)
+static void reg_call SetCCRforNegX(uint32_t dstvalue, uint32_t result)
 {
 	ZFLG &= Bool2Bit(result == 0);
 
@@ -6268,7 +6268,7 @@ LOCALIPROC DoCodeMoveEaCR(void)
 	m68k_setCR(DecodeGetDstValue());
 }
 
-LOCALPROC DoPrivilegeViolation(void)
+static void DoPrivilegeViolation(void)
 {
 #if WantCloserCyc
 	V_MaxCyclesToGo += GetDcoCycles(V_regs.CurDecOp);
@@ -6753,7 +6753,7 @@ LOCALIPROC DoCodeMoveP3(void)
 	put_byte(memp + 6, val);
 }
 
-LOCALPROC op_illg(void)
+static void op_illg(void)
 {
 	BackupPC();
 	Exception(4);
@@ -6898,7 +6898,7 @@ LOCALIPROC DoCodeFdefault(void)
 	Exception(0xB);
 }
 
-LOCALPROC m68k_setstopped(void)
+static void m68k_setstopped(void)
 {
 	/* not implemented. doesn't seemed to be used on Mac Plus */
 	Exception(4); /* fake an illegal instruction */
@@ -6918,7 +6918,7 @@ LOCALIPROC DoCodeStop(void)
 	}
 }
 
-FORWARDPROC local_customreset(void);
+static void local_customreset(void);
 
 LOCALIPROC DoCodeReset(void)
 {
@@ -6966,7 +6966,7 @@ LOCALIPROC DoCodeBraL(void)
 #endif
 
 #if Use68020
-LOCALPROC SkipiLong(void)
+static void SkipiLong(void)
 {
 	V_pc_p += 4;
 
@@ -7027,7 +7027,7 @@ LOCALIPROC DoCodeEXTBL(void)
 #endif
 
 #if Use68020
-LOCALPROC DoCHK2orCMP2(void)
+static void DoCHK2orCMP2(void)
 {
 	/* CHK2 or CMP2 00000ss011mmmrrr */
 	uint32_t regv;
@@ -7091,7 +7091,7 @@ LOCALPROC DoCHK2orCMP2(void)
 #endif
 
 #if Use68020
-LOCALPROC DoCAS(void)
+static void DoCAS(void)
 {
 	/* CAS 00001ss011mmmrrr */
 	uint32_t srcvalue;
@@ -7161,7 +7161,7 @@ LOCALPROC DoCAS(void)
 #endif
 
 #if Use68020
-LOCALPROC DoCAS2(void)
+static void DoCAS2(void)
 {
 	/* CAS2 00001ss011111100 */
 	uint32_t extra = nextilong();
@@ -7243,7 +7243,7 @@ LOCALPROC DoCAS2(void)
 #endif
 
 #if Use68020
-LOCALPROC DoMOVES(void)
+static void DoMOVES(void)
 {
 	/* MoveS 00001110ssmmmrrr */
 	ReportAbnormalID(0x0112, "MoveS instruction");
@@ -7291,7 +7291,7 @@ typedef struct uint64_t0 uint64_t0;
 #endif
 
 #if Use68020
-LOCALPROC Ui6r_Negate(uint64_t0 *v)
+static void Ui6r_Negate(uint64_t0 *v)
 {
 	v->hi = ~ v->hi;
 	v->lo = - v->lo;
@@ -7302,21 +7302,21 @@ LOCALPROC Ui6r_Negate(uint64_t0 *v)
 #endif
 
 #if Use68020
-LOCALFUNC bool reg_call Ui6r_IsZero(uint64_t0 *v)
+static bool reg_call Ui6r_IsZero(uint64_t0 *v)
 {
 	return (v->hi == 0) && (v->lo == 0);
 }
 #endif
 
 #if Use68020
-LOCALFUNC bool reg_call Ui6r_IsNeg(uint64_t0 *v)
+static bool reg_call Ui6r_IsNeg(uint64_t0 *v)
 {
 	return ((int32_t)v->hi) < 0;
 }
 #endif
 
 #if Use68020
-LOCALPROC mul_unsigned(uint32_t src1, uint32_t src2, uint64_t0 *dst)
+static void mul_unsigned(uint32_t src1, uint32_t src2, uint64_t0 *dst)
 {
 	uint32_t src1_lo = uint32_t_lo(src1);
 	uint32_t src2_lo = uint32_t_lo(src2);
@@ -7336,7 +7336,7 @@ LOCALPROC mul_unsigned(uint32_t src1, uint32_t src2, uint64_t0 *dst)
 #endif
 
 #if Use68020
-LOCALFUNC bool div_unsigned(uint64_t0 *src, uint32_t div,
+static bool div_unsigned(uint64_t0 *src, uint32_t div,
 	uint32_t *quot, uint32_t *rem)
 {
 	int i;
@@ -7707,7 +7707,7 @@ LOCALIPROC DoCodeLinkL(void)
 #endif
 
 #if Use68020
-LOCALPROC DoCodeTRAPcc_t(void)
+static void DoCodeTRAPcc_t(void)
 {
 	ReportAbnormalID(0x011B, "TRAPcc trapping");
 	Exception(7);
@@ -7716,7 +7716,7 @@ LOCALPROC DoCodeTRAPcc_t(void)
 #endif
 
 #if Use68020
-LOCALPROC DoCodeTRAPcc_f(void)
+static void DoCodeTRAPcc_f(void)
 {
 }
 #endif
@@ -7968,7 +7968,7 @@ LOCALIPROC DoBitField(void)
 #endif
 
 #if EmMMU | EmFPU
-LOCALFUNC bool DecodeModeRegister(uint32_t sz)
+static bool DecodeModeRegister(uint32_t sz)
 {
 	bool IsOk;
 	uint16_t Dat = V_regs.CurDecOpY.v[0].ArgDat;
@@ -8069,7 +8069,7 @@ LOCALFUNC bool DecodeModeRegister(uint32_t sz)
 #endif
 
 #if EmMMU | EmFPU
-LOCALFUNC uint32_t GetArgValueL(void)
+static uint32_t GetArgValueL(void)
 {
 	uint32_t v;
 
@@ -8085,7 +8085,7 @@ LOCALFUNC uint32_t GetArgValueL(void)
 #endif
 
 #if EmMMU | EmFPU
-LOCALFUNC uint32_t GetArgValueW(void)
+static uint32_t GetArgValueW(void)
 {
 	uint32_t v;
 
@@ -8101,7 +8101,7 @@ LOCALFUNC uint32_t GetArgValueW(void)
 #endif
 
 #if EmMMU | EmFPU
-LOCALFUNC uint32_t GetArgValueB(void)
+static uint32_t GetArgValueB(void)
 {
 	uint32_t v;
 
@@ -8117,7 +8117,7 @@ LOCALFUNC uint32_t GetArgValueB(void)
 #endif
 
 #if EmMMU | EmFPU
-LOCALPROC SetArgValueL(uint32_t v)
+static void SetArgValueL(uint32_t v)
 {
 	if (AKMemory == V_regs.ArgKind) {
 		put_long(V_regs.ArgAddr.mem, v);
@@ -8129,7 +8129,7 @@ LOCALPROC SetArgValueL(uint32_t v)
 #endif
 
 #if EmMMU | EmFPU
-LOCALPROC SetArgValueW(uint32_t v)
+static void SetArgValueW(uint32_t v)
 {
 	if (AKMemory == V_regs.ArgKind) {
 		put_word(V_regs.ArgAddr.mem, v);
@@ -8142,7 +8142,7 @@ LOCALPROC SetArgValueW(uint32_t v)
 #endif
 
 #if EmMMU | EmFPU
-LOCALPROC SetArgValueB(uint32_t v)
+static void SetArgValueB(uint32_t v)
 {
 	if (AKMemory == V_regs.ArgKind) {
 		put_byte(V_regs.ArgAddr.mem, v);
@@ -8203,7 +8203,7 @@ LOCALIPROC DoCodeMMU(void)
 #endif
 
 #if HaveGlbReg
-LOCALPROC Em_Swap(void)
+static void Em_Swap(void)
 {
 #ifdef r_pc_p
 	{
@@ -8249,7 +8249,7 @@ LOCALPROC Em_Swap(void)
 #endif
 
 #if HaveGlbReg
-LOCALFUNC bool LocalMemAccessNtfy(ATTep pT)
+static bool LocalMemAccessNtfy(ATTep pT)
 {
 	bool v;
 
@@ -8264,7 +8264,7 @@ LOCALFUNC bool LocalMemAccessNtfy(ATTep pT)
 #endif
 
 #if HaveGlbReg
-LOCALFUNC uint32_t LocalMMDV_Access(ATTep p, uint32_t Data,
+static uint32_t LocalMMDV_Access(ATTep p, uint32_t Data,
 	bool WriteMem, bool ByteSize, CPTR addr)
 {
 	uint32_t v;
@@ -8279,14 +8279,14 @@ LOCALFUNC uint32_t LocalMMDV_Access(ATTep p, uint32_t Data,
 #define LocalMMDV_Access MMDV_Access
 #endif
 
-LOCALPROC local_customreset(void)
+static void local_customreset(void)
 {
 	Em_Exit();
 	customreset();
 	Em_Enter();
 }
 
-LOCALFUNC ATTep LocalFindATTel(CPTR addr)
+static ATTep LocalFindATTel(CPTR addr)
 {
 	ATTep prev;
 	ATTep p;
@@ -8315,7 +8315,7 @@ LOCALFUNC ATTep LocalFindATTel(CPTR addr)
 	return p;
 }
 
-LOCALPROC SetUpMATC(
+static void SetUpMATC(
 	MATCp CurMATC,
 	ATTep p)
 {
@@ -8325,7 +8325,7 @@ LOCALPROC SetUpMATC(
 	CurMATC->usebase = p->usebase;
 }
 
-LOCALFUNC uint32_t reg_call get_byte_ext(CPTR addr)
+static uint32_t reg_call get_byte_ext(CPTR addr)
 {
 	ATTep p;
 	uint8_t * m;
@@ -8356,7 +8356,7 @@ Label_Retry:
 	return uint32_t_FromSByte(Data);
 }
 
-LOCALPROC reg_call put_byte_ext(CPTR addr, uint32_t b)
+static void reg_call put_byte_ext(CPTR addr, uint32_t b)
 {
 	ATTep p;
 	uint8_t * m;
@@ -8384,7 +8384,7 @@ Label_Retry:
 	}
 }
 
-LOCALFUNC uint32_t reg_call get_word_ext(CPTR addr)
+static uint32_t reg_call get_word_ext(CPTR addr)
 {
 	uint32_t Data;
 
@@ -8423,7 +8423,7 @@ Label_Retry:
 	return uint32_t_FromSWord(Data);
 }
 
-LOCALPROC reg_call put_word_ext(CPTR addr, uint32_t w)
+static void reg_call put_word_ext(CPTR addr, uint32_t w)
 {
 	if (0 != (addr & 0x01)) {
 		put_byte(addr, w >> 8);
@@ -8457,7 +8457,7 @@ Label_Retry:
 	}
 }
 
-LOCALFUNC uint32_t reg_call get_long_misaligned_ext(CPTR addr)
+static uint32_t reg_call get_long_misaligned_ext(CPTR addr)
 {
 	uint32_t hi = get_word(addr);
 	uint32_t lo = get_word(addr + 2);
@@ -8467,14 +8467,14 @@ LOCALFUNC uint32_t reg_call get_long_misaligned_ext(CPTR addr)
 	return uint32_t_FromSLong(Data);
 }
 
-LOCALPROC reg_call put_long_misaligned_ext(CPTR addr, uint32_t l)
+static void reg_call put_long_misaligned_ext(CPTR addr, uint32_t l)
 {
 	put_word(addr, l >> 16);
 	put_word(addr + 2, l);
 }
 
 #if FasterAlignedL
-LOCALFUNC uint32_t reg_call get_long_ext(CPTR addr)
+static uint32_t reg_call get_long_ext(CPTR addr)
 {
 	uint32_t Data;
 
@@ -8520,7 +8520,7 @@ Label_Retry:
 #endif
 
 #if FasterAlignedL
-LOCALPROC reg_call put_long_ext(CPTR addr, uint32_t l)
+static void reg_call put_long_ext(CPTR addr, uint32_t l)
 {
 	if (0 != (addr & 0x03)) {
 		put_word(addr, l >> 16);
@@ -8557,7 +8557,7 @@ Label_Retry:
 }
 #endif
 
-LOCALPROC Recalc_PC_Block(void)
+static void Recalc_PC_Block(void)
 {
 	ATTep p;
 	CPTR curpc = m68k_getpc();
@@ -8591,7 +8591,7 @@ Label_Retry:
 	}
 }
 
-LOCALFUNC uint32_t reg_call Recalc_PC_BlockReturnUi5r(uint32_t v)
+static uint32_t reg_call Recalc_PC_BlockReturnUi5r(uint32_t v)
 {
 	/*
 		Used to prevent compiler from saving
@@ -8603,7 +8603,7 @@ LOCALFUNC uint32_t reg_call Recalc_PC_BlockReturnUi5r(uint32_t v)
 	return v;
 }
 
-LOCALFUNC uint32_t nextilong_ext(void)
+static uint32_t nextilong_ext(void)
 {
 	uint32_t r;
 
@@ -8619,7 +8619,7 @@ LOCALFUNC uint32_t nextilong_ext(void)
 	return r;
 }
 
-LOCALPROC DoCheckExternalInterruptPending(void)
+static void DoCheckExternalInterruptPending(void)
 {
 	uint8_t level = *V_regs.fIPL;
 	if ((level > V_regs.intmask) || (level == 7)) {
@@ -8632,13 +8632,13 @@ LOCALPROC DoCheckExternalInterruptPending(void)
 	}
 }
 
-LOCALPROC do_trace(void)
+static void do_trace(void)
 {
 	V_regs.TracePending = true;
 	NeedToGetOut();
 }
 
-GLOBALPROC m68k_go_nCycles(uint32_t n)
+void m68k_go_nCycles(uint32_t n)
 {
 	Em_Enter();
 	V_MaxCyclesToGo += (n + V_regs.ResidualCycles);
@@ -8673,7 +8673,7 @@ GLOBALPROC m68k_go_nCycles(uint32_t n)
 	Em_Exit();
 }
 
-GLOBALFUNC int32_t GetCyclesRemaining(void)
+ int32_t GetCyclesRemaining(void)
 {
 	int32_t v;
 
@@ -8684,7 +8684,7 @@ GLOBALFUNC int32_t GetCyclesRemaining(void)
 	return v;
 }
 
-GLOBALPROC SetCyclesRemaining(int32_t n)
+void SetCyclesRemaining(int32_t n)
 {
 	Em_Enter();
 
@@ -8698,7 +8698,7 @@ GLOBALPROC SetCyclesRemaining(int32_t n)
 	Em_Exit();
 }
 
-GLOBALFUNC ATTep FindATTel(CPTR addr)
+ ATTep FindATTel(CPTR addr)
 {
 	ATTep v;
 
@@ -8709,7 +8709,7 @@ GLOBALFUNC ATTep FindATTel(CPTR addr)
 	return v;
 }
 
-GLOBALFUNC uint8_t get_vm_byte(CPTR addr)
+ uint8_t get_vm_byte(CPTR addr)
 {
 	uint8_t v;
 
@@ -8720,7 +8720,7 @@ GLOBALFUNC uint8_t get_vm_byte(CPTR addr)
 	return v;
 }
 
-GLOBALFUNC uint16_t get_vm_word(CPTR addr)
+ uint16_t get_vm_word(CPTR addr)
 {
 	uint16_t v;
 
@@ -8731,7 +8731,7 @@ GLOBALFUNC uint16_t get_vm_word(CPTR addr)
 	return v;
 }
 
-GLOBALFUNC uint32_t get_vm_long(CPTR addr)
+ uint32_t get_vm_long(CPTR addr)
 {
 	uint32_t v;
 
@@ -8742,28 +8742,28 @@ GLOBALFUNC uint32_t get_vm_long(CPTR addr)
 	return v;
 }
 
-GLOBALPROC put_vm_byte(CPTR addr, uint8_t b)
+void put_vm_byte(CPTR addr, uint8_t b)
 {
 	Em_Enter();
 	put_byte(addr, uint32_t_FromSByte(b));
 	Em_Exit();
 }
 
-GLOBALPROC put_vm_word(CPTR addr, uint16_t w)
+void put_vm_word(CPTR addr, uint16_t w)
 {
 	Em_Enter();
 	put_word(addr, uint32_t_FromSWord(w));
 	Em_Exit();
 }
 
-GLOBALPROC put_vm_long(CPTR addr, uint32_t l)
+void put_vm_long(CPTR addr, uint32_t l)
 {
 	Em_Enter();
 	put_long(addr, uint32_t_FromSLong(l));
 	Em_Exit();
 }
 
-GLOBALPROC SetHeadATTel(ATTep p)
+void SetHeadATTel(ATTep p)
 {
 	Em_Enter();
 
@@ -8790,7 +8790,7 @@ GLOBALPROC SetHeadATTel(ATTep p)
 	Em_Exit();
 }
 
-GLOBALPROC DiskInsertedPsuedoException(CPTR newpc, uint32_t data)
+void DiskInsertedPsuedoException(CPTR newpc, uint32_t data)
 {
 	Em_Enter();
 	ExceptionTo(newpc
@@ -8803,7 +8803,7 @@ GLOBALPROC DiskInsertedPsuedoException(CPTR newpc, uint32_t data)
 	Em_Exit();
 }
 
-GLOBALPROC m68k_IPLchangeNtfy(void)
+void m68k_IPLchangeNtfy(void)
 {
 	Em_Enter();
 	{
@@ -8817,7 +8817,7 @@ GLOBALPROC m68k_IPLchangeNtfy(void)
 }
 
 #if WantDumpTable
-LOCALPROC InitDumpTable(void)
+static void InitDumpTable(void)
 {
 	int32_t i;
 
@@ -8826,7 +8826,7 @@ LOCALPROC InitDumpTable(void)
 	}
 }
 
-LOCALPROC DumpATable(uint32_t *p, uint32_t n)
+static void DumpATable(uint32_t *p, uint32_t n)
 {
 	int32_t i;
 
@@ -8836,14 +8836,14 @@ LOCALPROC DumpATable(uint32_t *p, uint32_t n)
 	}
 }
 
-EXPORTPROC DoDumpTable(void);
-GLOBALPROC DoDumpTable(void)
+extern void DoDumpTable(void);
+void DoDumpTable(void)
 {
 	DumpATable(DumpTable, kNumIKinds);
 }
 #endif
 
-GLOBALPROC m68k_reset(void)
+void m68k_reset(void)
 {
 	Em_Enter();
 
@@ -8898,14 +8898,14 @@ GLOBALPROC m68k_reset(void)
 }
 
 #if SmallGlobals
-GLOBALPROC MINEM68K_ReserveAlloc(void)
+void MINEM68K_ReserveAlloc(void)
 {
 	ReserveAllocOneBlock((uint8_t * *)&regs.disp_table,
 		disp_table_sz * 8, 6, false);
 }
 #endif
 
-GLOBALPROC MINEM68K_Init(
+void MINEM68K_Init(
 	uint8_t *fIPL)
 {
 	regs.fIPL = fIPL;

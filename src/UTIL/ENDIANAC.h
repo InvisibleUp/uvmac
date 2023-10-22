@@ -37,7 +37,7 @@
 #if BigEndianUnaligned
 #define do_get_mem_word(a) ((uint16_t)*((uint16_t *)(a)))
 #else
-LOCALINLINEFUNC uint16_t do_get_mem_word(uint8_t * a)
+static uint16_t do_get_mem_word(uint8_t * a)
 {
 #if LittleEndianUnaligned
 	uint16_t b = (*((uint16_t *)(a)));
@@ -54,7 +54,7 @@ LOCALINLINEFUNC uint16_t do_get_mem_word(uint8_t * a)
 #elif HaveSwapUi5r && LittleEndianUnaligned
 #define do_get_mem_long(a) (SwapUi5r((uint32_t)*((uint32_t *)(a))))
 #else
-LOCALINLINEFUNC uint32_t do_get_mem_long(uint8_t * a)
+static uint32_t do_get_mem_long(uint8_t * a)
 {
 #if LittleEndianUnaligned
 #if 0
@@ -98,7 +98,7 @@ LOCALINLINEFUNC uint32_t do_get_mem_long(uint8_t * a)
 #if BigEndianUnaligned
 #define do_put_mem_word(a, v) ((*((uint16_t *)(a))) = (v))
 #else
-LOCALINLINEFUNC void do_put_mem_word(uint8_t * a, uint16_t v)
+static void do_put_mem_word(uint8_t * a, uint16_t v)
 {
 #if LittleEndianUnaligned
 	uint16_t b = ((v & 0x00FF) << 8) | ((v >> 8) & 0x00FF);
@@ -116,7 +116,7 @@ LOCALINLINEFUNC void do_put_mem_word(uint8_t * a, uint16_t v)
 #elif HaveSwapUi5r && LittleEndianUnaligned
 #define do_put_mem_long(a, v) ((*((uint32_t *)(a))) = SwapUi5r(v))
 #else
-LOCALINLINEFUNC void do_put_mem_long(uint8_t * a, uint32_t v)
+static void do_put_mem_long(uint8_t * a, uint32_t v)
 {
 #if LittleEndianUnaligned
 	uint16_t b1 = v;

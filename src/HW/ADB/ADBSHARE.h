@@ -32,18 +32,18 @@
 
 #define ADB_MaxSzDatBuf 8
 
-LOCALVAR uint8_t ADB_SzDatBuf;
-LOCALVAR bool ADB_TalkDatBuf = false;
-LOCALVAR uint8_t ADB_DatBuf[ADB_MaxSzDatBuf];
-LOCALVAR uint8_t ADB_CurCmd = 0;
-LOCALVAR uint8_t NotSoRandAddr = 1;
+static uint8_t ADB_SzDatBuf;
+static bool ADB_TalkDatBuf = false;
+static uint8_t ADB_DatBuf[ADB_MaxSzDatBuf];
+static uint8_t ADB_CurCmd = 0;
+static uint8_t NotSoRandAddr = 1;
 
-LOCALVAR uint8_t MouseADBAddress;
-LOCALVAR bool SavedCurMouseButton = false;
-LOCALVAR uint16_t MouseADBDeltaH = 0;
-LOCALVAR uint16_t MouseADBDeltaV = 0;
+static uint8_t MouseADBAddress;
+static bool SavedCurMouseButton = false;
+static uint16_t MouseADBDeltaH = 0;
+static uint16_t MouseADBDeltaV = 0;
 
-LOCALPROC ADB_DoMouseTalk(void)
+static void ADB_DoMouseTalk(void)
 {
 	switch (ADB_CurCmd & 3) {
 		case 0:
@@ -118,7 +118,7 @@ LOCALPROC ADB_DoMouseTalk(void)
 	}
 }
 
-LOCALPROC ADB_DoMouseListen(void)
+static void ADB_DoMouseListen(void)
 {
 	switch (ADB_CurCmd & 3) {
 		case 3:
@@ -137,9 +137,9 @@ LOCALPROC ADB_DoMouseListen(void)
 	}
 }
 
-LOCALVAR uint8_t KeyboardADBAddress;
+static uint8_t KeyboardADBAddress;
 
-LOCALFUNC bool CheckForADBkeyEvt(uint8_t *NextADBkeyevt)
+static bool CheckForADBkeyEvt(uint8_t *NextADBkeyevt)
 {
 	int i;
 	bool KeyDown;
@@ -177,7 +177,7 @@ LOCALFUNC bool CheckForADBkeyEvt(uint8_t *NextADBkeyevt)
 	}
 }
 
-LOCALPROC ADB_DoKeyboardTalk(void)
+static void ADB_DoKeyboardTalk(void)
 {
 	switch (ADB_CurCmd & 3) {
 		case 0:
@@ -210,7 +210,7 @@ LOCALPROC ADB_DoKeyboardTalk(void)
 	}
 }
 
-LOCALPROC ADB_DoKeyboardListen(void)
+static void ADB_DoKeyboardListen(void)
 {
 	switch (ADB_CurCmd & 3) {
 		case 3:
@@ -229,7 +229,7 @@ LOCALPROC ADB_DoKeyboardListen(void)
 	}
 }
 
-LOCALFUNC bool CheckForADBanyEvt(void)
+static bool CheckForADBanyEvt(void)
 {
 	EvtQEl *p = EvtQOutP();
 	if (nullpr != p) {
@@ -247,7 +247,7 @@ LOCALFUNC bool CheckForADBanyEvt(void)
 	return (0 != MouseADBDeltaH) && (0 != MouseADBDeltaV);
 }
 
-LOCALPROC ADB_DoTalk(void)
+static void ADB_DoTalk(void)
 {
 	uint8_t Address = ADB_CurCmd >> 4;
 	if (Address == MouseADBAddress) {
@@ -257,7 +257,7 @@ LOCALPROC ADB_DoTalk(void)
 	}
 }
 
-LOCALPROC ADB_EndListen(void)
+static void ADB_EndListen(void)
 {
 	uint8_t Address = ADB_CurCmd >> 4;
 	if (Address == MouseADBAddress) {
@@ -267,13 +267,13 @@ LOCALPROC ADB_EndListen(void)
 	}
 }
 
-LOCALPROC ADB_DoReset(void)
+static void ADB_DoReset(void)
 {
 	MouseADBAddress = 3;
 	KeyboardADBAddress = 2;
 }
 
-LOCALPROC ADB_Flush(void)
+static void ADB_Flush(void)
 {
 	uint8_t Address = ADB_CurCmd >> 4;
 

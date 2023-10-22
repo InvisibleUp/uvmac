@@ -28,7 +28,7 @@
 #define kVidMem_Base 0x00540000
 
 
-EXPORTFUNC bool ROM_Init(void);
+extern bool ROM_Init(void);
 
 
 #endif

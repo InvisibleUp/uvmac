@@ -20,11 +20,11 @@
 
 
 #if IncludePbufs
-LOCALVAR void *PbufDat[NumPbufs];
+static void *PbufDat[NumPbufs];
 #endif
 
 #if IncludePbufs
-LOCALFUNC MacErr_t PbufNewFromPtr(void *p, uint32_t count, tPbuf *r)
+static MacErr_t PbufNewFromPtr(void *p, uint32_t count, tPbuf *r)
 {
 	tPbuf i;
 	MacErr_t err;
@@ -44,7 +44,7 @@ LOCALFUNC MacErr_t PbufNewFromPtr(void *p, uint32_t count, tPbuf *r)
 #endif
 
 #if IncludePbufs
-LOCALPROC PbufKillToPtr(void **p, uint32_t *count, tPbuf r)
+static void PbufKillToPtr(void **p, uint32_t *count, tPbuf r)
 {
 	*p = PbufDat[r];
 	*count = PbufSize[r];
@@ -80,7 +80,7 @@ GLOBALOSGLUPROC PbufDispose(tPbuf i)
 #endif
 
 #if IncludePbufs
-LOCALPROC UnInitPbufs(void)
+static void UnInitPbufs(void)
 {
 	tPbuf i;
 
@@ -97,7 +97,7 @@ LOCALPROC UnInitPbufs(void)
 #endif
 
 #if IncludePbufs
-LOCALFUNC uint8_t * PbufLock(tPbuf i)
+static uint8_t * PbufLock(tPbuf i)
 {
 	return (uint8_t *)PbufDat[i];
 }

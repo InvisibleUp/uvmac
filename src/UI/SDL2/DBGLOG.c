@@ -16,10 +16,10 @@
 #endif
 
 #if ! dbglog_ToStdErr
-LOCALVAR FILE *dbglog_File = NULL;
+static FILE *dbglog_File = NULL;
 #endif
 
-LOCALFUNC bool dbglog_open0(void)
+static bool dbglog_open0(void)
 {
 #if dbglog_ToStdErr || dbglog_ToSDL_Log
 	return true;
@@ -39,7 +39,7 @@ LOCALFUNC bool dbglog_open0(void)
 #endif
 }
 
-LOCALPROC dbglog_write0(char *s, uimr L)
+static void dbglog_write0(char *s, uimr L)
 {
 #if dbglog_ToStdErr
 	(void) fwrite(s, 1, L, stderr);
@@ -60,7 +60,7 @@ LOCALPROC dbglog_write0(char *s, uimr L)
 #endif
 }
 
-LOCALPROC dbglog_close0(void)
+static void dbglog_close0(void)
 {
 #if ! dbglog_ToStdErr
 	if (dbglog_File != NULL) {

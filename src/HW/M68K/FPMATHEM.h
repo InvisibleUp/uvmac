@@ -160,7 +160,7 @@ enum {
 | and exception flags.
 *----------------------------------------------------------------------------*/
 
-LOCALVAR int8_t float_rounding_mode = float_round_nearest_even;
+static int8_t float_rounding_mode = float_round_nearest_even;
 
 
 /*----------------------------------------------------------------------------
@@ -174,14 +174,14 @@ enum {
 	float_flag_underflow = 16,
 	float_flag_inexact   = 32
 };
-LOCALVAR int8_t float_exception_flags = 0;
+static int8_t float_exception_flags = 0;
 
 /*----------------------------------------------------------------------------
 | Software IEC/IEEE extended double-precision rounding precision.  Valid
 | values are 32, 64, and 80.
 *----------------------------------------------------------------------------*/
 
-LOCALVAR int8_t floatx80_rounding_precision = 80;
+static int8_t floatx80_rounding_precision = 80;
 
 /*----------------------------------------------------------------------------
 | Primitive arithmetic functions, including multi-word arithmetic, and
@@ -209,7 +209,7 @@ Arithmetic Package, Release 2b.
 | The result is stored in the location pointed to by `zPtr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shift32RightJamming( uint32_t a, int16_t count, uint32_t *zPtr )
+static void shift32RightJamming( uint32_t a, int16_t count, uint32_t *zPtr )
 {
 	uint32_t z;
 
@@ -235,7 +235,7 @@ LOCALINLINEPROC shift32RightJamming( uint32_t a, int16_t count, uint32_t *zPtr )
 | The result is stored in the location pointed to by `zPtr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shift64RightJamming( uint64_t a, int16_t count, uint64_t *zPtr )
+static void shift64RightJamming( uint64_t a, int16_t count, uint64_t *zPtr )
 {
 	uint64_t z;
 
@@ -269,7 +269,7 @@ LOCALINLINEPROC shift64RightJamming( uint64_t a, int16_t count, uint64_t *zPtr )
 | described above, and is returned at the location pointed to by `z1Ptr'.)
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shift64ExtraRightJamming(
+static void shift64ExtraRightJamming(
 	uint64_t a0, uint64_t a1, int16_t count, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
 	uint64_t z0, z1;
@@ -305,7 +305,7 @@ LOCALINLINEPROC shift64ExtraRightJamming(
 | which are stored at the locations pointed to by `z0Ptr' and `z1Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shift128Right(
+static void shift128Right(
 	uint64_t a0, uint64_t a1, int16_t count, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
 	uint64_t z0, z1;
@@ -339,7 +339,7 @@ LOCALINLINEPROC shift128Right(
 | the locations pointed to by `z0Ptr' and `z1Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shift128RightJamming(
+static void shift128RightJamming(
 	uint64_t a0, uint64_t a1, int16_t count, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
 	uint64_t z0, z1;
@@ -389,7 +389,7 @@ LOCALINLINEPROC shift128RightJamming(
 | `z2Ptr'.)
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shift128ExtraRightJamming(
+static void shift128ExtraRightJamming(
 	uint64_t a0,
 	uint64_t a1,
 	uint64_t a2,
@@ -445,7 +445,7 @@ LOCALINLINEPROC shift128ExtraRightJamming(
 | pieces which are stored at the locations pointed to by `z0Ptr' and `z1Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC shortShift128Left(
+static void shortShift128Left(
 	uint64_t a0, uint64_t a1, int16_t count, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
 
@@ -462,7 +462,7 @@ LOCALINLINEPROC shortShift128Left(
 | are stored at the locations pointed to by `z0Ptr' and `z1Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC add128(
+static void add128(
 	uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
 	uint64_t z1;
@@ -480,7 +480,7 @@ LOCALINLINEPROC add128(
 | `z1Ptr', and `z2Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC add192(
+static void add192(
 	uint64_t a0,
 	uint64_t a1,
 	uint64_t a2,
@@ -516,7 +516,7 @@ LOCALINLINEPROC add192(
 | `z1Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC
+static void
  sub128(
 	 uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
@@ -534,7 +534,7 @@ LOCALINLINEPROC
 | pointed to by `z0Ptr', `z1Ptr', and `z2Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC
+static void
  sub192(
 	 uint64_t a0,
 	 uint64_t a1,
@@ -576,13 +576,13 @@ LOCALINLINEPROC
 #endif
 
 #if HaveUi5to6Mul
-LOCALINLINEPROC Ui5to6Mul( uint32_t src1, uint32_t src2, uint64_t *z)
+static void Ui5to6Mul( uint32_t src1, uint32_t src2, uint64_t *z)
 {
 	*z = ((uint64_t) src1) * src2;
 }
 #else
 
-LOCALINLINEPROC Ui6fromHiLo(uint32_t hi, uint32_t lo, uint64_t *z)
+static void Ui6fromHiLo(uint32_t hi, uint32_t lo, uint64_t *z)
 {
 	*z = (((uint64_t)(hi)) << 32) + lo;
 #if 0
@@ -591,7 +591,7 @@ LOCALINLINEPROC Ui6fromHiLo(uint32_t hi, uint32_t lo, uint64_t *z)
 #endif
 }
 
-LOCALPROC Ui5to6Mul( uint32_t src1, uint32_t src2, uint64_t *z)
+static void Ui5to6Mul( uint32_t src1, uint32_t src2, uint64_t *z)
 {
 	uint16_t src1_lo = uint32_t_lo(src1);
 	uint16_t src2_lo = uint32_t_lo(src2);
@@ -614,7 +614,7 @@ LOCALPROC Ui5to6Mul( uint32_t src1, uint32_t src2, uint64_t *z)
 #endif
 
 
-LOCALINLINEPROC mul64To128( uint64_t a, uint64_t b, uint64_t *z0Ptr, uint64_t *z1Ptr )
+static void mul64To128( uint64_t a, uint64_t b, uint64_t *z0Ptr, uint64_t *z1Ptr )
 {
 	uint32_t aHigh, aLow, bHigh, bLow;
 	uint64_t z0, zMiddleA, zMiddleB, z1;
@@ -646,7 +646,7 @@ LOCALINLINEPROC mul64To128( uint64_t a, uint64_t b, uint64_t *z0Ptr, uint64_t *z
 | `z2Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC
+static void
  mul128By64To192(
 	 uint64_t a0,
 	 uint64_t a1,
@@ -674,7 +674,7 @@ LOCALINLINEPROC
 | the locations pointed to by `z0Ptr', `z1Ptr', `z2Ptr', and `z3Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEPROC
+static void
  mul128To256(
 	 uint64_t a0,
 	 uint64_t a1,
@@ -724,7 +724,7 @@ LOCALINLINEPROC
 	Assuming other 64 bit operations available,
 	like compare, subtract, shift.
 */
-LOCALFUNC uint64_t Ui6Div(uint64_t num, uint64_t den)
+static uint64_t Ui6Div(uint64_t num, uint64_t den)
 {
 	uint64_t bit = 1;
 	uint64_t res = 0;
@@ -747,7 +747,7 @@ LOCALFUNC uint64_t Ui6Div(uint64_t num, uint64_t den)
 }
 #endif
 
-LOCALFUNC uint64_t estimateDiv128To64( uint64_t a0, uint64_t a1, uint64_t b )
+static uint64_t estimateDiv128To64( uint64_t a0, uint64_t a1, uint64_t b )
 {
 	uint64_t b0, b1;
 	uint64_t rem0, rem1, term0, term1;
@@ -779,7 +779,7 @@ LOCALFUNC uint64_t estimateDiv128To64( uint64_t a0, uint64_t a1, uint64_t b )
 | value.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC uint32_t estimateSqrt32( int16_t aExp, uint32_t a )
+static uint32_t estimateSqrt32( int16_t aExp, uint32_t a )
 {
 	static const uint16_t sqrtOddAdjustments[] = {
 		0x0004, 0x0022, 0x005D, 0x00B1, 0x011D, 0x019F, 0x0236, 0x02E0,
@@ -813,7 +813,7 @@ LOCALFUNC uint32_t estimateSqrt32( int16_t aExp, uint32_t a )
 | `a'.  If `a' is zero, 32 is returned.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC int8_t countLeadingZeros32( uint32_t a )
+static int8_t countLeadingZeros32( uint32_t a )
 {
 	static const int8_t countLeadingZerosHigh[] = {
 		8, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -854,7 +854,7 @@ LOCALFUNC int8_t countLeadingZeros32( uint32_t a )
 | `a'.  If `a' is zero, 64 is returned.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC int8_t countLeadingZeros64( uint64_t a )
+static int8_t countLeadingZeros64( uint64_t a )
 {
 	int8_t shiftCount;
 
@@ -876,7 +876,7 @@ LOCALFUNC int8_t countLeadingZeros64( uint64_t a )
 | Otherwise, returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag eq128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
+static flag eq128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 {
 
 	return ( a0 == b0 ) && ( a1 == b1 );
@@ -889,7 +889,7 @@ LOCALINLINEFUNC flag eq128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 | Otherwise, returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag le128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
+static flag le128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 {
 
 	return ( a0 < b0 ) || ( ( a0 == b0 ) && ( a1 <= b1 ) );
@@ -902,7 +902,7 @@ LOCALINLINEFUNC flag le128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 | returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag lt128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
+static flag lt128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 {
 
 	return ( a0 < b0 ) || ( ( a0 == b0 ) && ( a1 < b1 ) );
@@ -916,7 +916,7 @@ LOCALINLINEFUNC flag lt128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALINLINEFUNC flag ne128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
+static flag ne128( uint64_t a0, uint64_t a1, uint64_t b0, uint64_t b1 )
 {
 
 	return ( a0 != b0 ) || ( a1 != b1 );
@@ -958,7 +958,7 @@ enum {
 | Underflow tininess-detection mode, statically initialized to default value.
 | (The declaration in `softfloat.h' must match the `int8_t' type here.)
 *----------------------------------------------------------------------------*/
-LOCALVAR int8_t float_detect_tininess = float_tininess_after_rounding;
+static int8_t float_detect_tininess = float_tininess_after_rounding;
 
 /*----------------------------------------------------------------------------
 | Routine to raise any or all of the software IEC/IEEE floating-point
@@ -971,7 +971,7 @@ LOCALVAR int8_t float_detect_tininess = float_tininess_after_rounding;
 | should be simply `float_exception_flags |= flags;'.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC void float_raise( int8_t flags )
+static void float_raise( int8_t flags )
 {
 
 	float_exception_flags |= flags;
@@ -999,7 +999,7 @@ typedef struct {
 | NaN; otherwise returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC flag floatx80_is_nan( floatx80 a )
+static flag floatx80_is_nan( floatx80 a )
 {
 
 	return ( ( a.high & 0x7FFF ) == 0x7FFF ) && (uint64_t) ( a.low<<1 );
@@ -1011,7 +1011,7 @@ LOCALFUNC flag floatx80_is_nan( floatx80 a )
 | signaling NaN; otherwise returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC flag floatx80_is_signaling_nan( floatx80 a )
+static flag floatx80_is_signaling_nan( floatx80 a )
 {
 	uint64_t aLow;
 
@@ -1029,7 +1029,7 @@ LOCALFUNC flag floatx80_is_signaling_nan( floatx80 a )
 | invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC commonNaNT floatx80ToCommonNaN( floatx80 a )
+static commonNaNT floatx80ToCommonNaN( floatx80 a )
 {
 	commonNaNT z;
 
@@ -1046,7 +1046,7 @@ LOCALFUNC commonNaNT floatx80ToCommonNaN( floatx80 a )
 | double-precision floating-point format.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 commonNaNToFloatx80( commonNaNT a )
+static floatx80 commonNaNToFloatx80( commonNaNT a )
 {
 	floatx80 z;
 
@@ -1062,7 +1062,7 @@ LOCALFUNC floatx80 commonNaNToFloatx80( commonNaNT a )
 | `b' is a signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 propagateFloatx80NaN( floatx80 a, floatx80 b )
+static floatx80 propagateFloatx80NaN( floatx80 a, floatx80 b )
 {
 	flag aIsNaN, aIsSignalingNaN, bIsNaN, bIsSignalingNaN;
 
@@ -1104,7 +1104,7 @@ LOCALFUNC floatx80 propagateFloatx80NaN( floatx80 a, floatx80 b )
 | otherwise returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC flag float128_is_nan( float128 a )
+static flag float128_is_nan( float128 a )
 {
 
 	return
@@ -1118,7 +1118,7 @@ LOCALFUNC flag float128_is_nan( float128 a )
 | signaling NaN; otherwise returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC flag float128_is_signaling_nan( float128 a )
+static flag float128_is_signaling_nan( float128 a )
 {
 
 	return
@@ -1133,7 +1133,7 @@ LOCALFUNC flag float128_is_signaling_nan( float128 a )
 | exception is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC commonNaNT float128ToCommonNaN( float128 a )
+static commonNaNT float128ToCommonNaN( float128 a )
 {
 	commonNaNT z;
 
@@ -1149,7 +1149,7 @@ LOCALFUNC commonNaNT float128ToCommonNaN( float128 a )
 | precision floating-point format.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 commonNaNToFloat128( commonNaNT a )
+static float128 commonNaNToFloat128( commonNaNT a )
 {
 	float128 z;
 
@@ -1165,7 +1165,7 @@ LOCALFUNC float128 commonNaNToFloat128( commonNaNT a )
 | `b' is a signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 propagateFloat128NaN( float128 a, float128 b )
+static float128 propagateFloat128NaN( float128 a, float128 b )
 {
 	flag aIsNaN, aIsSignalingNaN, bIsNaN, bIsSignalingNaN;
 
@@ -1220,7 +1220,7 @@ Package, Release 2b.
 | positive or negative integer is returned.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC int32_t roundAndPackInt32( flag zSign, uint64_t absZ )
+static int32_t roundAndPackInt32( flag zSign, uint64_t absZ )
 {
 	int8_t roundingMode;
 	flag roundNearestEven;
@@ -1263,7 +1263,7 @@ LOCALFUNC int32_t roundAndPackInt32( flag zSign, uint64_t absZ )
 | value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC uint64_t extractFloatx80Frac( floatx80 a )
+static uint64_t extractFloatx80Frac( floatx80 a )
 {
 
 	return a.low;
@@ -1275,7 +1275,7 @@ LOCALINLINEFUNC uint64_t extractFloatx80Frac( floatx80 a )
 | value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC int32_t extractFloatx80Exp( floatx80 a )
+static int32_t extractFloatx80Exp( floatx80 a )
 {
 
 	return a.high & 0x7FFF;
@@ -1287,7 +1287,7 @@ LOCALINLINEFUNC int32_t extractFloatx80Exp( floatx80 a )
 | `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag extractFloatx80Sign( floatx80 a )
+static flag extractFloatx80Sign( floatx80 a )
 {
 
 	return a.high>>15;
@@ -1301,7 +1301,7 @@ LOCALINLINEFUNC flag extractFloatx80Sign( floatx80 a )
 | `zSigPtr', respectively.
 *----------------------------------------------------------------------------*/
 
-LOCALPROC
+static void
  normalizeFloatx80Subnormal( uint64_t aSig, int32_t *zExpPtr, uint64_t *zSigPtr )
 {
 	int8_t shiftCount;
@@ -1317,7 +1317,7 @@ LOCALPROC
 | extended double-precision floating-point value, returning the result.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC floatx80 packFloatx80( flag zSign, int32_t zExp, uint64_t zSig )
+static floatx80 packFloatx80( flag zSign, int32_t zExp, uint64_t zSig )
 {
 	floatx80 z;
 
@@ -1351,7 +1351,7 @@ LOCALINLINEFUNC floatx80 packFloatx80( flag zSign, int32_t zExp, uint64_t zSig )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80
+static floatx80
  roundAndPackFloatx80(
 	 int8_t roundingPrecision, flag zSign, int32_t zExp, uint64_t zSig0, uint64_t zSig1
  )
@@ -1519,7 +1519,7 @@ LOCALFUNC floatx80
 | normalized.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80
+static floatx80
  normalizeRoundAndPackFloatx80(
 	 int8_t roundingPrecision, flag zSign, int32_t zExp, uint64_t zSig0, uint64_t zSig1
  )
@@ -1546,7 +1546,7 @@ LOCALFUNC floatx80
 | floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC uint64_t extractFloat128Frac1( float128 a )
+static uint64_t extractFloat128Frac1( float128 a )
 {
 
 	return a.low;
@@ -1558,7 +1558,7 @@ LOCALINLINEFUNC uint64_t extractFloat128Frac1( float128 a )
 | floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC uint64_t extractFloat128Frac0( float128 a )
+static uint64_t extractFloat128Frac0( float128 a )
 {
 
 	return a.high & LIT64( 0x0000FFFFFFFFFFFF );
@@ -1570,7 +1570,7 @@ LOCALINLINEFUNC uint64_t extractFloat128Frac0( float128 a )
 | `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC int32_t extractFloat128Exp( float128 a )
+static int32_t extractFloat128Exp( float128 a )
 {
 
 	return ( a.high>>48 ) & 0x7FFF;
@@ -1581,7 +1581,7 @@ LOCALINLINEFUNC int32_t extractFloat128Exp( float128 a )
 | Returns the sign bit of the quadruple-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag extractFloat128Sign( float128 a )
+static flag extractFloat128Sign( float128 a )
 {
 
 	return a.high>>63;
@@ -1598,7 +1598,7 @@ LOCALINLINEFUNC flag extractFloat128Sign( float128 a )
 | location pointed to by `zSig1Ptr'.
 *----------------------------------------------------------------------------*/
 
-LOCALPROC
+static void
  normalizeFloat128Subnormal(
 	 uint64_t aSig0,
 	 uint64_t aSig1,
@@ -1642,7 +1642,7 @@ LOCALPROC
 | significand.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC float128
+static float128
  packFloat128( flag zSign, int32_t zExp, uint64_t zSig0, uint64_t zSig1 )
 {
 	float128 z;
@@ -1674,7 +1674,7 @@ LOCALINLINEFUNC float128
 | overflow follows the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128
+static float128
  roundAndPackFloat128(
 	 flag zSign, int32_t zExp, uint64_t zSig0, uint64_t zSig1, uint64_t zSig2 )
 {
@@ -1774,7 +1774,7 @@ LOCALFUNC float128
 | point exponent.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128
+static float128
  normalizeRoundAndPackFloat128(
 	 flag zSign, int32_t zExp, uint64_t zSig0, uint64_t zSig1 )
 {
@@ -1809,7 +1809,7 @@ LOCALFUNC float128
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 int32_to_floatx80( int32_t a )
+static floatx80 int32_to_floatx80( int32_t a )
 {
 	flag zSign;
 	uint32_t absA;
@@ -1835,7 +1835,7 @@ LOCALFUNC floatx80 int32_to_floatx80( int32_t a )
 | overflows, the largest integer with the same sign as `a' is returned.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC int32_t floatx80_to_int32( floatx80 a )
+static int32_t floatx80_to_int32( floatx80 a )
 {
 	flag aSign;
 	int32_t aExp, shiftCount;
@@ -1863,7 +1863,7 @@ LOCALFUNC int32_t floatx80_to_int32( floatx80 a )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC int32_t floatx80_to_int32_round_to_zero( floatx80 a )
+static int32_t floatx80_to_int32_round_to_zero( floatx80 a )
 {
 	flag aSign;
 	int32_t aExp, shiftCount;
@@ -1908,7 +1908,7 @@ LOCALFUNC int32_t floatx80_to_int32_round_to_zero( floatx80 a )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 floatx80_to_float128( floatx80 a )
+static float128 floatx80_to_float128( floatx80 a )
 {
 	flag aSign;
 	int16_t aExp;
@@ -1934,7 +1934,7 @@ LOCALFUNC float128 floatx80_to_float128( floatx80 a )
 | Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_round_to_int( floatx80 a )
+static floatx80 floatx80_round_to_int( floatx80 a )
 {
 	flag aSign;
 	int32_t aExp;
@@ -2008,7 +2008,7 @@ LOCALFUNC floatx80 floatx80_round_to_int( floatx80 a )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 addFloatx80Sigs( floatx80 a, floatx80 b, flag zSign )
+static floatx80 addFloatx80Sigs( floatx80 a, floatx80 b, flag zSign )
 {
 	int32_t aExp, bExp, zExp;
 	uint64_t aSig, bSig, zSig0, zSig1;
@@ -2074,7 +2074,7 @@ LOCALFUNC floatx80 addFloatx80Sigs( floatx80 a, floatx80 b, flag zSign )
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 subFloatx80Sigs( floatx80 a, floatx80 b, flag zSign )
+static floatx80 subFloatx80Sigs( floatx80 a, floatx80 b, flag zSign )
 {
 	int32_t aExp, bExp, zExp;
 	uint64_t aSig, bSig, zSig0, zSig1;
@@ -2140,7 +2140,7 @@ LOCALFUNC floatx80 subFloatx80Sigs( floatx80 a, floatx80 b, flag zSign )
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_add( floatx80 a, floatx80 b )
+static floatx80 floatx80_add( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign;
 
@@ -2161,7 +2161,7 @@ LOCALFUNC floatx80 floatx80_add( floatx80 a, floatx80 b )
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_sub( floatx80 a, floatx80 b )
+static floatx80 floatx80_sub( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign;
 
@@ -2182,7 +2182,7 @@ LOCALFUNC floatx80 floatx80_sub( floatx80 a, floatx80 b )
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_mul( floatx80 a, floatx80 b )
+static floatx80 floatx80_mul( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign, zSign;
 	int32_t aExp, bExp, zExp;
@@ -2241,7 +2241,7 @@ LOCALFUNC floatx80 floatx80_mul( floatx80 a, floatx80 b )
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_div( floatx80 a, floatx80 b )
+static floatx80 floatx80_div( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign, zSign;
 	int32_t aExp, bExp, zExp;
@@ -2336,7 +2336,7 @@ LOCALFUNC floatx80 floatx80_div( floatx80 a, floatx80 b )
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_rem( floatx80 a, floatx80 b )
+static floatx80 floatx80_rem( floatx80 a, floatx80 b )
 {
 	flag aSign, /* bSign, */ zSign;
 	int32_t aExp, bExp, expDiff;
@@ -2436,7 +2436,7 @@ LOCALFUNC floatx80 floatx80_rem( floatx80 a, floatx80 b )
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_sqrt( floatx80 a )
+static floatx80 floatx80_sqrt( floatx80 a )
 {
 	flag aSign;
 	int32_t aExp, zExp;
@@ -2508,7 +2508,7 @@ LOCALFUNC floatx80 floatx80_sqrt( floatx80 a )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC flag floatx80_eq( floatx80 a, floatx80 b )
+static flag floatx80_eq( floatx80 a, floatx80 b )
 {
 
 	if (    (    ( extractFloatx80Exp( a ) == 0x7FFF )
@@ -2540,7 +2540,7 @@ LOCALFUNC flag floatx80_eq( floatx80 a, floatx80 b )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC flag floatx80_le( floatx80 a, floatx80 b )
+static flag floatx80_le( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign;
 
@@ -2575,7 +2575,7 @@ LOCALFUNC flag floatx80_le( floatx80 a, floatx80 b )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC flag floatx80_lt( floatx80 a, floatx80 b )
+static flag floatx80_lt( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign;
 
@@ -2610,7 +2610,7 @@ LOCALFUNC flag floatx80_lt( floatx80 a, floatx80 b )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC flag floatx80_eq_signaling( floatx80 a, floatx80 b )
+static flag floatx80_eq_signaling( floatx80 a, floatx80 b )
 {
 
 	if (    (    ( extractFloatx80Exp( a ) == 0x7FFF )
@@ -2639,7 +2639,7 @@ LOCALFUNC flag floatx80_eq_signaling( floatx80 a, floatx80 b )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC flag floatx80_le_quiet( floatx80 a, floatx80 b )
+static flag floatx80_le_quiet( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign;
 
@@ -2677,7 +2677,7 @@ LOCALFUNC flag floatx80_le_quiet( floatx80 a, floatx80 b )
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC flag floatx80_lt_quiet( floatx80 a, floatx80 b )
+static flag floatx80_lt_quiet( floatx80 a, floatx80 b )
 {
 	flag aSign, bSign;
 
@@ -2716,7 +2716,7 @@ LOCALFUNC flag floatx80_lt_quiet( floatx80 a, floatx80 b )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 float128_to_floatx80( float128 a )
+static floatx80 float128_to_floatx80( float128 a )
 {
 	flag aSign;
 	int32_t aExp;
@@ -2752,7 +2752,7 @@ LOCALFUNC floatx80 float128_to_floatx80( float128 a )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 addFloat128Sigs( float128 a, float128 b, flag zSign )
+static float128 addFloat128Sigs( float128 a, float128 b, flag zSign )
 {
 	int32_t aExp, bExp, zExp;
 	uint64_t aSig0, aSig1, bSig0, bSig1, zSig0, zSig1, zSig2;
@@ -2830,7 +2830,7 @@ LOCALFUNC float128 addFloat128Sigs( float128 a, float128 b, flag zSign )
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 subFloat128Sigs( float128 a, float128 b, flag zSign )
+static float128 subFloat128Sigs( float128 a, float128 b, flag zSign )
 {
 	int32_t aExp, bExp, zExp;
 	uint64_t aSig0, aSig1, bSig0, bSig1, zSig0, zSig1;
@@ -2912,7 +2912,7 @@ LOCALFUNC float128 subFloat128Sigs( float128 a, float128 b, flag zSign )
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 float128_add( float128 a, float128 b )
+static float128 float128_add( float128 a, float128 b )
 {
 	flag aSign, bSign;
 
@@ -2933,7 +2933,7 @@ LOCALFUNC float128 float128_add( float128 a, float128 b )
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 float128_sub( float128 a, float128 b )
+static float128 float128_sub( float128 a, float128 b )
 {
 	flag aSign, bSign;
 
@@ -2954,7 +2954,7 @@ LOCALFUNC float128 float128_sub( float128 a, float128 b )
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 float128_mul( float128 a, float128 b )
+static float128 float128_mul( float128 a, float128 b )
 {
 	flag aSign, bSign, zSign;
 	int32_t aExp, bExp, zExp;
@@ -3018,7 +3018,7 @@ LOCALFUNC float128 float128_mul( float128 a, float128 b )
 | the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float128 float128_div( float128 a, float128 b )
+static float128 float128_div( float128 a, float128 b )
 {
 	flag aSign, bSign, zSign;
 	int32_t aExp, bExp, zExp;
@@ -3107,7 +3107,7 @@ typedef unsigned int float32;
 | `zSigPtr', respectively.
 *----------------------------------------------------------------------------*/
 
-LOCALPROC
+static void
  normalizeFloat32Subnormal( uint32_t aSig, int16_t *zExpPtr, uint32_t *zSigPtr )
 {
 	int8_t shiftCount;
@@ -3122,7 +3122,7 @@ LOCALPROC
 | Returns the fraction bits of the single-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC uint32_t extractFloat32Frac( float32 a )
+static uint32_t extractFloat32Frac( float32 a )
 {
 
 	return a & 0x007FFFFF;
@@ -3133,7 +3133,7 @@ LOCALINLINEFUNC uint32_t extractFloat32Frac( float32 a )
 | Returns the exponent bits of the single-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC int16_t extractFloat32Exp( float32 a )
+static int16_t extractFloat32Exp( float32 a )
 {
 
 	return ( a>>23 ) & 0xFF;
@@ -3144,7 +3144,7 @@ LOCALINLINEFUNC int16_t extractFloat32Exp( float32 a )
 | Returns the sign bit of the single-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag extractFloat32Sign( float32 a )
+static flag extractFloat32Sign( float32 a )
 {
 
 	return a>>31;
@@ -3156,7 +3156,7 @@ LOCALINLINEFUNC flag extractFloat32Sign( float32 a )
 | NaN; otherwise returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC flag float32_is_signaling_nan( float32 a )
+static flag float32_is_signaling_nan( float32 a )
 {
 
 	return ( ( ( a>>22 ) & 0x1FF ) == 0x1FE ) && ( a & 0x003FFFFF );
@@ -3169,7 +3169,7 @@ LOCALFUNC flag float32_is_signaling_nan( float32 a )
 | exception is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC commonNaNT float32ToCommonNaN( float32 a )
+static commonNaNT float32ToCommonNaN( float32 a )
 {
 	commonNaNT z;
 
@@ -3188,7 +3188,7 @@ LOCALFUNC commonNaNT float32ToCommonNaN( float32 a )
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 float32_to_floatx80( float32 a )
+static floatx80 float32_to_floatx80( float32 a )
 {
 	flag aSign;
 	int16_t aExp;
@@ -3221,7 +3221,7 @@ LOCALFUNC floatx80 float32_to_floatx80( float32 a )
 | significand.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC float32 packFloat32( flag zSign, int16_t zExp, uint32_t zSig )
+static float32 packFloat32( flag zSign, int16_t zExp, uint32_t zSig )
 {
 
 	return ( ( (uint32_t) zSign )<<31 ) + ( ( (uint32_t) zExp )<<23 ) + zSig;
@@ -3250,7 +3250,7 @@ LOCALINLINEFUNC float32 packFloat32( flag zSign, int16_t zExp, uint32_t zSig )
 | Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float32 roundAndPackFloat32( flag zSign, int16_t zExp, uint32_t zSig )
+static float32 roundAndPackFloat32( flag zSign, int16_t zExp, uint32_t zSig )
 {
 	int8_t roundingMode;
 	flag roundNearestEven;
@@ -3307,7 +3307,7 @@ LOCALFUNC float32 roundAndPackFloat32( flag zSign, int16_t zExp, uint32_t zSig )
 | precision floating-point format.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float32 commonNaNToFloat32( commonNaNT a )
+static float32 commonNaNToFloat32( commonNaNT a )
 {
 
 	return ( ( (uint32_t) a.sign )<<31 ) | 0x7FC00000 | ( a.high>>41 );
@@ -3321,7 +3321,7 @@ LOCALFUNC float32 commonNaNToFloat32( commonNaNT a )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float32 floatx80_to_float32( floatx80 a )
+static float32 floatx80_to_float32( floatx80 a )
 {
 	flag aSign;
 	int32_t aExp;
@@ -3349,7 +3349,7 @@ typedef uint64_t float64;
 | Returns the fraction bits of the double-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC uint64_t extractFloat64Frac( float64 a )
+static uint64_t extractFloat64Frac( float64 a )
 {
 
 	return a & LIT64( 0x000FFFFFFFFFFFFF );
@@ -3360,7 +3360,7 @@ LOCALINLINEFUNC uint64_t extractFloat64Frac( float64 a )
 | Returns the exponent bits of the double-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC int16_t extractFloat64Exp( float64 a )
+static int16_t extractFloat64Exp( float64 a )
 {
 
 	return ( a>>52 ) & 0x7FF;
@@ -3371,7 +3371,7 @@ LOCALINLINEFUNC int16_t extractFloat64Exp( float64 a )
 | Returns the sign bit of the double-precision floating-point value `a'.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC flag extractFloat64Sign( float64 a )
+static flag extractFloat64Sign( float64 a )
 {
 
 	return a>>63;
@@ -3383,7 +3383,7 @@ LOCALINLINEFUNC flag extractFloat64Sign( float64 a )
 | NaN; otherwise returns 0.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC flag float64_is_signaling_nan( float64 a )
+static flag float64_is_signaling_nan( float64 a )
 {
 
 	return
@@ -3398,7 +3398,7 @@ LOCALFUNC flag float64_is_signaling_nan( float64 a )
 | exception is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC commonNaNT float64ToCommonNaN( float64 a )
+static commonNaNT float64ToCommonNaN( float64 a )
 {
 	commonNaNT z;
 
@@ -3417,7 +3417,7 @@ LOCALFUNC commonNaNT float64ToCommonNaN( float64 a )
 | `zSigPtr', respectively.
 *----------------------------------------------------------------------------*/
 
-LOCALPROC
+static void
  normalizeFloat64Subnormal( uint64_t aSig, int16_t *zExpPtr, uint64_t *zSigPtr )
 {
 	int8_t shiftCount;
@@ -3435,7 +3435,7 @@ LOCALPROC
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 float64_to_floatx80( float64 a )
+static floatx80 float64_to_floatx80( float64 a )
 {
 	flag aSign;
 	int16_t aExp;
@@ -3469,7 +3469,7 @@ LOCALFUNC floatx80 float64_to_floatx80( float64 a )
 | significand.
 *----------------------------------------------------------------------------*/
 
-LOCALINLINEFUNC float64 packFloat64( flag zSign, int16_t zExp, uint64_t zSig )
+static float64 packFloat64( flag zSign, int16_t zExp, uint64_t zSig )
 {
 
 	return ( ( (uint64_t) zSign )<<63 ) + ( ( (uint64_t) zExp )<<52 ) + zSig;
@@ -3498,7 +3498,7 @@ LOCALINLINEFUNC float64 packFloat64( flag zSign, int16_t zExp, uint64_t zSig )
 | Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float64 roundAndPackFloat64( flag zSign, int16_t zExp, uint64_t zSig )
+static float64 roundAndPackFloat64( flag zSign, int16_t zExp, uint64_t zSig )
 {
 	int8_t roundingMode;
 	flag roundNearestEven;
@@ -3555,7 +3555,7 @@ LOCALFUNC float64 roundAndPackFloat64( flag zSign, int16_t zExp, uint64_t zSig )
 | precision floating-point format.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float64 commonNaNToFloat64( commonNaNT a )
+static float64 commonNaNToFloat64( commonNaNT a )
 {
 
 	return
@@ -3572,7 +3572,7 @@ LOCALFUNC float64 commonNaNToFloat64( commonNaNT a )
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC float64 floatx80_to_float64( floatx80 a )
+static float64 floatx80_to_float64( floatx80 a )
 {
 	flag aSign;
 	int32_t aExp;
@@ -3610,7 +3610,7 @@ typedef uint64_t Bit64u;
 | is raised.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 propagateOneFloatx80NaN(floatx80 *a)
+static floatx80 propagateOneFloatx80NaN(floatx80 *a)
 {
 	if (floatx80_is_signaling_nan(*a))
 		float_raise(float_flag_invalid);
@@ -3658,7 +3658,7 @@ enum {
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_mul128(floatx80 a, float128 b)
+static floatx80 floatx80_mul128(floatx80 a, float128 b)
 {
 	Bit32s aExp, bExp, zExp;
 	Bit64u aSig, bSig0, bSig1, zSig0, zSig1, zSig2;
@@ -3773,7 +3773,7 @@ inline floatx80 floatx80_abs(floatx80 *reg)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_chs(floatx80 *x)
+static floatx80 floatx80_chs(floatx80 *x)
 {
 	x->high ^= 0x8000;
 	return *x;
@@ -3797,7 +3797,7 @@ LOCALFUNC floatx80 floatx80_chs(floatx80 *x)
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC Bit16s floatx80_to_int16(floatx80 a)
+static Bit16s floatx80_to_int16(floatx80 a)
 {
 #if 0
    if (floatx80_is_unsupported(a))
@@ -3828,7 +3828,7 @@ LOCALFUNC Bit16s floatx80_to_int16(floatx80 a)
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC Bit16s floatx80_to_int16_round_to_zero(floatx80 a)
+static Bit16s floatx80_to_int16_round_to_zero(floatx80 a)
 {
 #if 0
    if (floatx80_is_unsupported(a))
@@ -3856,7 +3856,7 @@ LOCALFUNC Bit16s floatx80_to_int16_round_to_zero(floatx80 a)
 | the IEC/IEEE recommended logb(x) function.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_extract(floatx80 *a)
+static floatx80 floatx80_extract(floatx80 *a)
 {
 	Bit64u aSig = extractFloatx80Frac(*a);
 	Bit32s aExp = extractFloatx80Exp(*a);
@@ -3903,7 +3903,7 @@ LOCALFUNC floatx80 floatx80_extract(floatx80 *a)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_scale(floatx80 a, floatx80 b)
+static floatx80 floatx80_scale(floatx80 a, floatx80 b)
 {
 	int shiftCount;
 	Bit32s scale;
@@ -3984,7 +3984,7 @@ LOCALFUNC floatx80 floatx80_scale(floatx80 a, floatx80 b)
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC float_class_t floatx80_class(floatx80 a)
+static float_class_t floatx80_class(floatx80 a)
 {
    Bit32s aExp = extractFloatx80Exp(a);
    Bit64u aSig = extractFloatx80Frac(a);
@@ -4023,7 +4023,7 @@ LOCALFUNC float_class_t floatx80_class(floatx80 a)
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC int floatx80_compare(floatx80 a, floatx80 b)
+static int floatx80_compare(floatx80 a, floatx80 b)
 {
 	int aSign;
 	int bSign;
@@ -4092,7 +4092,7 @@ LOCALFUNC int floatx80_compare(floatx80 a, floatx80 b)
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC int floatx80_compare_quiet(floatx80 a, floatx80 b)
+static int floatx80_compare_quiet(floatx80 a, floatx80 b)
 {
 	int aSign;
 	int bSign;
@@ -4168,7 +4168,7 @@ LOCALFUNC int floatx80_compare_quiet(floatx80 a, floatx80 b)
 #define USE_estimateDiv128To64
 
 /* executes single exponent reduction cycle */
-LOCALFUNC Bit64u remainder_kernel(Bit64u aSig0, Bit64u bSig, int expDiff, Bit64u *zSig0, Bit64u *zSig1)
+static Bit64u remainder_kernel(Bit64u aSig0, Bit64u bSig, int expDiff, Bit64u *zSig0, Bit64u *zSig1)
 {
 	Bit64u term0, term1;
 	Bit64u aSig1 = 0;
@@ -4185,7 +4185,7 @@ LOCALFUNC Bit64u remainder_kernel(Bit64u aSig0, Bit64u bSig, int expDiff, Bit64u
 	return q;
 }
 
-LOCALFUNC floatx80 do_fprem(floatx80 a, floatx80 b, Bit64u *q, int rounding_mode)
+static floatx80 do_fprem(floatx80 a, floatx80 b, Bit64u *q, int rounding_mode)
 {
 	Bit32s aExp, bExp, zExp, expDiff;
 	Bit64u aSig0, aSig1, bSig;
@@ -4296,7 +4296,7 @@ LOCALFUNC floatx80 do_fprem(floatx80 a, floatx80 b, Bit64u *q, int rounding_mode
 *----------------------------------------------------------------------------*/
 
 #if cIncludeFPUUnused
-LOCALFUNC floatx80 floatx80_ieee754_remainder(floatx80 a, floatx80 b, Bit64u *q)
+static floatx80 floatx80_ieee754_remainder(floatx80 a, floatx80 b, Bit64u *q)
 {
 	return do_fprem(a, b, q, float_round_nearest_even);
 }
@@ -4311,7 +4311,7 @@ LOCALFUNC floatx80 floatx80_ieee754_remainder(floatx80 a, floatx80 b, Bit64u *q)
 | quotient of 'a' divided by 'b' to an integer.
 *----------------------------------------------------------------------------*/
 
-LOCALFUNC floatx80 floatx80_remainder(floatx80 a, floatx80 b, Bit64u *q)
+static floatx80 floatx80_remainder(floatx80 a, floatx80 b, Bit64u *q)
 {
 	return do_fprem(a, b, q, float_round_to_zero);
 }
@@ -4394,7 +4394,7 @@ LOCALFUNC floatx80 floatx80_remainder(floatx80 a, floatx80 b, Bit64u *q)
 //   f(x) ~ [ p(x) + x * q(x) ]
 //
 
-LOCALFUNC float128 EvalPoly(float128 x, float128 *arr, unsigned n)
+static float128 EvalPoly(float128 x, float128 *arr, unsigned n)
 {
 	float128 r2;
 	float128 x2 = float128_mul(x, x);
@@ -4437,7 +4437,7 @@ LOCALFUNC float128 EvalPoly(float128 x, float128 *arr, unsigned n)
 //   f(x) ~ [ p(x) + x * q(x) ]
 //
 
-LOCALFUNC float128 EvenPoly(float128 x, float128 *arr, unsigned n)
+static float128 EvenPoly(float128 x, float128 *arr, unsigned n)
 {
 	 return EvalPoly(float128_mul(x, x), arr, n);
 }
@@ -4457,7 +4457,7 @@ LOCALFUNC float128 EvenPoly(float128 x, float128 *arr, unsigned n)
 //   f(x) ~ x * [ p(x) + x * q(x) ]
 //
 
-LOCALFUNC float128 OddPoly(float128 x, float128 *arr, unsigned n)
+static float128 OddPoly(float128 x, float128 *arr, unsigned n)
 {
 	 return float128_mul(x, EvenPoly(x, arr, n));
 }
@@ -4498,7 +4498,7 @@ static float128 ln_arr[L2_ARR_SIZE] =
 	PACK_FLOAT_128(0x3ffae1e1e1e1e1e1, 0xe1e1e1e1e1e1e1e2)  /* 17 */
 };
 
-LOCALFUNC float128 poly_ln(float128 x1)
+static float128 poly_ln(float128 x1)
 {
 /*
 	//
@@ -4527,7 +4527,7 @@ LOCALFUNC float128 poly_ln(float128 x1)
 }
 
 /* required sqrt(2)/2 < x < sqrt(2) */
-LOCALFUNC float128 poly_l2(float128 x)
+static float128 poly_l2(float128 x)
 {
 	/* using float128 for approximation */
 	float128 x_p1 = float128_add(x, float128_one);
@@ -4538,7 +4538,7 @@ LOCALFUNC float128 poly_l2(float128 x)
 	return x;
 }
 
-LOCALFUNC float128 poly_l2p1(float128 x)
+static float128 poly_l2p1(float128 x)
 {
 	/* using float128 for approximation */
 	float128 x_p2 = float128_add(x, float128_two);
@@ -4573,7 +4573,7 @@ LOCALFUNC float128 poly_l2p1(float128 x)
 //       1-u             3     5     7           2n+1
 //
 
-LOCALFUNC floatx80 fyl2x(floatx80 a, floatx80 b)
+static floatx80 fyl2x(floatx80 a, floatx80 b)
 {
 	int aSign;
 	int bSign;
@@ -4696,7 +4696,7 @@ invalid:
 //       1-u             3     5     7           2n+1
 //
 
-LOCALFUNC floatx80 fyl2xp1(floatx80 a, floatx80 b)
+static floatx80 fyl2xp1(floatx80 a, floatx80 b)
 {
 	Bit32s aExp, bExp;
 	Bit64u aSig, bSig, zSig0, zSig1, zSig2;
@@ -4840,7 +4840,7 @@ static float128 exp_arr[EXP_ARR_SIZE] =
 };
 
 /* required -1 < x < 1 */
-LOCALFUNC float128 poly_exp(float128 x)
+static float128 poly_exp(float128 x)
 {
 /*
 	//               2     3     4     5     6     7     8     9
@@ -4886,7 +4886,7 @@ LOCALFUNC float128 poly_exp(float128 x)
 //               1!    2!    3!    4!    5!          n!
 //
 
-LOCALFUNC floatx80 f2xm1(floatx80 a)
+static floatx80 f2xm1(floatx80 a)
 {
 	Bit64u zSig0, zSig1;
 	float128 x;
@@ -4967,7 +4967,7 @@ static const floatx80 floatx80_one = packFloatx80m(0, 0x3fff, LIT64(0x8000000000
 
 /* reduce trigonometric function argument using 128-bit precision
    M_PI approximation */
-LOCALFUNC Bit64u argument_reduction_kernel(Bit64u aSig0, int Exp, Bit64u *zSig0, Bit64u *zSig1)
+static Bit64u argument_reduction_kernel(Bit64u aSig0, int Exp, Bit64u *zSig0, Bit64u *zSig1)
 {
 	Bit64u term0, term1, term2;
 	Bit64u aSig1 = 0;
@@ -4985,7 +4985,7 @@ LOCALFUNC Bit64u argument_reduction_kernel(Bit64u aSig0, int Exp, Bit64u *zSig0,
 	return q;
 }
 
-LOCALFUNC int reduce_trig_arg(int expDiff, int *zSign, Bit64u *aSig0, Bit64u *aSig1)
+static int reduce_trig_arg(int expDiff, int *zSign, Bit64u *aSig0, Bit64u *aSig1)
 {
 	Bit64u term0, term1, q = 0;
 
@@ -5049,7 +5049,7 @@ static float128 cos_arr[COS_ARR_SIZE] =
 };
 
 /* 0 <= x <= pi/4 */
-LOCALINLINEFUNC float128 poly_sin(float128 x)
+static float128 poly_sin(float128 x)
 {
 	//                 3     5     7     9     11     13     15
 	//                x     x     x     x     x      x      x
@@ -5075,7 +5075,7 @@ LOCALINLINEFUNC float128 poly_sin(float128 x)
 }
 
 /* 0 <= x <= pi/4 */
-LOCALINLINEFUNC float128 poly_cos(float128 x)
+static float128 poly_cos(float128 x)
 {
 	//                 2     4     6     8     10     12     14
 	//                x     x     x     x     x      x      x
@@ -5095,19 +5095,19 @@ LOCALINLINEFUNC float128 poly_cos(float128 x)
 	return EvenPoly(x, cos_arr, COS_ARR_SIZE);
 }
 
-LOCALINLINEPROC sincos_invalid(floatx80 *sin_a, floatx80 *cos_a, floatx80 a)
+static void sincos_invalid(floatx80 *sin_a, floatx80 *cos_a, floatx80 a)
 {
 	if (sin_a) *sin_a = a;
 	if (cos_a) *cos_a = a;
 }
 
-LOCALINLINEPROC sincos_tiny_argument(floatx80 *sin_a, floatx80 *cos_a, floatx80 a)
+static void sincos_tiny_argument(floatx80 *sin_a, floatx80 *cos_a, floatx80 a)
 {
 	if (sin_a) *sin_a = a;
 	if (cos_a) *cos_a = floatx80_one;
 }
 
-LOCALFUNC floatx80 sincos_approximation(int neg, float128 r, Bit64u quotient)
+static floatx80 sincos_approximation(int neg, float128 r, Bit64u quotient)
 {
 	floatx80 result;
 
@@ -5148,7 +5148,7 @@ LOCALFUNC floatx80 sincos_approximation(int neg, float128 r, Bit64u quotient)
 //  sin(x+2pi)    =  sin(x)
 //
 
-LOCALFUNC int fsincos(floatx80 a, floatx80 *sin_a, floatx80 *cos_a)
+static int fsincos(floatx80 a, floatx80 *sin_a, floatx80 *cos_a)
 {
 	float128 r;
 	Bit64u aSig0, aSig1 = 0;
@@ -5267,7 +5267,7 @@ LOCALFUNC int fsincos(floatx80 a, floatx80 *sin_a, floatx80 *cos_a)
 //           cos(x)
 //
 
-LOCALFUNC int ftan(floatx80 *a)
+static int ftan(floatx80 *a)
 {
 	float128 r;
 	float128 sin_r;
@@ -5404,7 +5404,7 @@ static float128 atan_arr[FPATAN_ARR_SIZE] =
 };
 
 /* |x| < 1/4 */
-LOCALFUNC float128 poly_atan(float128 x1)
+static float128 poly_atan(float128 x1)
 {
 /*
 	//                 3     5     7     9     11     13     15     17
@@ -5475,7 +5475,7 @@ LOCALFUNC float128 poly_atan(float128 x1)
 //                  3     5     7     9                 2n+1
 //
 
-LOCALFUNC floatx80 fpatan(floatx80 a, floatx80 b)
+static floatx80 fpatan(floatx80 a, floatx80 b)
 {
 	float128 a128;
 	float128 b128;
@@ -5640,27 +5640,27 @@ approximation_completed:
 
 typedef floatx80 myfpr;
 
-LOCALPROC myfp_FromExtendedFormat(myfpr *r, uint16_t v2, uint32_t v1, uint32_t v0)
+static void myfp_FromExtendedFormat(myfpr *r, uint16_t v2, uint32_t v1, uint32_t v0)
 {
 	r->high = v2;
 	r->low = (((uint64_t)v1) << 32) | (v0 & 0xFFFFFFFF);
 }
 
-LOCALPROC myfp_ToExtendedFormat(myfpr *dd, uint16_t *v2, uint32_t *v1, uint32_t *v0)
+static void myfp_ToExtendedFormat(myfpr *dd, uint16_t *v2, uint32_t *v1, uint32_t *v0)
 {
 	*v0 = ((uint64_t) dd->low) & 0xFFFFFFFF;
 	*v1 = (((uint64_t) dd->low) >> 32) & 0xFFFFFFFF;
 	*v2 = dd->high;
 }
 
-LOCALPROC myfp_FromDoubleFormat(myfpr *r, uint32_t v1, uint32_t v0)
+static void myfp_FromDoubleFormat(myfpr *r, uint32_t v1, uint32_t v0)
 {
 	float64 t = (float64)((((uint64_t)v1) << 32) | (v0 & 0xFFFFFFFF));
 
 	*r = float64_to_floatx80(t);
 }
 
-LOCALPROC myfp_ToDoubleFormat(myfpr *dd, uint32_t *v1, uint32_t *v0)
+static void myfp_ToDoubleFormat(myfpr *dd, uint32_t *v1, uint32_t *v0)
 {
 	float64 t = floatx80_to_float64(*dd);
 
@@ -5668,101 +5668,101 @@ LOCALPROC myfp_ToDoubleFormat(myfpr *dd, uint32_t *v1, uint32_t *v0)
 	*v1 = (((uint64_t) t) >> 32) & 0xFFFFFFFF;
 }
 
-LOCALPROC myfp_FromSingleFormat(myfpr *r, uint32_t x)
+static void myfp_FromSingleFormat(myfpr *r, uint32_t x)
 {
 	*r = float32_to_floatx80(x);
 }
 
-LOCALFUNC uint32_t myfp_ToSingleFormat(myfpr *ff)
+static uint32_t myfp_ToSingleFormat(myfpr *ff)
 {
 	return floatx80_to_float32(*ff);
 }
 
-LOCALPROC myfp_FromLong(myfpr *r, uint32_t x)
+static void myfp_FromLong(myfpr *r, uint32_t x)
 {
 	*r = int32_to_floatx80( x );
 }
 
-LOCALFUNC uint32_t myfp_ToLong(myfpr *x)
+static uint32_t myfp_ToLong(myfpr *x)
 {
 	return floatx80_to_int32( *x );
 }
 
-LOCALFUNC bool myfp_IsNan(myfpr *x)
+static bool myfp_IsNan(myfpr *x)
 {
 	return floatx80_is_nan(*x);
 }
 
-LOCALFUNC bool myfp_IsInf(myfpr *x)
+static bool myfp_IsInf(myfpr *x)
 {
 	return ( ( x->high & 0x7FFF ) == 0x7FFF ) && (0 == ((uint64_t) ( x->low<<1 )));
 }
 
-LOCALFUNC bool myfp_IsZero(myfpr *x)
+static bool myfp_IsZero(myfpr *x)
 {
 	return ( ( x->high & 0x7FFF ) == 0x0000 ) && (0 == ((uint64_t) ( x->low<<1 )));
 }
 
-LOCALFUNC bool myfp_IsNeg(myfpr *x)
+static bool myfp_IsNeg(myfpr *x)
 {
 	return ( ( x->high & 0x8000 ) != 0x0000 );
 }
 
-LOCALPROC myfp_Add(myfpr *r, const myfpr *a, const myfpr *b)
+static void myfp_Add(myfpr *r, const myfpr *a, const myfpr *b)
 {
 	*r = floatx80_add(*a, *b);
 }
 
-LOCALPROC myfp_Sub(myfpr *r, const myfpr *a, const myfpr *b)
+static void myfp_Sub(myfpr *r, const myfpr *a, const myfpr *b)
 {
 	*r = floatx80_sub(*a, *b);
 }
 
-LOCALPROC myfp_Mul(myfpr *r, const myfpr *a, const myfpr *b)
+static void myfp_Mul(myfpr *r, const myfpr *a, const myfpr *b)
 {
 	*r = floatx80_mul(*a, *b);
 }
 
-LOCALPROC myfp_Div(myfpr *r, const myfpr *a, const myfpr *b)
+static void myfp_Div(myfpr *r, const myfpr *a, const myfpr *b)
 {
 	*r = floatx80_div(*a, *b);
 }
 
-LOCALPROC myfp_Rem(myfpr *r, const myfpr *a, const myfpr *b)
+static void myfp_Rem(myfpr *r, const myfpr *a, const myfpr *b)
 {
 	*r = floatx80_rem(*a, *b);
 }
 
-LOCALPROC myfp_Sqrt(myfpr *r, myfpr *x)
+static void myfp_Sqrt(myfpr *r, myfpr *x)
 {
 	*r = floatx80_sqrt(*x);
 }
 
-LOCALPROC myfp_Mod(myfpr *r, myfpr *a, myfpr *b)
+static void myfp_Mod(myfpr *r, myfpr *a, myfpr *b)
 {
 	Bit64u q;
 	*r = floatx80_remainder(*a, *b, &q);
 		/* should save low byte of q */
 }
 
-LOCALPROC myfp_Scale(myfpr *r, myfpr *a, myfpr *b)
+static void myfp_Scale(myfpr *r, myfpr *a, myfpr *b)
 {
 	*r = floatx80_scale(*a, *b);
 }
 
-LOCALPROC myfp_GetMan(myfpr *r, myfpr *x)
+static void myfp_GetMan(myfpr *r, myfpr *x)
 {
 	*r = *x;
 	(void) floatx80_extract(r);
 }
 
-LOCALPROC myfp_GetExp(myfpr *r, myfpr *x)
+static void myfp_GetExp(myfpr *r, myfpr *x)
 {
 	floatx80 t0 = *x;
 	*r = floatx80_extract(&t0);
 }
 
-LOCALPROC myfp_floor(myfpr *r, myfpr *x)
+static void myfp_floor(myfpr *r, myfpr *x)
 {
 	int8_t SaveRoundingMode = float_rounding_mode;
 
@@ -5771,7 +5771,7 @@ LOCALPROC myfp_floor(myfpr *r, myfpr *x)
 	float_rounding_mode = SaveRoundingMode;
 }
 
-LOCALPROC myfp_IntRZ(myfpr *r, myfpr *x)
+static void myfp_IntRZ(myfpr *r, myfpr *x)
 {
 	int8_t SaveRoundingMode = float_rounding_mode;
 
@@ -5780,38 +5780,38 @@ LOCALPROC myfp_IntRZ(myfpr *r, myfpr *x)
 	float_rounding_mode = SaveRoundingMode;
 }
 
-LOCALPROC myfp_Int(myfpr *r, myfpr *x)
+static void myfp_Int(myfpr *r, myfpr *x)
 {
 	*r = floatx80_round_to_int(*x);
 }
 
-LOCALPROC myfp_RoundToSingle(myfpr *r, myfpr *x)
+static void myfp_RoundToSingle(myfpr *r, myfpr *x)
 {
 	float32 t0 = floatx80_to_float32(*x);
 
 	*r = float32_to_floatx80(t0);
 }
 
-LOCALPROC myfp_RoundToDouble(myfpr *r, myfpr *x)
+static void myfp_RoundToDouble(myfpr *r, myfpr *x)
 {
 	float64 t0 = floatx80_to_float64(*x);
 
 	*r = float64_to_floatx80(t0);
 }
 
-LOCALPROC myfp_Abs(myfpr *r, myfpr *x)
+static void myfp_Abs(myfpr *r, myfpr *x)
 {
 	*r = *x;
 	r->high &= 0x7FFF;
 }
 
-LOCALPROC myfp_Neg(myfpr *r, myfpr *x)
+static void myfp_Neg(myfpr *r, myfpr *x)
 {
 	*r = *x;
 	r->high ^= 0x8000;
 }
 
-LOCALPROC myfp_TwoToX(myfpr *r, myfpr *x)
+static void myfp_TwoToX(myfpr *r, myfpr *x)
 {
 	floatx80 t2;
 	floatx80 t3;
@@ -5824,7 +5824,7 @@ LOCALPROC myfp_TwoToX(myfpr *r, myfpr *x)
 	*r = floatx80_scale(t5, t2);
 }
 
-LOCALPROC myfp_TenToX(myfpr *r, myfpr *x)
+static void myfp_TenToX(myfpr *r, myfpr *x)
 {
 	floatx80 t1;
 	const floatx80 t = /* 1.0 / log(2.0) */
@@ -5835,7 +5835,7 @@ LOCALPROC myfp_TenToX(myfpr *r, myfpr *x)
 	myfp_TwoToX(r, &t1);
 }
 
-LOCALPROC myfp_EToX(myfpr *r, myfpr *x)
+static void myfp_EToX(myfpr *r, myfpr *x)
 {
 	floatx80 t1;
 	const floatx80 t = /* 1.0 / log(2.0) */
@@ -5844,7 +5844,7 @@ LOCALPROC myfp_EToX(myfpr *r, myfpr *x)
 	myfp_TwoToX(r, &t1);
 }
 
-LOCALPROC myfp_EToXM1(myfpr *r, myfpr *x)
+static void myfp_EToXM1(myfpr *r, myfpr *x)
 {
 	floatx80 t1;
 	floatx80 t2;
@@ -5867,54 +5867,54 @@ LOCALPROC myfp_EToXM1(myfpr *r, myfpr *x)
 	}
 }
 
-LOCALPROC myfp_Log2(myfpr *r, myfpr *x)
+static void myfp_Log2(myfpr *r, myfpr *x)
 {
 	*r = fyl2x(*x, floatx80_one);
 }
 
-LOCALPROC myfp_LogN(myfpr *r, myfpr *x)
+static void myfp_LogN(myfpr *r, myfpr *x)
 {
 	const floatx80 t = /* log(2.0) */
 		packFloatx80m(0, 0x3ffe, LIT64(0xb17217f7d1cf79ac));
 	*r = fyl2x(*x, t);
 }
 
-LOCALPROC myfp_Log10(myfpr *r, myfpr *x)
+static void myfp_Log10(myfpr *r, myfpr *x)
 {
 	const floatx80 t = /* log10(2.0) = ln(2) / ln(10), unknown accuracy */
 		packFloatx80m(0, 0x3ffd, LIT64(0x9a209a84fbcff798));
 	*r = fyl2x(*x, t);
 }
 
-LOCALPROC myfp_LogNP1(myfpr *r, myfpr *x)
+static void myfp_LogNP1(myfpr *r, myfpr *x)
 {
 	const floatx80 t = /* log(2.0) */
 		packFloatx80m(0, 0x3ffe, LIT64(0xb17217f7d1cf79ac));
 	*r = fyl2xp1(*x, t);
 }
 
-LOCALPROC myfp_Sin(myfpr *r, myfpr *x)
+static void myfp_Sin(myfpr *r, myfpr *x)
 {
 	(void) fsincos(*x, r, 0);
 }
 
-LOCALPROC myfp_Cos(myfpr *r, myfpr *x)
+static void myfp_Cos(myfpr *r, myfpr *x)
 {
 	(void) fsincos(*x, 0, r);
 }
 
-LOCALPROC myfp_Tan(myfpr *r, myfpr *x)
+static void myfp_Tan(myfpr *r, myfpr *x)
 {
 	*r = *x;
 	(void) ftan(r);
 }
 
-LOCALPROC myfp_ATan(myfpr *r, myfpr *x)
+static void myfp_ATan(myfpr *r, myfpr *x)
 {
 	*r = fpatan(floatx80_one, *x);
 }
 
-LOCALPROC myfp_ASin(myfpr *r, myfpr *x)
+static void myfp_ASin(myfpr *r, myfpr *x)
 {
 	floatx80 x2 = floatx80_mul(*x, *x);
 	floatx80 mx2 = floatx80_sub(floatx80_one, x2);
@@ -5923,7 +5923,7 @@ LOCALPROC myfp_ASin(myfpr *r, myfpr *x)
 	*r = fpatan(cx, *x);
 }
 
-LOCALPROC myfp_ACos(myfpr *r, myfpr *x)
+static void myfp_ACos(myfpr *r, myfpr *x)
 {
 	floatx80 x2 = floatx80_mul(*x, *x);
 	floatx80 mx2 = floatx80_sub(floatx80_one, x2);
@@ -5941,7 +5941,7 @@ static const floatx80 floatx80_Two =
 static const floatx80 floatx80_Ten =
 	packFloatx80m(0, 0x4002, LIT64(0xa000000000000000));
 
-LOCALPROC myfp_Sinh(myfpr *r, myfpr *x)
+static void myfp_Sinh(myfpr *r, myfpr *x)
 {
 	myfpr ex;
 	myfpr nx;
@@ -5955,7 +5955,7 @@ LOCALPROC myfp_Sinh(myfpr *r, myfpr *x)
 	myfp_Div(r, &t1, &floatx80_Two);
 }
 
-LOCALPROC myfp_Cosh(myfpr *r, myfpr *x)
+static void myfp_Cosh(myfpr *r, myfpr *x)
 {
 	myfpr ex;
 	myfpr nx;
@@ -5969,7 +5969,7 @@ LOCALPROC myfp_Cosh(myfpr *r, myfpr *x)
 	myfp_Div(r, &t1, &floatx80_Two);
 }
 
-LOCALPROC myfp_Tanh(myfpr *r, myfpr *x)
+static void myfp_Tanh(myfpr *r, myfpr *x)
 {
 	myfpr x2;
 	myfpr ex2;
@@ -5983,7 +5983,7 @@ LOCALPROC myfp_Tanh(myfpr *r, myfpr *x)
 	myfp_Div(r, &ex2m1, &ex2p1);
 }
 
-LOCALPROC myfp_ATanh(myfpr *r, myfpr *x)
+static void myfp_ATanh(myfpr *r, myfpr *x)
 {
 	myfpr onepx;
 	myfpr onemx;
@@ -5997,12 +5997,12 @@ LOCALPROC myfp_ATanh(myfpr *r, myfpr *x)
 	myfp_Div(r, &ldv, &floatx80_Two);
 }
 
-LOCALPROC myfp_SinCos(myfpr *r_sin, myfpr *r_cos, myfpr *source)
+static void myfp_SinCos(myfpr *r_sin, myfpr *r_cos, myfpr *source)
 {
 	(void) fsincos(*source, r_sin, r_cos);
 }
 
-LOCALFUNC bool myfp_getCR(myfpr *r, uint16_t opmode)
+static bool myfp_getCR(myfpr *r, uint16_t opmode)
 {
 	switch (opmode) {
 		case 0x00:
@@ -6151,7 +6151,7 @@ LOCALFUNC bool myfp_getCR(myfpr *r, uint16_t opmode)
 
 /* Floating point control register */
 
-LOCALPROC myfp_SetFPCR(uint32_t v)
+static void myfp_SetFPCR(uint32_t v)
 {
 	switch ((v >> 4) & 0x03) {
 		case 0:
@@ -6189,7 +6189,7 @@ LOCALPROC myfp_SetFPCR(uint32_t v)
 	}
 }
 
-LOCALFUNC uint32_t myfp_GetFPCR(void)
+static uint32_t myfp_GetFPCR(void)
 {
 	uint32_t v = 0;
 
@@ -6222,33 +6222,33 @@ LOCALFUNC uint32_t myfp_GetFPCR(void)
 	return v;
 }
 
-LOCALVAR struct myfp_envStruct
+static struct myfp_envStruct
 {
 	uint32_t FPSR;  /* Floating point status register */
 } myfp_env;
 
-LOCALPROC myfp_SetFPSR(uint32_t v)
+static void myfp_SetFPSR(uint32_t v)
 {
 	myfp_env.FPSR = v;
 }
 
-LOCALFUNC uint32_t myfp_GetFPSR(void)
+static uint32_t myfp_GetFPSR(void)
 {
 	return myfp_env.FPSR;
 }
 
-LOCALFUNC uint8_t myfp_GetConditionCodeByte(void)
+static uint8_t myfp_GetConditionCodeByte(void)
 {
 	return (myfp_env.FPSR >> 24) & 0x0F;
 }
 
-LOCALPROC myfp_SetConditionCodeByte(uint8_t v)
+static void myfp_SetConditionCodeByte(uint8_t v)
 {
 	myfp_env.FPSR = ((myfp_env.FPSR & 0x00FFFFFF)
 		| (v << 24));
 }
 
-LOCALPROC myfp_SetConditionCodeByteFromResult(myfpr *result)
+static void myfp_SetConditionCodeByteFromResult(myfpr *result)
 {
 	/* Set condition codes here based on result */
 

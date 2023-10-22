@@ -86,7 +86,7 @@ unsigned char * HMAC_BITS[] = {
 #define HappyMacBase 0x1948 - 0x18
 #endif
 
-LOCALPROC PatchHappyMac(AHM_t ahm)
+static void PatchHappyMac(AHM_t ahm)
 {
 	uint8_t *dst = ROM + HappyMacBase + 0x18;
 	uint8_t *src = HMAC_BITS[ahm];

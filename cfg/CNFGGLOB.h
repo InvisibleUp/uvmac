@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 
-#define MayInline inline
 #define SmallGlobals 0
 #define cIncludeUnused 0
 #define UnusedParam(p) (void) p

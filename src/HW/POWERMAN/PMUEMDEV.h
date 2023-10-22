@@ -20,5 +20,5 @@
 #define PMUEMDEV_H
 #endif
 
-EXPORTPROC PmuToReady_ChangeNtfy(void);
-EXPORTPROC PMU_DoTask(void);
+extern void PmuToReady_ChangeNtfy(void);
+extern void PMU_DoTask(void);

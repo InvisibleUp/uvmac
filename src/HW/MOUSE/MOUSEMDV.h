@@ -20,5 +20,5 @@
 #define MOUSEMDV_H
 #endif
 
-EXPORTPROC Mouse_Update(void);
-EXPORTPROC Mouse_EndTickNotify(void);
+extern void Mouse_Update(void);
+extern void Mouse_EndTickNotify(void);

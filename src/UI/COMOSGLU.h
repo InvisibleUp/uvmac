@@ -27,49 +27,49 @@
 #include "MYOSGLUE.h"
 #define EnableRecreateW 1
 
-extern GLOBALVAR uint32_t vSonyWritableMask;
-extern GLOBALVAR uint32_t vSonyInsertedMask;
+extern uint32_t vSonyWritableMask;
+extern uint32_t vSonyInsertedMask;
 
 #if IncludeSonyRawMode
-extern GLOBALVAR bool vSonyRawMode;
+extern bool vSonyRawMode;
 #endif
 
 #if IncludeSonyNew
-extern GLOBALVAR bool vSonyNewDiskWanted;
-extern GLOBALVAR uint32_t vSonyNewDiskSize;
+extern bool vSonyNewDiskWanted;
+extern uint32_t vSonyNewDiskSize;
 #endif
 
 #if IncludeSonyNameNew
-extern GLOBALVAR tPbuf vSonyNewDiskName;
+extern tPbuf vSonyNewDiskName;
 #endif
 
-extern GLOBALVAR uint32_t CurMacDateInSeconds;
+extern uint32_t CurMacDateInSeconds;
 #if AutoLocation
-extern GLOBALVAR uint32_t CurMacLatitude;
-extern GLOBALVAR uint32_t CurMacLongitude;
+extern uint32_t CurMacLatitude;
+extern uint32_t CurMacLongitude;
 #endif
 #if AutoTimeZone
-extern GLOBALVAR uint32_t CurMacDelta;
+extern uint32_t CurMacDelta;
 #endif
 
-extern GLOBALVAR bool UseColorMode;
-extern GLOBALVAR bool ColorModeWorks;
-extern GLOBALVAR bool ColorMappingChanged;
+extern bool UseColorMode;
+extern bool ColorModeWorks;
+extern bool ColorMappingChanged;
 
-extern GLOBALVAR uint16_t CLUT_reds[CLUT_size];
-extern GLOBALVAR uint16_t CLUT_greens[CLUT_size];
-extern GLOBALVAR uint16_t CLUT_blues[CLUT_size];
+extern uint16_t CLUT_reds[CLUT_size];
+extern uint16_t CLUT_greens[CLUT_size];
+extern uint16_t CLUT_blues[CLUT_size];
 
-extern GLOBALVAR bool RequestMacOff;
-extern GLOBALVAR bool ForceMacOff;
-extern GLOBALVAR bool WantMacInterrupt;
-extern GLOBALVAR bool WantMacReset;
-extern GLOBALVAR uint8_t SpeedValue;
-extern GLOBALVAR uint16_t CurMouseV;
-extern GLOBALVAR uint16_t CurMouseH;
+extern bool RequestMacOff;
+extern bool ForceMacOff;
+extern bool WantMacInterrupt;
+extern bool WantMacReset;
+extern uint8_t SpeedValue;
+extern uint16_t CurMouseV;
+extern uint16_t CurMouseH;
 
-extern GLOBALVAR uint32_t QuietTime;
-extern GLOBALVAR uint32_t QuietSubTicks;
+extern uint32_t QuietTime;
+extern uint32_t QuietSubTicks;
 
 #ifndef GrabKeysFullScreen
 #define GrabKeysFullScreen 1
@@ -80,24 +80,24 @@ extern GLOBALVAR uint32_t QuietSubTicks;
 #endif
 
 #if IncludePbufs
-GLOBALVAR uint32_t PbufAllocatedMask;
-GLOBALVAR uint32_t PbufSize[NumPbufs];
+ uint32_t PbufAllocatedMask;
+ uint32_t PbufSize[NumPbufs];
 #define PbufIsAllocated(i) ((PbufAllocatedMask & ((uint32_t)1 << (i))) != 0)
 
-GLOBALFUNC bool FirstFreePbuf(tPbuf *r);
-GLOBALPROC PbufNewNotify(tPbuf Pbuf_No, uint32_t count);
-GLOBALPROC PbufDisposeNotify(tPbuf Pbuf_No);
+ bool FirstFreePbuf(tPbuf *r);
+void PbufNewNotify(tPbuf Pbuf_No, uint32_t count);
+void PbufDisposeNotify(tPbuf Pbuf_No);
 GLOBALOSGLUFUNC MacErr_t CheckPbuf(tPbuf Pbuf_No);
 GLOBALOSGLUFUNC MacErr_t PbufGetSize(tPbuf Pbuf_No, uint32_t *Count);
 #endif
 
-GLOBALFUNC bool FirstFreeDisk(tDrive *Drive_No);
+ bool FirstFreeDisk(tDrive *Drive_No);
 GLOBALOSGLUFUNC bool AnyDiskInserted(void);
 GLOBALOSGLUPROC DiskRevokeWritable(tDrive Drive_No);
-GLOBALPROC DiskInsertNotify(tDrive Drive_No, bool locked);
-GLOBALPROC DiskEjectedNotify(tDrive Drive_No);
+void DiskInsertNotify(tDrive Drive_No, bool locked);
+void DiskEjectedNotify(tDrive Drive_No);
 
-extern GLOBALVAR uint8_t * screencomparebuff;
+extern uint8_t * screencomparebuff;
 
 /*
 	block type - for operating on multiple uint8_t elements
@@ -134,27 +134,27 @@ extern GLOBALVAR uint8_t * screencomparebuff;
 #define WantColorTransValid 0
 #endif
 
-extern GLOBALVAR bool EmVideoDisable;
-extern GLOBALVAR int8_t EmLagTime;
+extern bool EmVideoDisable;
+extern int8_t EmLagTime;
 // The time slice we are currently dealing with,
 // in the same units as TrueEmulatedTime.
-extern GLOBALVAR uint32_t OnTrueTime;
+extern uint32_t OnTrueTime;
 
-GLOBALPROC ScreenClearChanges(void);
-GLOBALPROC ScreenChangedAll(void);
+void ScreenClearChanges(void);
+void ScreenChangedAll(void);
 
-GLOBALVAR int16_t ScreenChangedTop;
-GLOBALVAR int16_t ScreenChangedLeft;
-GLOBALVAR int16_t ScreenChangedBottom;
-GLOBALVAR int16_t ScreenChangedRight;
+ int16_t ScreenChangedTop;
+ int16_t ScreenChangedLeft;
+ int16_t ScreenChangedBottom;
+ int16_t ScreenChangedRight;
 
 GLOBALOSGLUPROC Screen_OutputFrame(uint8_t * screencurrentbuff);
 
 #if MayFullScreen
-extern GLOBALVAR uint16_t ViewHSize;
-extern GLOBALVAR uint16_t ViewVSize;
-extern GLOBALVAR uint16_t ViewHStart;
-extern GLOBALVAR uint16_t ViewVStart;
+extern uint16_t ViewHSize;
+extern uint16_t ViewVSize;
+extern uint16_t ViewHStart;
+extern uint16_t ViewVStart;
 #endif
 
 #ifndef WantAutoScrollBorder
@@ -169,8 +169,8 @@ extern GLOBALVAR uint16_t ViewVStart;
 #define CeilPow2Mult(i, p) FloorPow2Mult((i) + Pow2Mask(p), (p))
 	/* warning - CeilPow2Mult evaluates p twice */
 
-extern GLOBALVAR uimr ReserveAllocOffset;
-extern GLOBALVAR uint8_t * ReserveAllocBigBlock;
+extern uimr ReserveAllocOffset;
+extern uint8_t * ReserveAllocBigBlock;
 GLOBALOSGLUPROC ReserveAllocOneBlock(uint8_t * *p, uimr n,
 	uint8_t align, bool FillOnes);
 
@@ -197,7 +197,7 @@ GLOBALOSGLUPROC dbglog_writelnNum(char *s, simr v);
 
 GLOBALOSGLUFUNC EvtQEl * EvtQOutP(void);
 GLOBALOSGLUPROC EvtQOutDone(void);
-extern GLOBALVAR bool EvtQNeedRecover;
+extern bool EvtQNeedRecover;
 
 #define kKeepMaskControl  (1 << 0)
 #define kKeepMaskCapsLock (1 << 1)
@@ -206,24 +206,24 @@ extern GLOBALVAR bool EvtQNeedRecover;
 #define kKeepMaskShift    (1 << 4)
 
 
-GLOBALPROC Keyboard_UpdateKeyMap(uint8_t key, bool down);
-GLOBALPROC MouseButtonSet(bool down);
-GLOBALPROC MousePositionSet(uint16_t h, uint16_t v);
-GLOBALPROC MousePositionNotify(int h, int v);
-GLOBALPROC InitKeyCodes(void);
-GLOBALPROC DisconnectKeyCodes(uint32_t KeepMask);
-GLOBALPROC EvtQTryRecoverFromFull(void);
+void Keyboard_UpdateKeyMap(uint8_t key, bool down);
+void MouseButtonSet(bool down);
+void MousePositionSet(uint16_t h, uint16_t v);
+void MousePositionNotify(int h, int v);
+void InitKeyCodes(void);
+void DisconnectKeyCodes(uint32_t KeepMask);
+void EvtQTryRecoverFromFull(void);
 
 /* MacMsg */
 
-extern GLOBALVAR char *SavedBriefMsg;
-extern GLOBALVAR char *SavedLongMsg;
+extern char *SavedBriefMsg;
+extern char *SavedLongMsg;
 #if WantAbnormalReports
-extern GLOBALVAR uint16_t SavedIDMsg;
+extern uint16_t SavedIDMsg;
 #endif
-extern GLOBALVAR bool SavedFatalMsg;
+extern bool SavedFatalMsg;
 
-GLOBALPROC MacMsg(char *briefMsg, char *longMsg, bool fatal);
+void MacMsg(char *briefMsg, char *longMsg, bool fatal);
 
 #if WantAbnormalReports
 GLOBALOSGLUPROC WarnMsgAbnormalID(uint16_t id);

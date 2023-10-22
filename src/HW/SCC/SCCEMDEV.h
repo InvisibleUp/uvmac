@@ -17,15 +17,15 @@
 #ifndef SCCEMDEV_H
 #define SCCEMDEV_H
 
-EXPORTPROC SCC_Reset(void);
+extern void SCC_Reset(void);
 
-EXPORTFUNC uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
+extern uint32_t SCC_Access(uint32_t Data, bool WriteMem, CPTR addr);
 
-EXPORTFUNC bool SCC_InterruptsEnabled(void);
+extern bool SCC_InterruptsEnabled(void);
 
 #if EmLocalTalk
-EXPORTPROC LocalTalkTick(void);
-EXPORTFUNC int InitLocalTalk(void);
+extern void LocalTalkTick(void);
+extern int InitLocalTalk(void);
 #endif
 
 #endif

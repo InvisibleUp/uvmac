@@ -16,12 +16,12 @@
 #define CanGetAppPath 1
 #endif
 
-LOCALVAR char *d_arg = NULL;
-LOCALVAR char *n_arg = NULL;
+static char *d_arg = NULL;
+static char *n_arg = NULL;
 
 #if CanGetAppPath
-LOCALVAR char *app_parent = NULL;
-LOCALVAR char *pref_dir = NULL;
+static char *app_parent = NULL;
+static char *pref_dir = NULL;
 #endif
 
 #ifdef _WIN32

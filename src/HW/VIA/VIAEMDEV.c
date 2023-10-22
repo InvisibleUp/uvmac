@@ -37,71 +37,71 @@
 */
 
 #ifdef VIA1_iA0_ChangeNtfy
-IMPORTPROC VIA1_iA0_ChangeNtfy(void);
+extern void VIA1_iA0_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA1_ChangeNtfy
-IMPORTPROC VIA1_iA1_ChangeNtfy(void);
+extern void VIA1_iA1_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA2_ChangeNtfy
-IMPORTPROC VIA1_iA2_ChangeNtfy(void);
+extern void VIA1_iA2_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA3_ChangeNtfy
-IMPORTPROC VIA1_iA3_ChangeNtfy(void);
+extern void VIA1_iA3_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA4_ChangeNtfy
-IMPORTPROC VIA1_iA4_ChangeNtfy(void);
+extern void VIA1_iA4_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA5_ChangeNtfy
-IMPORTPROC VIA1_iA5_ChangeNtfy(void);
+extern void VIA1_iA5_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA6_ChangeNtfy
-IMPORTPROC VIA1_iA6_ChangeNtfy(void);
+extern void VIA1_iA6_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iA7_ChangeNtfy
-IMPORTPROC VIA1_iA7_ChangeNtfy(void);
+extern void VIA1_iA7_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB0_ChangeNtfy
-IMPORTPROC VIA1_iB0_ChangeNtfy(void);
+extern void VIA1_iB0_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB1_ChangeNtfy
-IMPORTPROC VIA1_iB1_ChangeNtfy(void);
+extern void VIA1_iB1_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB2_ChangeNtfy
-IMPORTPROC VIA1_iB2_ChangeNtfy(void);
+extern void VIA1_iB2_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB3_ChangeNtfy
-IMPORTPROC VIA1_iB3_ChangeNtfy(void);
+extern void VIA1_iB3_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB4_ChangeNtfy
-IMPORTPROC VIA1_iB4_ChangeNtfy(void);
+extern void VIA1_iB4_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB5_ChangeNtfy
-IMPORTPROC VIA1_iB5_ChangeNtfy(void);
+extern void VIA1_iB5_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB6_ChangeNtfy
-IMPORTPROC VIA1_iB6_ChangeNtfy(void);
+extern void VIA1_iB6_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iB7_ChangeNtfy
-IMPORTPROC VIA1_iB7_ChangeNtfy(void);
+extern void VIA1_iB7_ChangeNtfy(void);
 #endif
 
 #ifdef VIA1_iCB2_ChangeNtfy
-IMPORTPROC VIA1_iCB2_ChangeNtfy(void);
+extern void VIA1_iCB2_ChangeNtfy(void);
 #endif
 
 #define Ui3rPowOf2(p) (1 << (p))
@@ -225,7 +225,7 @@ typedef struct {
 	uint8_t ORA;    /* Buffer A */
 } VIA1_Ty;
 
-LOCALVAR VIA1_Ty VIA1_D;
+static VIA1_Ty VIA1_D;
 
 #define kIntCA2 0 /* One_Second */
 #define kIntCA1 1 /* Vertical_Blanking */
@@ -243,7 +243,7 @@ LOCALVAR VIA1_Ty VIA1_D;
 	about their status
 */
 
-LOCALFUNC uint8_t VIA1_Get_ORA(uint8_t Selection)
+static uint8_t VIA1_Get_ORA(uint8_t Selection)
 {
 	uint8_t Value = (~ VIA1_ORA_CanIn) & Selection & VIA1_ORA_FloatVal;
 
@@ -304,7 +304,7 @@ LOCALFUNC uint8_t VIA1_Get_ORA(uint8_t Selection)
 	about their status
 */
 
-LOCALFUNC uint8_t VIA1_Get_ORB(uint8_t Selection)
+static uint8_t VIA1_Get_ORB(uint8_t Selection)
 {
 	uint8_t Value = (~ VIA1_ORB_CanIn) & Selection & VIA1_ORB_FloatVal;
 
@@ -363,7 +363,7 @@ LOCALFUNC uint8_t VIA1_Get_ORB(uint8_t Selection)
 	(Ui3rTestBit(Selection, p) && \
 	((v = (Data >> p) & 1) != x))
 
-LOCALPROC VIA1_Put_ORA(uint8_t Selection, uint8_t Data)
+static void VIA1_Put_ORA(uint8_t Selection, uint8_t Data)
 {
 #if 0 != VIA1_ORA_CanOut
 	uint8_t v;
@@ -442,7 +442,7 @@ LOCALPROC VIA1_Put_ORA(uint8_t Selection, uint8_t Data)
 #endif
 }
 
-LOCALPROC VIA1_Put_ORB(uint8_t Selection, uint8_t Data)
+static void VIA1_Put_ORB(uint8_t Selection, uint8_t Data)
 {
 #if 0 != VIA1_ORB_CanOut
 	uint8_t v;
@@ -521,7 +521,7 @@ LOCALPROC VIA1_Put_ORB(uint8_t Selection, uint8_t Data)
 #endif
 }
 
-LOCALPROC VIA1_SetDDR_A(uint8_t Data)
+static void VIA1_SetDDR_A(uint8_t Data)
 {
 	uint8_t floatbits = VIA1_D.DDR_A & ~ Data;
 	uint8_t unfloatbits = Data & ~ VIA1_D.DDR_A;
@@ -539,7 +539,7 @@ LOCALPROC VIA1_SetDDR_A(uint8_t Data)
 	}
 }
 
-LOCALPROC VIA1_SetDDR_B(uint8_t Data)
+static void VIA1_SetDDR_B(uint8_t Data)
 {
 	uint8_t floatbits = VIA1_D.DDR_B & ~ Data;
 	uint8_t unfloatbits = Data & ~ VIA1_D.DDR_B;
@@ -558,7 +558,7 @@ LOCALPROC VIA1_SetDDR_B(uint8_t Data)
 }
 
 
-LOCALPROC VIA1_CheckInterruptFlag(void)
+static void VIA1_CheckInterruptFlag(void)
 {
 	uint8_t NewInterruptRequest =
 		((VIA1_D.IFR & VIA1_D.IER) != 0) ? 1 : 0;
@@ -572,12 +572,12 @@ LOCALPROC VIA1_CheckInterruptFlag(void)
 }
 
 
-LOCALVAR uint8_t VIA1_T1_Active = 0;
-LOCALVAR uint8_t VIA1_T2_Active = 0;
+static uint8_t VIA1_T1_Active = 0;
+static uint8_t VIA1_T2_Active = 0;
 
-LOCALVAR bool VIA1_T1IntReady = false;
+static bool VIA1_T1IntReady = false;
 
-LOCALPROC VIA1_Clear(void)
+static void VIA1_Clear(void)
 {
 	VIA1_D.ORA   = 0; VIA1_D.DDR_A = 0;
 	VIA1_D.ORB   = 0; VIA1_D.DDR_B = 0;
@@ -598,7 +598,7 @@ bool VIA1_Zap(void)
 	return true;
 }
 
-GLOBALPROC VIA1_Reset(void)
+void VIA1_Reset(void)
 {
 	VIA1_SetDDR_A(0);
 	VIA1_SetDDR_B(0);
@@ -608,13 +608,13 @@ GLOBALPROC VIA1_Reset(void)
 	VIA1_CheckInterruptFlag();
 }
 
-LOCALPROC VIA1_SetInterruptFlag(uint8_t VIA_Int)
+static void VIA1_SetInterruptFlag(uint8_t VIA_Int)
 {
 	VIA1_D.IFR |= ((uint8_t)1 << VIA_Int);
 	VIA1_CheckInterruptFlag();
 }
 
-LOCALPROC VIA1_ClrInterruptFlag(uint8_t VIA_Int)
+static void VIA1_ClrInterruptFlag(uint8_t VIA_Int)
 {
 	VIA1_D.IFR &= ~ ((uint8_t)1 << VIA_Int);
 	VIA1_CheckInterruptFlag();
@@ -624,7 +624,7 @@ LOCALPROC VIA1_ClrInterruptFlag(uint8_t VIA_Int)
 #include <stdio.h>
 #endif
 
-GLOBALPROC VIA1_ShiftInData(uint8_t v)
+void VIA1_ShiftInData(uint8_t v)
 {
 	/*
 		external hardware generates 8 pulses on CB1,
@@ -651,7 +651,7 @@ GLOBALPROC VIA1_ShiftInData(uint8_t v)
 	}
 }
 
-GLOBALFUNC uint8_t VIA1_ShiftOutData(void)
+ uint8_t VIA1_ShiftOutData(void)
 {
 	/*
 		external hardware generates 8 pulses on CB1,
@@ -671,10 +671,10 @@ GLOBALFUNC uint8_t VIA1_ShiftOutData(void)
 #define CyclesPerViaTime (10 * ClockMult)
 #define CyclesScaledPerViaTime (kCycleScale * CyclesPerViaTime)
 
-LOCALVAR bool VIA1_T1Running = true;
-LOCALVAR iCountt VIA1_T1LastTime = 0;
+static bool VIA1_T1Running = true;
+static iCountt VIA1_T1LastTime = 0;
 
-GLOBALPROC VIA1_DoTimer1Check(void)
+void VIA1_DoTimer1Check(void)
 {
 	if (VIA1_T1Running) {
 		iCountt NewTime = GetCuriCount();
@@ -746,7 +746,7 @@ GLOBALPROC VIA1_DoTimer1Check(void)
 	}
 }
 
-LOCALPROC CheckT1IntReady(void)
+static void CheckT1IntReady(void)
 {
 	if (VIA1_T1Running) {
 		bool NewT1IntReady = false;
@@ -766,7 +766,7 @@ LOCALPROC CheckT1IntReady(void)
 	}
 }
 
-GLOBALFUNC uint16_t VIA1_GetT1InvertTime(void)
+ uint16_t VIA1_GetT1InvertTime(void)
 {
 	uint16_t v;
 
@@ -778,11 +778,11 @@ GLOBALFUNC uint16_t VIA1_GetT1InvertTime(void)
 	return v;
 }
 
-LOCALVAR bool VIA1_T2Running = true;
-LOCALVAR bool VIA1_T2C_ShortTime = false;
-LOCALVAR iCountt VIA1_T2LastTime = 0;
+static bool VIA1_T2Running = true;
+static bool VIA1_T2C_ShortTime = false;
+static iCountt VIA1_T2LastTime = 0;
 
-GLOBALPROC VIA1_DoTimer2Check(void)
+void VIA1_DoTimer2Check(void)
 {
 	if (VIA1_T2Running) {
 		iCountt NewTime = GetCuriCount();
@@ -838,7 +838,7 @@ GLOBALPROC VIA1_DoTimer2Check(void)
 #define kIER    0x0E
 #define kORA    0x0F
 
-GLOBALFUNC uint32_t VIA1_Access(uint32_t Data, bool WriteMem, CPTR addr)
+ uint32_t VIA1_Access(uint32_t Data, bool WriteMem, CPTR addr)
 {
 	switch (addr) {
 		case kORB   :
@@ -1168,7 +1168,7 @@ GLOBALFUNC uint32_t VIA1_Access(uint32_t Data, bool WriteMem, CPTR addr)
 	return Data;
 }
 
-GLOBALPROC VIA1_ExtraTimeBegin(void)
+void VIA1_ExtraTimeBegin(void)
 {
 	if (VIA1_T1Running) {
 		VIA1_DoTimer1Check(); /* run up to this moment */
@@ -1180,7 +1180,7 @@ GLOBALPROC VIA1_ExtraTimeBegin(void)
 	}
 }
 
-GLOBALPROC VIA1_ExtraTimeEnd(void)
+void VIA1_ExtraTimeEnd(void)
 {
 	if (! VIA1_T1Running) {
 		VIA1_T1Running = true;
@@ -1197,28 +1197,28 @@ GLOBALPROC VIA1_ExtraTimeEnd(void)
 /* VIA Interrupt Interface */
 
 #ifdef VIA1_iCA1_PulseNtfy
-GLOBALPROC VIA1_iCA1_PulseNtfy(void)
+void VIA1_iCA1_PulseNtfy(void)
 {
 	VIA1_SetInterruptFlag(kIntCA1);
 }
 #endif
 
 #ifdef VIA1_iCA2_PulseNtfy
-GLOBALPROC VIA1_iCA2_PulseNtfy(void)
+void VIA1_iCA2_PulseNtfy(void)
 {
 	VIA1_SetInterruptFlag(kIntCA2);
 }
 #endif
 
 #ifdef VIA1_iCB1_PulseNtfy
-GLOBALPROC VIA1_iCB1_PulseNtfy(void)
+void VIA1_iCB1_PulseNtfy(void)
 {
 	VIA1_SetInterruptFlag(kIntCB1);
 }
 #endif
 
 #ifdef VIA1_iCB2_PulseNtfy
-GLOBALPROC VIA1_iCB2_PulseNtfy(void)
+void VIA1_iCB2_PulseNtfy(void)
 {
 	VIA1_SetInterruptFlag(kIntCB2);
 }

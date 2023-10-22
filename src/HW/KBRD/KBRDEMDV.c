@@ -39,8 +39,8 @@
 	ReportAbnormalID unused 0x0B03 - 0x0BFF
 */
 
-IMPORTPROC KYBD_ShiftOutData(uint8_t v);
-IMPORTFUNC uint8_t KYBD_ShiftInData(void);
+extern void KYBD_ShiftOutData(uint8_t v);
+extern uint8_t KYBD_ShiftInData(void);
 
 enum {
 	kKybdStateIdle,
@@ -51,12 +51,12 @@ enum {
 	kKybdStates
 };
 
-LOCALVAR int KybdState = kKybdStateIdle;
+static int KybdState = kKybdStateIdle;
 
-LOCALVAR bool HaveKeyBoardResult = false;
-LOCALVAR uint8_t KeyBoardResult;
+static bool HaveKeyBoardResult = false;
+static uint8_t KeyBoardResult;
 
-LOCALPROC GotKeyBoardData(uint8_t v)
+static void GotKeyBoardData(uint8_t v)
 {
 	if (KybdState != kKybdStateIdle) {
 		HaveKeyBoardResult = true;
@@ -67,9 +67,9 @@ LOCALPROC GotKeyBoardData(uint8_t v)
 	}
 }
 
-LOCALVAR uint8_t InstantCommandData = 0x7B;
+static uint8_t InstantCommandData = 0x7B;
 
-LOCALFUNC bool AttemptToFinishInquiry(void)
+static bool AttemptToFinishInquiry(void)
 {
 	int i;
 	bool KeyDown;
@@ -103,9 +103,9 @@ LOCALFUNC bool AttemptToFinishInquiry(void)
 		to keep connection.
 	*/
 
-LOCALVAR int InquiryCommandTimer = 0;
+static int InquiryCommandTimer = 0;
 
-GLOBALPROC DoKybd_ReceiveCommand(void)
+void DoKybd_ReceiveCommand(void)
 {
 	if (KybdState != kKybdStateRecievingCommand) {
 		ReportAbnormalID(0x0B01,
@@ -147,7 +147,7 @@ GLOBALPROC DoKybd_ReceiveCommand(void)
 	}
 }
 
-GLOBALPROC DoKybd_ReceiveEndCommand(void)
+void DoKybd_ReceiveEndCommand(void)
 {
 	if (KybdState != kKybdStateRecievingEndCommand) {
 		ReportAbnormalID(0x0B02,
@@ -168,7 +168,7 @@ GLOBALPROC DoKybd_ReceiveEndCommand(void)
 	}
 }
 
-GLOBALPROC Kybd_DataLineChngNtfy(void)
+void Kybd_DataLineChngNtfy(void)
 {
 	switch (KybdState) {
 		case kKybdStateIdle:
@@ -199,7 +199,7 @@ GLOBALPROC Kybd_DataLineChngNtfy(void)
 	}
 }
 
-GLOBALPROC KeyBoard_Update(void)
+void KeyBoard_Update(void)
 {
 	if (InquiryCommandTimer != 0) {
 		if (AttemptToFinishInquiry()) {

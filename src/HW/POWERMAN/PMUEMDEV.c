@@ -44,27 +44,27 @@ enum {
 };
 
 #define PMU_BuffSz 8
-LOCALVAR uint8_t PMU_BuffA[PMU_BuffSz];
-LOCALVAR uint8_t * PMU_p;
-LOCALVAR uint8_t PMU_rem;
-LOCALVAR uint8_t PMU_i;
+static uint8_t PMU_BuffA[PMU_BuffSz];
+static uint8_t * PMU_p;
+static uint8_t PMU_rem;
+static uint8_t PMU_i;
 
-LOCALVAR int PMUState = kPMUStateReadyForCommand;
+static int PMUState = kPMUStateReadyForCommand;
 
-LOCALVAR uint8_t PMU_CurCommand;
-LOCALVAR uint8_t PMU_SendNext;
-LOCALVAR uint8_t PMU_BuffL;
+static uint8_t PMU_CurCommand;
+static uint8_t PMU_SendNext;
+static uint8_t PMU_BuffL;
 
-LOCALPROC PmuStartSendResult(uint8_t ResultCode, uint8_t L)
+static void PmuStartSendResult(uint8_t ResultCode, uint8_t L)
 {
 	PMU_SendNext = ResultCode;
 	PMU_BuffL = L;
 	PMUState = kPMUStateSendLength;
 }
 
-LOCALVAR uint8_t PARAMRAM[128];
+static uint8_t PARAMRAM[128];
 
-LOCALPROC PmuCheckCommandOp(void)
+static void PmuCheckCommandOp(void)
 {
 	switch (PMU_CurCommand) {
 		case 0x10: /* kPMUpowerCntl - power plane/clock control */
@@ -262,7 +262,7 @@ LOCALPROC PmuCheckCommandOp(void)
 	}
 }
 
-LOCALPROC LocBuffSetUpNextChunk(void)
+static void LocBuffSetUpNextChunk(void)
 {
 	PMU_p = PMU_BuffA;
 	PMU_rem = PMU_BuffL - PMU_i;
@@ -271,7 +271,7 @@ LOCALPROC LocBuffSetUpNextChunk(void)
 	}
 }
 
-LOCALFUNC uint8_t GetPMUbus(void)
+static uint8_t GetPMUbus(void)
 {
 	uint8_t v;
 
@@ -294,7 +294,7 @@ LOCALFUNC uint8_t GetPMUbus(void)
 	return v;
 }
 
-LOCALPROC SetPMUbus(uint8_t v)
+static void SetPMUbus(uint8_t v)
 {
 	VIA1_iA0 = v & 0x01;
 	v >>= 1;
@@ -313,9 +313,9 @@ LOCALPROC SetPMUbus(uint8_t v)
 	VIA1_iA7 = v & 0x01;
 }
 
-LOCALVAR bool PMU_Sending = false;
+static bool PMU_Sending = false;
 
-LOCALPROC PmuCheckCommandCompletion(void)
+static void PmuCheckCommandCompletion(void)
 {
 	if (PMU_i == PMU_BuffL) {
 		PMUState = kPMUStateRecievedCommand;
@@ -336,7 +336,7 @@ LOCALPROC PmuCheckCommandCompletion(void)
 	}
 }
 
-GLOBALPROC PmuToReady_ChangeNtfy(void)
+void PmuToReady_ChangeNtfy(void)
 {
 	if (PMU_Sending) {
 		PMU_Sending = false;
@@ -432,7 +432,7 @@ GLOBALPROC PmuToReady_ChangeNtfy(void)
 	}
 }
 
-GLOBALPROC PMU_DoTask(void)
+void PMU_DoTask(void)
 {
 	if (PMU_Sending) {
 		PMU_Sending = false;

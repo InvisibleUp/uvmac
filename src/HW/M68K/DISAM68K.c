@@ -31,7 +31,7 @@
 
 #include "HW/M68K/DISAM68K.h"
 
-LOCALVAR uint32_t Disasm_pc;
+static uint32_t Disasm_pc;
 
 /*
 	don't use get_vm_byte/get_vm_word/get_vm_long
@@ -39,15 +39,15 @@ LOCALVAR uint32_t Disasm_pc;
 		(if pc points to memory mapped device)
 */
 
-LOCALVAR uint8_t * Disasm_pcp;
-LOCALVAR uint32_t Disasm_pc_blockmask;
-LOCALVAR uint8_t Disasm_pcp_dummy[2] = {
+static uint8_t * Disasm_pcp;
+static uint32_t Disasm_pc_blockmask;
+static uint8_t Disasm_pcp_dummy[2] = {
 	0, 0
 };
 
-IMPORTFUNC ATTep FindATTel(CPTR addr);
+extern ATTep FindATTel(CPTR addr);
 
-LOCALPROC Disasm_Find_pcp(void)
+static void Disasm_Find_pcp(void)
 {
 	ATTep p;
 
@@ -63,7 +63,7 @@ LOCALPROC Disasm_Find_pcp(void)
 	}
 }
 
-LOCALFUNC uint16_t Disasm_nextiword(void)
+static uint16_t Disasm_nextiword(void)
 /* NOT sign extended */
 {
 	uint16_t r = do_get_mem_word(Disasm_pcp);
@@ -75,12 +75,12 @@ LOCALFUNC uint16_t Disasm_nextiword(void)
 	return r;
 }
 
-LOCALINLINEFUNC uint8_t Disasm_nextibyte(void)
+static uint8_t Disasm_nextibyte(void)
 {
 	return (uint8_t) Disasm_nextiword();
 }
 
-LOCALFUNC uint32_t Disasm_nextilong(void)
+static uint32_t Disasm_nextilong(void)
 {
 	uint32_t hi = Disasm_nextiword();
 	uint32_t lo = Disasm_nextiword();
@@ -90,7 +90,7 @@ LOCALFUNC uint32_t Disasm_nextilong(void)
 	return r;
 }
 
-LOCALPROC Disasm_setpc(CPTR newpc)
+static void Disasm_setpc(CPTR newpc)
 {
 	if (newpc != Disasm_pc) {
 		Disasm_pc = newpc;
@@ -99,9 +99,9 @@ LOCALPROC Disasm_setpc(CPTR newpc)
 	}
 }
 
-LOCALVAR uint32_t Disasm_opcode;
+static uint32_t Disasm_opcode;
 
-LOCALVAR uint32_t Disasm_opsize;
+static uint32_t Disasm_opsize;
 
 #define Disasm_b76 ((Disasm_opcode >> 6) & 3)
 #define Disasm_b8 ((Disasm_opcode >> 8) & 1)
@@ -110,7 +110,7 @@ LOCALVAR uint32_t Disasm_opsize;
 #define Disasm_md6 ((Disasm_opcode >> 6) & 7)
 #define Disasm_rg9 ((Disasm_opcode >> 9) & 7)
 
-LOCALPROC DisasmOpSizeFromb76(void)
+static void DisasmOpSizeFromb76(void)
 {
 	Disasm_opsize = 1 << Disasm_b76;
 	switch (Disasm_opsize) {
@@ -126,7 +126,7 @@ LOCALPROC DisasmOpSizeFromb76(void)
 	}
 }
 
-LOCALPROC DisasmModeRegister(uint32_t themode, uint32_t thereg)
+static void DisasmModeRegister(uint32_t themode, uint32_t thereg)
 {
 	switch (themode) {
 		case 0 :
@@ -212,12 +212,12 @@ LOCALPROC DisasmModeRegister(uint32_t themode, uint32_t thereg)
 	}
 }
 
-LOCALPROC DisasmStartOne(char *s)
+static void DisasmStartOne(char *s)
 {
 	dbglog_writeCStr(s);
 }
 
-LOCALPROC Disasm_xxxxxxxxssmmmrrr(char *s)
+static void Disasm_xxxxxxxxssmmmrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -226,7 +226,7 @@ LOCALPROC Disasm_xxxxxxxxssmmmrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmEaD_xxxxdddxssmmmrrr(char *s)
+static void DisasmEaD_xxxxdddxssmmmrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -238,7 +238,7 @@ LOCALPROC DisasmEaD_xxxxdddxssmmmrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmI_xxxxxxxxssmmmrrr(char *s)
+static void DisasmI_xxxxxxxxssmmmrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -255,7 +255,7 @@ LOCALPROC DisasmI_xxxxxxxxssmmmrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmsAA_xxxxdddxssxxxrrr(char *s)
+static void DisasmsAA_xxxxdddxssxxxrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -265,7 +265,7 @@ LOCALPROC DisasmsAA_xxxxdddxssxxxrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALFUNC uint32_t Disasm_octdat(uint32_t x)
+static uint32_t Disasm_octdat(uint32_t x)
 {
 	if (x == 0) {
 		return 8;
@@ -274,7 +274,7 @@ LOCALFUNC uint32_t Disasm_octdat(uint32_t x)
 	}
 }
 
-LOCALPROC Disasm_xxxxnnnxssmmmrrr(char *s)
+static void Disasm_xxxxnnnxssmmmrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -286,7 +286,7 @@ LOCALPROC Disasm_xxxxnnnxssmmmrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmDEa_xxxxdddxssmmmrrr(char *s)
+static void DisasmDEa_xxxxdddxssmmmrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -297,7 +297,7 @@ LOCALPROC DisasmDEa_xxxxdddxssmmmrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmEaA_xxxxdddsxxmmmrrr(char *s)
+static void DisasmEaA_xxxxdddsxxmmmrrr(char *s)
 {
 	DisasmStartOne(s);
 
@@ -314,7 +314,7 @@ LOCALPROC DisasmEaA_xxxxdddsxxmmmrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmDD_xxxxdddxssxxxrrr(char *s)
+static void DisasmDD_xxxxdddxssxxxrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -325,7 +325,7 @@ LOCALPROC DisasmDD_xxxxdddxssxxxrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmAAs_xxxxdddxssxxxrrr(char *s)
+static void DisasmAAs_xxxxdddxssxxxrrr(char *s)
 {
 	DisasmStartOne(s);
 	DisasmOpSizeFromb76();
@@ -336,31 +336,31 @@ LOCALPROC DisasmAAs_xxxxdddxssxxxrrr(char *s)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmTst(void)
+static void DisasmTst(void)
 {
 	/* Tst 01001010ssmmmrrr */
 	Disasm_xxxxxxxxssmmmrrr("TST");
 }
 
-LOCALPROCUSEDONCE DisasmCompare(void)
+static void DisasmCompare(void)
 {
 	/* Cmp 1011ddd0ssmmmrrr */
 	DisasmEaD_xxxxdddxssmmmrrr("CMP");
 }
 
-LOCALPROCUSEDONCE DisasmCmpI(void)
+static void DisasmCmpI(void)
 {
 	/* CMPI 00001100ssmmmrrr */
 	DisasmI_xxxxxxxxssmmmrrr("CMP");
 }
 
-LOCALPROCUSEDONCE DisasmCmpM(void)
+static void DisasmCmpM(void)
 {
 	/* CmpM 1011ddd1ss001rrr */
 	DisasmsAA_xxxxdddxssxxxrrr("CMP");
 }
 
-LOCALPROC DisasmCC(void)
+static void DisasmCC(void)
 {
 	switch ((Disasm_opcode >> 8) & 15) {
 		case 0:  dbglog_writeCStr("T"); break;
@@ -383,7 +383,7 @@ LOCALPROC DisasmCC(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmBcc(void)
+static void DisasmBcc(void)
 {
 	/* Bcc 0110ccccnnnnnnnn */
 	uint32_t src = ((uint32_t)Disasm_opcode) & 255;
@@ -414,7 +414,7 @@ LOCALPROCUSEDONCE DisasmBcc(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmDBcc(void)
+static void DisasmDBcc(void)
 {
 	/* DBcc 0101cccc11001ddd */
 
@@ -432,7 +432,7 @@ LOCALPROCUSEDONCE DisasmDBcc(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmSwap(void)
+static void DisasmSwap(void)
 {
 	/* Swap 0100100001000rrr */
 
@@ -441,7 +441,7 @@ LOCALPROCUSEDONCE DisasmSwap(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmMove(void) /* MOVE */
+static void DisasmMove(void) /* MOVE */
 {
 	DisasmModeRegister(Disasm_mode, Disasm_reg);
 	dbglog_writeCStr(", ");
@@ -449,42 +449,42 @@ LOCALPROC DisasmMove(void) /* MOVE */
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveL(void)
+static void DisasmMoveL(void)
 {
 	DisasmStartOne("MOVE.L ");
 	Disasm_opsize = 4;
 	DisasmMove();
 }
 
-LOCALPROCUSEDONCE DisasmMoveW(void)
+static void DisasmMoveW(void)
 {
 	DisasmStartOne("MOVE.W ");
 	Disasm_opsize = 2;
 	DisasmMove();
 }
 
-LOCALPROCUSEDONCE DisasmMoveB(void)
+static void DisasmMoveB(void)
 {
 	DisasmStartOne("MOVE.B ");
 	Disasm_opsize = 1;
 	DisasmMove();
 }
 
-LOCALPROCUSEDONCE DisasmMoveAL(void)
+static void DisasmMoveAL(void)
 {
 	DisasmStartOne("MOVEA.L ");
 	Disasm_opsize = 4;
 	DisasmMove();
 }
 
-LOCALPROCUSEDONCE DisasmMoveAW(void)
+static void DisasmMoveAW(void)
 {
 	DisasmStartOne("MOVEA.W ");
 	Disasm_opsize = 2;
 	DisasmMove();
 }
 
-LOCALPROCUSEDONCE DisasmMoveQ(void)
+static void DisasmMoveQ(void)
 {
 	/* MoveQ 0111ddd0nnnnnnnn */
 	DisasmStartOne("MOVEQ #");
@@ -494,49 +494,49 @@ LOCALPROCUSEDONCE DisasmMoveQ(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmAddEaR(void)
+static void DisasmAddEaR(void)
 {
 	DisasmEaD_xxxxdddxssmmmrrr("ADD");
 }
 
-LOCALPROCUSEDONCE DisasmAddQ(void)
+static void DisasmAddQ(void)
 {
 	/* AddQ 0101nnn0ssmmmrrr */
 	Disasm_xxxxnnnxssmmmrrr("ADDQ");
 }
 
-LOCALPROCUSEDONCE DisasmAddI(void)
+static void DisasmAddI(void)
 {
 	DisasmI_xxxxxxxxssmmmrrr("ADDI");
 }
 
-LOCALPROCUSEDONCE DisasmAddREa(void)
+static void DisasmAddREa(void)
 {
 	DisasmDEa_xxxxdddxssmmmrrr("ADD");
 }
 
-LOCALPROCUSEDONCE DisasmSubEaR(void)
+static void DisasmSubEaR(void)
 {
 	DisasmEaD_xxxxdddxssmmmrrr("SUB");
 }
 
-LOCALPROCUSEDONCE DisasmSubQ(void)
+static void DisasmSubQ(void)
 {
 	/* SubQ 0101nnn1ssmmmrrr */
 	Disasm_xxxxnnnxssmmmrrr("SUBQ");
 }
 
-LOCALPROCUSEDONCE DisasmSubI(void)
+static void DisasmSubI(void)
 {
 	DisasmI_xxxxxxxxssmmmrrr("SUBI");
 }
 
-LOCALPROCUSEDONCE DisasmSubREa(void)
+static void DisasmSubREa(void)
 {
 	DisasmDEa_xxxxdddxssmmmrrr("SUB");
 }
 
-LOCALPROCUSEDONCE DisasmLea(void)
+static void DisasmLea(void)
 {
 	/* Lea 0100aaa111mmmrrr */
 	DisasmStartOne("LEA ");
@@ -546,7 +546,7 @@ LOCALPROCUSEDONCE DisasmLea(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmPEA(void)
+static void DisasmPEA(void)
 {
 	/* PEA 0100100001mmmrrr */
 	DisasmStartOne("PEA ");
@@ -554,14 +554,14 @@ LOCALPROCUSEDONCE DisasmPEA(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmALine(void)
+static void DisasmALine(void)
 {
 	DisasmStartOne("$");
 	dbglog_writeHex(Disasm_opcode);
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmBsr(void)
+static void DisasmBsr(void)
 {
 	uint32_t src = ((uint32_t)Disasm_opcode) & 255;
 	uint32_t s = Disasm_pc;
@@ -584,7 +584,7 @@ LOCALPROCUSEDONCE DisasmBsr(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmJsr(void)
+static void DisasmJsr(void)
 {
 	/* Jsr 0100111010mmmrrr */
 	DisasmStartOne("JSR ");
@@ -592,14 +592,14 @@ LOCALPROCUSEDONCE DisasmJsr(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmLinkA6(void)
+static void DisasmLinkA6(void)
 {
 	DisasmStartOne("LINK A6, ");
 	dbglog_writeHex(Disasm_nextiword());
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMOVEMRmM(void)
+static void DisasmMOVEMRmM(void)
 {
 	/* MOVEM reg to mem 0100100011s100rrr */
 	int16_t z;
@@ -631,7 +631,7 @@ LOCALPROCUSEDONCE DisasmMOVEMRmM(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMOVEMApR(void)
+static void DisasmMOVEMApR(void)
 {
 	/* MOVEM mem to reg 0100110011s011rrr */
 	int16_t z;
@@ -663,20 +663,20 @@ LOCALPROCUSEDONCE DisasmMOVEMApR(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmUnlkA6(void)
+static void DisasmUnlkA6(void)
 {
 	DisasmStartOne("UNLINK A6");
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmRts(void)
+static void DisasmRts(void)
 {
 	/* Rts 0100111001110101 */
 	DisasmStartOne("RTS");
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmJmp(void)
+static void DisasmJmp(void)
 {
 	/* JMP 0100111011mmmrrr */
 	DisasmStartOne("JMP ");
@@ -684,19 +684,19 @@ LOCALPROCUSEDONCE DisasmJmp(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmClr(void)
+static void DisasmClr(void)
 {
 	/* Clr 01000010ssmmmrrr */
 	Disasm_xxxxxxxxssmmmrrr("CLR");
 }
 
-LOCALPROCUSEDONCE DisasmAddA(void)
+static void DisasmAddA(void)
 {
 	/* ADDA 1101dddm11mmmrrr */
 	DisasmEaA_xxxxdddsxxmmmrrr("ADDA");
 }
 
-LOCALPROCUSEDONCE DisasmAddQA(void)
+static void DisasmAddQA(void)
 {
 	/* 0101nnn0ss001rrr */
 	DisasmStartOne("ADDQA #");
@@ -706,7 +706,7 @@ LOCALPROCUSEDONCE DisasmAddQA(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmSubQA(void)
+static void DisasmSubQA(void)
 {
 	/* 0101nnn1ss001rrr */
 	DisasmStartOne("SUBQA #");
@@ -716,13 +716,13 @@ LOCALPROCUSEDONCE DisasmSubQA(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmSubA(void)
+static void DisasmSubA(void)
 {
 	/* SUBA 1001dddm11mmmrrr */
 	DisasmEaA_xxxxdddsxxmmmrrr("SUBA");
 }
 
-LOCALPROCUSEDONCE DisasmCmpA(void)
+static void DisasmCmpA(void)
 {
 	DisasmStartOne("CMPA ");
 	Disasm_opsize = Disasm_b8 * 2 + 2;
@@ -732,27 +732,27 @@ LOCALPROCUSEDONCE DisasmCmpA(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmAddXd(void)
+static void DisasmAddXd(void)
 {
 	DisasmDD_xxxxdddxssxxxrrr("ADDX");
 }
 
-LOCALPROCUSEDONCE DisasmAddXm(void)
+static void DisasmAddXm(void)
 {
 	DisasmAAs_xxxxdddxssxxxrrr("ADDX");
 }
 
-LOCALPROCUSEDONCE DisasmSubXd(void)
+static void DisasmSubXd(void)
 {
 	DisasmDD_xxxxdddxssxxxrrr("SUBX");
 }
 
-LOCALPROCUSEDONCE DisasmSubXm(void)
+static void DisasmSubXm(void)
 {
 	DisasmAAs_xxxxdddxssxxxrrr("SUBX");
 }
 
-LOCALPROC DisasmBinOp1(uint32_t x)
+static void DisasmBinOp1(uint32_t x)
 {
 	if (! Disasm_b8) {
 		switch (x) {
@@ -793,7 +793,7 @@ LOCALPROC DisasmBinOp1(uint32_t x)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmRolopNM(void)
+static void DisasmRolopNM(void)
 {
 	DisasmBinOp1(Disasm_rg9);
 	dbglog_writeCStr(" ");
@@ -802,7 +802,7 @@ LOCALPROCUSEDONCE DisasmRolopNM(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmRolopND(void)
+static void DisasmRolopND(void)
 {
 	/* 1110cccdss0ttddd */
 	DisasmBinOp1(Disasm_mode & 3);
@@ -814,7 +814,7 @@ LOCALPROCUSEDONCE DisasmRolopND(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmRolopDD(void)
+static void DisasmRolopDD(void)
 {
 	/* 1110rrrdss1ttddd */
 	DisasmBinOp1(Disasm_mode & 3);
@@ -826,7 +826,7 @@ LOCALPROCUSEDONCE DisasmRolopDD(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmBinBitOp1(void)
+static void DisasmBinBitOp1(void)
 {
 	switch (Disasm_b76) {
 		case 0:
@@ -847,7 +847,7 @@ LOCALPROC DisasmBinBitOp1(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmBitOpDD(void)
+static void DisasmBitOpDD(void)
 {
 	/* dynamic bit, Opcode = 0000ddd1tt000rrr */
 	DisasmBinBitOp1();
@@ -859,7 +859,7 @@ LOCALPROCUSEDONCE DisasmBitOpDD(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmBitOpDM(void)
+static void DisasmBitOpDM(void)
 {
 	/* dynamic bit, Opcode = 0000ddd1ttmmmrrr */
 	DisasmBinBitOp1();
@@ -871,7 +871,7 @@ LOCALPROCUSEDONCE DisasmBitOpDM(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmBitOpND(void)
+static void DisasmBitOpND(void)
 {
 	/* static bit 00001010tt000rrr */
 	DisasmBinBitOp1();
@@ -883,7 +883,7 @@ LOCALPROCUSEDONCE DisasmBitOpND(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmBitOpNM(void)
+static void DisasmBitOpNM(void)
 {
 	/* static bit 00001010ttmmmrrr */
 	DisasmBinBitOp1();
@@ -895,58 +895,58 @@ LOCALPROCUSEDONCE DisasmBitOpNM(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmAndI(void)
+static void DisasmAndI(void)
 {
 	DisasmI_xxxxxxxxssmmmrrr("ANDI");
 }
 
-LOCALPROCUSEDONCE DisasmAndDEa(void)
+static void DisasmAndDEa(void)
 {
 	/* And 1100ddd1ssmmmrrr */
 	DisasmDEa_xxxxdddxssmmmrrr("AND");
 }
 
-LOCALPROCUSEDONCE DisasmAndEaD(void)
+static void DisasmAndEaD(void)
 {
 	/* And 1100ddd0ssmmmrrr */
 	DisasmEaD_xxxxdddxssmmmrrr("AND");
 }
 
-LOCALPROCUSEDONCE DisasmOrI(void)
+static void DisasmOrI(void)
 {
 	DisasmI_xxxxxxxxssmmmrrr("ORI");
 }
 
-LOCALPROCUSEDONCE DisasmOrDEa(void)
+static void DisasmOrDEa(void)
 {
 	/* OR 1000ddd1ssmmmrrr */
 	DisasmDEa_xxxxdddxssmmmrrr("OR");
 }
 
-LOCALPROCUSEDONCE DisasmOrEaD(void)
+static void DisasmOrEaD(void)
 {
 	/* OR 1000ddd0ssmmmrrr */
 	DisasmEaD_xxxxdddxssmmmrrr("OR");
 }
 
-LOCALPROCUSEDONCE DisasmEorI(void)
+static void DisasmEorI(void)
 {
 	DisasmI_xxxxxxxxssmmmrrr("EORI");
 }
 
-LOCALPROCUSEDONCE DisasmEor(void)
+static void DisasmEor(void)
 {
 	/* Eor 1011ddd1ssmmmrrr */
 	DisasmDEa_xxxxdddxssmmmrrr("EOR");
 }
 
-LOCALPROCUSEDONCE DisasmNot(void)
+static void DisasmNot(void)
 {
 	/* Not 01000110ssmmmrrr */
 	Disasm_xxxxxxxxssmmmrrr("NOT");
 }
 
-LOCALPROCUSEDONCE DisasmScc(void)
+static void DisasmScc(void)
 {
 	/* Scc 0101cccc11mmmrrr */
 	Disasm_opsize = 1;
@@ -957,33 +957,33 @@ LOCALPROCUSEDONCE DisasmScc(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmEXTL(void)
+static void DisasmEXTL(void)
 {
 	DisasmStartOne("EXT.L D");
 	dbglog_writeHex(Disasm_reg);
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmEXTW(void)
+static void DisasmEXTW(void)
 {
 	DisasmStartOne("EXT.W D");
 	dbglog_writeHex(Disasm_reg);
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmNeg(void)
+static void DisasmNeg(void)
 {
 	/* Neg 01000100ssmmmrrr */
 	Disasm_xxxxxxxxssmmmrrr("NEG");
 }
 
-LOCALPROCUSEDONCE DisasmNegX(void)
+static void DisasmNegX(void)
 {
 	/* NegX 01000000ssmmmrrr */
 	Disasm_xxxxxxxxssmmmrrr("NEGX");
 }
 
-LOCALPROCUSEDONCE DisasmMulU(void)
+static void DisasmMulU(void)
 {
 	/* MulU 1100ddd011mmmrrr */
 	Disasm_opsize = 2;
@@ -995,7 +995,7 @@ LOCALPROCUSEDONCE DisasmMulU(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMulS(void)
+static void DisasmMulS(void)
 {
 	/* MulS 1100ddd111mmmrrr */
 	Disasm_opsize = 2;
@@ -1007,7 +1007,7 @@ LOCALPROCUSEDONCE DisasmMulS(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmDivU(void)
+static void DisasmDivU(void)
 {
 	/* DivU 1000ddd011mmmrrr */
 
@@ -1020,7 +1020,7 @@ LOCALPROCUSEDONCE DisasmDivU(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmDivS(void)
+static void DisasmDivS(void)
 {
 	/* DivS 1000ddd111mmmrrr */
 
@@ -1033,7 +1033,7 @@ LOCALPROCUSEDONCE DisasmDivS(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmExgdd(void)
+static void DisasmExgdd(void)
 {
 	/* Exg 1100ddd101000rrr */
 
@@ -1045,7 +1045,7 @@ LOCALPROCUSEDONCE DisasmExgdd(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmExgaa(void)
+static void DisasmExgaa(void)
 {
 	/* Exg 1100ddd101001rrr */
 
@@ -1057,7 +1057,7 @@ LOCALPROCUSEDONCE DisasmExgaa(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmExgda(void)
+static void DisasmExgda(void)
 {
 	/* Exg 1100ddd110001rrr */
 
@@ -1069,7 +1069,7 @@ LOCALPROCUSEDONCE DisasmExgda(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveCCREa(void)
+static void DisasmMoveCCREa(void)
 {
 	/* Move from CCR 0100001011mmmrrr */
 	Disasm_opsize = 2;
@@ -1078,7 +1078,7 @@ LOCALPROCUSEDONCE DisasmMoveCCREa(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveEaCR(void)
+static void DisasmMoveEaCR(void)
 {
 	/* 0100010011mmmrrr */
 	Disasm_opsize = 2;
@@ -1088,7 +1088,7 @@ LOCALPROCUSEDONCE DisasmMoveEaCR(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveSREa(void)
+static void DisasmMoveSREa(void)
 {
 	/* Move from SR 0100000011mmmrrr */
 	Disasm_opsize = 2;
@@ -1097,7 +1097,7 @@ LOCALPROCUSEDONCE DisasmMoveSREa(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveEaSR(void)
+static void DisasmMoveEaSR(void)
 {
 	/* 0100011011mmmrrr */
 	Disasm_opsize = 2;
@@ -1107,7 +1107,7 @@ LOCALPROCUSEDONCE DisasmMoveEaSR(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmBinOpStatusCCR(void)
+static void DisasmBinOpStatusCCR(void)
 {
 	switch (Disasm_rg9) {
 		case 0 :
@@ -1133,7 +1133,7 @@ LOCALPROC DisasmBinOpStatusCCR(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROC disasmreglist(int16_t direction, uint32_t m1, uint32_t r1)
+static void disasmreglist(int16_t direction, uint32_t m1, uint32_t r1)
 {
 	int16_t z;
 	uint32_t regmask;
@@ -1176,19 +1176,19 @@ LOCALPROC disasmreglist(int16_t direction, uint32_t m1, uint32_t r1)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMOVEMrm(void)
+static void DisasmMOVEMrm(void)
 {
 	/* MOVEM reg to mem 010010001ssmmmrrr */
 	disasmreglist(0, Disasm_mode, Disasm_reg);
 }
 
-LOCALPROCUSEDONCE DisasmMOVEMmr(void)
+static void DisasmMOVEMmr(void)
 {
 	/* MOVEM mem to reg 0100110011smmmrrr */
 	disasmreglist(1, Disasm_mode, Disasm_reg);
 }
 
-LOCALPROC DisasmByteBinOp(char *s, uint32_t m1, uint32_t r1, uint32_t m2, uint32_t r2)
+static void DisasmByteBinOp(char *s, uint32_t m1, uint32_t r1, uint32_t m2, uint32_t r2)
 {
 	DisasmStartOne(s);
 	dbglog_writeCStr(" ");
@@ -1199,51 +1199,51 @@ LOCALPROC DisasmByteBinOp(char *s, uint32_t m1, uint32_t r1, uint32_t m2, uint32
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmAbcdr(void)
+static void DisasmAbcdr(void)
 {
 	/* ABCD 1100ddd100000rrr */
 	DisasmByteBinOp("ABCD", 0, Disasm_reg, 0, Disasm_rg9);
 }
 
-LOCALPROCUSEDONCE DisasmAbcdm(void)
+static void DisasmAbcdm(void)
 {
 	/* ABCD 1100ddd100001rrr */
 	DisasmByteBinOp("ABCD", 4, Disasm_reg, 4, Disasm_rg9);
 }
 
-LOCALPROCUSEDONCE DisasmSbcdr(void)
+static void DisasmSbcdr(void)
 {
 	/* SBCD 1000xxx100000xxx */
 	DisasmByteBinOp("ABCD", 0, Disasm_reg, 0, Disasm_rg9);
 }
 
-LOCALPROCUSEDONCE DisasmSbcdm(void)
+static void DisasmSbcdm(void)
 {
 	/* SBCD 1000xxx100001xxx */
 	DisasmByteBinOp("ABCD", 4, Disasm_reg, 4, Disasm_rg9);
 }
 
-LOCALPROCUSEDONCE DisasmNbcd(void)
+static void DisasmNbcd(void)
 {
 	/* Nbcd 0100100000mmmrrr */
 	Disasm_xxxxxxxxssmmmrrr("NBCD");
 }
 
-LOCALPROCUSEDONCE DisasmRte(void)
+static void DisasmRte(void)
 {
 	/* Rte 0100111001110011 */
 	DisasmStartOne("RTE");
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmNop(void)
+static void DisasmNop(void)
 {
 	/* Nop 0100111001110001 */
 	DisasmStartOne("NOP");
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveP(void)
+static void DisasmMoveP(void)
 {
 	/* MoveP 0000ddd1mm001aaa */
 
@@ -1268,13 +1268,13 @@ LOCALPROCUSEDONCE DisasmMoveP(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmIllegal(void)
+static void DisasmIllegal(void)
 {
 	DisasmStartOne("ILLEGAL");
 	dbglog_writeReturn();
 }
 
-LOCALPROC DisasmCheck(void)
+static void DisasmCheck(void)
 {
 	DisasmStartOne("CHK");
 	if (2 == Disasm_opsize) {
@@ -1290,14 +1290,14 @@ LOCALPROC DisasmCheck(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmChkW(void)
+static void DisasmChkW(void)
 {
 	/* Chk.W 0100ddd110mmmrrr */
 	Disasm_opsize = 2;
 	DisasmCheck();
 }
 
-LOCALPROCUSEDONCE DisasmTrap(void)
+static void DisasmTrap(void)
 {
 	/* Trap 010011100100vvvv */
 	DisasmStartOne("TRAP ");
@@ -1305,21 +1305,21 @@ LOCALPROCUSEDONCE DisasmTrap(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmTrapV(void)
+static void DisasmTrapV(void)
 {
 	/* TrapV 0100111001110110 */
 	DisasmStartOne("TRAPV");
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmRtr(void)
+static void DisasmRtr(void)
 {
 	/* Rtr 0100111001110111 */
 	DisasmStartOne("RTR");
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmLink(void)
+static void DisasmLink(void)
 {
 	DisasmStartOne("LINK A");
 	dbglog_writeHex(Disasm_reg);
@@ -1328,14 +1328,14 @@ LOCALPROCUSEDONCE DisasmLink(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmUnlk(void)
+static void DisasmUnlk(void)
 {
 	DisasmStartOne("UNLINK A");
 	dbglog_writeHex(Disasm_reg);
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveRUSP(void)
+static void DisasmMoveRUSP(void)
 {
 	/* MOVE USP 0100111001100aaa */
 	DisasmStartOne("MOVE A");
@@ -1344,7 +1344,7 @@ LOCALPROCUSEDONCE DisasmMoveRUSP(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmMoveUSPR(void)
+static void DisasmMoveUSPR(void)
 {
 	/* MOVE USP 0100111001101aaa */
 	DisasmStartOne("MOVE USP, A");
@@ -1352,7 +1352,7 @@ LOCALPROCUSEDONCE DisasmMoveUSPR(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmTas(void)
+static void DisasmTas(void)
 {
 	/* Tas 0100101011mmmrrr */
 	Disasm_opsize = 1;
@@ -1362,14 +1362,14 @@ LOCALPROCUSEDONCE DisasmTas(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmFLine(void)
+static void DisasmFLine(void)
 {
 	DisasmStartOne("$");
 	dbglog_writeHex(Disasm_opcode);
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmCallMorRtm(void)
+static void DisasmCallMorRtm(void)
 {
 	DisasmStartOne("CALLM #");
 	dbglog_writeHex(Disasm_nextibyte());
@@ -1378,7 +1378,7 @@ LOCALPROCUSEDONCE DisasmCallMorRtm(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmStop(void)
+static void DisasmStop(void)
 {
 	/* Stop 0100111001110010 */
 	DisasmStartOne("STOP #");
@@ -1386,7 +1386,7 @@ LOCALPROCUSEDONCE DisasmStop(void)
 	dbglog_writeReturn();
 }
 
-LOCALPROCUSEDONCE DisasmReset(void)
+static void DisasmReset(void)
 {
 	/* Reset 0100111001100000 */
 	DisasmStartOne("RESET");
@@ -1394,7 +1394,7 @@ LOCALPROCUSEDONCE DisasmReset(void)
 }
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmEXTBL(void)
+static void DisasmEXTBL(void)
 {
 	/* EXTB.L */
 	DisasmStartOne("EXTB.L D");
@@ -1404,7 +1404,7 @@ LOCALPROCUSEDONCE DisasmEXTBL(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmTRAPcc(void)
+static void DisasmTRAPcc(void)
 {
 	/* TRAPcc 0101cccc11111sss */
 
@@ -1433,7 +1433,7 @@ LOCALPROCUSEDONCE DisasmTRAPcc(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmChkL(void)
+static void DisasmChkL(void)
 {
 	/* Chk.L 0100ddd100mmmrrr */
 	Disasm_opsize = 4;
@@ -1442,7 +1442,7 @@ LOCALPROCUSEDONCE DisasmChkL(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmBkpt(void)
+static void DisasmBkpt(void)
 {
 	/* BKPT 0100100001001rrr */
 	DisasmStartOne("BKPT #");
@@ -1452,7 +1452,7 @@ LOCALPROCUSEDONCE DisasmBkpt(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmDivL(void)
+static void DisasmDivL(void)
 {
 	/* DIVU 0100110001mmmrrr 0rrr0s0000000rrr */
 	/* DIVS 0100110001mmmrrr 0rrr1s0000000rrr */
@@ -1492,7 +1492,7 @@ LOCALPROCUSEDONCE DisasmDivL(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmMulL(void)
+static void DisasmMulL(void)
 {
 	/* MULU 0100110000mmmrrr 0rrr0s0000000rrr */
 	/* MULS 0100110000mmmrrr 0rrr1s0000000rrr */
@@ -1531,7 +1531,7 @@ LOCALPROCUSEDONCE DisasmMulL(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmRtd(void)
+static void DisasmRtd(void)
 {
 	/* Rtd 0100111001110100 */
 	DisasmStartOne("RTD #");
@@ -1541,7 +1541,7 @@ LOCALPROCUSEDONCE DisasmRtd(void)
 #endif
 
 #if Use68020
-LOCALPROC DisasmControlReg(uint16_t i)
+static void DisasmControlReg(uint16_t i)
 {
 	switch (i) {
 		case 0x0000:
@@ -1576,7 +1576,7 @@ LOCALPROC DisasmControlReg(uint16_t i)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmMoveC(void)
+static void DisasmMoveC(void)
 {
 	/* MOVEC 010011100111101m */
 	DisasmStartOne("MOVEC ");
@@ -1618,7 +1618,7 @@ LOCALPROCUSEDONCE DisasmMoveC(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmLinkL(void)
+static void DisasmLinkL(void)
 {
 	/* Link.L 0100100000001rrr */
 	DisasmStartOne("LINK.L A");
@@ -1630,7 +1630,7 @@ LOCALPROCUSEDONCE DisasmLinkL(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmPack(void)
+static void DisasmPack(void)
 {
 	DisasmStartOne("PACK ???");
 	dbglog_writeReturn();
@@ -1639,7 +1639,7 @@ LOCALPROCUSEDONCE DisasmPack(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmUnpk(void)
+static void DisasmUnpk(void)
 {
 	DisasmStartOne("UNPK ???");
 	dbglog_writeReturn();
@@ -1648,7 +1648,7 @@ LOCALPROCUSEDONCE DisasmUnpk(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmCHK2orCMP2(void)
+static void DisasmCHK2orCMP2(void)
 {
 	DisasmStartOne("CHK2/CMP2 ???");
 	dbglog_writeReturn();
@@ -1657,7 +1657,7 @@ LOCALPROCUSEDONCE DisasmCHK2orCMP2(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmCAS2(void)
+static void DisasmCAS2(void)
 {
 	DisasmStartOne("CAS2 ???");
 	dbglog_writeReturn();
@@ -1666,7 +1666,7 @@ LOCALPROCUSEDONCE DisasmCAS2(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmCAS(void)
+static void DisasmCAS(void)
 {
 	DisasmStartOne("CAS ???");
 	dbglog_writeReturn();
@@ -1675,7 +1675,7 @@ LOCALPROCUSEDONCE DisasmCAS(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmMOVES(void)
+static void DisasmMOVES(void)
 {
 	DisasmStartOne("MOVES ???");
 	dbglog_writeReturn();
@@ -1684,7 +1684,7 @@ LOCALPROCUSEDONCE DisasmMOVES(void)
 #endif
 
 #if Use68020
-LOCALPROCUSEDONCE DisasmBitField(void)
+static void DisasmBitField(void)
 {
 	DisasmStartOne("BitField ???");
 	dbglog_writeReturn();
@@ -1692,17 +1692,17 @@ LOCALPROCUSEDONCE DisasmBitField(void)
 }
 #endif
 
-LOCALFUNC bool IsValidAddrMode(void)
+static bool IsValidAddrMode(void)
 {
 	return (Disasm_mode != 7) || (Disasm_reg < 5);
 }
 
-LOCALFUNC bool IsValidDstAddrMode(void)
+static bool IsValidDstAddrMode(void)
 {
 	return (Disasm_md6 != 7) || (Disasm_rg9 < 2);
 }
 
-LOCALFUNC bool IsValidDataAltAddrMode(void)
+static bool IsValidDataAltAddrMode(void)
 {
 	bool IsOk;
 
@@ -1727,7 +1727,7 @@ LOCALFUNC bool IsValidDataAltAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC bool IsValidDataAddrMode(void)
+static bool IsValidDataAddrMode(void)
 {
 	bool IsOk;
 
@@ -1752,7 +1752,7 @@ LOCALFUNC bool IsValidDataAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC bool IsValidControlAddrMode(void)
+static bool IsValidControlAddrMode(void)
 {
 	bool IsOk;
 
@@ -1777,7 +1777,7 @@ LOCALFUNC bool IsValidControlAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC bool IsValidControlAltAddrMode(void)
+static bool IsValidControlAltAddrMode(void)
 {
 	bool IsOk;
 
@@ -1802,7 +1802,7 @@ LOCALFUNC bool IsValidControlAltAddrMode(void)
 	return IsOk;
 }
 
-LOCALFUNC bool IsValidAltMemAddrMode(void)
+static bool IsValidAltMemAddrMode(void)
 {
 	bool IsOk;
 
@@ -1827,7 +1827,7 @@ LOCALFUNC bool IsValidAltMemAddrMode(void)
 	return IsOk;
 }
 
-LOCALPROCUSEDONCE DisasmCode0(void)
+static void DisasmCode0(void)
 {
 	if (Disasm_b8 == 1) {
 		if (Disasm_mode == 1) {
@@ -1970,7 +1970,7 @@ LOCALPROCUSEDONCE DisasmCode0(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode1(void)
+static void DisasmCode1(void)
 {
 	if ((Disasm_mode == 1) || ! IsValidAddrMode()) {
 		DisasmIllegal();
@@ -1983,7 +1983,7 @@ LOCALPROCUSEDONCE DisasmCode1(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode2(void)
+static void DisasmCode2(void)
 {
 	if (Disasm_md6 == 1) { /* MOVEA */
 		if (IsValidAddrMode()) {
@@ -2000,7 +2000,7 @@ LOCALPROCUSEDONCE DisasmCode2(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode3(void)
+static void DisasmCode3(void)
 {
 	if (Disasm_md6 == 1) { /* MOVEA */
 		if (IsValidAddrMode()) {
@@ -2017,7 +2017,7 @@ LOCALPROCUSEDONCE DisasmCode3(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode4(void)
+static void DisasmCode4(void)
 {
 	if (Disasm_b8 != 0) {
 		switch (Disasm_b76) {
@@ -2391,7 +2391,7 @@ LOCALPROCUSEDONCE DisasmCode4(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode5(void)
+static void DisasmCode5(void)
 {
 	if (Disasm_b76 == 3) {
 		if (Disasm_mode == 1) {
@@ -2440,7 +2440,7 @@ LOCALPROCUSEDONCE DisasmCode5(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode6(void)
+static void DisasmCode6(void)
 {
 	uint32_t cond = (Disasm_opcode >> 8) & 15;
 
@@ -2456,7 +2456,7 @@ LOCALPROCUSEDONCE DisasmCode6(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode7(void)
+static void DisasmCode7(void)
 {
 	if (Disasm_b8 == 0) {
 		DisasmMoveQ();
@@ -2465,7 +2465,7 @@ LOCALPROCUSEDONCE DisasmCode7(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode8(void)
+static void DisasmCode8(void)
 {
 	if (Disasm_b76 == 3) {
 		if (Disasm_b8 == 0) {
@@ -2528,7 +2528,7 @@ LOCALPROCUSEDONCE DisasmCode8(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCode9(void)
+static void DisasmCode9(void)
 {
 	if (Disasm_b76 == 3) {
 		/* SUBA 1001dddm11mmmrrr */
@@ -2564,12 +2564,12 @@ LOCALPROCUSEDONCE DisasmCode9(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCodeA(void)
+static void DisasmCodeA(void)
 {
 	DisasmALine();
 }
 
-LOCALPROCUSEDONCE DisasmCodeB(void)
+static void DisasmCodeB(void)
 {
 	if (Disasm_b76 == 3) {
 		/* CMPA 1011ddds11mmmrrr */
@@ -2600,7 +2600,7 @@ LOCALPROCUSEDONCE DisasmCodeB(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCodeC(void)
+static void DisasmCodeC(void)
 {
 	if (Disasm_b76 == 3) {
 		if (Disasm_b8 == 0) {
@@ -2667,7 +2667,7 @@ LOCALPROCUSEDONCE DisasmCodeC(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCodeD(void)
+static void DisasmCodeD(void)
 {
 	if (Disasm_b76 == 3) {
 		/* ADDA 1101dddm11mmmrrr */
@@ -2701,7 +2701,7 @@ LOCALPROCUSEDONCE DisasmCodeD(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCodeE(void)
+static void DisasmCodeE(void)
 {
 	if (Disasm_b76 == 3) {
 		if ((Disasm_opcode & 0x0800) != 0) {
@@ -2768,12 +2768,12 @@ LOCALPROCUSEDONCE DisasmCodeE(void)
 	}
 }
 
-LOCALPROCUSEDONCE DisasmCodeF(void)
+static void DisasmCodeF(void)
 {
 	DisasmFLine();
 }
 
-LOCALPROC m68k_Disasm_one(void)
+static void m68k_Disasm_one(void)
 {
 	Disasm_opcode = Disasm_nextiword();
 
@@ -2833,13 +2833,13 @@ LOCALPROC m68k_Disasm_one(void)
 #define Ln2SavedPCs 4
 #define NumSavedPCs (1 << Ln2SavedPCs)
 #define SavedPCsMask (NumSavedPCs - 1)
-LOCALVAR uint32_t SavedPCs[NumSavedPCs];
-LOCALVAR uint32_t SavedPCsIn = 0;
-LOCALVAR uint32_t SavedPCsOut = 0;
+static uint32_t SavedPCs[NumSavedPCs];
+static uint32_t SavedPCsIn = 0;
+static uint32_t SavedPCsOut = 0;
 
 #define DisasmIncludeCycles 0
 
-LOCALPROCUSEDONCE DisasmOneAndBack(uint32_t pc)
+static void DisasmOneAndBack(uint32_t pc)
 {
 #if DisasmIncludeCycles
 	dbglog_writeHex(GetCuriCount());
@@ -2851,7 +2851,7 @@ LOCALPROCUSEDONCE DisasmOneAndBack(uint32_t pc)
 	m68k_Disasm_one();
 }
 
-LOCALPROCUSEDONCE DisasmSavedPCs(void)
+static void DisasmSavedPCs(void)
 {
 	uint32_t n = SavedPCsIn - SavedPCsOut;
 
@@ -2920,9 +2920,9 @@ LOCALPROCUSEDONCE DisasmSavedPCs(void)
 	}
 }
 
-LOCALVAR uint32_t DisasmCounter = 0;
+static uint32_t DisasmCounter = 0;
 
-GLOBALPROC DisasmOneOrSave(uint32_t pc)
+void DisasmOneOrSave(uint32_t pc)
 {
 	if (0 != DisasmCounter) {
 		DisasmOneAndBack(pc);
@@ -2933,7 +2933,7 @@ GLOBALPROC DisasmOneOrSave(uint32_t pc)
 	}
 }
 
-GLOBALPROC m68k_WantDisasmContext(void)
+void m68k_WantDisasmContext(void)
 {
 	DisasmSavedPCs();
 	DisasmCounter = /* 256 */ 128;

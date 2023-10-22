@@ -53,7 +53,7 @@ GLOBALOSGLUPROC MoveBytes(anyp srcPtr, anyp destPtr, int32_t byteCount)
 
 /* --- basic dialogs --- */
 
-LOCALPROC CheckSavedMacMsg(void)
+static void CheckSavedMacMsg(void)
 {
 	/* called only on quit, if error saved but not yet reported */
 
@@ -84,10 +84,10 @@ LOCALPROC CheckSavedMacMsg(void)
 #define UseMotionEvents 1
 
 #if UseMotionEvents
-LOCALVAR bool CaughtMouse = false;
+static bool CaughtMouse = false;
 #endif
 
-LOCALPROC HandleTheEvent(SDL_Event *event)
+static void HandleTheEvent(SDL_Event *event)
 {
 	switch (event->type) {
 		case SDL_QUIT:
@@ -206,10 +206,10 @@ LOCALPROC HandleTheEvent(SDL_Event *event)
 
 /* --- main window creation and disposal --- */
 
-LOCALVAR int argc;
-LOCALVAR char **argv;
+static int argc;
+static char **argv;
 
-LOCALFUNC bool SDL_InitDisplay(void)
+static bool SDL_InitDisplay(void)
 {
 	bool v = false;
 
@@ -226,11 +226,11 @@ LOCALFUNC bool SDL_InitDisplay(void)
 }
 
 #if MayFullScreen
-LOCALVAR bool GrabMachine = false;
+static bool GrabMachine = false;
 #endif
 
 #if MayFullScreen
-LOCALPROC GrabTheMachine(void)
+static void GrabTheMachine(void)
 {
 #if GrabKeysFullScreen
 	SDL_SetWindowGrab(main_wind, SDL_TRUE);
@@ -261,7 +261,7 @@ LOCALPROC GrabTheMachine(void)
 #endif
 
 #if MayFullScreen
-LOCALPROC UngrabMachine(void)
+static void UngrabMachine(void)
 {
 #if EnableFSMouseMotion
 
@@ -284,7 +284,7 @@ LOCALPROC UngrabMachine(void)
 #endif
 
 #if EnableFSMouseMotion && HaveWorkingWarp
-LOCALPROC MouseConstrain(void)
+static void MouseConstrain(void)
 {
 	int16_t shiftdh;
 	int16_t shiftdv;
@@ -324,13 +324,13 @@ enum {
 #define kMagStateAuto kNumMagStates
 
 #if MayNotFullScreen
-LOCALVAR int CurWinIndx;
-LOCALVAR bool HavePositionWins[kNumMagStates];
-LOCALVAR int WinPositionsX[kNumMagStates];
-LOCALVAR int WinPositionsY[kNumMagStates];
+static int CurWinIndx;
+static bool HavePositionWins[kNumMagStates];
+static int WinPositionsX[kNumMagStates];
+static int WinPositionsY[kNumMagStates];
 #endif
 
-LOCALFUNC bool CreateMainWindow(void)
+static bool CreateMainWindow(void)
 {
 	int NewWindowX;
 	int NewWindowY;
@@ -486,7 +486,7 @@ LOCALFUNC bool CreateMainWindow(void)
 	return v;
 }
 
-LOCALPROC CloseMainWindow(void)
+static void CloseMainWindow(void)
 {
 	if (NULL != format) {
 		SDL_FreeFormat(format);
@@ -510,7 +510,7 @@ LOCALPROC CloseMainWindow(void)
 }
 
 #if EnableRecreateW
-LOCALPROC ZapWState(void)
+static void ZapWState(void)
 {
 	main_wind = NULL;
 	renderer = NULL;
@@ -547,7 +547,7 @@ typedef struct WState WState;
 #endif
 
 #if EnableRecreateW
-LOCALPROC GetWState(WState *r)
+static void GetWState(WState *r)
 {
 #if MayFullScreen
 	r->f_ViewHSize = ViewHSize;
@@ -574,7 +574,7 @@ LOCALPROC GetWState(WState *r)
 #endif
 
 #if EnableRecreateW
-LOCALPROC SetWState(WState *r)
+static void SetWState(WState *r)
 {
 #if MayFullScreen
 	ViewHSize = r->f_ViewHSize;
@@ -611,11 +611,11 @@ enum {
 #endif
 
 #if 1 && 1
-LOCALVAR int WinMagStates[kNumWinStates];
+static int WinMagStates[kNumWinStates];
 #endif
 
 #if EnableRecreateW
-LOCALFUNC bool ReCreateMainWindow(void)
+static bool ReCreateMainWindow(void)
 {
 	WState old_state;
 	WState new_state;
@@ -693,7 +693,7 @@ LOCALFUNC bool ReCreateMainWindow(void)
 }
 #endif
 
-LOCALPROC ZapWinStateVars(void)
+static void ZapWinStateVars(void)
 {
 #if MayNotFullScreen
 	{
@@ -755,13 +755,13 @@ void ToggleWantFullScreen(void)
 
 /* --- SavedTasks --- */
 
-LOCALPROC LeaveBackground(void)
+static void LeaveBackground(void)
 {
 	ReconnectKeyCodes3();
 	DisableKeyRepeat();
 }
 
-LOCALPROC EnterBackground(void)
+static void EnterBackground(void)
 {
 	RestoreKeyRepeat();
 	DisconnectKeyCodes3();
@@ -785,7 +785,7 @@ void EnterSpeedStopped(void)
 #endif
 }
 
-LOCALPROC CheckForSavedTasks(void)
+static void CheckForSavedTasks(void)
 {
 	if (EvtQNeedRecover) {
 		EvtQNeedRecover = false;
@@ -884,7 +884,7 @@ LOCALPROC CheckForSavedTasks(void)
 /* --- command line parsing --- */
 
 // TODO: reimplement with an actual argument parsing library
-LOCALFUNC bool ScanCommandLine(void)
+static bool ScanCommandLine(void)
 {
 	return true;
 }
@@ -897,7 +897,7 @@ GLOBALOSGLUFUNC bool ExtraTimeNotOver(void)
 	return TrueEmulatedTime == OnTrueTime;
 }
 
-LOCALPROC WaitForTheNextEvent(void)
+static void WaitForTheNextEvent(void)
 {
 	SDL_Event event;
 
@@ -906,7 +906,7 @@ LOCALPROC WaitForTheNextEvent(void)
 	}
 }
 
-LOCALPROC CheckForSystemEvents(void)
+static void CheckForSystemEvents(void)
 {
 	SDL_Event event;
 	int i = 10;
@@ -963,13 +963,13 @@ label_retry:
 
 #include "PROGMAIN.h"
 
-LOCALPROC ZapOSGLUVars(void)
+static void ZapOSGLUVars(void)
 {
 	InitDrives();
 	ZapWinStateVars();
 }
 
-LOCALPROC ReserveAllocAll(void)
+static void ReserveAllocAll(void)
 {
 #if dbglog_HAVE
 	dbglog_ReserveAlloc();
@@ -992,7 +992,7 @@ LOCALPROC ReserveAllocAll(void)
 	EmulationReserveAlloc();
 }
 
-LOCALFUNC bool AllocMemory(void)
+static bool AllocMemory(void)
 {
 	uimr n;
 	bool IsOk = false;
@@ -1017,7 +1017,7 @@ LOCALFUNC bool AllocMemory(void)
 	return IsOk;
 }
 
-LOCALPROC UnallocMemory(void)
+static void UnallocMemory(void)
 {
 	if (nullpr != ReserveAllocBigBlock) {
 		free((char *)ReserveAllocBigBlock);
@@ -1025,7 +1025,7 @@ LOCALPROC UnallocMemory(void)
 }
 
 #if CanGetAppPath
-LOCALFUNC bool InitWhereAmI(void)
+static bool InitWhereAmI(void)
 {
 	app_parent = SDL_GetBasePath();
 
@@ -1036,7 +1036,7 @@ LOCALFUNC bool InitWhereAmI(void)
 #endif
 
 #if CanGetAppPath
-LOCALPROC UninitWhereAmI(void)
+static void UninitWhereAmI(void)
 {
 	SDL_free(pref_dir);
 
@@ -1044,7 +1044,7 @@ LOCALPROC UninitWhereAmI(void)
 }
 #endif
 
-LOCALFUNC bool InitOSGLU(void)
+static bool InitOSGLU(void)
 {
 	if (Config_TryInit())
 	if (AllocMemory())
@@ -1070,7 +1070,7 @@ LOCALFUNC bool InitOSGLU(void)
 	return false;
 }
 
-LOCALPROC UnInitOSGLU(void)
+static void UnInitOSGLU(void)
 {
 	RestoreKeyRepeat();
 #if MayFullScreen

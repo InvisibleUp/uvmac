@@ -20,12 +20,12 @@
 #define SONYEMDV_H
 #endif
 
-EXPORTPROC ExtnDisk_Access(CPTR p);
-EXPORTPROC ExtnSony_Access(CPTR p);
+extern void ExtnDisk_Access(CPTR p);
+extern void ExtnSony_Access(CPTR p);
 
-EXPORTPROC Sony_SetQuitOnEject(void);
+extern void Sony_SetQuitOnEject(void);
 
-EXPORTPROC Sony_EjectAllDisks(void);
-EXPORTPROC Sony_Reset(void);
+extern void Sony_EjectAllDisks(void);
+extern void Sony_Reset(void);
 
-EXPORTPROC Sony_Update(void);
+extern void Sony_Update(void);

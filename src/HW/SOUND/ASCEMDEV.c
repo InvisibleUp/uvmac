@@ -33,15 +33,15 @@
 	ReportAbnormalID unused 0x0F0E, 0x0F1E - 0x0FFF
 */
 
-LOCALVAR uint8_t SoundReg801 = 0;
-LOCALVAR uint8_t SoundReg802 = 0;
-LOCALVAR uint8_t SoundReg803 = 0;
-LOCALVAR uint8_t SoundReg804 = 0;
-LOCALVAR uint8_t SoundReg805 = 0;
-LOCALVAR uint8_t SoundReg_Volume = 0; /* 0x806 */
-/* LOCALVAR uint8_t SoundReg807 = 0; */
+static uint8_t SoundReg801 = 0;
+static uint8_t SoundReg802 = 0;
+static uint8_t SoundReg803 = 0;
+static uint8_t SoundReg804 = 0;
+static uint8_t SoundReg805 = 0;
+static uint8_t SoundReg_Volume = 0; /* 0x806 */
+/* static uint8_t SoundReg807 = 0; */
 
-LOCALVAR uint8_t ASC_SampBuff[0x800];
+static uint8_t ASC_SampBuff[0x800];
 
 struct ASC_ChanR {
 	uint8_t freq[4];
@@ -49,20 +49,20 @@ struct ASC_ChanR {
 };
 typedef struct ASC_ChanR ASC_ChanR;
 
-LOCALVAR ASC_ChanR ASC_ChanA[4];
+static ASC_ChanR ASC_ChanA[4];
 
-LOCALVAR uint16_t ASC_FIFO_Out = 0;
-LOCALVAR uint16_t ASC_FIFO_InA = 0;
-LOCALVAR uint16_t ASC_FIFO_InB = 0;
-LOCALVAR bool ASC_Playing = false;
+static uint16_t ASC_FIFO_Out = 0;
+static uint16_t ASC_FIFO_InA = 0;
+static uint16_t ASC_FIFO_InB = 0;
+static bool ASC_Playing = false;
 
 #define ASC_dolog (dbglog_HAVE && 0)
 
 #ifdef ASC_interrupt_PulseNtfy
-IMPORTPROC ASC_interrupt_PulseNtfy(void);
+extern void ASC_interrupt_PulseNtfy(void);
 #endif
 
-LOCALPROC ASC_RecalcStatus(void)
+static void ASC_RecalcStatus(void)
 {
 	if ((1 == SoundReg801) && ASC_Playing) {
 		if (((uint16_t)(ASC_FIFO_InA - ASC_FIFO_Out)) >= 0x200) {
@@ -90,7 +90,7 @@ LOCALPROC ASC_RecalcStatus(void)
 	}
 }
 
-LOCALPROC ASC_ClearFIFO(void)
+static void ASC_ClearFIFO(void)
 {
 	ASC_FIFO_Out = 0;
 	ASC_FIFO_InA = 0;
@@ -99,7 +99,7 @@ LOCALPROC ASC_ClearFIFO(void)
 	ASC_RecalcStatus();
 }
 
-GLOBALFUNC uint32_t ASC_Access(uint32_t Data, bool WriteMem, CPTR addr)
+ uint32_t ASC_Access(uint32_t Data, bool WriteMem, CPTR addr)
 {
 	if (addr < 0x800) {
 		if (WriteMem) {
@@ -517,11 +517,11 @@ GLOBALFUNC uint32_t ASC_Access(uint32_t Data, bool WriteMem, CPTR addr)
 	= {approx} (x - kCenterSound) / (8 - SoundVolume) + kCenterSound;
 */
 
-LOCALVAR const uint16_t vol_mult[] = {
+static const uint16_t vol_mult[] = {
 	8192, 9362, 10922, 13107, 16384, 21845, 32768
 };
 
-LOCALVAR const trSoundSamp vol_offset[] = {
+static const trSoundSamp vol_offset[] = {
 #if 3 == kLn2SoundSampSz
 	112, 110, 107, 103, 96, 86, 64, 0
 #elif 4 == kLn2SoundSampSz
@@ -531,12 +531,12 @@ LOCALVAR const trSoundSamp vol_offset[] = {
 #endif
 };
 
-LOCALVAR const uint8_t SubTick_n[kNumSubTicks] = {
+static const uint8_t SubTick_n[kNumSubTicks] = {
 	23,  23,  23,  23,  23,  23,  23,  24,
 	23,  23,  23,  23,  23,  23,  23,  24
 };
 
-GLOBALPROC ASC_SubTick(int SubTick)
+void ASC_SubTick(int SubTick)
 {
 	uint16_t actL;
 #if SoundEnabled

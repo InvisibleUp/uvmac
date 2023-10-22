@@ -35,7 +35,7 @@
 
 #include "HW/MOUSE/MOUSEMDV.h"
 
-GLOBALPROC Mouse_Update(void)
+void Mouse_Update(void)
 {
 #if HaveMasterEvtQLock
 	if (0 != MasterEvtQLock) {
@@ -119,7 +119,7 @@ GLOBALPROC Mouse_Update(void)
 #endif
 }
 
-GLOBALPROC Mouse_EndTickNotify(void)
+void Mouse_EndTickNotify(void)
 {
 	if (Mouse_Enabled()) {
 		/* tell platform specific code where the mouse went */

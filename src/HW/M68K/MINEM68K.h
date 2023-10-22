@@ -17,20 +17,20 @@
 #ifndef MINEM68K_H
 #define MINEM68K_H
 
-EXPORTPROC MINEM68K_Init(
+extern void MINEM68K_Init(
 	uint8_t *fIPL);
 #if SmallGlobals
-EXPORTPROC MINEM68K_ReserveAlloc(void);
+extern void MINEM68K_ReserveAlloc(void);
 #endif
 
-EXPORTPROC m68k_IPLchangeNtfy(void);
-EXPORTPROC DiskInsertedPsuedoException(CPTR newpc, uint32_t data);
-EXPORTPROC m68k_reset(void);
+extern void m68k_IPLchangeNtfy(void);
+extern void DiskInsertedPsuedoException(CPTR newpc, uint32_t data);
+extern void m68k_reset(void);
 
-EXPORTFUNC int32_t GetCyclesRemaining(void);
-EXPORTPROC SetCyclesRemaining(int32_t n);
+extern int32_t GetCyclesRemaining(void);
+extern void SetCyclesRemaining(int32_t n);
 
-EXPORTPROC m68k_go_nCycles(uint32_t n);
+extern void m68k_go_nCycles(uint32_t n);
 
 /*
 	general purpose access of address space
@@ -38,15 +38,15 @@ EXPORTPROC m68k_go_nCycles(uint32_t n);
 	memory mapped hardware.)
 */
 
-EXPORTFUNC uint8_t get_vm_byte(CPTR addr);
-EXPORTFUNC uint16_t get_vm_word(CPTR addr);
-EXPORTFUNC uint32_t get_vm_long(CPTR addr);
+extern uint8_t get_vm_byte(CPTR addr);
+extern uint16_t get_vm_word(CPTR addr);
+extern uint32_t get_vm_long(CPTR addr);
 
-EXPORTPROC put_vm_byte(CPTR addr, uint8_t b);
-EXPORTPROC put_vm_word(CPTR addr, uint16_t w);
-EXPORTPROC put_vm_long(CPTR addr, uint32_t l);
+extern void put_vm_byte(CPTR addr, uint8_t b);
+extern void put_vm_word(CPTR addr, uint16_t w);
+extern void put_vm_long(CPTR addr, uint32_t l);
 
-EXPORTPROC SetHeadATTel(ATTep p);
-EXPORTFUNC ATTep FindATTel(CPTR addr);
+extern void SetHeadATTel(ATTep p);
+extern ATTep FindATTel(CPTR addr);
 
 #endif

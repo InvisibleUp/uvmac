@@ -28,23 +28,23 @@
 */
 
 
-LOCALVAR struct fpustruct
+static struct fpustruct
 {
 	myfpr fp[8];
 	CPTR FPIAR; /* Floating point instruction address register */
 } fpu_dat;
 
-LOCALPROC myfp_SetFPIAR(uint32_t v)
+static void myfp_SetFPIAR(uint32_t v)
 {
 	fpu_dat.FPIAR = v;
 }
 
-LOCALFUNC uint32_t myfp_GetFPIAR(void)
+static uint32_t myfp_GetFPIAR(void)
 {
 	return fpu_dat.FPIAR;
 }
 
-LOCALFUNC bool DecodeAddrModeRegister(uint32_t sz)
+static bool DecodeAddrModeRegister(uint32_t sz)
 {
 	uint16_t Dat = V_regs.CurDecOpY.v[0].ArgDat;
 	uint16_t themode = (Dat >> 3) & 7;
@@ -78,7 +78,7 @@ LOCALFUNC bool DecodeAddrModeRegister(uint32_t sz)
 	}
 }
 
-LOCALPROC read_long_double(uint32_t addr, myfpr *r)
+static void read_long_double(uint32_t addr, myfpr *r)
 {
 	uint16_t v2;
 	uint32_t v1;
@@ -92,7 +92,7 @@ LOCALPROC read_long_double(uint32_t addr, myfpr *r)
 	myfp_FromExtendedFormat(r, v2, v1, v0);
 }
 
-LOCALPROC write_long_double(uint32_t addr, myfpr *xx)
+static void write_long_double(uint32_t addr, myfpr *xx)
 {
 	uint16_t v2;
 	uint32_t v1;
@@ -106,7 +106,7 @@ LOCALPROC write_long_double(uint32_t addr, myfpr *xx)
 	put_long(addr + 8, v0);
 }
 
-LOCALPROC read_double(uint32_t addr, myfpr *r)
+static void read_double(uint32_t addr, myfpr *r)
 {
 	uint32_t v1;
 	uint32_t v0;
@@ -117,7 +117,7 @@ LOCALPROC read_double(uint32_t addr, myfpr *r)
 	myfp_FromDoubleFormat(r, v1, v0);
 }
 
-LOCALPROC write_double(uint32_t addr, myfpr *dd)
+static void write_double(uint32_t addr, myfpr *dd)
 {
 	uint32_t v1;
 	uint32_t v0;
@@ -129,19 +129,19 @@ LOCALPROC write_double(uint32_t addr, myfpr *dd)
 }
 
 #if 0
-LOCALPROC read_single(uint32_t addr, myfpr *r)
+static void read_single(uint32_t addr, myfpr *r)
 {
 	myfp_FromSingleFormat(r, get_long(addr));
 }
 
-LOCALPROC write_single(uint32_t addr, myfpr *ff)
+static void write_single(uint32_t addr, myfpr *ff)
 {
 	put_long(addr, myfp_ToSingleFormat(ff));
 }
 #endif
 
 
-LOCALFUNC int CheckFPCondition(uint16_t predicate)
+static int CheckFPCondition(uint16_t predicate)
 {
 	int condition_true = 0;
 
@@ -417,13 +417,13 @@ LOCALIPROC DoCodeFPU_Scc(void)
 	}
 }
 
-LOCALPROC DoCodeF_InvalidPlusWord(void)
+static void DoCodeF_InvalidPlusWord(void)
 {
 	BackupPC();
 	DoCodeFPU_dflt();
 }
 
-LOCALFUNC int CountCSIAlist(uint16_t word2)
+static int CountCSIAlist(uint16_t word2)
 {
 	uint16_t regselect = (word2 >> 10) & 0x7;
 	int num = 0;
@@ -441,7 +441,7 @@ LOCALFUNC int CountCSIAlist(uint16_t word2)
 	return num;
 }
 
-LOCALPROC DoCodeFPU_Move_EA_CSIA(uint16_t word2)
+static void DoCodeFPU_Move_EA_CSIA(uint16_t word2)
 {
 	int n;
 	uint32_t ea_value[3];
@@ -485,7 +485,7 @@ LOCALPROC DoCodeFPU_Move_EA_CSIA(uint16_t word2)
 	}
 }
 
-LOCALPROC DoCodeFPU_MoveM_CSIA_EA(uint16_t word2)
+static void DoCodeFPU_MoveM_CSIA_EA(uint16_t word2)
 {
 	int n;
 	uint32_t ea_value[3];
@@ -529,7 +529,7 @@ LOCALPROC DoCodeFPU_MoveM_CSIA_EA(uint16_t word2)
 	}
 }
 
-LOCALPROC DoCodeFPU_MoveM_EA_list(uint16_t word2)
+static void DoCodeFPU_MoveM_EA_list(uint16_t word2)
 {
 	int i;
 	uint32_t myaddr;
@@ -582,7 +582,7 @@ LOCALPROC DoCodeFPU_MoveM_EA_list(uint16_t word2)
 	}
 }
 
-LOCALPROC DoCodeFPU_MoveM_list_EA(uint16_t word2)
+static void DoCodeFPU_MoveM_list_EA(uint16_t word2)
 {
 	/* FMOVEM.X <list>, <ea> */
 
@@ -643,7 +643,7 @@ LOCALPROC DoCodeFPU_MoveM_list_EA(uint16_t word2)
 	}
 }
 
-LOCALPROC DoCodeFPU_MoveCR(uint16_t word2)
+static void DoCodeFPU_MoveCR(uint16_t word2)
 {
 	/* FMOVECR */
 	uint16_t opcode = ((uint16_t)(V_regs.CurDecOpY.v[0].AMd) << 8)
@@ -667,13 +667,13 @@ LOCALPROC DoCodeFPU_MoveCR(uint16_t word2)
 	}
 }
 
-LOCALPROC SaveResultAndFPSR(myfpr *DestReg, myfpr *result)
+static void SaveResultAndFPSR(myfpr *DestReg, myfpr *result)
 {
 	*DestReg = *result;
 	myfp_SetConditionCodeByteFromResult(result);
 }
 
-LOCALPROC DoCodeFPU_GenOp(uint16_t word2, myfpr *source)
+static void DoCodeFPU_GenOp(uint16_t word2, myfpr *source)
 {
 	myfpr result;
 	myfpr t0;
@@ -988,14 +988,14 @@ LOCALPROC DoCodeFPU_GenOp(uint16_t word2, myfpr *source)
 	}
 }
 
-LOCALPROC DoCodeFPU_GenOpReg(uint16_t word2)
+static void DoCodeFPU_GenOpReg(uint16_t word2)
 {
 	uint16_t regselect = (word2 >> 10) & 0x7;
 
 	DoCodeFPU_GenOp(word2, &fpu_dat.fp[regselect]);
 }
 
-LOCALPROC DoCodeFPU_GenOpEA(uint16_t word2)
+static void DoCodeFPU_GenOpEA(uint16_t word2)
 {
 	myfpr source;
 
@@ -1096,7 +1096,7 @@ LOCALPROC DoCodeFPU_GenOpEA(uint16_t word2)
 	}
 }
 
-LOCALPROC DoCodeFPU_Move_FP_EA(uint16_t word2)
+static void DoCodeFPU_Move_FP_EA(uint16_t word2)
 {
 	/* FMOVE FP?, <EA> */
 

@@ -21,7 +21,7 @@
 #endif
 
 
-EXPORTPROC Kybd_DataLineChngNtfy(void);
-EXPORTPROC DoKybd_ReceiveEndCommand(void);
-EXPORTPROC DoKybd_ReceiveCommand(void);
-EXPORTPROC KeyBoard_Update(void);
+extern void Kybd_DataLineChngNtfy(void);
+extern void DoKybd_ReceiveEndCommand(void);
+extern void DoKybd_ReceiveCommand(void);
+extern void KeyBoard_Update(void);

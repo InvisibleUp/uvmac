@@ -56,12 +56,12 @@ void MacMsgOverride(char *title, char *msg)
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, msg, main_wind);
 }
 
-LOCALPROC WarnMsgCorruptedROM(void)
+static void WarnMsgCorruptedROM(void)
 {
 	MacMsgOverride(kStrCorruptedROMTitle, kStrCorruptedROMMessage);
 }
 
-LOCALPROC WarnMsgUnsupportedROM(void)
+static void WarnMsgUnsupportedROM(void)
 {
 	MacMsgOverride(kStrUnsupportedROMTitle,
 		kStrUnsupportedROMMessage);

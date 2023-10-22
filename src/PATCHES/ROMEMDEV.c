@@ -38,7 +38,7 @@
 #endif
 
 #ifdef ln2mtb
-LOCALPROC ROMscrambleForMTB(void)
+static void ROMscrambleForMTB(void)
 {
 	int32_t j;
 	uint8_t * p = ROM;
@@ -60,7 +60,7 @@ LOCALPROC ROMscrambleForMTB(void)
 }
 #endif
 
-GLOBALFUNC bool ROM_Init(void)
+ bool ROM_Init(void)
 {
 #if DisableRomCheck
 

@@ -21,7 +21,7 @@
 #endif
 
 
-EXPORTPROC ADBstate_ChangeNtfy(void);
-EXPORTPROC ADB_DoNewState(void);
-EXPORTPROC ADB_DataLineChngNtfy(void);
-EXPORTPROC ADB_Update(void);
+extern void ADBstate_ChangeNtfy(void);
+extern void ADB_DoNewState(void);
+extern void ADB_DataLineChngNtfy(void);
+extern void ADB_Update(void);

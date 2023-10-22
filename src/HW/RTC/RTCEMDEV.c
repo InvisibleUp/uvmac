@@ -76,11 +76,11 @@ typedef struct
 	uint8_t PARAMRAM[PARAMRAMSize];
 } RTC_Ty;
 
-LOCALVAR RTC_Ty RTC;
+static RTC_Ty RTC;
 
 /* RTC Functions */
 
-LOCALVAR uint32_t LastRealDate;
+static uint32_t LastRealDate;
 
 #ifndef RTCinitPRAM
 #define RTCinitPRAM 1
@@ -127,9 +127,9 @@ LOCALVAR uint32_t LastRealDate;
 		+ (DiskCacheOn << 5) + (MouseScalingOn << 6))
 
 #if dbglog_HAVE && 0
-EXPORTPROC DumpRTC(void);
+extern void DumpRTC(void);
 
-GLOBALPROC DumpRTC(void)
+void DumpRTC(void)
 {
 	int Counter;
 
@@ -143,7 +143,7 @@ GLOBALPROC DumpRTC(void)
 }
 #endif
 
-GLOBALFUNC bool RTC_Init(void)
+ bool RTC_Init(void)
 {
 	int Counter;
 	uint32_t secs;
@@ -300,10 +300,10 @@ if ((0 == vMacScreenDepth) || (vMacScreenDepth >= 4)) {
 }
 
 #ifdef RTC_OneSecond_PulseNtfy
-IMPORTPROC RTC_OneSecond_PulseNtfy(void);
+extern void RTC_OneSecond_PulseNtfy(void);
 #endif
 
-GLOBALPROC RTC_Interrupt(void)
+void RTC_Interrupt(void)
 {
 	uint32_t Seconds = 0;
 	uint32_t NewRealDate = CurMacDateInSeconds;
@@ -326,7 +326,7 @@ GLOBALPROC RTC_Interrupt(void)
 	}
 }
 
-LOCALFUNC uint8_t RTC_Access_PRAM_Reg(uint8_t Data, bool WriteReg, uint8_t t)
+static uint8_t RTC_Access_PRAM_Reg(uint8_t Data, bool WriteReg, uint8_t t)
 {
 	if (WriteReg) {
 		if (! RTC.WrProtect) {
@@ -341,7 +341,7 @@ LOCALFUNC uint8_t RTC_Access_PRAM_Reg(uint8_t Data, bool WriteReg, uint8_t t)
 	return Data;
 }
 
-LOCALFUNC uint8_t RTC_Access_Reg(uint8_t Data, bool WriteReg, uint8_t TheCmd)
+static uint8_t RTC_Access_Reg(uint8_t Data, bool WriteReg, uint8_t TheCmd)
 {
 	uint8_t t = (TheCmd & 0x7C) >> 2;
 	if (t < 8) {
@@ -377,7 +377,7 @@ LOCALFUNC uint8_t RTC_Access_Reg(uint8_t Data, bool WriteReg, uint8_t TheCmd)
 	return Data;
 }
 
-LOCALPROC RTC_DoCmd(void)
+static void RTC_DoCmd(void)
 {
 	switch (RTC.Mode) {
 		case 0: /* This Byte is a RTC Command */
@@ -437,7 +437,7 @@ LOCALPROC RTC_DoCmd(void)
 	}
 }
 
-GLOBALPROC RTCunEnabled_ChangeNtfy(void)
+void RTCunEnabled_ChangeNtfy(void)
 {
 	if (RTCunEnabled) {
 		/* abort anything going on */
@@ -455,7 +455,7 @@ GLOBALPROC RTCunEnabled_ChangeNtfy(void)
 	}
 }
 
-GLOBALPROC RTCclock_ChangeNtfy(void)
+void RTCclock_ChangeNtfy(void)
 {
 	if (! RTCunEnabled) {
 		if (RTCclock) {
@@ -480,7 +480,7 @@ GLOBALPROC RTCclock_ChangeNtfy(void)
 	}
 }
 
-GLOBALPROC RTCdataLine_ChangeNtfy(void)
+void RTCdataLine_ChangeNtfy(void)
 {
 #if dbglog_HAVE
 	if (RTC.DataOut) {

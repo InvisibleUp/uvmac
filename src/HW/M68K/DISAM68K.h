@@ -21,7 +21,7 @@
 #ifndef DIS1M68K_H
 #define DIS1M68K_H
 
-EXPORTPROC DisasmOneOrSave(uint32_t pc);
-EXPORTPROC m68k_WantDisasmContext(void);
+extern void DisasmOneOrSave(uint32_t pc);
+extern void m68k_WantDisasmContext(void);
 
 #endif

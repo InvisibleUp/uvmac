@@ -44,14 +44,14 @@
 */
 
 
-LOCALVAR uint32_t vSonyMountedMask = 0;
+static uint32_t vSonyMountedMask = 0;
 
 #define vSonyIsLocked(Drive_No) \
 	((vSonyWritableMask & ((uint32_t)1 << (Drive_No))) == 0)
 #define vSonyIsMounted(Drive_No) \
 	((vSonyMountedMask & ((uint32_t)1 << (Drive_No))) != 0)
 
-LOCALFUNC bool vSonyNextPendingInsert0(tDrive *Drive_No)
+static bool vSonyNextPendingInsert0(tDrive *Drive_No)
 {
 	/* find next drive to Mount */
 	uint32_t MountPending = vSonyInsertedMask & (~ vSonyMountedMask);
@@ -68,7 +68,7 @@ LOCALFUNC bool vSonyNextPendingInsert0(tDrive *Drive_No)
 	return false;
 }
 
-LOCALFUNC MacErr_t CheckReadableDrive(tDrive Drive_No)
+static MacErr_t CheckReadableDrive(tDrive Drive_No)
 {
 	MacErr_t result;
 
@@ -83,7 +83,7 @@ LOCALFUNC MacErr_t CheckReadableDrive(tDrive Drive_No)
 	return result;
 }
 
-LOCALFUNC MacErr_t vSonyTransferVM(bool IsWrite,
+static MacErr_t vSonyTransferVM(bool IsWrite,
 	CPTR Buffera, tDrive Drive_No,
 	uint32_t Sony_Start, uint32_t Sony_Count, uint32_t *Sony_ActCount)
 {
@@ -124,7 +124,7 @@ label_1:
 	return result;
 }
 
-LOCALPROC MoveBytesVM(CPTR srcPtr, CPTR dstPtr, int32_t byteCount)
+static void MoveBytesVM(CPTR srcPtr, CPTR dstPtr, int32_t byteCount)
 {
 	uint8_t * src;
 	uint8_t * dst;
@@ -151,13 +151,13 @@ label_1:
 	}
 }
 
-LOCALVAR uint32_t ImageDataOffset[NumDrives];
+static uint32_t ImageDataOffset[NumDrives];
 	/* size of any header in disk image file */
-LOCALVAR uint32_t ImageDataSize[NumDrives];
+static uint32_t ImageDataSize[NumDrives];
 	/* size of disk image file contents */
 
 #if Sony_SupportTags
-LOCALVAR uint32_t ImageTagOffset[NumDrives];
+static uint32_t ImageTagOffset[NumDrives];
 	/* offset to disk image file tags */
 #endif
 
@@ -176,7 +176,7 @@ LOCALVAR uint32_t ImageTagOffset[NumDrives];
 #define ChecksumBlockSize 1024
 
 #if Sony_SupportDC42 && Sony_WantChecksumsUpdated
-LOCALFUNC MacErr_t DC42BlockChecksum(tDrive Drive_No,
+static MacErr_t DC42BlockChecksum(tDrive Drive_No,
 	uint32_t Sony_Start, uint32_t Sony_Count, uint32_t *r)
 {
 	MacErr_t result;
@@ -230,7 +230,7 @@ LOCALFUNC MacErr_t DC42BlockChecksum(tDrive Drive_No,
 #endif
 
 #if Sony_WantChecksumsUpdated
-LOCALPROC Drive_UpdateChecksums(tDrive Drive_No)
+static void Drive_UpdateChecksums(tDrive Drive_No)
 {
 	if (! vSonyIsLocked(Drive_No)) {
 		uint32_t DataOffset = ImageDataOffset[Drive_No];
@@ -291,7 +291,7 @@ LOCALPROC Drive_UpdateChecksums(tDrive Drive_No)
 
 #define Sony_SupportOtherFormats Sony_SupportDC42
 
-LOCALFUNC MacErr_t vSonyNextPendingInsert(tDrive *Drive_No)
+static MacErr_t vSonyNextPendingInsert(tDrive *Drive_No)
 {
 	tDrive i;
 	MacErr_t result;
@@ -432,12 +432,12 @@ LOCALFUNC MacErr_t vSonyNextPendingInsert(tDrive *Drive_No)
 		if call PostEvent too frequently, insert events seem to get lost
 	*/
 
-LOCALVAR uint16_t DelayUntilNextInsert;
+static uint16_t DelayUntilNextInsert;
 
-LOCALVAR CPTR MountCallBack = 0;
+static CPTR MountCallBack = 0;
 
 /* This checks to see if a disk (image) has been inserted */
-GLOBALPROC Sony_Update (void)
+void Sony_Update (void)
 {
 	if (DelayUntilNextInsert != 0) {
 		--DelayUntilNextInsert;
@@ -469,7 +469,7 @@ GLOBALPROC Sony_Update (void)
 	}
 }
 
-LOCALFUNC MacErr_t Drive_Transfer(bool IsWrite, CPTR Buffera,
+static MacErr_t Drive_Transfer(bool IsWrite, CPTR Buffera,
 	tDrive Drive_No, uint32_t Sony_Start, uint32_t Sony_Count,
 	uint32_t *Sony_ActCount)
 {
@@ -510,14 +510,14 @@ LOCALFUNC MacErr_t Drive_Transfer(bool IsWrite, CPTR Buffera,
 	return result;
 }
 
-LOCALVAR bool QuitOnEject = false;
+static bool QuitOnEject = false;
 
-GLOBALPROC Sony_SetQuitOnEject(void)
+void Sony_SetQuitOnEject(void)
 {
 	QuitOnEject = true;
 }
 
-LOCALFUNC MacErr_t Drive_Eject(tDrive Drive_No)
+static MacErr_t Drive_Eject(tDrive Drive_No)
 {
 	MacErr_t result;
 
@@ -539,7 +539,7 @@ LOCALFUNC MacErr_t Drive_Eject(tDrive Drive_No)
 }
 
 #if IncludeSonyNew
-LOCALFUNC MacErr_t Drive_EjectDelete(tDrive Drive_No)
+static MacErr_t Drive_EjectDelete(tDrive Drive_No)
 {
 	MacErr_t result;
 
@@ -557,7 +557,7 @@ LOCALFUNC MacErr_t Drive_EjectDelete(tDrive Drive_No)
 }
 #endif
 
-GLOBALPROC Sony_EjectAllDisks(void)
+void Sony_EjectAllDisks(void)
 {
 	tDrive i;
 
@@ -572,7 +572,7 @@ GLOBALPROC Sony_EjectAllDisks(void)
 	}
 }
 
-GLOBALPROC Sony_Reset(void)
+void Sony_Reset(void)
 {
 	DelayUntilNextInsert = 0;
 	QuitOnEject = false;
@@ -617,7 +617,7 @@ GLOBALPROC Sony_Reset(void)
 #define kParamDiskBuffer 16
 #define kParamDiskDrive_No 20
 
-GLOBALPROC ExtnDisk_Access(CPTR p)
+void ExtnDisk_Access(CPTR p)
 {
 	MacErr_t result = mnvm_controlErr;
 
@@ -929,10 +929,10 @@ typedef struct DriverDat_R DriverDat_R;
 #define Sony_dolog (dbglog_HAVE && 0)
 
 #if Sony_SupportTags
-LOCALVAR CPTR TheTagBuffer;
+static CPTR TheTagBuffer;
 #endif
 
-LOCALFUNC uint32_t DriveVarsLocation(tDrive Drive_No)
+static uint32_t DriveVarsLocation(tDrive Drive_No)
 {
 	CPTR SonyVars = get_vm_long(SonyVarsPtr);
 
@@ -944,7 +944,7 @@ LOCALFUNC uint32_t DriveVarsLocation(tDrive Drive_No)
 	}
 }
 
-LOCALFUNC MacErr_t Sony_Mount(CPTR p)
+static MacErr_t Sony_Mount(CPTR p)
 {
 	uint32_t data = get_vm_long(p + ExtnDat_params + 0);
 	MacErr_t result = mnvm_miscErr;
@@ -1035,7 +1035,7 @@ LOCALFUNC MacErr_t Sony_Mount(CPTR p)
 }
 
 #if Sony_SupportTags
-LOCALFUNC MacErr_t Sony_PrimeTags(tDrive Drive_No,
+static MacErr_t Sony_PrimeTags(tDrive Drive_No,
 	uint32_t Sony_Start, uint32_t Sony_Count, bool IsWrite)
 {
 	MacErr_t result = mnvm_noErr;
@@ -1084,7 +1084,7 @@ label_fail:
 #endif
 
 /* Handles I/O to disks */
-LOCALFUNC MacErr_t Sony_Prime(CPTR p)
+static MacErr_t Sony_Prime(CPTR p)
 {
 	MacErr_t result;
 	uint32_t Sony_Count;
@@ -1240,7 +1240,7 @@ label_fail:
 }
 
 /* Implements control csCodes for the Sony driver */
-LOCALFUNC MacErr_t Sony_Control(CPTR p)
+static MacErr_t Sony_Control(CPTR p)
 {
 	MacErr_t result;
 	CPTR ParamBlk = get_vm_long(p + ExtnDat_params + 0);
@@ -1429,7 +1429,7 @@ LOCALFUNC MacErr_t Sony_Control(CPTR p)
 }
 
 /* Handles the DriveStatus call */
-LOCALFUNC MacErr_t Sony_Status(CPTR p)
+static MacErr_t Sony_Status(CPTR p)
 {
 	MacErr_t result;
 	CPTR ParamBlk = get_vm_long(p + ExtnDat_params + 0);
@@ -1473,7 +1473,7 @@ LOCALFUNC MacErr_t Sony_Status(CPTR p)
 	return result;
 }
 
-LOCALFUNC MacErr_t Sony_Close(CPTR p)
+static MacErr_t Sony_Close(CPTR p)
 {
 #if 0
 	CPTR ParamBlk = get_vm_long(p + ExtnDat_params + 0);
@@ -1483,7 +1483,7 @@ LOCALFUNC MacErr_t Sony_Close(CPTR p)
 	return mnvm_closErr; /* Can't Close Driver */
 }
 
-LOCALFUNC MacErr_t Sony_OpenA(CPTR p)
+static MacErr_t Sony_OpenA(CPTR p)
 {
 #if Sony_dolog
 	dbglog_WriteNote("Sony : OpenA");
@@ -1504,7 +1504,7 @@ LOCALFUNC MacErr_t Sony_OpenA(CPTR p)
 	}
 }
 
-LOCALFUNC MacErr_t Sony_OpenB(CPTR p)
+static MacErr_t Sony_OpenB(CPTR p)
 {
 	int16_t i;
 	CPTR dvl;
@@ -1579,7 +1579,7 @@ LOCALFUNC MacErr_t Sony_OpenB(CPTR p)
 	return mnvm_noErr;
 }
 
-LOCALFUNC MacErr_t Sony_OpenC(CPTR p)
+static MacErr_t Sony_OpenC(CPTR p)
 {
 #if Sony_dolog
 	dbglog_WriteNote("Sony : OpenC");
@@ -1602,7 +1602,7 @@ LOCALFUNC MacErr_t Sony_OpenC(CPTR p)
 #define kCmndSonyOpenC 7
 #define kCmndSonyMount 8
 
-GLOBALPROC ExtnSony_Access(CPTR p)
+void ExtnSony_Access(CPTR p)
 {
 	MacErr_t result;
 

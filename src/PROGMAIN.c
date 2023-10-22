@@ -262,7 +262,7 @@ const DevMethods_t DEVICES[] = {
 	},
 };
 
-LOCALPROC EmulatedHardwareZap(void)
+static void EmulatedHardwareZap(void)
 {
 	int i;
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
@@ -270,13 +270,13 @@ LOCALPROC EmulatedHardwareZap(void)
 	}
 }
 
-LOCALPROC DoMacReset(void)
+static void DoMacReset(void)
 {
 	Sony_EjectAllDisks();
 	EmulatedHardwareZap();
 }
 
-LOCALPROC InterruptReset_Update(void)
+static void InterruptReset_Update(void)
 {
 	SetInterruptButton(false); // don't keep held over 1/60 sec
 
@@ -290,7 +290,7 @@ LOCALPROC InterruptReset_Update(void)
 	}
 }
 
-LOCALPROC SubTickNotify(int SubTick)
+static void SubTickNotify(int SubTick)
 {
 	int i;
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
@@ -301,9 +301,9 @@ LOCALPROC SubTickNotify(int SubTick)
 #define CyclesScaledPerTick (130240UL * ClockMult * kCycleScale)
 #define CyclesScaledPerSubTick (CyclesScaledPerTick / kNumSubTicks)
 
-LOCALVAR uint16_t SubTickCounter;
+static uint16_t SubTickCounter;
 
-LOCALPROC SubTickTaskDo(void)
+static void SubTickTaskDo(void)
 {
 	SubTickNotify(SubTickCounter);
 	++SubTickCounter;
@@ -318,18 +318,18 @@ LOCALPROC SubTickTaskDo(void)
 	}
 }
 
-LOCALPROC SubTickTaskStart(void)
+static void SubTickTaskStart(void)
 {
 	SubTickCounter = 0;
 	ICT_add(kICT_SubTick, CyclesScaledPerSubTick);
 }
 
-LOCALPROC SubTickTaskEnd(void)
+static void SubTickTaskEnd(void)
 {
 	SubTickNotify(kNumSubTicks - 1);
 }
 
-LOCALPROC SixtiethSecondNotify(void)
+static void SixtiethSecondNotify(void)
 {
 	/*int i;
 	// Begin new frame
@@ -357,7 +357,7 @@ LOCALPROC SixtiethSecondNotify(void)
 	SubTickTaskStart();
 }
 
-LOCALPROC SixtiethEndNotify(void)
+static void SixtiethEndNotify(void)
 {
 	int i;
 	SubTickTaskEnd();
@@ -367,7 +367,7 @@ LOCALPROC SixtiethEndNotify(void)
 	// End frame
 }
 
-LOCALPROC ExtraTimeBeginNotify(void)
+static void ExtraTimeBeginNotify(void)
 {
 	int i;
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
@@ -375,7 +375,7 @@ LOCALPROC ExtraTimeBeginNotify(void)
 	}
 }
 
-LOCALPROC ExtraTimeEndNotify(void)
+static void ExtraTimeEndNotify(void)
 {
 	int i;
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
@@ -383,7 +383,7 @@ LOCALPROC ExtraTimeEndNotify(void)
 	}
 }
 
-GLOBALPROC EmulationReserveAlloc(void)
+void EmulationReserveAlloc(void)
 {
 	ReserveAllocOneBlock(&RAM, kRAM_Size + RAMSafetyMarginFudge, 5, false);
 #if EmVidCard
@@ -397,7 +397,7 @@ GLOBALPROC EmulationReserveAlloc(void)
 #endif
 }
 
-LOCALFUNC bool InitEmulation(void)
+static bool InitEmulation(void)
 {
 	int i;
 	for ( i = 0; i < ARRAY_SIZE(DEVICES); i++ ) {
@@ -410,7 +410,7 @@ LOCALFUNC bool InitEmulation(void)
 	return true;
 }
 
-LOCALPROC ICT_DoTask(int taskid)
+static void ICT_DoTask(int taskid)
 {
 	switch (taskid) {
 		case kICT_SubTick:
@@ -454,7 +454,7 @@ LOCALPROC ICT_DoTask(int taskid)
 	}
 }
 
-LOCALPROC ICT_DoCurrentTasks(void)
+static void ICT_DoCurrentTasks(void)
 {
 	int i;
 	uimr m;
@@ -475,7 +475,7 @@ LOCALPROC ICT_DoCurrentTasks(void)
 	}
 }
 
-LOCALFUNC uint32_t ICT_DoGetNext(uint32_t maxn)
+static uint32_t ICT_DoGetNext(uint32_t maxn)
 {
 	int i;
 	uimr m;
@@ -490,7 +490,7 @@ LOCALFUNC uint32_t ICT_DoGetNext(uint32_t maxn)
 	return v;
 }
 
-LOCALPROC m68k_go_nCycles_1(uint32_t n)
+static void m68k_go_nCycles_1(uint32_t n)
 {
 	uint32_t n2;
 	uint32_t StopiCount = NextiCount + n;
@@ -503,9 +503,9 @@ LOCALPROC m68k_go_nCycles_1(uint32_t n)
 	} while (n != 0);
 }
 
-LOCALVAR uint32_t ExtraSubTicksToDo = 0;
+static uint32_t ExtraSubTicksToDo = 0;
 
-LOCALPROC DoEmulateOneTick(void)
+static void DoEmulateOneTick(void)
 {
 	// AutoSlow
 	uint32_t NewQuietTime = QuietTime + 1;
@@ -537,7 +537,7 @@ LOCALPROC DoEmulateOneTick(void)
 	}
 }
 
-LOCALFUNC bool MoreSubTicksToDo(void)
+static bool MoreSubTicksToDo(void)
 {
 	bool v = false;
 
@@ -557,7 +557,7 @@ LOCALFUNC bool MoreSubTicksToDo(void)
 	periodically calls ExtraTimeNotOver and stops when this returns false
 	(or it is finished with emulating the extra time).
 */
-LOCALPROC DoEmulateExtraTime(void)
+static void DoEmulateExtraTime(void)
 {
 	if (MoreSubTicksToDo()) {
 		ExtraTimeBeginNotify();
@@ -579,7 +579,7 @@ LOCALPROC DoEmulateExtraTime(void)
 	The number of ticks that have been emulated so far.
 	That is, the number of times "DoEmulateOneTick" has been called.
 */
-LOCALVAR uint32_t CurEmulatedTime = 0;
+static uint32_t CurEmulatedTime = 0;
 
 /*
 	The general idea is to call DoEmulateOneTick once per tick.
@@ -593,7 +593,7 @@ LOCALVAR uint32_t CurEmulatedTime = 0;
 	determined at the beginning, rather than just calling DoEmulateOneTick
 	until CurEmulatedTime >= TrueEmulatedTime.
 */
-LOCALPROC RunEmulatedTicksToTrueTime(void)
+static void RunEmulatedTicksToTrueTime(void)
 {
 	int8_t lag = OnTrueTime - CurEmulatedTime;
 
@@ -623,7 +623,7 @@ LOCALPROC RunEmulatedTicksToTrueTime(void)
 	}
 }
 
-LOCALPROC MainEventLoop(void)
+static void MainEventLoop(void)
 {
 	while (true) {
 		WaitForNextTick();
@@ -633,7 +633,7 @@ LOCALPROC MainEventLoop(void)
 	}
 }
 
-GLOBALPROC ProgramMain(void)
+void ProgramMain(void)
 {
 	if (InitEmulation() == false) {return;}
 	MainEventLoop();

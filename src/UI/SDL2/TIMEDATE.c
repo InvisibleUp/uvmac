@@ -38,7 +38,7 @@ void InitNextTime(void)
 	IncrNextTime();
 }
 
-LOCALVAR uint32_t NewMacDateInSeconds;
+static uint32_t NewMacDateInSeconds;
 
 bool UpdateTrueEmulatedTime(void)
 {

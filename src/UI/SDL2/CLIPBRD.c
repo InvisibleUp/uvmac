@@ -12,7 +12,7 @@
 /* --- clipboard --- */
 
 #if IncludeHostTextClipExchange
-LOCALFUNC uimr MacRoman2UniCodeSize(uint8_t *s, uimr L)
+static uimr MacRoman2UniCodeSize(uint8_t *s, uimr L)
 {
 	uimr i;
 	uint8_t x;
@@ -293,7 +293,7 @@ LOCALFUNC uimr MacRoman2UniCodeSize(uint8_t *s, uimr L)
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALPROC MacRoman2UniCodeData(uint8_t *s, uimr L, char *t)
+static void MacRoman2UniCodeData(uint8_t *s, uimr L, char *t)
 {
 	uimr i;
 	uint8_t x;
@@ -596,7 +596,7 @@ GLOBALOSGLUFUNC MacErr_t HTCEexport(tPbuf i)
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALFUNC MacErr_t UniCodeStrLength(char *s, uimr *r)
+static MacErr_t UniCodeStrLength(char *s, uimr *r)
 {
 	MacErr_t err;
 	uint8_t t;
@@ -665,7 +665,7 @@ label_retry:
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALFUNC uint8_t UniCodePoint2MacRoman(uint32_t x)
+static uint8_t UniCodePoint2MacRoman(uint32_t x)
 {
 /*
 	adapted from
@@ -943,7 +943,7 @@ LOCALFUNC uint8_t UniCodePoint2MacRoman(uint32_t x)
 #endif
 
 #if IncludeHostTextClipExchange
-LOCALPROC UniCodeStr2MacRoman(char *s, char *r)
+static void UniCodeStr2MacRoman(char *s, char *r)
 {
 	MacErr_t err;
 	uint8_t t;

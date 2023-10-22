@@ -50,11 +50,11 @@
 	= {approx} (x - kCenterSound) / (8 - SoundVolume) + kCenterSound;
 */
 
-LOCALVAR const uint16_t vol_mult[] = {
+static const uint16_t vol_mult[] = {
 	8192, 9362, 10922, 13107, 16384, 21845, 32768
 };
 
-LOCALVAR const trSoundSamp vol_offset[] = {
+static const trSoundSamp vol_offset[] = {
 #if 3 == kLn2SoundSampSz
 	112, 110, 107, 103, 96, 86, 64, 0
 #elif 4 == kLn2SoundSampSz
@@ -64,12 +64,12 @@ LOCALVAR const trSoundSamp vol_offset[] = {
 #endif
 };
 
-LOCALVAR const uint16_t SubTick_offset[kNumSubTicks] = {
+static const uint16_t SubTick_offset[kNumSubTicks] = {
 	0,    25,  50,  90, 102, 115, 138, 161,
 	185, 208, 231, 254, 277, 300, 323, 346
 };
 
-LOCALVAR const uint8_t SubTick_n[kNumSubTicks] = {
+static const uint8_t SubTick_n[kNumSubTicks] = {
 	25,   25,  40,  12,  13,  23,  23,  24,
 	23,   23,  23,  23,  23,  23,  23,  24
 };
@@ -99,12 +99,12 @@ LOCALVAR const uint8_t SubTick_n[kNumSubTicks] = {
 	writing offset 0 before it is read.
 */
 
-LOCALVAR uint32_t SoundInvertPhase = 0;
-LOCALVAR uint16_t SoundInvertState = 0;
+static uint32_t SoundInvertPhase = 0;
+static uint16_t SoundInvertState = 0;
 
-IMPORTFUNC uint16_t GetSoundInvertTime(void);
+extern uint16_t GetSoundInvertTime(void);
 
-GLOBALPROC MacSound_SubTick(int SubTick)
+void MacSound_SubTick(int SubTick)
 {
 	uint16_t actL;
 	tpSoundSamp p;

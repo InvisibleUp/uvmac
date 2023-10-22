@@ -35,10 +35,10 @@ static struct bpf_insn insns[] =
 	BPF_STMT(BPF_RET + BPF_K, 0),
 };
 
-GLOBALVAR uint8_t * LT_TxBuffer = NULL;
+ uint8_t * LT_TxBuffer = NULL;
 
 /* Transmit state */
-GLOBALVAR uint16_t LT_TxBuffSz = 0;
+ uint16_t LT_TxBuffSz = 0;
 
 /*
 	Transmit buffer that is reused from tx packet to tx packet.
@@ -59,9 +59,9 @@ static unsigned char tx_buffer[20 + LT_TxBfMxSz] =
 	"\xFF\xFF\xFF\xFF\xFF\xFFssssss\x80\x9BppppSS";
 
 /* Receive state */
-GLOBALVAR uint8_t * LT_RxBuffer = NULL;
+ uint8_t * LT_RxBuffer = NULL;
 	/* When data pending, this is used */
-GLOBALVAR uint32_t LT_RxBuffSz = 0;
+ uint32_t LT_RxBuffSz = 0;
 	/* When data pending, this is used */
 
 /* Macro used by only the get_sockaddrs function for readability. */
@@ -72,7 +72,7 @@ GLOBALVAR uint32_t LT_RxBuffSz = 0;
 	Utility function needed for walking the addresses of the
 	kernel route lookup
 */
-LOCALPROC get_sockaddrs(int addrs, struct sockaddr* sa,
+static void get_sockaddrs(int addrs, struct sockaddr* sa,
 	struct sockaddr** rti_info)
 {
 	int loop;
@@ -103,7 +103,7 @@ LOCALPROC get_sockaddrs(int addrs, struct sockaddr* sa,
 	packets.
 */
 
-LOCALFUNC int get_ethernet(void)
+static int get_ethernet(void)
 {
 	int result;
 	int size;
@@ -260,13 +260,13 @@ LOCALFUNC int get_ethernet(void)
 	return true;
 }
 
-LOCALVAR unsigned char *RxBuffer = NULL;
+static unsigned char *RxBuffer = NULL;
 
 /*
 	External function needed at startup to initialize the LocalTalk
 	functionality.
 */
-LOCALFUNC int InitLocalTalk(void)
+static int InitLocalTalk(void)
 {
 	/* Perform a lot of stuff to get access to the Ethernet */
 	get_ethernet();
@@ -307,10 +307,10 @@ GLOBALOSGLUPROC LT_TransmitPacket(void)
 	(void)count; /* unused */
 }
 
-LOCALVAR unsigned char* NextPacket = NULL;
-LOCALVAR unsigned char* EndPackets = NULL;
+static unsigned char* NextPacket = NULL;
+static unsigned char* EndPackets = NULL;
 
-LOCALPROC LocalTalkTick0(void)
+static void LocalTalkTick0(void)
 {
 	/* Get a single buffer worth of packets from BPF */
 	unsigned char* device_buffer = RxBuffer;

@@ -26,54 +26,54 @@
 #include "COMOSGLU.h"
 #include "HW/SCREEN/SCRNEMDV.h"
 
-GLOBALVAR uint32_t vSonyWritableMask = 0;
-GLOBALVAR uint32_t vSonyInsertedMask = 0;
+ uint32_t vSonyWritableMask = 0;
+ uint32_t vSonyInsertedMask = 0;
 
 #if IncludeSonyRawMode
-GLOBALVAR bool vSonyRawMode = false;
+ bool vSonyRawMode = false;
 #endif
 
 #if IncludeSonyNew
-GLOBALVAR bool vSonyNewDiskWanted = false;
-GLOBALVAR uint32_t vSonyNewDiskSize;
+ bool vSonyNewDiskWanted = false;
+ uint32_t vSonyNewDiskSize;
 #endif
 
 #if IncludeSonyNameNew
-GLOBALVAR tPbuf vSonyNewDiskName = NotAPbuf;
+ tPbuf vSonyNewDiskName = NotAPbuf;
 #endif
 
-GLOBALVAR uint32_t CurMacDateInSeconds = 0;
+ uint32_t CurMacDateInSeconds = 0;
 #if AutoLocation
-GLOBALVAR uint32_t CurMacLatitude = 0;
-GLOBALVAR uint32_t CurMacLongitude = 0;
+ uint32_t CurMacLatitude = 0;
+ uint32_t CurMacLongitude = 0;
 #endif
 #if AutoTimeZone
-GLOBALVAR uint32_t CurMacDelta = 0;
+ uint32_t CurMacDelta = 0;
 #endif
 
-GLOBALVAR bool UseColorMode = false;
-GLOBALVAR bool ColorModeWorks = false;
+ bool UseColorMode = false;
+ bool ColorModeWorks = false;
 
-GLOBALVAR bool ColorMappingChanged = false;
+ bool ColorMappingChanged = false;
 
-GLOBALVAR uint16_t CLUT_reds[CLUT_size];
-GLOBALVAR uint16_t CLUT_greens[CLUT_size];
-GLOBALVAR uint16_t CLUT_blues[CLUT_size];
+ uint16_t CLUT_reds[CLUT_size];
+ uint16_t CLUT_greens[CLUT_size];
+ uint16_t CLUT_blues[CLUT_size];
 
-GLOBALVAR bool RequestMacOff = false;
-GLOBALVAR bool ForceMacOff = false;
-GLOBALVAR bool WantMacInterrupt = false;
-GLOBALVAR bool WantMacReset = false;
+ bool RequestMacOff = false;
+ bool ForceMacOff = false;
+ bool WantMacInterrupt = false;
+ bool WantMacReset = false;
 
-GLOBALVAR uint8_t SpeedValue = WantInitSpeedValue;
-GLOBALVAR uint16_t CurMouseV = 0;
-GLOBALVAR uint16_t CurMouseH = 0;
+ uint8_t SpeedValue = WantInitSpeedValue;
+ uint16_t CurMouseV = 0;
+ uint16_t CurMouseH = 0;
 
-GLOBALVAR uint32_t QuietTime = 0;
-GLOBALVAR uint32_t QuietSubTicks = 0;
+ uint32_t QuietTime = 0;
+ uint32_t QuietSubTicks = 0;
 
 #if IncludePbufs
-GLOBALFUNC bool FirstFreePbuf(tPbuf *r)
+ bool FirstFreePbuf(tPbuf *r)
 {
 	tPbuf i;
 
@@ -86,13 +86,13 @@ GLOBALFUNC bool FirstFreePbuf(tPbuf *r)
 	return false;
 }
 
-GLOBALPROC PbufNewNotify(tPbuf Pbuf_No, uint32_t count)
+void PbufNewNotify(tPbuf Pbuf_No, uint32_t count)
 {
 	PbufSize[Pbuf_No] = count;
 	PbufAllocatedMask |= ((uint32_t)1 << Pbuf_No);
 }
 
-GLOBALPROC PbufDisposeNotify(tPbuf Pbuf_No)
+void PbufDisposeNotify(tPbuf Pbuf_No)
 {
 	PbufAllocatedMask &= ~ ((uint32_t)1 << Pbuf_No);
 }
@@ -124,7 +124,7 @@ GLOBALOSGLUFUNC MacErr_t PbufGetSize(tPbuf Pbuf_No, uint32_t *Count)
 }
 #endif
 
-GLOBALFUNC bool FirstFreeDisk(tDrive *Drive_No)
+ bool FirstFreeDisk(tDrive *Drive_No)
 {
 	tDrive i;
 
@@ -149,7 +149,7 @@ GLOBALOSGLUPROC DiskRevokeWritable(tDrive Drive_No)
 	vSonyWritableMask &= ~ ((uint32_t)1 << Drive_No);
 }
 
-GLOBALPROC DiskInsertNotify(tDrive Drive_No, bool locked)
+void DiskInsertNotify(tDrive Drive_No, bool locked)
 {
 	vSonyInsertedMask |= ((uint32_t)1 << Drive_No);
 	if (! locked) {
@@ -159,23 +159,23 @@ GLOBALPROC DiskInsertNotify(tDrive Drive_No, bool locked)
 	QuietEnds();
 }
 
-GLOBALPROC DiskEjectedNotify(tDrive Drive_No)
+void DiskEjectedNotify(tDrive Drive_No)
 {
 	vSonyWritableMask &= ~ ((uint32_t)1 << Drive_No);
 	vSonyInsertedMask &= ~ ((uint32_t)1 << Drive_No);
 }
 
-GLOBALVAR uint8_t * screencomparebuff = nullpr;
+ uint8_t * screencomparebuff = nullpr;
 
 #if WantColorTransValid
-LOCALVAR bool ColorTransValid = false;
+static bool ColorTransValid = false;
 #endif
 
-GLOBALVAR bool EmVideoDisable = false;
-GLOBALVAR int8_t EmLagTime = 0;
-GLOBALVAR uint32_t OnTrueTime = 0;
+ bool EmVideoDisable = false;
+ int8_t EmLagTime = 0;
+ uint32_t OnTrueTime = 0;
 
-GLOBALPROC ScreenClearChanges(void)
+void ScreenClearChanges(void)
 {
 	ScreenChangedTop = vMacScreenHeight;
 	ScreenChangedBottom = 0;
@@ -183,7 +183,7 @@ GLOBALPROC ScreenClearChanges(void)
 	ScreenChangedRight = 0;
 }
 
-GLOBALPROC ScreenChangedAll(void)
+void ScreenChangedAll(void)
 {
 	ScreenChangedTop = 0;
 	ScreenChangedBottom = vMacScreenHeight;
@@ -192,13 +192,13 @@ GLOBALPROC ScreenChangedAll(void)
 }
 
 #if MayFullScreen
-GLOBALVAR uint16_t ViewHSize;
-GLOBALVAR uint16_t ViewVSize;
-GLOBALVAR uint16_t ViewHStart = 0;
-GLOBALVAR uint16_t ViewVStart = 0;
+ uint16_t ViewHSize;
+ uint16_t ViewVSize;
+ uint16_t ViewHStart = 0;
+ uint16_t ViewVStart = 0;
 #endif
 
-LOCALPROC SetLongs(uint32_t *p, long n)
+static void SetLongs(uint32_t *p, long n)
 {
 	long i;
 
@@ -207,8 +207,8 @@ LOCALPROC SetLongs(uint32_t *p, long n)
 	}
 }
 
-GLOBALVAR uimr ReserveAllocOffset;
-GLOBALVAR uint8_t * ReserveAllocBigBlock = nullpr;
+ uimr ReserveAllocOffset;
+ uint8_t * ReserveAllocBigBlock = nullpr;
 
 GLOBALOSGLUPROC ReserveAllocOneBlock(uint8_t * *p, uimr n,
 	uint8_t align, bool FillOnes)
@@ -229,16 +229,16 @@ GLOBALOSGLUPROC ReserveAllocOneBlock(uint8_t * *p, uimr n,
 
 #if dbglog_HAVE
 
-LOCALVAR uimr dbglog_bufpos = 0;
-LOCALVAR char *dbglog_bufp = nullpr;
+static uimr dbglog_bufpos = 0;
+static char *dbglog_bufp = nullpr;
 
-LOCALPROC dbglog_ReserveAlloc(void)
+static void dbglog_ReserveAlloc(void)
 {
 	ReserveAllocOneBlock((uint8_t * *)&dbglog_bufp, dbglog_bufsz,
 		5, false);
 }
 
-LOCALPROC dbglog_close(void)
+static void dbglog_close(void)
 {
 	uimr n = ModPow2(dbglog_bufpos, dbglog_buflnsz);
 	if (n != 0) {
@@ -248,7 +248,7 @@ LOCALPROC dbglog_close(void)
 	dbglog_close0();
 }
 
-LOCALPROC dbglog_write(char *p, uimr L)
+static void dbglog_write(char *p, uimr L)
 {
 	uimr r;
 	uimr bufposmod;
@@ -272,7 +272,7 @@ label_retry:
 	dbglog_bufpos = newbufpos;
 }
 
-LOCALFUNC uimr CStrLength(char *s)
+static uimr CStrLength(char *s)
 {
 	char *p = s;
 
@@ -346,7 +346,7 @@ GLOBALOSGLUPROC dbglog_writeMacChar(uint8_t x)
 	dbglog_write(&s, 1);
 }
 
-LOCALPROC dbglog_writeSpace(void)
+static void dbglog_writeSpace(void)
 {
 	dbglog_writeCStr(" ");
 }
@@ -369,9 +369,9 @@ GLOBALOSGLUPROC dbglog_writelnNum(char *s, simr v)
 
 /* my event queue */
 
-LOCALVAR EvtQEl EvtQA[EvtQSz];
-LOCALVAR uint16_t EvtQIn = 0;
-LOCALVAR uint16_t EvtQOut = 0;
+static EvtQEl EvtQA[EvtQSz];
+static uint16_t EvtQIn = 0;
+static uint16_t EvtQOut = 0;
 
 GLOBALOSGLUFUNC EvtQEl * EvtQOutP(void)
 {
@@ -387,10 +387,10 @@ GLOBALOSGLUPROC EvtQOutDone(void)
 	++EvtQOut;
 }
 
-GLOBALVAR bool EvtQNeedRecover = false;
+ bool EvtQNeedRecover = false;
 	/* events lost because of full queue */
 
-LOCALFUNC EvtQEl * EvtQElPreviousIn(void)
+static EvtQEl * EvtQElPreviousIn(void)
 {
 	EvtQEl *p = NULL;
 	if (EvtQIn - EvtQOut != 0) {
@@ -400,7 +400,7 @@ LOCALFUNC EvtQEl * EvtQElPreviousIn(void)
 	return p;
 }
 
-LOCALFUNC EvtQEl * EvtQElAlloc(void)
+static EvtQEl * EvtQElAlloc(void)
 {
 	EvtQEl *p = NULL;
 	if (EvtQIn - EvtQOut >= EvtQSz) {
@@ -414,9 +414,9 @@ LOCALFUNC EvtQEl * EvtQElAlloc(void)
 	return p;
 }
 
-LOCALVAR uint32_t theKeys[4];
+static uint32_t theKeys[4];
 
-GLOBALPROC Keyboard_UpdateKeyMap(uint8_t key, bool down)
+void Keyboard_UpdateKeyMap(uint8_t key, bool down)
 {
 	uint8_t k = key & 127; /* just for safety */
 	uint8_t bit = 1 << (k & 7);
@@ -441,9 +441,9 @@ GLOBALPROC Keyboard_UpdateKeyMap(uint8_t key, bool down)
 	}
 }
 
-LOCALVAR bool MouseButtonState = false;
+static bool MouseButtonState = false;
 
-GLOBALPROC MouseButtonSet(bool down)
+void MouseButtonSet(bool down)
 {
 	if (MouseButtonState != down) {
 		EvtQEl *p = EvtQElAlloc();
@@ -458,10 +458,10 @@ GLOBALPROC MouseButtonSet(bool down)
 	}
 }
 
-LOCALVAR uint16_t MousePosCurV = 0;
-LOCALVAR uint16_t MousePosCurH = 0;
+static uint16_t MousePosCurV = 0;
+static uint16_t MousePosCurH = 0;
 
-GLOBALPROC MousePositionSet(uint16_t h, uint16_t v)
+void MousePositionSet(uint16_t h, uint16_t v)
 {
 	if ((h != MousePosCurH) || (v != MousePosCurV)) {
 		EvtQEl *p = EvtQElPreviousIn();
@@ -481,7 +481,7 @@ GLOBALPROC MousePositionSet(uint16_t h, uint16_t v)
 	}
 }
 
-GLOBALPROC InitKeyCodes(void)
+void InitKeyCodes(void)
 {
 	theKeys[0] = 0;
 	theKeys[1] = 0;
@@ -489,7 +489,7 @@ GLOBALPROC InitKeyCodes(void)
 	theKeys[3] = 0;
 }
 
-GLOBALPROC DisconnectKeyCodes(uint32_t KeepMask)
+void DisconnectKeyCodes(uint32_t KeepMask)
 {
 	/*
 		Called when may miss key ups,
@@ -528,7 +528,7 @@ GLOBALPROC DisconnectKeyCodes(uint32_t KeepMask)
 	}
 }
 
-GLOBALPROC EvtQTryRecoverFromFull(void)
+void EvtQTryRecoverFromFull(void)
 {
 	MouseButtonSet(false);
 	DisconnectKeyCodes(0);
@@ -536,14 +536,14 @@ GLOBALPROC EvtQTryRecoverFromFull(void)
 
 /* MacMsg */
 
-GLOBALVAR char *SavedBriefMsg = nullpr;
-GLOBALVAR char *SavedLongMsg = nullpr;
+ char *SavedBriefMsg = nullpr;
+ char *SavedLongMsg = nullpr;
 #if WantAbnormalReports
-GLOBALVAR uint16_t SavedIDMsg = 0;
+ uint16_t SavedIDMsg = 0;
 #endif
-GLOBALVAR bool SavedFatalMsg = false;
+ bool SavedFatalMsg = false;
 
-GLOBALPROC MacMsg(char *briefMsg, char *longMsg, bool fatal)
+void MacMsg(char *briefMsg, char *longMsg, bool fatal)
 {
 	if (nullpr != SavedBriefMsg) {
 		/*

@@ -45,7 +45,7 @@ extern bool ControlKeyPressed;
 #define RAMSafetyMarginFudge 4
 
 #define kRAM_Size (kRAMa_Size + kRAMb_Size)
-EXPORTVAR(uint8_t *, RAM)
+extern uint8_t * RAM;
 	/*
 		allocated by MYOSGLUE to be at least
 			kRAM_Size + RAMSafetyMarginFudge
@@ -54,17 +54,17 @@ EXPORTVAR(uint8_t *, RAM)
 	*/
 
 #if EmVidCard
-EXPORTVAR(uint8_t *, VidROM)
+extern uint8_t * VidROM;
 #endif
 
 #if IncludeVidMem
-EXPORTVAR(uint8_t *, VidMem)
+extern uint8_t * VidMem;
 #endif
 
-EXPORTPROC MemOverlay_ChangeNtfy(void);
+extern void MemOverlay_ChangeNtfy(void);
 
 #if (CurEmMd == kEmMd_II) || (CurEmMd == kEmMd_IIx)
-EXPORTPROC Addr32_ChangeNtfy(void);
+extern void Addr32_ChangeNtfy(void);
 #endif
 
 /*
@@ -76,7 +76,7 @@ typedef uint32_t CPTR;
 	mapping of address space to real memory
 */
 
-EXPORTFUNC uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
+extern uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
 	uint32_t *actL);
 
 /*
@@ -114,7 +114,7 @@ EXPORTFUNC uint8_t * get_real_address0(uint32_t L, bool WritableMem, CPTR addr,
 	real memory, i.e. memory mapped devices
 */
 
-EXPORTFUNC bool AddrSpac_Init(void);
+extern bool AddrSpac_Init(void);
 
 
 #define uint32_t_FromSByte(x) ((uint32_t)(int32_t)(int8_t)(uint8_t)(x))
@@ -127,19 +127,19 @@ EXPORTFUNC bool AddrSpac_Init(void);
 
 
 #if WantDisasm
-EXPORTPROC dbglog_StartLine(void);
+extern void dbglog_StartLine(void);
 #else
 #define dbglog_StartLine()
 #endif
 
 #if dbglog_HAVE
-EXPORTPROC dbglog_WriteMemArrow(bool WriteMem);
+extern void dbglog_WriteMemArrow(bool WriteMem);
 
-EXPORTPROC dbglog_WriteNote(char *s);
-EXPORTPROC dbglog_WriteSetBool(char *s, bool v);
-EXPORTPROC dbglog_AddrAccess(char *s,
+extern void dbglog_WriteNote(char *s);
+extern void dbglog_WriteSetBool(char *s, bool v);
+extern void dbglog_AddrAccess(char *s,
 	uint32_t Data, bool WriteMem, uint32_t addr);
-EXPORTPROC dbglog_Access(char *s, uint32_t Data, bool WriteMem);
+extern void dbglog_Access(char *s, uint32_t Data, bool WriteMem);
 #endif
 
 #if ! WantAbnormalReports
@@ -150,17 +150,17 @@ EXPORTPROC dbglog_Access(char *s, uint32_t Data, bool WriteMem);
 #else
 #define ReportAbnormalID(id, s) DoReportAbnormalID(id)
 #endif
-EXPORTPROC DoReportAbnormalID(uint16_t id
+extern void DoReportAbnormalID(uint16_t id
 #if dbglog_HAVE
 	, char *s
 #endif
 	);
 #endif /* WantAbnormalReports */
 
-EXPORTPROC VIAorSCCinterruptChngNtfy(void);
+extern void VIAorSCCinterruptChngNtfy(void);
 
-EXPORTVAR(bool, InterruptButton)
-EXPORTPROC SetInterruptButton(bool v);
+extern bool InterruptButton;
+extern void SetInterruptButton(bool v);
 
 enum {
 	kICT_SubTick,
@@ -184,17 +184,17 @@ enum {
 	kNumICTs
 };
 
-EXPORTPROC ICT_add(int taskid, uint32_t n);
+extern void ICT_add(int taskid, uint32_t n);
 
 #define iCountt uint32_t
-EXPORTFUNC iCountt GetCuriCount(void);
-EXPORTPROC ICT_Zap(void);
+extern iCountt GetCuriCount(void);
+extern void ICT_Zap(void);
 
-EXPORTVAR(uimr, ICTactive)
-EXPORTVAR(iCountt, ICTwhen[kNumICTs])
-EXPORTVAR(iCountt, NextiCount)
+extern uimr ICTactive;
+extern iCountt ICTwhen[kNumICTs];
+extern iCountt NextiCount;
 
-EXPORTVAR(uint8_t, Wires[kNumWires])
+extern uint8_t Wires[kNumWires];
 
 #define kLn2CycleScale 6
 #define kCycleScale (1 << kLn2CycleScale)
@@ -209,9 +209,9 @@ EXPORTVAR(uint8_t, Wires[kNumWires])
 
 #define HaveMasterEvtQLock EmClassicKbrd
 #if HaveMasterEvtQLock
-EXPORTVAR(uint16_t, MasterEvtQLock)
+extern uint16_t MasterEvtQLock;
 #endif
-EXPORTFUNC bool FindKeyEvent(int *VirtualKey, bool *KeyDown);
+extern bool FindKeyEvent(int *VirtualKey, bool *KeyDown);
 
 
 /* minivmac extensions */
@@ -245,13 +245,13 @@ enum {
 
 #define kcom_callcheck 0x5B17
 
-EXPORTVAR(uint32_t, disk_icon_addr)
+extern uint32_t disk_icon_addr;
 
-EXPORTPROC Memory_Reset(void);
+extern void Memory_Reset(void);
 
-EXPORTPROC Extn_Reset(void);
+extern void Extn_Reset(void);
 
-EXPORTPROC customreset(void);
+extern void customreset(void);
 
 struct ATTer {
 	struct ATTer *Next;
@@ -280,8 +280,8 @@ typedef ATTer *ATTep;
 #define kATTA_mmdvmask (1 << kATTA_mmdvbit)
 #define kATTA_ntfymask (1 << kATTA_ntfybit)
 
-EXPORTFUNC uint32_t MMDV_Access(ATTep p, uint32_t Data,
+extern uint32_t MMDV_Access(ATTep p, uint32_t Data,
 	bool WriteMem, bool ByteSize, CPTR addr);
-EXPORTFUNC bool MemAccessNtfy(ATTep pT);
+extern bool MemAccessNtfy(ATTep pT);
 
 #endif

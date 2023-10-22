@@ -17,8 +17,8 @@
 #ifndef IWMEVDEV_H
 #define IWMEVDEV_H
 
-EXPORTPROC IWM_Reset(void);
+extern void IWM_Reset(void);
 
-EXPORTFUNC uint32_t IWM_Access(uint32_t Data, bool WriteMem, CPTR addr);
+extern uint32_t IWM_Access(uint32_t Data, bool WriteMem, CPTR addr);
 
 #endif

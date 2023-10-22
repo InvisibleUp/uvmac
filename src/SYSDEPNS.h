@@ -41,10 +41,6 @@ typedef int32_t simr;
 /* pascal string, single byte characters */
 #define ps3p uint8_t *
 
-#ifndef MayInline
-#define MayInline
-#endif
-
 #ifndef reg_call
 #define reg_call
 #endif
@@ -53,44 +49,10 @@ typedef int32_t simr;
 #define osglu_call
 #endif
 
-#define LOCALVAR static
-#ifdef AllFiles
-#define GLOBALVAR LOCALVAR
-#define EXPORTVAR(t, v)
-#else
-#define GLOBALVAR
-#define EXPORTVAR(t, v) extern t v;
-#endif
-
-#define LOCALFUNC static
-#define FORWARDFUNC LOCALFUNC
-#ifdef AllFiles
-#define GLOBALFUNC LOCALFUNC
-#define EXPORTFUNC LOCALFUNC
-#else
-#define GLOBALFUNC
-#define EXPORTFUNC extern
-#endif
-#define IMPORTFUNC EXPORTFUNC
-#define TYPEDEFFUNC typedef
-
-#define LOCALPROC LOCALFUNC void
-#define GLOBALPROC GLOBALFUNC void
-#define EXPORTPROC EXPORTFUNC void
-#define IMPORTPROC IMPORTFUNC void
-#define FORWARDPROC FORWARDFUNC void
-#define TYPEDEFPROC TYPEDEFFUNC void
-
-#define LOCALINLINEFUNC static MayInline
-#define LOCALINLINEPROC LOCALINLINEFUNC void
-
-#define LOCALFUNCUSEDONCE LOCALINLINEFUNC
-#define LOCALPROCUSEDONCE LOCALINLINEPROC
-
-#define GLOBALOSGLUFUNC GLOBALFUNC osglu_call
-#define EXPORTOSGLUFUNC EXPORTFUNC osglu_call
-#define GLOBALOSGLUPROC GLOBALFUNC osglu_call void
-#define EXPORTOSGLUPROC EXPORTFUNC osglu_call void
+#define GLOBALOSGLUFUNC  osglu_call
+#define EXPORTOSGLUFUNC extern osglu_call
+#define GLOBALOSGLUPROC  osglu_call void
+#define EXPORTOSGLUPROC extern osglu_call void
 	/*
 		For functions in operating system glue that
 		are called by rest of program.

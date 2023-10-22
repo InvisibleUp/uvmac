@@ -12,10 +12,10 @@
 
 /* --- ROM --- */
 
-LOCALVAR char *rom_path = NULL;
+static char *rom_path = NULL;
 
 #if CanGetAppPath
-LOCALFUNC MacErr_t LoadMacRomFromPrefDir(void)
+static MacErr_t LoadMacRomFromPrefDir(void)
 {
 	MacErr_t err;
 	char *t = NULL;
@@ -46,7 +46,7 @@ LOCALFUNC MacErr_t LoadMacRomFromPrefDir(void)
 #endif
 
 #if CanGetAppPath
-LOCALFUNC MacErr_t LoadMacRomFromAppPar(void)
+static MacErr_t LoadMacRomFromAppPar(void)
 {
 	MacErr_t err;
 	char *d = (NULL == d_arg) ? app_parent : d_arg;

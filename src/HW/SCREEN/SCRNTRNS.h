@@ -58,7 +58,7 @@
 
 /* now define the procedure */
 
-LOCALPROC ScrnTrns_DoTrans(int16_t top, int16_t left,
+static void ScrnTrns_DoTrans(int16_t top, int16_t left,
 	int16_t bottom, int16_t right)
 {
 	int i;

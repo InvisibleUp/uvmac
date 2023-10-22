@@ -35,15 +35,15 @@
 	ReportAbnormalID unused 0x0C06 - 0x0CFF
 */
 
-IMPORTPROC ADB_ShiftOutData(uint8_t v);
-IMPORTFUNC uint8_t ADB_ShiftInData(void);
+extern void ADB_ShiftOutData(uint8_t v);
+extern uint8_t ADB_ShiftInData(void);
 
 #include "HW/ADB/ADBSHARE.h"
 
-LOCALVAR bool ADB_ListenDatBuf;
-LOCALVAR uint8_t ADB_IndexDatBuf;
+static bool ADB_ListenDatBuf;
+static uint8_t ADB_IndexDatBuf;
 
-GLOBALPROC ADB_DoNewState(void)
+void ADB_DoNewState(void)
 {
 	uint8_t state = ADB_st1 * 2 + ADB_st0;
 #ifdef _VIA_Debug
@@ -157,7 +157,7 @@ GLOBALPROC ADB_DoNewState(void)
 	}
 }
 
-GLOBALPROC ADBstate_ChangeNtfy(void)
+void ADBstate_ChangeNtfy(void)
 {
 #ifdef _VIA_Debug
 	fprintf(stderr, "ADBstate_ChangeNtfy: %d, %d, %d\n",
@@ -179,14 +179,14 @@ GLOBALPROC ADBstate_ChangeNtfy(void)
 		*/
 }
 
-GLOBALPROC ADB_DataLineChngNtfy(void)
+void ADB_DataLineChngNtfy(void)
 {
 #ifdef _VIA_Debug
 	fprintf(stderr, "ADB_DataLineChngNtfy: %d\n", ADB_Data);
 #endif
 }
 
-GLOBALPROC ADB_Update(void)
+void ADB_Update(void)
 {
 	uint8_t state = ADB_st1 * 2 + ADB_st0;
 

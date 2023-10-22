@@ -20,9 +20,9 @@ volatile static uint16_t ThePlayOffset;
 volatile static uint16_t TheFillOffset;
 volatile static uint16_t MinFilledSoundBuffs;
 #if dbglog_SoundBuffStats
-LOCALVAR uint16_t MaxFilledSoundBuffs;
+static uint16_t MaxFilledSoundBuffs;
 #endif
-LOCALVAR uint16_t TheWriteOffset;
+static uint16_t TheWriteOffset;
 
 void Sound_Init0(void)
 {
@@ -321,9 +321,9 @@ label_retry:
 	datp->lastv = v1;
 }
 
-LOCALVAR SoundR cur_audio;
+static SoundR cur_audio;
 
-LOCALVAR bool HaveSoundOut = false;
+static bool HaveSoundOut = false;
 
 void Sound_Stop(void)
 {

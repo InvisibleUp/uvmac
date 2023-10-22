@@ -17,10 +17,10 @@
 #ifndef VIDEMDEV_H
 #define VIDEMDEV_H
 
-EXPORTFUNC bool Vid_Init(void);
-EXPORTFUNC uint16_t Vid_Reset(void);
-EXPORTPROC Vid_Update(void);
+extern bool Vid_Init(void);
+extern uint16_t Vid_Reset(void);
+extern void Vid_Update(void);
 
-EXPORTPROC ExtnVideo_Access(CPTR p);
+extern void ExtnVideo_Access(CPTR p);
 
 #endif

@@ -14,6 +14,17 @@ This fork was created to clean up and modernize the code base, make the project 
 
 So far µvMac has only been tested on Windows and Linux. No other operating systems are supported at this time.
 
+# Building
+
+µvMac uses CMake 3.21+ and [vcpkg](https://vcpkg.io/).
+
+1. `git submodule update --init --recursive`
+2. Install CMake and a suitable C compiler. Windows users can use Visual Studio. Ubuntu users may need to use the [Kitware APT repo](https://apt.kitware.com/).
+3. Run `cmake -B [build directory] -S . --preset=debug` (or open the project your IDE). Note that on Linux the configuration may fail due to missing system packages. Install those as needed.
+4. Enter your build directory and run `ninja` to build
+5. Acquire a Macintosh Plus ROM and a system disk and place it in the build directory, named `vMac.ROM`
+6. Start the application and drag the system disk to the window.
+
 ## Legal info
 
 You can redistribute µvMac and/or modify it under the terms

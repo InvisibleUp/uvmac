@@ -3,10 +3,11 @@
     "configurePresets": [
         {
             "name": "debug",
+            "generator": "Ninja",
             "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
-              }
+            }
         }
     ]
 }

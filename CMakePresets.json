@@ -1,0 +1,12 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "debug",
+            "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+              }
+        }
+    ]
+}

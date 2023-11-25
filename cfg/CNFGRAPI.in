@@ -1,0 +1,30 @@
+#pragma once
+
+// TODO: allow some of these options to be configured via CMake
+#define EnableDragDrop 1
+#define ItnlKyBdFix 1
+#define MayFullScreen 1
+#define MayNotFullScreen 1
+#define NeedDoAboutMsg 1
+#define NeedDoMoreCommandsMsg 1
+#define NeedIntlChars 0
+#define NeedRequestInsertDisk 1
+#define NeedRequestIthDisk 0
+#define RomStartCheckSum 1
+#define SaveDialogEnable 1
+#define UseControlKeys 0
+#define WantEnblCrtlKtg 1
+#define WantEnblCtrlInt 1
+#define WantEnblCtrlRst 1
+#define WantInitFullScreen 0
+#define WantInitMagnify 0
+#define WantInitRunInBackground 1
+#define WantInitSpeedValue 0
+#define WindowScale 2
+
+#define kAppVariationStr "@PROJECT_VERSION@"
+#define kBldOpts "obsolete"
+#define kMaintainerName "InvisibleUp"
+#define kStrAppName "micro vMac"
+#define kStrCopyrightYear "1996-2023"
+#define kStrHomePage "https://github.com/invisibleup/uvmac/"

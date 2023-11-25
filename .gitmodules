@@ -4,3 +4,6 @@
 [submodule "src/tomlc99"]
 	path = lib/tomlc99
 	url = https://github.com/cktan/tomlc99
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/Microsoft/vcpkg.git

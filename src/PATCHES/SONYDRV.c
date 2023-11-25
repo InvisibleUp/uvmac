@@ -23,8 +23,8 @@
 
 // Include binaries
 #ifndef _MSC_VER
-INCBIN(SonyDriver, "rsrc/SONYDRV.bin");
-INCBIN(SonyIcon, "rsrc/SONYICO.bin");
+INCBIN(SonyDriver, "../../rsrc/SONYDRV.bin");
+INCBIN(SonyIcon, "../../rsrc/SONYICO.bin");
 #endif
 
 void Sony_LoadDriver(uint8_t *pto, int *size)

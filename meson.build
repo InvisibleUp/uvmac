@@ -1,5 +1,5 @@
 # Project definition
-project('microvmac', 'c', default_options: ['warning_level=everything', 'prefer_static=true', 'c_std=c17'])
+project('microvmac', 'c', default_options: ['warning_level=3', 'prefer_static=true', 'c_std=c17'])
 
 # Configuration data
 conf = configuration_data({
@@ -57,7 +57,7 @@ configure_file(
 )
 
 # Dependencies
-lSDL2 = dependency('SDL2', static: true, default_options: ['test=false'])
+lSDL2 = dependency('SDL2')
 
 # Windows resources
 if target_machine.system() == 'windows'

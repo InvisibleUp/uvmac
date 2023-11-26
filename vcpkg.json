@@ -1,11 +1,5 @@
 {
   "dependencies": [
     "sdl2"
-  ],
-  "overrides": [
-    {
-      "name": "sdl2",
-      "version": "2.26.5"
-    }
   ]
 }

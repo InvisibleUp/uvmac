@@ -67,9 +67,9 @@ uint32_t GetPixFormatFromDepth(int depth)
 	switch(depth)
 	{
 	case 1:	
-		return SDL_PIXELFORMAT_INDEX1LSB;
+		return SDL_PIXELFORMAT_INDEX1MSB;
 	case 4:
-		return SDL_PIXELFORMAT_INDEX4LSB;
+		return SDL_PIXELFORMAT_INDEX4MSB;
 	case 8:
 		return SDL_PIXELFORMAT_INDEX8;
 	case 16:
